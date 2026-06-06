@@ -7,6 +7,20 @@ This repository is a personal life management system built around:
 The goal is not only to record ideas, but to turn intuitions into testable assumptions,
 collect evidence, and gradually build a set of validated personal principles.
 
+## Top-Level Purpose
+
+The repository exists to make daily life compound.
+
+The highest-level goals are:
+
+1. Improve cognition and use that improved cognition to reach financial freedom.
+2. Maintain a healthy life.
+
+Both goals require life to be operated as a system: daily actions should generate
+feedback, evidence, better assumptions, stronger principles, and eventually more
+reliable behavior. AI agents are currently an important domain and leverage point,
+but they are not the final goal. They are one part of the broader life system.
+
 ## Core Areas
 
 - `profile/`: stable and seasonal personal context
