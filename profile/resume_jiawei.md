@@ -1,21 +1,21 @@
 钱家伟
 +86 18983425855	jiaweiqian0@gmail.com	Shanghai, China
-AI Agent Systems Engineer，当前作为 AI Browser 核心智能体验端到端 owner，同时负责 Agent 效果迭代、深度场景定义、核心 case 设计与下一代产品智能能力演进——既驱动当前 Agent Harness 自迭代系统（auto-evaluation → auto-analysis → auto-iteration 全链路）落地，也定义"Browser × Agent"下一代产品形态与能力边界。工作方法论以控制论视角拆解 Agent Loop（plant / controller / observer / feedback），并以训练范式重构效果迭代——把 benchmark score 视作 objective，把归因信号视作 loss，把 context / memory / skill / system prompt 视作可更新参数空间，在其上施加"gradient-like"的迭代更新。兼具 Agent runtime 架构、工具链设计、产品能力定义与 training flywheel 落地经验。
+AI Agent Systems Engineer，当前作为 AI Browser 核心智能体验端到端 owner，负责 Agent Harness 自迭代系统、深度场景定义、核心 case 设计与下一代产品智能能力演进。主导 Tabbit 相关 Agent 效果迭代与 benchmark / case 体系建设，支撑公开口径中核心能力评分从约 50 提升至约 90。工作方法论以控制论视角拆解 Agent Loop（plant / controller / observer / feedback），并以训练范式重构效果迭代——把 benchmark score 视作 objective，把归因信号视作 loss，把 context / memory / skill / system prompt 视作可更新参数空间，在其上施加"gradient-like"的迭代更新。兼具 Agent runtime 架构、工具链设计、产品能力定义、auto-skill pipeline 与 agentic post-training / training flywheel 落地经验。
 PROFESSIONAL EXPERIENCE
 AI Agent Engineer, Meituan
 Dec 2025 – Present
-作为 AI Browser 核心智能体验的端到端 owner，同时负责 Agent 效果迭代、深度场景定义、核心 case 设计与下一代产品智能能力演进——向下负责 Agent Harness 自迭代系统（auto-evaluation → auto-analysis → auto-iteration 全链路）、Agent runtime 架构与 training flywheel，向上定义"Browser × Agent"的产品形态、能力边界与体验基线，覆盖 browser-use / computer-use 场景。
+作为 AI Browser 核心智能体验的端到端 owner，同时负责 Agent 效果迭代、深度场景定义、核心 case 设计与下一代产品智能能力演进——向下负责 Agent Harness 自迭代系统（auto-evaluation → auto-analysis → auto-iteration 全链路）、Agent runtime 架构、auto-skill pipeline 与 training flywheel，向上定义"Browser × Agent"的产品形态、能力边界与体验基线，覆盖 browser-use / computer-use 场景。主导 Tabbit 相关 benchmark、核心 case 与迭代闭环建设，支撑核心能力评分从约 50 提升至约 90。
 Product & Experience Ownership（AI Browser 核心智能体验）
-•	作为 AI Browser 核心智能体验端到端 owner，统一拉通 Agent 效果、产品形态与能力演进三条线：对外定义下一代"Browser × Agent"的用户交互范式、深度场景边界与体验基线，对内将产品目标拆解为可被迭代系统消费的 benchmark、case 集合与归因信号。
+•	作为 AI Browser 核心智能体验端到端 owner，统一拉通 Agent 效果、产品形态与能力演进三条线：对外定义下一代"Browser × Agent"的用户交互范式、深度场景边界与体验基线，对内将产品目标拆解为可被迭代系统消费的 benchmark、case 集合与归因信号，并以 Tabbit 50→90 的公开结果作为阶段性验证。
 •	主导深度场景定义与核心 case 设计：从真实用户旅程中抽象出可衡量、可回归的高价值任务集（长路径信息获取、跨 tab / 跨站点协同、表单与事务类操作、复杂网页理解等），作为 Agent 能力的 setpoint 与产品能力的锚点。
 •	推动产品智能能力演进路线：将"模型能力升级 / harness 架构演进 / skill 沉淀 / context & memory 机制"映射到具体产品能力节点（可用 → 稳定 → 可预期 → 可放大），让每一次 Agent 效果迭代都对应到一次可感知的产品体验升级，而非纯内部指标优化。
 Methodology（方法论）
 • 以控制论视角设计 Agent Loop：把 LLM policy 当作 plant，把 harness 当作 controller，把 evaluation / semantic observer 当作 feedback sensor，通过显式拆分 setpoint（任务目标）、state（执行上下文）、observation（环境反馈）与 actuation（工具调用），抑制长路径任务中的振荡与发散，换取系统级稳定性而非单点 prompt 调优。
 • 以训练范式重构效果迭代：将 benchmark score 视为 objective，auto-analysis 产出的结构化归因当作 loss，把 context 结构、memory 组织、Agent Skill 与 system prompt 视作可更新的"参数空间"，由高阶 Agent 控制层在其上施加 gradient-like 的迭代更新，使每次 benchmark 回归都等价于一次可解释的"参数步进"，而非一次性人工调参。
 Agent Harness Self-Iteration Pipeline（核心方向）
-• 设计并落地 auto-evaluation → auto-analysis → auto-iteration 全链路闭环系统：以更高阶的 Agent 控制层自动完成子 Agent 的效果评测、失败归因与迭代决策，将"人驱动迭代"升级为"系统驱动迭代"，大幅降低人工参与带宽。
+• 设计并落地 auto-evaluation → auto-analysis → auto-iteration 全链路闭环系统：以更高阶的 Agent 控制层自动完成子 Agent 的效果评测、失败归因与迭代决策，将"人驱动迭代"升级为"系统驱动迭代"，支撑 Tabbit benchmark 从约 50 分提升至约 90 分，并大幅降低人工参与带宽。
 • 拆解 Agent 效果迭代的完整可调空间并实现自动化迭代覆盖：context 结构与去噪策略、tool 空间定义与组合、system prompt 工程、Agent Skill 注入与编排、以及方案选型（GUI Agent vs CLI Agent vs 混合模式），使每个维度均可被迭代系统独立感知、评估与优化。
-• 构建 Skill 自动沉淀与注入机制：从执行轨迹中自动回溯关键路径、UI 元素与动作序列，沉淀为可复用 Playbook / Agent Skill，支持 test-time skill reuse 与 self-evolution，形成 skill 维度的自迭代飞轮。
+• 构建 auto-skill 生成、上传与收敛迭代 pipeline：基于上游挖掘的、按场景维度聚类的 user query 与执行 trajectory，自动生成垂类 Agent Skill / Playbook，完成 skill 上传、benchmark 回归、失败归因与多轮迭代，直到目标场景收敛；将 skill 从人工沉淀升级为面向垂类深度场景的自动优化单元。
 • 设计迭代系统的 evaluation 层：区分 rule-based 判定与 LLM-as-judge 评估，结合任务目标达成、轨迹效率与行为合规性多维度指标，为 auto-analysis 提供结构化归因信号而非简单通过率。
 • 设计迭代系统的 analysis 与 decision 层：基于评测信号自动定位瓶颈维度（context 不足 / tool 缺失 / prompt 歧义 / skill 缺口），生成可执行的迭代提案并自动应用，实现迭代闭环。
 Browser-use & Computer-use Agent Runtime
@@ -23,7 +23,8 @@ Browser-use & Computer-use Agent Runtime
 • 推动 Agent harness 中"软调优"和"硬约束"解耦，引入 State Tracker 与 Semantic Observer，将系统鲁棒性从依赖模型能力转向依赖架构保障，抑制复杂任务中的逻辑振荡。
 • 设计正交化、原子化工具集，覆盖感知到执行全链路，降低 tool selection 阶段的语义歧义，提升决策确定性与系统可维护性。
 Training Flywheel
-• 探索基于真实专家轨迹的 SFT 数据飞轮，构建轻量模型在垂直任务中的替代方案，验证 7B / 30B 模型在部分高频场景下对高成本模型调用的替代潜力，以优化 token cost 与端到端时延。
+• 负责 agentic post-training 实验与训练数据飞轮探索：基于公开 Claude 3.7-distilled BUA 数据，对 Qwen3-VL-8B-Instruct 与 UI-TARS-1.5-7B 进行轨迹 SFT / 行为微调，重点强化 tool calling、browser-use 轨迹跟随、UI grounding 与动作决策能力，并在内部 browser-use case 上获得可观察增益。
+• 探索基于真实专家轨迹与蒸馏轨迹的 SFT 数据飞轮，构建轻量模型在垂直任务中的替代方案，验证 7B / 8B / 30B 模型在部分高频场景下对高成本模型调用的替代潜力，以优化 token cost 与端到端时延。
 
 Software Engineer, Microsoft
 May 2024 – Present
@@ -61,9 +62,9 @@ Python, Golang, SQL
 AI-native Engineering:
 Problem scoping & prioritization, AI task decomposition, human-in-the-loop workflow redesign, Cursor, Codex
 LLM / Agent:
-Agent harness self-iteration pipeline, auto-evaluation / auto-analysis / auto-iteration, control-theoretic agent loop design (plant / controller / observer / feedback), training-style iteration (benchmark→loss→gradient over context / memory / skill / system prompt), browser-use / computer-use agents, ReAct, context engineering, tool orchestration, system prompt engineering, skill injection & design, LangGraph, RAG, prompt engineering
+Agent harness self-iteration pipeline, auto-evaluation / auto-analysis / auto-iteration, auto-skill generation / upload / convergence loop, scenario clustering over user queries and trajectories, agentic post-training, tool calling SFT, BUA trajectory data, Qwen3-VL-8B-Instruct, UI-TARS-1.5-7B, control-theoretic agent loop design (plant / controller / observer / feedback), training-style iteration (benchmark→loss→gradient over context / memory / skill / system prompt), browser-use / computer-use agents, ReAct, context engineering, tool orchestration, system prompt engineering, skill injection & design, LangGraph, RAG, prompt engineering
 Training / Modeling:
-SFT, trajectory data construction, Transformers, GRU, CNN, model compression, offline evaluation, approximation optimization
+SFT, agent trajectory construction, VLM / GUI agent post-training, Transformers, GRU, CNN, model compression, offline evaluation, approximation optimization
 Data / Infrastructure:
 Spark, ClickHouse, Azure ML, MySQL, Kafka, CI/CD, RESTful APIs
 Language:

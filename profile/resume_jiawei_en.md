@@ -1,35 +1,40 @@
 Jiawei Qian
 +86 18983425855 | jiaweiqian0@gmail.com | Shanghai, China
 
-AI-Native Agent / LLM Systems Engineer currently serving as the end-to-end owner of the core intelligent experience of an AI Browser — accountable for agent quality iteration, deep-scenario definition, core-case design, and next-generation product intelligence evolution, driving both the current Agent Harness self-iteration pipeline (auto-evaluation → auto-analysis → auto-iteration) and the definition of the next-generation "Browser × Agent" product form and capability boundary. Work methodology: decompose and design agent loops through a control-theoretic lens (policy as plant, harness as controller, evaluator / semantic observer as feedback sensor), and reframe capability iteration as a training process — treating benchmark scores as the objective, structured failure attribution as the loss, and context / memory / skill / system prompt as the updatable parameter space on which a higher-order agent applies gradient-like iterative updates. Experienced in restructuring complex R&D work into AI-executable subproblems and designing human-AI collaborative workflows that reduce manual effort and accelerate experimentation and quality iteration.
+## SUMMARY
+
+AI-Native Agent / LLM Systems Engineer focused on agentic browser and LLM systems. Currently the end-to-end owner of the core intelligence of an Agentic Browser, spanning benchmark design, browser-use / computer-use runtime, evaluation harness, trajectory-data flywheel, reusable agent skills, and next-generation "Browser x Agent" product definition. Led benchmark-driven iteration that ranked #1 (SOTA) on an internal browser-agent benchmark against Comet, Perplexity, and Atlas.
+
+Specializes in turning ambiguous agentic product goals into measurable task suites, closed-loop evaluation systems, and architecture-backed reliability improvements across context, memory, tools, prompts, and skill injection. Work methodology combines control-theoretic agent-loop design with training-style capability iteration: benchmark score as objective, structured failure attribution as loss, and context / memory / skill / system prompt as the updatable parameter space.
 
 ## PROFESSIONAL EXPERIENCE
 
 ### AI Agent Engineer, Meituan
 Dec 2025 - Present
 
-End-to-end owner of the core intelligent experience of an AI Browser, simultaneously accountable for agent quality iteration, deep-scenario definition, core-case design, and next-generation product intelligence evolution. Bottom-up: own agent runtime architecture, the Agent Harness self-iteration pipeline, and the trajectory-data flywheel. Top-down: define the product form, capability boundary, and experience baseline of the next-generation "Browser × Agent", covering browser-use / computer-use scenarios.
+End-to-end owner of the Agentic Browser's core intelligence, accountable for agent quality, product capability definition, benchmark design, runtime architecture, the Agent Harness self-iteration pipeline, and the trajectory-data flywheel.
 
-#### Product & Experience Ownership (AI Browser Core Intelligence)
-- Act as the end-to-end owner of the AI Browser's core intelligent experience, aligning three tracks — agent quality, product form, and capability evolution — by externally defining the next-generation "Browser × Agent" interaction paradigm, deep-scenario boundary, and experience baseline, and internally decomposing product goals into benchmarks, case sets, and attribution signals that the self-iteration system can directly consume.
-- Led deep-scenario definition and core-case design: abstracted a measurable, regression-ready set of high-value tasks from real user journeys (long-horizon information gathering, cross-tab / cross-site coordination, form and transactional operations, complex web understanding), used as both the setpoint of agent capability and the anchor of product capability.
-- Drove the evolution roadmap of product intelligence: mapped "model capability upgrade / harness architecture evolution / skill distillation / context & memory mechanisms" to concrete product capability milestones (usable → stable → predictable → scalable), so that every agent quality iteration translates into a perceivable product experience upgrade rather than a purely internal metric improvement.
-
-#### Methodology
-- Designed the agent loop through a control-theoretic lens: treat the LLM policy as the plant, the harness as the controller, and the evaluator / semantic observer as feedback sensors, with explicit separation of setpoint (task goal), state (execution context), observation (environment feedback), and actuation (tool calls), suppressing oscillation and divergence in long-horizon tasks and shifting robustness from single-point prompt tuning to system-level guarantees.
-- Reframed capability iteration as a training process: treat benchmark scores as the objective, structured auto-analysis outputs as the loss, and context structure, memory organization, agent skills, and system prompts as the updatable "parameter space" over which a higher-order agent applies gradient-like iterative updates, making every benchmark regression an interpretable "parameter step" rather than ad-hoc manual tuning.
+#### Benchmark & Product Ownership (Agentic Browser Core Intelligence)
+- Owned the Agentic Browser benchmark and product definition layer: translated real browser journeys into measurable, regression-ready cases covering long-horizon information gathering, cross-tab / cross-site coordination, form and transactional operations, and complex web understanding.
+- Led benchmark-driven agent quality iteration that ranked #1 (SOTA) on the internal browser-agent benchmark against Comet, Perplexity, and Atlas; converted score deltas and trajectory failures into concrete updates to runtime policy, context / memory structure, skill design, tool contracts, and system prompts.
+- Defined the next-generation "Browser x Agent" interaction paradigm, deep-scenario boundary, capability baseline, and product roadmap; mapped model upgrades, harness architecture, skill distillation, and context / memory mechanisms to product milestones from usable to stable, predictable, and scalable.
+- Built the bridge between product goals and agent engineering by decomposing user-facing capability expectations into benchmarks, case sets, evaluator rubrics, failure taxonomies, and attribution signals that the self-iteration system can directly consume.
 
 #### Browser-Use & Computer-Use Agent Runtime
 - Led AI-native agent capability iteration by identifying high-value problems, filtering out low-leverage directions, decomposing complex R&D goals into tool-assisted AI-executable tasks, and redesigning workflows to reduce manual involvement and accelerate experimentation.
-- Designed and iterated a ReAct-loop-based agent runtime, covering state management, observation abstraction, tool-calling protocols, and failure recovery, improving execution stability for long-horizon tasks.
+- Designed and iterated a ReAct-loop-based browser-use / computer-use runtime covering state management, observation abstraction, tool-calling protocols, and failure recovery, improving execution stability for long-horizon web tasks.
 - Drove the decoupling of "soft optimization" and "hard constraints" in the agent harness by introducing a State Tracker and Semantic Observer, shifting system robustness from model-dependent behavior to architecture-backed guarantees and reducing logical oscillation in complex tasks.
 - Designed an orthogonal and atomic toolset spanning the full chain from perception to execution, reducing semantic ambiguity during tool selection and improving decision reliability and system maintainability.
 - Built multi-level context denoising and prompt optimization mechanisms for high-noise observation settings, improving action compliance and task completion quality under perceptual saturation.
 
 #### Auto-Iteration, Agent Skill & Trajectory Data Flywheel
-- Developed Playbook / Agent Skill capabilities that automatically trace back critical paths, UI elements, and action sequences from execution trajectories, distilling them into reusable skills for test-time reuse and self-evolution.
-- Built a full closed-loop pipeline of auto-run -> auto-evaluation -> skill extraction / skill-based re-run -> auto-iteration, enabling the system to automatically evaluate outcomes, attribute failures, distill reusable skills, and iterate on task performance from execution feedback and trajectory data.
+- Developed Playbook / Agent Skill capabilities that automatically trace critical paths, UI elements, and action sequences from execution trajectories, distilling them into reusable skills for test-time reuse and self-evolution.
+- Built a full closed-loop pipeline of auto-run -> auto-evaluation -> failure attribution -> skill extraction / skill-based re-run -> auto-iteration, enabling the system to evaluate outcomes, explain failures, distill reusable behavior, and improve task performance from trajectory data.
 - Explored an SFT data flywheel based on real expert trajectories, building lightweight-model alternatives for vertical tasks and validating the replacement potential of 7B / 30B models in selected high-frequency scenarios to reduce token cost and end-to-end latency.
+
+#### Agent Loop Methodology
+- Designed the agent loop through a control-theoretic lens: treat the LLM policy as the plant, the harness as the controller, and the evaluator / semantic observer as feedback sensors, with explicit separation of setpoint, state, observation, and actuation to suppress oscillation and divergence in long-horizon tasks.
+- Reframed capability iteration as a training process: treat benchmark scores as the objective, structured auto-analysis outputs as the loss, and context structure, memory organization, agent skills, and system prompts as the updatable "parameter space" over which a higher-order agent applies gradient-like iterative updates.
 
 ### Software Engineer, Microsoft
 May 2024 - Present
