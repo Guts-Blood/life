@@ -1,0 +1,178 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1510" viewBox="0 0 1800 1510" role="img" aria-labelledby="title desc">
+  <title id="title">Qwen3-30B-A3B MoE architecture, parameter accounting and training activation memory</title>
+  <desc id="desc">A Qwen3 style mixture-of-experts Transformer with 48 layers, grouped-query attention, top-8 routing across 128 experts, exact parameter formulas and an 8192-token activation-size example.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+    <style>
+      text { font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; fill: #172033; }
+      .title { font-size: 34px; font-weight: 700; }
+      .subtitle { font-size: 18px; fill: #526078; }
+      .section { font-size: 22px; font-weight: 700; }
+      .label { font-size: 17px; font-weight: 650; }
+      .body { font-size: 15px; }
+      .small { font-size: 13px; fill: #526078; }
+      .tiny { font-size: 12px; fill: #526078; }
+      .panel { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1.5; }
+      .node { fill: #f8fafc; stroke: #64748b; stroke-width: 1.5; }
+      .attention { fill: #dbeafe; stroke: #2563eb; stroke-width: 1.5; }
+      .router { fill: #fef3c7; stroke: #d97706; stroke-width: 1.5; }
+      .expert { fill: #f3e8ff; stroke: #9333ea; stroke-width: 1.5; }
+      .inactive { fill: #f1f5f9; stroke: #94a3b8; stroke-width: 1.2; }
+      .activation { fill: #dcfce7; stroke: #16a34a; stroke-width: 1.5; }
+      .gradient { fill: #fee2e2; stroke: #dc2626; stroke-width: 1.5; }
+      .memory { fill: #ede9fe; stroke: #7c3aed; stroke-width: 1.5; }
+      .warning { fill: #fff1f2; stroke: #e11d48; stroke-width: 1.8; }
+      .arrow { fill: none; stroke: #475569; stroke-width: 2.2; marker-end: url(#arrow); }
+      .route { fill: none; stroke: #d97706; stroke-width: 1.8; marker-end: url(#arrow); }
+      .residual { fill: none; stroke: #16a34a; stroke-width: 2; stroke-dasharray: 5 5; }
+      .formula { font-family: "SFMono-Regular", Consolas, monospace; font-size: 14px; fill: #273449; }
+    </style>
+  </defs>
+
+  <rect width="1800" height="1510" fill="#f5f7fb"/>
+  <text x="50" y="56" class="title">Qwen3-30B-A3B：MoE Transformer、参数账本与训练 activation</text>
+  <text x="50" y="87" class="subtitle">关键区别：per-token compute 看 3.3B active；full-training model-state memory 看 30.5B total</text>
+
+  <rect x="45" y="112" width="1710" height="82" rx="16" class="panel"/>
+  <text x="72" y="145" class="label">Official config snapshot</text>
+  <text x="72" y="171" class="body">L=48 · D=2048 · vocab=151,936 · head_dim=128 · Q heads=32 · KV heads=4 · experts=128 · top-k=8 · expert F=768</text>
+  <rect x="1280" y="128" width="205" height="45" rx="12" class="memory"/>
+  <text x="1310" y="157" class="label">30.5B total</text>
+  <rect x="1505" y="128" width="205" height="45" rx="12" class="activation"/>
+  <text x="1536" y="157" class="label">3.3B active</text>
+
+  <rect x="45" y="220" width="1015" height="800" rx="18" class="panel"/>
+  <rect x="1085" y="220" width="670" height="800" rx="18" class="panel"/>
+  <text x="75" y="260" class="section">1 · 单个 token 在 48 个 MoE blocks 中如何流动</text>
+  <text x="1115" y="260" class="section">2 · Full SFT model-state memory</text>
+
+  <rect x="105" y="298" width="250" height="62" rx="12" class="node"/>
+  <text x="158" y="326" class="label">Tokens → embedding</text>
+  <text x="144" y="348" class="small">W_embed [151,936, 2,048]</text>
+  <path d="M 355 329 L 420 329" class="arrow"/>
+
+  <rect x="420" y="288" width="500" height="82" rx="12" class="attention"/>
+  <text x="555" y="318" class="label">RMSNorm → GQA attention</text>
+  <text x="505" y="343" class="small">Q: 32×128=4096 · K/V: 4×128=512 · output D=2048</text>
+  <path d="M 670 370 L 670 420" class="arrow"/>
+
+  <rect x="105" y="420" width="815" height="500" rx="16" fill="#fffbeb" stroke="#d97706" stroke-width="1.5"/>
+  <text x="135" y="458" class="section">Sparse MoE block</text>
+  <text x="727" y="456" class="small">每个 token 单独选择 experts</text>
+
+  <rect x="145" y="488" width="220" height="70" rx="12" class="router"/>
+  <text x="207" y="516" class="label">Router</text>
+  <text x="169" y="540" class="small">logits [tokens, 128] → top-8</text>
+  <path d="M 365 523 L 420 523" class="route"/>
+
+  <rect x="420" y="478" width="240" height="90" rx="12" class="router"/>
+  <text x="452" y="509" class="label">AllToAll dispatch</text>
+  <text x="447" y="534" class="small">token copied/routed to 8 experts</text>
+  <text x="465" y="555" class="tiny">expert parallel 时跨 GPU</text>
+
+  <path d="M 540 568 L 540 610" class="route"/>
+  <text x="145" y="614" class="label">Selected experts：8 / 128</text>
+
+  <rect x="145" y="636" width="145" height="72" rx="10" class="expert"/>
+  <text x="190" y="664" class="label">Expert 1</text>
+  <text x="166" y="688" class="tiny">2048→768→2048</text>
+  <rect x="305" y="636" width="145" height="72" rx="10" class="expert"/>
+  <text x="350" y="664" class="label">Expert 2</text>
+  <text x="326" y="688" class="tiny">gate/up/down</text>
+  <rect x="465" y="636" width="145" height="72" rx="10" class="expert"/>
+  <text x="510" y="664" class="label">Expert 3</text>
+  <text x="486" y="688" class="tiny">gate/up/down</text>
+  <rect x="625" y="636" width="145" height="72" rx="10" class="expert"/>
+  <text x="670" y="664" class="label">Expert 4</text>
+  <text x="646" y="688" class="tiny">gate/up/down</text>
+
+  <rect x="145" y="724" width="145" height="72" rx="10" class="expert"/>
+  <text x="190" y="752" class="label">Expert 5</text>
+  <text x="166" y="776" class="tiny">selected path</text>
+  <rect x="305" y="724" width="145" height="72" rx="10" class="expert"/>
+  <text x="350" y="752" class="label">Expert 6</text>
+  <text x="326" y="776" class="tiny">selected path</text>
+  <rect x="465" y="724" width="145" height="72" rx="10" class="expert"/>
+  <text x="510" y="752" class="label">Expert 7</text>
+  <text x="486" y="776" class="tiny">selected path</text>
+  <rect x="625" y="724" width="145" height="72" rx="10" class="expert"/>
+  <text x="670" y="752" class="label">Expert 8</text>
+  <text x="646" y="776" class="tiny">selected path</text>
+
+  <rect x="785" y="636" width="105" height="160" rx="10" class="inactive"/>
+  <text x="812" y="683" class="label">120</text>
+  <text x="801" y="708" class="small">inactive</text>
+  <text x="801" y="730" class="small">experts</text>
+  <text x="802" y="764" class="tiny">本 token</text>
+  <text x="802" y="783" class="tiny">不计算</text>
+
+  <path d="M 455 812 L 455 840" class="route"/>
+  <rect x="340" y="840" width="360" height="58" rx="12" class="router"/>
+  <text x="398" y="866" class="label">weighted combine + AllToAll return</text>
+  <text x="414" y="888" class="tiny">top-k probabilities combine expert outputs</text>
+
+  <path d="M 520 920 L 520 952" class="arrow"/>
+  <rect x="345" y="952" width="350" height="45" rx="12" class="activation"/>
+  <text x="424" y="981" class="label">Residual output → next block</text>
+  <path d="M 105 329 L 75 329 L 75 975 L 345 975" class="residual"/>
+
+  <text x="1115" y="302" class="label">30.5B total parameters · default 16 B/P ledger</text>
+  <text x="1115" y="328" class="small">以下 storage 与 total parameters 成正比，不是 active 3.3B</text>
+
+  <text x="1115" y="377" class="label">BF16 weights · 2 B/P</text>
+  <rect x="1115" y="392" width="122" height="34" rx="8" class="attention"/>
+  <text x="1250" y="415" class="body">61 GB</text>
+
+  <text x="1115" y="466" class="label">BF16 gradients · 2 B/P</text>
+  <rect x="1115" y="481" width="122" height="34" rx="8" class="gradient"/>
+  <text x="1250" y="504" class="body">61 GB</text>
+
+  <text x="1115" y="555" class="label">FP32 Adam m + v · 8 B/P</text>
+  <rect x="1115" y="570" width="488" height="34" rx="8" class="memory"/>
+  <text x="1618" y="593" class="body">244 GB</text>
+
+  <text x="1115" y="644" class="label">Optional FP32 master · 4 B/P</text>
+  <rect x="1115" y="659" width="244" height="34" rx="8" class="memory"/>
+  <text x="1374" y="682" class="body">122 GB</text>
+
+  <rect x="1115" y="731" width="600" height="112" rx="14" class="warning"/>
+  <text x="1142" y="765" class="label">Total model states：366 / 488 / 549 GB</text>
+  <text x="1142" y="791" class="body">12 B/P · 16 B/P · 18 B/P 三种常见 Adam 口径</text>
+  <text x="1142" y="819" class="small">不含 activations、dispatch/collective buffers、workspace 与 allocator</text>
+
+  <rect x="1115" y="864" width="600" height="123" rx="14" class="activation"/>
+  <text x="1142" y="898" class="label">MoE 最重要的两本账</text>
+  <text x="1142" y="928" class="body">capacity / optimizer-state → 30.5B total parameters</text>
+  <text x="1142" y="955" class="body">per-token matmul compute → ≈3.3B activated parameters</text>
+  <text x="1142" y="979" class="small">MoE 省的是每-token compute；full SFT 不会把所有 expert states 变成 3.3B</text>
+
+  <rect x="45" y="1045" width="1710" height="420" rx="18" class="panel"/>
+  <text x="75" y="1085" class="section">3 · 具体公式：参数量与一次 forward 的逻辑 activation shape</text>
+
+  <text x="80" y="1126" class="label">Exact parameter accounting（由官方 config 推导）</text>
+  <text x="80" y="1156" class="formula">Embedding / LM head each = V×D = 151,936×2,048 = 311,164,928</text>
+  <text x="80" y="1184" class="formula">Attention/layer = D×4096 + 2×D×512 + 4096×D = 18,874,368</text>
+  <text x="80" y="1212" class="formula">One expert = 3×D×F = 3×2,048×768 = 4,718,592</text>
+  <text x="80" y="1240" class="formula">All experts/layer = 128×4,718,592 = 603,979,776</text>
+  <text x="80" y="1268" class="formula">Router/layer = D×E = 2,048×128 = 262,144</text>
+  <text x="80" y="1296" class="formula">Total ≈ 2×V×D + 48×623,120,640 = 30,532,122,624 ≈ 30.5B</text>
+  <text x="80" y="1324" class="formula">Active ≈ 2×V×D + 48×(attention + router + 8 experts) = 3.353B</text>
+  <text x="80" y="1355" class="small">norm weights 已计入精确 totals；bias-free projections。四舍五入后与官方 30.5B / 3.3B 一致。</text>
+
+  <line x1="900" y1="1110" x2="900" y2="1432" stroke="#cbd5e1" stroke-width="1.5"/>
+
+  <text x="940" y="1126" class="label">One-layer logical activations：B=1, T=8,192, BF16</text>
+  <text x="940" y="1156" class="formula">Residual [B,T,D]                    = 33.6 MB</text>
+  <text x="940" y="1184" class="formula">Q [B,T,4096]                        = 67.1 MB</text>
+  <text x="940" y="1212" class="formula">K or V [B,T,512]                    =  8.4 MB each</text>
+  <text x="940" y="1240" class="formula">Router logits [B,T,128]             =  2.1 MB BF16</text>
+  <text x="940" y="1268" class="formula">Expert assignments = B×T×top-k      = 65,536</text>
+  <text x="940" y="1296" class="formula">Gate or up [assignments,768]         = 100.7 MB each</text>
+  <text x="940" y="1324" class="formula">Dispatch [assignments,2048]          = 268.4 MB</text>
+  <text x="940" y="1352" class="formula">Naive attention [B,32,T,T]          = 4.295 GB</text>
+  <text x="940" y="1380" class="formula">48 layer-input checkpoints only     = 1.611 GB</text>
+  <rect x="940" y="1396" width="760" height="45" rx="10" class="warning"/>
+  <text x="960" y="1424" class="small">不要直接相加：fusion、FlashAttention、recompute 与 tensor lifetime 决定实际 saved / peak memory。</text>
+</svg>
