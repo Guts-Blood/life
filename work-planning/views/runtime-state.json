@@ -1,0 +1,20 @@
+{
+  "plan_status": "draft",
+  "preview": true,
+  "task_statuses": {
+    "AV2-CONTRACT": "ready",
+    "AV2-BACKEND": "draft",
+    "AV2-FRONTEND": "draft",
+    "AV2-BENCHMARK": "draft",
+    "AV2-SCHEMA-MIGRATION": "draft",
+    "AV2-IMAGE-FILE-ID": "ready",
+    "AV2-RELEASE": "draft"
+  },
+  "approved_gates": [],
+  "rejected_gates": [],
+  "requested_gates": [],
+  "artifacts": {},
+  "handoffs": {},
+  "pinned_human_bundle": null,
+  "last_event_at": "2026-07-16T07:52:06.212066Z"
+}

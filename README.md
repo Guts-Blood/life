@@ -31,6 +31,9 @@ but they are not the final goal. They are one part of the broader life system.
 - `reviews/`: periodic reflection and system maintenance
 - `templates/`: reusable note templates
 - `skill/`: workflow instructions for collaborating with Codex on this system
+- `skills/`: versioned personal Codex skills, including context-aware work planning
+- `work-planning/`: approved plans, event traces, and generated focus/review views
+- `work-tracking/`: concrete workstreams, launch tracking, and weekly execution logs
 
 ## Recommended Flow
 
@@ -48,10 +51,10 @@ but they are not the final goal. They are one part of the broader life system.
 - experiments: `E-YYYYMMDD-short-title.md`
 - evidence: `EV-YYYYMMDD-short-title.md`
 - principles: `P-YYYYMMDD-short-title.md`
+- work tracking: `work-tracking/<area>/<dashboard-or-workstream>.md`
 
 ## First Files To Fill In
 
 - `profile/user-profile.md`
 - `profile/current-season.md`
 - `assumptions/inbox/`
-

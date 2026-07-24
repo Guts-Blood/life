@@ -1,0 +1,66 @@
+flowchart LR
+  subgraph HUMAN["Human Focus / Review Lane"]
+    task_AV2_RELEASE["AV2-RELEASE · Authorize service rollout"]
+    gate_AV2_CONTRACT_contract_decision{"decision_gate: Are the compatibility and rollback boundaries acceptable?"}
+    gate_AV2_CONTRACT_cross_repo_contract{"integration_gate: Do both repos implement the same approved contract?"}
+    gate_AV2_BACKEND_backend_integration{"integration_gate: Does the backend diff satisfy the approved contract without regressions?"}
+    gate_AV2_FRONTEND_frontend_integration{"integration_gate: Are UI states consistent with backend semantics and understandable to users?"}
+    gate_AV2_BENCHMARK_taxonomy_artifact{"artifact_gate: Does the taxonomy cover valuable task families rather than frequency alone?"}
+    gate_AV2_SCHEMA_MIGRATION_migration_integration{"integration_gate: Is the migration and rollback evidence sufficient for integration?"}
+    gate_AV2_IMAGE_FILE_ID_file_id_decision{"decision_gate: Approve the file-id lifecycle, permission, and legacy compatibility boundary?"}
+    gate_AV2_IMAGE_FILE_ID_file_id_integration{"integration_gate: Do recent-master and tab-web implement one compatible file-id contract?"}
+    gate_AV2_RELEASE_release_authority{"release_gate: Authorize rollout with the stated observation and rollback plan?"}
+    gate_AV2_RELEASE_cross_repo_release{"integration_gate: Are both repos ready to release as one compatible unit?"}
+  end
+  subgraph C1["Codex Lane 1"]
+    task_AV2_CONTRACT["AV2-CONTRACT · Approve auto-skill service contract"]
+    task_AV2_BACKEND["AV2-BACKEND · Implement backend pipeline state machine"]
+    task_AV2_SCHEMA_MIGRATION["AV2-SCHEMA-MIGRATION · Prepare service schema migration"]
+  end
+  subgraph C2["Codex Lane 2"]
+    task_AV2_FRONTEND["AV2-FRONTEND · Implement auto-skill service UI states"]
+    task_AV2_IMAGE_FILE_ID["AV2-IMAGE-FILE-ID · Define image file-id migration contract"]
+  end
+  subgraph C3["Codex Lane 3"]
+    task_AV2_BENCHMARK["AV2-BENCHMARK · Connect benchmark taxonomy scenarios"]
+  end
+  gate_AV2_CONTRACT_contract_decision --> task_AV2_CONTRACT
+  task_AV2_CONTRACT --> gate_AV2_CONTRACT_cross_repo_contract
+  task_AV2_CONTRACT --> task_AV2_BACKEND
+  task_AV2_BACKEND --> gate_AV2_BACKEND_backend_integration
+  task_AV2_CONTRACT --> task_AV2_FRONTEND
+  task_AV2_FRONTEND --> gate_AV2_FRONTEND_frontend_integration
+  task_AV2_CONTRACT --> task_AV2_BENCHMARK
+  task_AV2_BENCHMARK --> gate_AV2_BENCHMARK_taxonomy_artifact
+  task_AV2_CONTRACT --> task_AV2_SCHEMA_MIGRATION
+  task_AV2_SCHEMA_MIGRATION --> gate_AV2_SCHEMA_MIGRATION_migration_integration
+  gate_AV2_IMAGE_FILE_ID_file_id_decision --> task_AV2_IMAGE_FILE_ID
+  task_AV2_IMAGE_FILE_ID --> gate_AV2_IMAGE_FILE_ID_file_id_integration
+  task_AV2_BACKEND --> task_AV2_RELEASE
+  task_AV2_FRONTEND --> task_AV2_RELEASE
+  task_AV2_BENCHMARK --> task_AV2_RELEASE
+  task_AV2_SCHEMA_MIGRATION --> task_AV2_RELEASE
+  task_AV2_RELEASE --> gate_AV2_RELEASE_release_authority
+  task_AV2_RELEASE --> gate_AV2_RELEASE_cross_repo_release
+  task_AV2_BACKEND -. "conflict" .- task_AV2_SCHEMA_MIGRATION
+  classDef codex fill:#E8F1FF,stroke:#2563EB,color:#111827
+  classDef hybrid fill:#FEF3C7,stroke:#D97706,color:#111827
+  classDef human fill:#FCE7F3,stroke:#DB2777,color:#111827
+  classDef review fill:#FFF7ED,stroke:#EA580C,color:#111827
+  class task_AV2_CONTRACT hybrid
+  class gate_AV2_CONTRACT_contract_decision review
+  class gate_AV2_CONTRACT_cross_repo_contract review
+  class task_AV2_BACKEND codex
+  class gate_AV2_BACKEND_backend_integration review
+  class task_AV2_FRONTEND codex
+  class gate_AV2_FRONTEND_frontend_integration review
+  class task_AV2_BENCHMARK codex
+  class gate_AV2_BENCHMARK_taxonomy_artifact review
+  class task_AV2_SCHEMA_MIGRATION codex
+  class gate_AV2_SCHEMA_MIGRATION_migration_integration review
+  class task_AV2_IMAGE_FILE_ID hybrid
+  class gate_AV2_IMAGE_FILE_ID_file_id_decision review
+  class gate_AV2_IMAGE_FILE_ID_file_id_integration review
+  class task_AV2_RELEASE human
+  class gate_AV2_RELEASE_release_authority review
+  class gate_AV2_RELEASE_cross_repo_release review

@@ -70,7 +70,7 @@ Day 02 建立左半边的 workload 账本：从 tensor shape 推出 Transformer 
 | 模块 | 希望真正掌握的整体能力 | 状态 |
 |---|---|---|
 | A. Roofline | 把一个 operation 的时间拆成 compute 与 data movement，并判断瓶颈 | `completed` |
-| B. Tensor FLOPs | 只看 tensor shape 就能数 dot/matmul FLOPs | `Day 02 Q1 in_progress` |
+| B. Tensor FLOPs | 只看 tensor shape 就能数 dot/matmul FLOPs | `D2-Q1 completed; D2-Q2 next` |
 | C. Transformer accounting | 从 config 推导参数量、forward/backward FLOPs | `locked` |
 | D. 工程容量判断 | 区分 weights、optimizer、gradients、activations 与吞吐瓶颈 | `locked` |
 
@@ -440,10 +440,43 @@ one length-D dot product
 
 FLOP count 与 BF16/FP32 dtype 无关；dtype 影响 bytes、数值精度和硬件可达到的 FLOPs/s。判定：`3/4 correct; dot-product reason needs_recheck`。
 
+#### D2-Q1 复测与“一阶近似”澄清
+
+当 `D=4096`：
+
+```text
+multiplications = 4096
+additions = 4095
+exact FLOPs = 4096 + 4095 = 8191
+leading-order approximation = 2D = 8192
+relative error = 1/8191 ≈ 0.012%
+```
+
+学习者正确指出 BF16/FP32 不改变数学 FLOP count；dtype 会改变 bytes、arithmetic intensity 与硬件对应精度的 FLOPs/s。
+
+这里的“一阶近似”指 leading-order approximation：保留随规模增长最快、决定数量级的主导项，忽略相对越来越小的常数项或低阶项。
+
+迁移题：
+
+```text
+P_layer = 4D² + 3DF + 2D, F = 4D
+        = 16D² + 2D
+        ≈ 16D²
+        ∈ Θ(D²)
+```
+
+学习者正确识别出 `2D` 是低阶项，可以用极限/比值理解其相对贡献趋近于零。需区分：
+
+- `16D²`：保留 leading term 及其系数，用于估算实际参数量/FLOPs。
+- `Θ(D²)`：只描述随 `D` 的渐近增长阶，可以忽略常数系数。
+- `D²`：若没有 `Θ` 或“正比于”的语境，不能替代 `16D²` 作为数值估算式。
+
+判定：`passed`。
+
 ## 完成标准
 
 - [x] 能解释 Roofline 的时间上下界、单位和 arithmetic intensity。
-- [ ] 能从 contraction shape 推 FLOPs，而不是只记公式。
+- [x] 能从 contraction shape 推 FLOPs，而不是只记公式。
 - [ ] 能解释训练 matmul 为何常用约 `6 × 参数量 × token 数`。
 - [ ] 能从 Qwen config 分解 Q/K/V/O 与 gated MLP 参数。
 - [ ] 能说明上述近似忽略了什么，以及何时误差会变大。
