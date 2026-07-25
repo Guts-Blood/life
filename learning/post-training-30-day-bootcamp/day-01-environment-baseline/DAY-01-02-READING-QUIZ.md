@@ -1,6 +1,6 @@
 # Day 01–02 Reading Quiz — Roofline 到 Transformer Accounting
 
-日期：`2026-07-23`–`2026-07-24`  
+日期：`2026-07-23`–`2026-07-25`
 状态：`in_progress`  
 方式：Socratic quiz；一次只讨论一道题，先回答、再纠错、再进入下一题。
 
@@ -70,7 +70,7 @@ Day 02 建立左半边的 workload 账本：从 tensor shape 推出 Transformer 
 | 模块 | 希望真正掌握的整体能力 | 状态 |
 |---|---|---|
 | A. Roofline | 把一个 operation 的时间拆成 compute 与 data movement，并判断瓶颈 | `completed` |
-| B. Tensor FLOPs | 只看 tensor shape 就能数 dot/matmul FLOPs | `D2-Q1 completed; D2-Q2 next` |
+| B. Tensor FLOPs | 只看 tensor shape 就能数 dot/matmul FLOPs | `D2-Q1 completed; D2-Q2 in_progress` |
 | C. Transformer accounting | 从 config 推导参数量、forward/backward FLOPs | `locked` |
 | D. 工程容量判断 | 区分 weights、optimizer、gradients、activations 与吞吐瓶颈 | `locked` |
 
@@ -472,6 +472,47 @@ P_layer = 4D² + 3DF + 2D, F = 4D
 - `D²`：若没有 `Θ` 或“正比于”的语境，不能替代 `16D²` 作为数值估算式。
 
 判定：`passed`。
+
+### D2-Q2 — Forward 与 Reverse FLOPs
+
+目标：从 chain rule 和 tensor shape 推出一个 linear/matmul 在训练中的 forward、`dX` 与 `dW` 三次主要矩阵乘法，为理解 `6 × parameters × tokens` 做准备。
+
+合并 token 维度，令 `N=B×T`：
+
+```text
+X:  [N,D]
+W:  [D,F]
+Y:  [N,F]
+G = dL/dY: [N,F]
+```
+
+前向与反向：
+
+```text
+Y  = X  @ W    : [N,D] @ [D,F] → [N,F]
+dX = G  @ Wᵀ   : [N,F] @ [F,D] → [N,D]
+dW = Xᵀ @ G    : [D,N] @ [N,F] → [D,F]
+```
+
+学习者最初能从标量 chain rule 判断线性映射对输入的导数与 `W` 有关，但忘记了矩阵反向传播的具体乘法。教学后，已经正确识别：
+
+- `L` 是 scalar loss；
+- `G` 是 upstream gradient `dL/dY`；
+- `dX` 来自 chain rule，但 reverse-mode 中使用线性映射的 transpose/adjoint；
+- `dW` 需要累加所有 `N` 个 token/sample 对共享权重的贡献。
+
+当前判定：`concept understood; shape recheck pending`。
+
+待复测：
+
+```text
+X:  [8,16]
+W:  [16,32]
+dY: [8,32]
+
+dX = [?] @ [?] → [?]
+dW = [?] @ [?] → [?]
+```
 
 ## 完成标准
 
