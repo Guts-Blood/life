@@ -1,6 +1,6 @@
 # Day 01–02 Reading Quiz — Roofline 到 Transformer Accounting
 
-日期：`2026-07-23`–`2026-07-25`
+日期：`2026-07-23`–`2026-07-26`
 状态：`in_progress`  
 方式：Socratic quiz；一次只讨论一道题，先回答、再纠错、再进入下一题。
 
@@ -70,8 +70,8 @@ Day 02 建立左半边的 workload 账本：从 tensor shape 推出 Transformer 
 | 模块 | 希望真正掌握的整体能力 | 状态 |
 |---|---|---|
 | A. Roofline | 把一个 operation 的时间拆成 compute 与 data movement，并判断瓶颈 | `completed` |
-| B. Tensor FLOPs | 只看 tensor shape 就能数 dot/matmul FLOPs | `D2-Q1 completed; D2-Q2 in_progress` |
-| C. Transformer accounting | 从 config 推导参数量、forward/backward FLOPs | `locked` |
+| B. Tensor FLOPs | 只看 tensor shape 就能数 dot/matmul FLOPs | `completed` |
+| C. Transformer accounting | 从 config 推导参数量、forward/backward FLOPs | `D2-Q4 completed; D2-Q5 in_progress` |
 | D. 工程容量判断 | 区分 weights、optimizer、gradients、activations 与吞吐瓶颈 | `locked` |
 
 题目总数预计 10–12 题；根据回答动态增加或跳过追问。
@@ -501,24 +501,239 @@ dW = Xᵀ @ G    : [D,N] @ [N,F] → [D,F]
 - `dX` 来自 chain rule，但 reverse-mode 中使用线性映射的 transpose/adjoint；
 - `dW` 需要累加所有 `N` 个 token/sample 对共享权重的贡献。
 
-当前判定：`concept understood; shape recheck pending`。
-
-待复测：
+Shape 复测回答：
 
 ```text
-X:  [8,16]
-W:  [16,32]
-dY: [8,32]
+dX = dY @ Wᵀ
+   = [8,32] @ [32,16]
+   → [8,16]
 
-dX = [?] @ [?] → [?]
-dW = [?] @ [?] → [?]
+dW = Xᵀ @ dY
+   = [16,8] @ [8,32]
+   → [16,32]
 ```
+
+FLOPs 推导：
+
+```text
+forward Y : 2NDF
+backward dX: 2NDF
+backward dW: 2NDF
+total      : 6NDF = 3 × forward FLOPs
+```
+
+令 linear weight 参数量 `P=D×F`，处理的 token 数 `N=B×T`，则：
+
+```text
+training FLOPs ≈ 6 × N × P
+```
+
+这是一阶 matmul accounting；bias、norm、activation、softmax、loss、attention 的非线性/二次项以及 activation recomputation 等需要按分析边界额外处理。判定：`passed`。
+
+### D2-Q3 — GQA 的 Q/K/V 维度
+
+一般形式：
+
+```text
+Q width = Hq  × d_k
+K width = Hkv × d_k
+V width = Hkv × d_v
+attention heads 拼接后的 width = Hq × d_v
+```
+
+标准 dot-product attention 要求 `d_q=d_k` 才能直接计算 `QKᵀ`；`d_v` 在数学上可以不同。模型 config 决定这些维度，训练学习的是 projection weights 的数值。
+
+GQA 中多个 query heads 共享一个 KV head。Qwen3-30B-A3B 的 `Hq=32`、`Hkv=4`，因此每 8 个 query heads 共享一个 KV head。其 config 使用统一的 `head_dim=128`，所以 Q/K/V widths 分别为 `4096/512/512`。
+
+复测使用不同的 value head dimension：
+
+```text
+Hq=32, Hkv=4, d_k=128, d_v=96
+
+Q width = 32×128 = 4096
+K width =  4×128 = 512
+V width =  4×96  = 384
+attention heads 拼接 width = 32×96 = 3072
+```
+
+学习者四项均正确。判定：`dimension constraints passed; projection parameter accounting pending`。
+
+Attention score shape 澄清：
+
+```text
+Q_h: [T,d_k]
+K_h: [T,d_k]
+Q_h @ K_hᵀ: [T,d_k] @ [d_k,T] → [T,T]
+```
+
+学习者最初将 `[B,Hq,T,T]` 误解为 `[B,Hq,d_k,d_k]`；现已理解 `d_k` 是 dot product 中被收缩的 feature dimension，两个 `T` 分别表示 query position 与 key position。因此 `attention_weights[b,h,i,j]` 表示 batch `b`、head `h` 中，第 `i` 个 query token 对第 `j` 个 key token 的权重。判定：`passed`。
+
+Qwen3-30B-A3B 单层 attention projection 参数账本（数学 `X@W` 记法，忽略 bias）：
+
+```text
+WQ [2048,4096]: 8,388,608
+WK [2048, 512]: 1,048,576
+WV [2048, 512]: 1,048,576
+WO [4096,2048]: 8,388,608
+total           : 18,874,368 ≈ 18.87M
+```
+
+学习者正确指出参数量就是矩阵维度乘积，总量为各 projection 相加；不再单独考察机械乘法。下一步考察 GQA 相对 MHA 改变了哪些账目。
+
+GQA → MHA 复测：
+
+```text
+Hq 保持 32，Hkv 从 4 增加到 32
+
+WQ: unchanged
+WO: unchanged
+WK: 8×
+WV: 8×
+KV cache total: 8×
+```
+
+KV cache 可写为 `2 × B × T × Hkv × d_head × bytes_per_element`；开头的 `2` 已同时计入 K 和 V，因此 K/V 各扩大 8 倍时，总 cache 也是扩大 8 倍而不是 16 倍。学习者三项均正确。判定：`passed`。
+
+GQA attention-compute 复测：
+
+学习者正确指出，减少 KV heads 只是让多个 query heads 共享 K/V；`Hq=32` 没有变化，32 个 query heads 仍然分别计算自己的 attention scores。因此 GQA 不会把核心 `QKᵀ` 和 `AV` 的逻辑 FLOPs 降低 8 倍：
+
+```text
+QKᵀ FLOPs ≈ 2 × B × Hq × T² × d_k
+AV FLOPs   ≈ 2 × B × Hq × T² × d_v
+```
+
+GQA 主要减少 K/V projection 参数与 FLOPs、K/V activation、推理 KV cache 及相关 memory traffic；具体 kernel 仍可能因复用和带宽行为获得额外性能收益。判定：`D2-Q3 passed`。
+
+### D2-Q4 — Gated MLP 与 MoE Expert Accounting
+
+一个 SwiGLU expert：
+
+```text
+gate   = X @ W_gate
+up     = X @ W_up
+hidden = SiLU(gate) ⊙ up
+output = hidden @ W_down
+
+W_gate: [D,F]
+W_up:   [D,F]
+W_down: [F,D]
+```
+
+因此：
+
+```text
+P_one_expert = DF + DF + FD = 3DF
+```
+
+学习者正确指出，`W_gate/W_up/W_down` 是持久、可训练的 weight parameters；`gate/up/hidden` 是 forward 过程中产生的 intermediate activations，不应加入参数量，但训练时可能需要保存或重算并占用 activation memory。`SiLU` 和逐元素乘法本身没有可训练参数。
+
+对于 Qwen3-30B-A3B 的 `D=2048, F=768`：
+
+```text
+P_one_expert = 3 × 2048 × 768
+             = 4,718,592
+             ≈ 4.72M
+```
+
+MoE total-vs-active 复测：
+
+```text
+E = 128 experts
+K = 8 selected experts/token
+Pe = 4,718,592 parameters/expert
+
+total expert parameters/layer
+= E × Pe
+= 128 × 4,718,592
+= 603,979,776
+≈ 603.98M
+
+active expert parameters/token/layer
+= K × Pe
+= 8 × 4,718,592
+= 37,748,736
+≈ 37.75M
+
+active / total = K/E = 8/128 = 1/16 = 6.25%
+```
+
+学习者的 `≈604.16M` 来自使用四舍五入后的 `4.72M`，作为一阶估算正确。判定：`D2-Q4 passed`。
+
+### D2-Q5 — MoE Capacity Cost vs Compute Cost
+
+给定 Qwen3-30B-A3B：
+
+```text
+total parameters  ≈ 30.5B
+active parameters ≈ 3.3B/token
+```
+
+学习者回答：
+
+1. full-SFT weights 显存按 total parameters：正确。
+2. gradients 与 Adam states 也按 total parameters，但理由表述为“事先不知道激活哪些 experts”：结论正确，理由需细化。
+3. per-token 主要 matmul FLOPs 按 active parameters；实际不会为该 token 执行全部 128 experts：正确。
+
+修正边界：所有 trainable expert weights 都是长期模型状态，并可能在不同 token、micro-batch 和 step 中被选中、产生梯度和更新，因此 full-SFT 的模型状态容量按 total trainable parameters 规划。某一 micro-batch 中未收到 token 的 expert 可能没有有效梯度，但常规容量估算仍需覆盖所有本地参数的 gradient/optimizer buffers；ZeRO/Expert Parallel 可以把这些状态跨 GPU 分片，但不会把全局模型从 total parameters 变成 active parameters。
+
+当前判定：`capacity/compute answers correct; optimizer-state reason recheck pending`。
+
+#### Training step、逐层 MoE 与 optimizer state
+
+- 这里的 `step 1/2` 指连续的 optimizer/training steps，通常各自消费一个新的 global batch；不是同一 batch 中的两条 sequence。若使用 gradient accumulation，则多个 micro-batches/micro-steps 先累计梯度，最后一次 `optimizer.step()` 才构成这里所说的 optimizer step。
+- 同一 batch 内的不同 sequence、不同 token 会独立路由；同一个 token 进入不同 decoder layers 时，也会由各层自己的 router 重新选择 experts。
+- Qwen3-30B-A3B 有 48 个 decoder layers，官方 config 为 `decoder_sparse_step=1`、`mlp_only_layers=[]`。Transformers 实现会在 `(layer_idx+1) % decoder_sparse_step == 0` 时使用 `Qwen3MoeSparseMoeBlock`，因此该模型每层的 FFN/MLP 子模块都是 MoE；self-attention 仍为 dense GQA。其他 MoE 模型可以交替使用 dense MLP 与 MoE。
+- Adam 并非逐 step 独立。它为每个 trainable parameter 保留一阶矩 `m` 与二阶矩 `v`：
+
+```text
+m_t = β1 m_(t-1) + (1-β1) g_t
+v_t = β2 v_(t-1) + (1-β2) g_t²
+```
+
+当前更新显式依赖过去 steps 的状态；若每一步重置 `m/v`，算法就不再是正常的 Adam。某个 expert 当前 step 未激活时，其状态可能保持不变，或按具体 optimizer/zero-gradient/weight-decay 语义处理，但不能丢弃，因为它在未来 step 再次激活时仍需延续历史。
+
+#### 为什么优化必须沿连续轨迹进行
+
+训练目标可写成：
+
+```text
+J(θ) = E_z[ℓ(θ; z)]
+```
+
+每个 mini-batch 只提供总体目标梯度的随机估计 `g_t`。梯度下降依靠迭代逐步接近更优参数：
+
+```text
+θ_(t+1) = θ_t - η g_t(θ_t)
+```
+
+`θ_(t+1)` 同时是前面所有更新积累出的模型，也是下一批数据计算梯度的位置。如果每一步都重新回到相同初始参数 `θ_0`，则只会得到许多个互不累积的一步更新，无法沿 loss surface 持续前进。
+
+例：`J(θ)=θ²/2`、`∇J=θ`、`η=0.1`、`θ_0=10`：
+
+```text
+连续训练: 10 → 9 → 8.1 → 7.29 → ... → 0
+每步重置: 10 → 9；10 → 9；10 → 9；...
+```
+
+如果每个 batch 都在同一个 `θ` 上计算梯度后求平均，本质上只是组成一个更大的 batch、执行一次更新，并不等于多次迭代。
+
+Checkpoint 只是把训练状态序列化到磁盘：
+
+- 保存并恢复 `θ + optimizer m/v + optimizer step + scheduler + RNG + data position`，原则上等价于不中断地继续训练。
+- 只加载更新后的 model weights `θ`，仍保留了模型参数的连续性，但重置了 Adam/scheduler 等历史，属于 warm start，后续轨迹会改变。
+- 对无 momentum 的 vanilla SGD，若学习率、下一批数据和随机状态完全一致，只恢复 weights 可以与连续更新等价；Adam 不满足这个条件。
+
+核对来源：
+
+- https://huggingface.co/Qwen/Qwen3-30B-A3B/blob/main/config.json
+- https://github.com/huggingface/transformers/blob/main/src/transformers/models/qwen3_moe/modeling_qwen3_moe.py
 
 ## 完成标准
 
 - [x] 能解释 Roofline 的时间上下界、单位和 arithmetic intensity。
 - [x] 能从 contraction shape 推 FLOPs，而不是只记公式。
-- [ ] 能解释训练 matmul 为何常用约 `6 × 参数量 × token 数`。
+- [x] 能解释训练 matmul 为何常用约 `6 × 参数量 × token 数`。
 - [ ] 能从 Qwen config 分解 Q/K/V/O 与 gated MLP 参数。
 - [ ] 能说明上述近似忽略了什么，以及何时误差会变大。
 - [ ] 完成 10–12 道自适应 Quiz，并记录至少 3 个被纠正的误区。
