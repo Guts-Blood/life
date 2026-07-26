@@ -1,0 +1,236 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1880" viewBox="0 0 1800 1880" role="img" aria-labelledby="title desc">
+  <title id="title">Distributed full-training GPU memory accounting and activation checkpointing</title>
+  <desc id="desc">A visual guide that separates global model states, distributed sharding, per-rank peak memory, activation checkpointing, disk training checkpoints, and SFT versus RL KV cache behavior.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#15803d"/>
+    </marker>
+    <style>
+      text { font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; fill: #172033; }
+      .title { font-size: 34px; font-weight: 700; }
+      .subtitle { font-size: 18px; fill: #526078; }
+      .section { font-size: 23px; font-weight: 700; }
+      .label { font-size: 17px; font-weight: 650; }
+      .body { font-size: 15px; }
+      .small { font-size: 13px; fill: #526078; }
+      .tiny { font-size: 12px; fill: #526078; }
+      .formula { font-family: "SFMono-Regular", Consolas, monospace; font-size: 14px; fill: #273449; }
+      .panel { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1.5; }
+      .node { fill: #f8fafc; stroke: #64748b; stroke-width: 1.4; }
+      .weight { fill: #dbeafe; stroke: #2563eb; stroke-width: 1.5; }
+      .gradient { fill: #fee2e2; stroke: #dc2626; stroke-width: 1.5; }
+      .optimizer { fill: #f3e8ff; stroke: #9333ea; stroke-width: 1.5; }
+      .activation { fill: #dcfce7; stroke: #16a34a; stroke-width: 1.5; }
+      .temporary { fill: #fef3c7; stroke: #d97706; stroke-width: 1.5; }
+      .runtime { fill: #e2e8f0; stroke: #64748b; stroke-width: 1.5; }
+      .disk { fill: #e0f2fe; stroke: #0284c7; stroke-width: 1.5; }
+      .warning { fill: #fff1f2; stroke: #e11d48; stroke-width: 1.8; }
+      .good { fill: #f0fdf4; stroke: #16a34a; stroke-width: 1.8; }
+      .line { fill: none; stroke: #475569; stroke-width: 2; marker-end: url(#arrow); }
+      .recompute { fill: none; stroke: #15803d; stroke-width: 2; stroke-dasharray: 7 5; marker-end: url(#arrow-green); }
+      .divider { stroke: #cbd5e1; stroke-width: 1.4; }
+    </style>
+  </defs>
+
+  <rect width="1800" height="1880" fill="#f5f7fb"/>
+  <text x="50" y="58" class="title">分布式训练显存：从全局账本算到每卡 peak</text>
+  <text x="50" y="90" class="subtitle">Full SFT · BF16/FP32 Adam · ZeRO/FSDP/TP/PP/EP · activation checkpointing · standard SFT persistent KV cache = 0</text>
+
+  <!-- Global model-state ledger -->
+  <rect x="40" y="118" width="600" height="430" rx="18" class="panel"/>
+  <text x="70" y="160" class="section">1 · 先算全局 persistent model states</text>
+  <text x="70" y="188" class="small">P_total = 所有参数；P_train = 需要更新的参数。Full SFT 中二者相等。</text>
+
+  <rect x="70" y="214" width="540" height="58" rx="11" class="weight"/>
+  <text x="92" y="238" class="label">Compute weights</text>
+  <text x="92" y="260" class="formula">M_W = P_total × b_W　·　BF16 通常 b_W=2 B/P</text>
+
+  <rect x="70" y="284" width="540" height="58" rx="11" class="gradient"/>
+  <text x="92" y="308" class="label">Gradients</text>
+  <text x="92" y="330" class="formula">M_G = P_train × b_G　·　BF16=2 / FP32=4 B/P</text>
+
+  <rect x="70" y="354" width="540" height="58" rx="11" class="optimizer"/>
+  <text x="92" y="378" class="label">Optional FP32 master weights</text>
+  <text x="92" y="400" class="formula">M_master = P_train × 4 B/P　·　one FP32 copy</text>
+
+  <rect x="70" y="424" width="540" height="58" rx="11" class="optimizer"/>
+  <text x="92" y="448" class="label">Adam optimizer states</text>
+  <text x="92" y="470" class="formula">M_Adam = P_train × (m 4 + v 4) = P_train × 8 B/P</text>
+
+  <rect x="70" y="494" width="540" height="36" rx="10" class="node"/>
+  <text x="92" y="518" class="formula">M_states_global = M_W + M_G + M_master + M_Adam</text>
+
+  <!-- Qwen numeric example -->
+  <rect x="660" y="118" width="1100" height="430" rx="18" class="panel"/>
+  <text x="690" y="160" class="section">Qwen3-30B-A3B · P_total ≈ P_train = 30.5B</text>
+  <text x="690" y="188" class="small">下面是全局状态总量；分布式之后才讨论每卡。所有 GB 使用十进制。</text>
+
+  <text x="700" y="224" class="label">16 B/P 示例</text>
+  <rect x="700" y="242" width="110" height="64" rx="8" class="weight"/>
+  <text x="722" y="268" class="body">Weights</text>
+  <text x="730" y="291" class="label">61 GB</text>
+  <rect x="810" y="242" width="110" height="64" rx="8" class="gradient"/>
+  <text x="838" y="268" class="body">Grads</text>
+  <text x="840" y="291" class="label">61 GB</text>
+  <rect x="920" y="242" width="220" height="64" rx="8" class="optimizer"/>
+  <text x="958" y="268" class="body">FP32 master</text>
+  <text x="999" y="291" class="label">122 GB</text>
+  <rect x="1140" y="242" width="439" height="64" rx="8" class="optimizer"/>
+  <text x="1274" y="268" class="body">Adam m + v</text>
+  <text x="1319" y="291" class="label">244 GB</text>
+  <text x="1600" y="281" class="section">= 488 GB</text>
+
+  <line x1="690" y1="331" x2="1725" y2="331" class="divider"/>
+  <text x="700" y="365" class="label">常见容量区间</text>
+  <rect x="700" y="384" width="512" height="34" rx="8" fill="#eef2ff" stroke="#6366f1"/>
+  <text x="720" y="407" class="body">12 B/P · no master + BF16 grads</text>
+  <text x="1230" y="407" class="label">366 GB · 6× BF16 checkpoint weights</text>
+  <rect x="700" y="430" width="683" height="34" rx="8" fill="#ede9fe" stroke="#7c3aed"/>
+  <text x="720" y="453" class="body">16 B/P · BF16 grads + FP32 master</text>
+  <text x="1400" y="453" class="label">488 GB · 8×</text>
+  <rect x="700" y="476" width="769" height="34" rx="8" fill="#fae8ff" stroke="#a21caf"/>
+  <text x="720" y="499" class="body">18 B/P · FP32 grads + FP32 master</text>
+  <text x="1486" y="499" class="label">549 GB · 9×</text>
+  <text x="700" y="529" class="tiny">这还不是训练 peak：activation、AllGather/full-layer materialization、workspace、通信 buffer 与 runtime overhead 尚未加入。</text>
+
+  <!-- Distributed placement -->
+  <rect x="40" y="568" width="1720" height="500" rx="18" class="panel"/>
+  <text x="70" y="610" class="section">2 · 再决定每类 state 如何分片</text>
+  <text x="70" y="638" class="small">D_DP 表示 data-parallel shard group size；O = FP32 master + Adam m/v。以下只画 ZeRO 维度，实际还需叠加 TP / PP / EP 的 ownership。</text>
+
+  <text x="72" y="699" class="label">No ZeRO</text>
+  <rect x="250" y="667" width="230" height="48" rx="9" class="weight"/>
+  <text x="306" y="697" class="body">W · replicated</text>
+  <rect x="495" y="667" width="230" height="48" rx="9" class="gradient"/>
+  <text x="549" y="697" class="body">G · replicated</text>
+  <rect x="740" y="667" width="360" height="48" rx="9" class="optimizer"/>
+  <text x="838" y="697" class="body">O · replicated</text>
+
+  <text x="72" y="774" class="label">ZeRO-1</text>
+  <rect x="250" y="742" width="230" height="48" rx="9" class="weight"/>
+  <text x="306" y="772" class="body">W · replicated</text>
+  <rect x="495" y="742" width="230" height="48" rx="9" class="gradient"/>
+  <text x="549" y="772" class="body">G · replicated</text>
+  <rect x="740" y="742" width="360" height="48" rx="9" class="optimizer"/>
+  <text x="818" y="772" class="body">O ÷ D_DP</text>
+
+  <text x="72" y="849" class="label">ZeRO-2</text>
+  <rect x="250" y="817" width="230" height="48" rx="9" class="weight"/>
+  <text x="306" y="847" class="body">W · replicated</text>
+  <rect x="495" y="817" width="230" height="48" rx="9" class="gradient"/>
+  <text x="552" y="847" class="body">G ÷ D_DP</text>
+  <rect x="740" y="817" width="360" height="48" rx="9" class="optimizer"/>
+  <text x="818" y="847" class="body">O ÷ D_DP</text>
+
+  <text x="72" y="924" class="label">ZeRO-3 / FSDP</text>
+  <rect x="250" y="892" width="230" height="48" rx="9" class="weight"/>
+  <text x="303" y="922" class="body">W ÷ D_DP</text>
+  <rect x="495" y="892" width="230" height="48" rx="9" class="gradient"/>
+  <text x="552" y="922" class="body">G ÷ D_DP</text>
+  <rect x="740" y="892" width="360" height="48" rx="9" class="optimizer"/>
+  <text x="818" y="922" class="body">O ÷ D_DP</text>
+
+  <rect x="1130" y="666" width="590" height="275" rx="14" class="node"/>
+  <text x="1160" y="700" class="label">TP / PP / EP 改变“谁拥有哪部分参数”</text>
+  <text x="1160" y="735" class="body">TP · 切分单层的大矩阵；norm / bias 等可能复制</text>
+  <text x="1160" y="770" class="body">PP · 将不同 layer 放到不同 pipeline stages</text>
+  <text x="1160" y="805" class="body">EP · 切分 MoE experts；dense attention 通常不随 EP 等分</text>
+  <text x="1160" y="840" class="body">DP · 若无 ZeRO/FSDP，会复制本 rank 的模型分区</text>
+  <text x="1160" y="880" class="small">所以 30.5B / GPU 数只是理想下界，不能替代并行拓扑账本。</text>
+  <text x="1160" y="912" class="small">MoE 还需检查 expert load imbalance 与 AllToAll buffers。</text>
+
+  <rect x="70" y="968" width="1650" height="72" rx="12" class="node"/>
+  <text x="95" y="996" class="formula">M_states_rank ≈ M_W / s_W + M_G / s_G + (M_master + M_Adam) / s_O</text>
+  <text x="95" y="1024" class="small">s_W / s_G / s_O 必须由真实 DP、ZeRO/FSDP、TP、PP、EP 配置分别确定；还要加 ZeRO-3/FSDP 的临时 AllGather 与通信峰值。</text>
+
+  <!-- Peak and activation checkpointing -->
+  <rect x="40" y="1088" width="1050" height="748" rx="18" class="panel"/>
+  <text x="70" y="1130" class="section">3 · 每卡真正要防的是 peak，不是平均 model states</text>
+
+  <text x="70" y="1170" class="label">Per-rank peak memory</text>
+  <rect x="70" y="1188" width="390" height="62" rx="9" class="optimizer"/>
+  <text x="128" y="1215" class="body">local persistent states</text>
+  <text x="164" y="1238" class="small">W + G + master + Adam</text>
+  <rect x="460" y="1188" width="245" height="62" rx="9" class="activation"/>
+  <text x="500" y="1215" class="body">saved activations</text>
+  <text x="522" y="1238" class="small">depends on tokens</text>
+  <rect x="705" y="1188" width="180" height="62" rx="9" class="temporary"/>
+  <text x="728" y="1215" class="body">temp + comm</text>
+  <text x="728" y="1238" class="small">workspace / AG</text>
+  <rect x="885" y="1188" width="155" height="62" rx="9" class="runtime"/>
+  <text x="911" y="1215" class="body">runtime</text>
+  <text x="907" y="1238" class="small">CUDA / allocator</text>
+
+  <text x="70" y="1281" class="formula">M_peak_rank ≈ M_states_rank + M_saved_act + M_temp + M_comm + M_runtime</text>
+  <text x="70" y="1311" class="small">OOM 由同时存活 tensor 的峰值决定；不是把所有 logical tensors 永久相加，也不是只看平均分片。</text>
+
+  <rect x="70" y="1336" width="970" height="88" rx="13" class="warning"/>
+  <text x="95" y="1367" class="label">Qwen 30.5B · 假设 16-way 完美 full shard（仅 persistent 理想下界）</text>
+  <text x="95" y="1397" class="body">12 B/P: 366/16 = 22.9 GB/rank　·　16 B/P: 30.5 GB/rank　·　18 B/P: 34.3 GB/rank</text>
+  <text x="95" y="1418" class="tiny">真实 peak 必然继续加 activation / full-layer materialization / buffers；dense 与 experts 也未必按同一 degree 均分。</text>
+
+  <line x1="70" y1="1452" x2="1040" y2="1452" class="divider"/>
+  <text x="70" y="1487" class="label">Activation checkpointing / recomputation：少存 activation，backward 时重算</text>
+
+  <text x="70" y="1530" class="body">不 checkpoint</text>
+  <rect x="225" y="1505" width="112" height="48" rx="8" class="activation"/>
+  <text x="249" y="1535" class="small">L1 internal</text>
+  <rect x="349" y="1505" width="112" height="48" rx="8" class="activation"/>
+  <text x="373" y="1535" class="small">L2 internal</text>
+  <rect x="473" y="1505" width="112" height="48" rx="8" class="activation"/>
+  <text x="497" y="1535" class="small">L3 internal</text>
+  <rect x="597" y="1505" width="112" height="48" rx="8" class="activation"/>
+  <text x="621" y="1535" class="small">L4 internal</text>
+  <rect x="721" y="1505" width="112" height="48" rx="8" class="activation"/>
+  <text x="745" y="1535" class="small">L5 internal</text>
+  <rect x="845" y="1505" width="112" height="48" rx="8" class="activation"/>
+  <text x="869" y="1535" class="small">L6 internal</text>
+  <text x="970" y="1535" class="small">保存多</text>
+
+  <text x="70" y="1610" class="body">有 checkpoint</text>
+  <rect x="225" y="1584" width="92" height="48" rx="8" class="good"/>
+  <text x="245" y="1614" class="small">boundary</text>
+  <path d="M 317 1608 L 470 1608" class="recompute"/>
+  <rect x="470" y="1584" width="92" height="48" rx="8" class="good"/>
+  <text x="490" y="1614" class="small">boundary</text>
+  <path d="M 562 1608 L 715 1608" class="recompute"/>
+  <rect x="715" y="1584" width="92" height="48" rx="8" class="good"/>
+  <text x="735" y="1614" class="small">boundary</text>
+  <path d="M 807 1608 L 960 1608" class="recompute"/>
+  <text x="970" y="1614" class="small">重算多</text>
+
+  <rect x="70" y="1660" width="970" height="142" rx="13" class="good"/>
+  <text x="95" y="1692" class="label">交换关系</text>
+  <text x="95" y="1722" class="body">saved activation memory ↓　·　额外 forward FLOPs / step time ↑</text>
+  <text x="95" y="1752" class="body">weights / gradients / master / Adam 不变　·　persistent model-state memory 不变</text>
+  <text x="95" y="1782" class="small">checkpoint 覆盖越多、保留的中间量越少，通常重算越多；最佳点需要结合显存和吞吐实测。</text>
+
+  <!-- Checkpoint meaning and SFT/RL -->
+  <rect x="1110" y="1088" width="650" height="748" rx="18" class="panel"/>
+  <text x="1140" y="1130" class="section">4 · “Checkpoint”有两个完全不同的意思</text>
+
+  <rect x="1140" y="1160" width="590" height="228" rx="14" class="activation"/>
+  <text x="1168" y="1194" class="label">A · Activation / gradient checkpointing</text>
+  <text x="1168" y="1227" class="body">保存少量 layer / segment boundary activations</text>
+  <text x="1168" y="1258" class="body">backward 需要内部 tensor 时，再跑一次局部 forward</text>
+  <text x="1168" y="1294" class="formula">activation memory ↓　compute / time ↑</text>
+  <text x="1168" y="1327" class="body">这是训练运行时的 memory optimization</text>
+  <text x="1168" y="1360" class="small">不减少 model-state bytes；只改变为 backward 保留哪些 activations。</text>
+
+  <rect x="1140" y="1410" width="590" height="218" rx="14" class="disk"/>
+  <text x="1168" y="1444" class="label">B · Training checkpoint saved to disk</text>
+  <text x="1168" y="1477" class="body">序列化 model / optimizer / scheduler / RNG / global step</text>
+  <text x="1168" y="1510" class="body">用于容错、resume、保留训练轨迹</text>
+  <text x="1168" y="1546" class="formula">live GPU memory ≈ unchanged</text>
+  <text x="1168" y="1579" class="body">保存时可能产生 I/O、CPU staging 或临时副本</text>
+  <text x="1168" y="1610" class="small">它不是显存优化；“存 checkpoint 能省显存”通常说的是上面的 activation checkpointing。</text>
+
+  <rect x="1140" y="1650" width="590" height="152" rx="14" class="node"/>
+  <text x="1168" y="1684" class="label">SFT 与 RL 的 KV cache 边界</text>
+  <text x="1168" y="1717" class="body">Teacher-forced SFT：persistent generation KV cache = 0</text>
+  <text x="1168" y="1748" class="body">但 Q/K/V 与 backward saved activations 仍存在</text>
+  <text x="1168" y="1779" class="body">RL rollout：自回归生成通常增加 KV cache、多模型与 rollout buffers</text>
+</svg>

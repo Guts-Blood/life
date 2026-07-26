@@ -22,12 +22,13 @@
 
 今日与 Day 01 合并进行互动阅读时，使用 [`../day-01-environment-baseline/DAY-01-02-READING-QUIZ.md`](../day-01-environment-baseline/DAY-01-02-READING-QUIZ.md) 跟踪原始回答、点评和修正版结论。
 
-- [ ] Day 02 Reading Quiz：started `2026-07-24`。
+- [x] Day 02 Reading Quiz：completed `2026-07-26`。
 
 参数、activation 与 training-state 的电子版参考：
 
 - [`../artifacts/reports/training-memory-visual-guide/dense-transformer-training-memory.svg`](../artifacts/reports/training-memory-visual-guide/dense-transformer-training-memory.svg)
 - [`../artifacts/reports/training-memory-visual-guide/qwen3-30b-a3b-moe-training-memory.svg`](../artifacts/reports/training-memory-visual-guide/qwen3-30b-a3b-moe-training-memory.svg)
+- [`../artifacts/reports/training-memory-visual-guide/distributed-training-memory-checkpointing.svg`](../artifacts/reports/training-memory-visual-guide/distributed-training-memory-checkpointing.svg)
 - [`../artifacts/reports/training-memory-visual-guide/README.md`](../artifacts/reports/training-memory-visual-guide/README.md)
 
 - Transformer 各矩阵的参数公式、forward/backward FLOPs、Adam 状态和 activation 来源。

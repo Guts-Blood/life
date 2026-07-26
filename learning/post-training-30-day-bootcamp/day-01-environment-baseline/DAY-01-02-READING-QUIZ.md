@@ -1,7 +1,7 @@
 # Day 01–02 Reading Quiz — Roofline 到 Transformer Accounting
 
 日期：`2026-07-23`–`2026-07-26`
-状态：`in_progress`  
+状态：`completed`
 方式：Socratic quiz；一次只讨论一道题，先回答、再纠错、再进入下一题。
 
 ## 当前进度口径
@@ -71,8 +71,8 @@ Day 02 建立左半边的 workload 账本：从 tensor shape 推出 Transformer 
 |---|---|---|
 | A. Roofline | 把一个 operation 的时间拆成 compute 与 data movement，并判断瓶颈 | `completed` |
 | B. Tensor FLOPs | 只看 tensor shape 就能数 dot/matmul FLOPs | `completed` |
-| C. Transformer accounting | 从 config 推导参数量、forward/backward FLOPs | `D2-Q4 completed; D2-Q5 in_progress` |
-| D. 工程容量判断 | 区分 weights、optimizer、gradients、activations 与吞吐瓶颈 | `locked` |
+| C. Transformer accounting | 从 config 推导参数量、forward/backward FLOPs | `completed` |
+| D. 工程容量判断 | 区分 weights、optimizer、gradients、activations 与吞吐瓶颈 | `completed` |
 
 题目总数预计 10–12 题；根据回答动态增加或跳过追问。
 
@@ -724,6 +724,58 @@ Checkpoint 只是把训练状态序列化到磁盘：
 - 只加载更新后的 model weights `θ`，仍保留了模型参数的连续性，但重置了 Adam/scheduler 等历史，属于 warm start，后续轨迹会改变。
 - 对无 momentum 的 vanilla SGD，若学习率、下一批数据和随机状态完全一致，只恢复 weights 可以与连续更新等价；Adam 不满足这个条件。
 
+连续优化数值复测：
+
+```text
+J(θ)=θ²/2, ∇J=θ, η=0.1, θ₀=10
+
+连续 3 steps: 10 → 9 → 8.1 → 7.29
+每步从 θ₀ 重置: 每次都是 10 → 9，第三次结束仍为 9
+```
+
+学习者两项均正确，已理解 mini-batch 可以独立抽样，但模型参数的优化轨迹不能互相独立。判定：`iterative-optimization concept passed; gradient-accumulation step semantics pending`。
+
+Gradient accumulation 初次回答（`gradient_accumulation_steps=4`）：
+
+1. `θ` 更新 1 次：正确。
+2. Adam `m/v` 更新 4 次：错误；标准实现只在唯一一次 `optimizer.step()` 中更新 1 次。
+3. gradients 是“中间状态”：方向接近但不精确；四次 backward 将梯度累积到各 parameter 的 `.grad` buffer，通常通过 loss scaling 得到四个 micro-batch gradients 的平均值，之后一次性供 optimizer 使用。
+
+标准时间线：
+
+```text
+zero_grad()
+backward(loss_1 / 4) → .grad += g_1/4
+backward(loss_2 / 4) → .grad += g_2/4
+backward(loss_3 / 4) → .grad += g_3/4
+backward(loss_4 / 4) → .grad += g_4/4
+optimizer.step()     → 使用累计 gradient，更新 θ/m/v 各 1 次
+zero_grad()
+```
+
+若不除以 4，`.grad` 中是 sum 而不是 mean，更新尺度会相差 4 倍；具体框架可能在 loss、gradient 或 optimizer 边界完成等价缩放。当前判定：`1/3 passed; m/v and grad-buffer semantics need recheck`。
+
+Day 02 最终综合题：
+
+```text
+total parameters  = 30.5B
+active parameters = 3.3B/token
+tokens            = 1M
+BF16 weights       = 2 bytes/parameter
+full-SFT state     = 12 bytes/parameter
+```
+
+回答与修正：
+
+```text
+BF16 weights = 30.5B × 2 bytes = 61GB                     # correct
+model states = 30.5B × 12 bytes = 366GB = 6× BF16 weights # 回答为 3×，倍率需修正
+training FLOPs ≈ 6 × 3.3B × 1M = 1.98×10^16 FLOPs
+               = 19.8 PFLOPs（总操作量，不是 PFLOPs/s）    # expression correct
+```
+
+学习者已正确区分 capacity 按 total parameters、per-token main matmul compute 按 active parameters；`12/2=6` 的错误属于机械倍率，不再追加题目。梯度累计细节移至后续 optimizer/checkpoint 日复测。判定：`D2-Q5 passed with arithmetic correction; Day 02 Reading Quiz completed 2026-07-26`。
+
 核对来源：
 
 - https://huggingface.co/Qwen/Qwen3-30B-A3B/blob/main/config.json
@@ -734,6 +786,6 @@ Checkpoint 只是把训练状态序列化到磁盘：
 - [x] 能解释 Roofline 的时间上下界、单位和 arithmetic intensity。
 - [x] 能从 contraction shape 推 FLOPs，而不是只记公式。
 - [x] 能解释训练 matmul 为何常用约 `6 × 参数量 × token 数`。
-- [ ] 能从 Qwen config 分解 Q/K/V/O 与 gated MLP 参数。
-- [ ] 能说明上述近似忽略了什么，以及何时误差会变大。
-- [ ] 完成 10–12 道自适应 Quiz，并记录至少 3 个被纠正的误区。
+- [x] 能从 Qwen config 分解 Q/K/V/O 与 gated MLP 参数。
+- [x] 能说明上述近似忽略了什么，以及何时误差会变大。
+- [x] 完成 10–12 道自适应 Quiz/追问，并记录至少 3 个被纠正的误区。

@@ -9,6 +9,7 @@
 
 - [`dense-transformer-training-memory.svg`](./dense-transformer-training-memory.svg)：Dense Transformer 数据流、forward/backward 保存项，以及 10B full SFT 显存账本。
 - [`qwen3-30b-a3b-moe-training-memory.svg`](./qwen3-30b-a3b-moe-training-memory.svg)：Qwen3-30B-A3B 风格 MoE block、router/expert/AllToAll，以及 total/active parameter 的显存与计算区别。
+- [`distributed-training-memory-checkpointing.svg`](./distributed-training-memory-checkpointing.svg)：从全局 weights/gradients/master/Adam 账本到 ZeRO/FSDP 每卡 peak，并解释 activation checkpointing 为什么省显存、disk training checkpoint 为什么不省。
 
 ## 首先固定口径
 
@@ -69,6 +70,20 @@ local micro-batch tokens
 - fused kernels、temporary workspace 和 allocator fragmentation。
 
 Activation checkpointing 的本质是少存 forward intermediates，并在 backward 时重新计算，所以它交换的是 memory 与 compute。
+
+这里必须区分两个同名概念：
+
+```text
+activation / gradient checkpointing
+→ 训练运行时少存 activation，backward 重算局部 forward
+→ activation memory 减少，FLOPs 与 step time 增加
+→ weights / gradients / optimizer states 不变
+
+training checkpoint saved to disk
+→ 保存 model / optimizer / scheduler / RNG / global step
+→ 用于容错和 resume
+→ 不降低正常训练时的 live GPU memory
+```
 
 ### Training 中为什么没有 persistent KV cache
 
@@ -278,6 +293,20 @@ M_states = P_total × bytes_per_parameter
 ```text
 M_states_per_gpu_ideal = M_states / world_size
 ```
+
+更准确的 ZeRO/FSDP 分类账：
+
+```text
+M_states_per_rank ≈
+  M_weights / s_weights
+  + M_gradients / s_gradients
+  + (M_master + M_Adam) / s_optimizer
+```
+
+- ZeRO-1：主要分片 optimizer states；
+- ZeRO-2：继续分片 gradients；
+- ZeRO-3 / FSDP full-shard：继续分片 parameters；
+- TP/PP/EP 会进一步改变 layer、matrix、expert 的 ownership，不能把所有状态无条件除以 `world_size`。
 
 ### 峰值显存
 
