@@ -24,6 +24,10 @@
 
 精读清单：[Day 03 — Roofline 落到 H100](../SCALING-BOOK-READING-GUIDE.md#day-03)。Core 是 Part 1 `Matrix multiplication`、`Network communication rooflines`、Problems Q3/Q5，以及 Part 12 的 H100 硬件/内存表。
 
+互动测验使用 [`DAY-03-READING-QUIZ.md`](./DAY-03-READING-QUIZ.md) 跟踪原始回答、点评和修正版结论。
+
+- [x] Day 03 Reading Quiz：`completed`（`2026-07-26`–`2026-07-27`）。
+
 - Compute/HBM/network roofline、arithmetic intensity、MFU 与 strong scaling。
 - 把已有 TPU/通用结论改写为当前 H100 和后续训练配置的预测。
 
