@@ -1,7 +1,8 @@
 # Day 02 — Transformer 参数、FLOPs 与显存
 
 日期：`2026-07-28`  
-状态：`in_progress`  
+状态：`done`（用户确认 Day 02 已完成；保留原清单，不补写未记录的 artifact）
+
 强度：工作日 4–5 小时
 
 ## 今日结果

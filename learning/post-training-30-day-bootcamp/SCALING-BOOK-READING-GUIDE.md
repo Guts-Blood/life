@@ -1,408 +1,411 @@
-# Scaling Book 精读路线
+# Scaling Book 与 Training 精读路线
 
 主教材：[How To Scale Your Model](https://jax-ml.github.io/scaling-book/)  
-适用范围：本 Bootcamp 的 Day 01–30  
-原则：不线性通读，不抄长摘要；围绕当天要写的代码、要跑的实验和要做的容量决策精读。
+适用范围：Day 01–30
 
-## 为什么不按原书顺序读
+状态：Day 01–03 已由用户确认完成；从 Day 04 起按本路线继续。
 
-原书以 TPU/JAX 为主要叙事，但本计划的硬件是 H100、工程栈是 PyTorch/ms-swift。Core 路线只选择可以迁移到 GPU 大模型后训练的内容：
+## 阅读原则
 
-```mermaid
-flowchart LR
-    A["Part 0/1\n术语与 Roofline"] --> B["Part 4\nTransformer accounting"]
-    B --> C["Part 3\nSharding 与 collectives"]
-    C --> D["Part 5\nTraining parallelism"]
-    D --> E["Part 6\n真实模型容量题"]
-    A --> F["Part 12\nGPU、网络与 GPU rooflines"]
-    D --> F
-    E --> G["Part 9\nProfiler：理论对实测"]
-    B --> H["Part 7\nEval/rollout inference"]
-    F --> I["30B+ Dense/MoE design"]
-    G --> I
-    H --> I
-```
+《How To Scale Your Model》继续作为系统直觉主线，但不再支配整个 bootcamp。Day 04 以后只在它能回答实际训练问题时回读：
 
-- Core：Part 0、1、3、4、5、6、7、9、12。
-- 选读：Part 2 TPU 硬件、Part 8 TPU serving、Part 10 JAX 编程。
-- 不直接迁移 TPU 数字。公式、分析方法和边界条件迁移到 H100；峰值 FLOPs、HBM/NVLink/IB 带宽必须换成实际实例数据。
+- `OOM`：参数、梯度、optimizer、activation、temporary buffer 到底谁超了？
+- `throughput`：compute、HBM、通信、数据加载或 padding 谁在限制？
+- `batch`：micro batch、accumulation、DP、有效 label tokens 如何组成 global batch？
+- `并行配置`：某种 sharding 解决了什么容量问题，又引入了什么 collective？
+- `checkpoint/resume`：保存的是完整训练状态还是仅可推理权重？
 
-## 每次阅读的固定动作
+本月不要求复现 collective 的精确环形推导、记 TPU 峰值数字或学习 JAX API。公式必须带单位，但 Day 04 后 quiz 不重复纯推导。
 
-工作日 45–90 分钟的 reading block：
+## 固定阅读和 Quiz 协议
 
-1. 5 分钟：先写今天要回答的两个问题。
-2. 25–50 分钟：只读下面指定的小节；看到推导要自己补单位。
-3. 10–20 分钟：先做指定问题，再展开网页答案。
-4. 10–15 分钟：写 `公式/结论 -> Qwen config -> H100/ms-swift 参数` 的映射。
+工作日 reading block 为 60–75 分钟，周末严格 60 分钟：
 
-周末 60 分钟：50 分钟阅读/手算，10 分钟写结论。周末不因阅读超时而开启 coding 或 GPU。
+1. 先看当天三题，写下初始判断。
+2. 只读指定的一手材料和与问题直接相关的小节。
+3. 回答三题并引用具体 config、sample、log 或 codepath。
+4. 留下一项最小验证；不把“继续多读”当验证。
 
-每次在当天 README 的 Daily Log 留下四项：
+每天 quiz 固定为且仅为三类：
 
-- `3 个可复述结论`
-- `1 个带单位的手算`
-- `1 个 Qwen/H100 工程映射`
-- `1 个仍然不知道的问题`
+1. **对象/数据题**：对象、字段、shape、版本和变换关系是什么？
+2. **状态/训练题**：哪些状态被读取、修改、聚合、保存或恢复？
+3. **诊断/判断题**：面对异常或方案选择，依据什么证据判断，下一项最小验证是什么？
 
-## Week 1：从公式到并行心智模型
+Daily Log 至少留下：三题答案、一个工程映射、一个证据路径、一个未解决问题。
+
+## Week 1：Scaling 基础与 Training 全景
 
 <a id="day-01"></a>
 
-### Day 01 — 术语、上下界与阅读地图（45–60 分钟）
+### Day 01 — 术语、上下界与可复现环境
 
-按顺序读：
+阅读：[Introduction](https://jax-ml.github.io/scaling-book/) 的全书地图；[Rooflines](https://jax-ml.github.io/scaling-book/roofline/) 的 `Where Does the Time Go?` 与 roofline 图。
 
-1. [Introduction](https://jax-ml.github.io/scaling-book/)：`High-Level Outline`、`Links to Sections`，10 分钟。
-2. [Part 1: Rooflines](https://jax-ml.github.io/scaling-book/roofline/)：`Where Does the Time Go?`，读到 arithmetic intensity 的定义与 compute-/communication-bound 判据，30 分钟。
-3. 同页 `Visualizing rooflines`，只看图和坐标含义，10 分钟。
+- **对象/数据题**：一次 run 的 code、model、tokenizer、dataset、config、environment、seed、hardware 分别用什么不可变标识？
+- **状态/训练题**：哪些状态只影响复现，哪些会直接改变下一次 optimizer update？
+- **诊断/判断题**：模型能放入显存但 step 很慢时，先收集哪三类证据区分 compute、HBM 和数据问题？
 
-必须回答：
-
-- 为什么运行时间下界是 `max(T_math, T_comms)`，上界是两者之和？
-- FLOPs、FLOPs/s、bytes、bytes/s 分别是什么单位？
-- “模型能放进显存”为什么不能推出“训练会很快”？
-
-停止点：今天不读 matmul 推导和多卡网络 roofline，留给 Day 03。
+当日落地：环境与 run identity 清单。历史完成状态不意味着补写不存在的 artifact。
 
 <a id="day-02"></a>
 
-### Day 02 — Transformer 参数与训练 FLOPs（80–90 分钟）
+### Day 02 — Transformer 参数、FLOPs 与训练状态
 
-读 [Part 4: Transformer Math](https://jax-ml.github.io/scaling-book/transformers/)：
+阅读：[Transformer Math](https://jax-ml.github.io/scaling-book/transformers/) 的 `Counting Dots`、forward/reverse FLOPs、Transformer accounting 与 global params/FLOPs。
 
-1. `Counting Dots`，10 分钟。
-2. `Forward and reverse FLOPs`，15 分钟；自己推一次为什么训练约为 forward 的 3 倍。
-3. `Transformer Accounting`，30 分钟；逐项对应 embedding、Q/K/V/O、gate/up/down。
-4. `Global FLOPs and Params Calculation`，20 分钟；找到 `6 × parameters × tokens` 的假设边界。
-5. `A Few Problems to Work` 的前两个参数/FLOPs 问题，先做后看答案，15 分钟。
+- **对象/数据题**：从 Qwen config 如何得到 embedding、attention、MLP、norm 与 lm_head 的 shape 和参数量？
+- **状态/训练题**：BF16 全参训练中 weight、gradient、FP32 master weight、Adam moments 和 activation 各何时存在？
+- **诊断/判断题**：估算参数量正确但实测显存差很多时，按什么顺序检查 activation、temporary buffer、allocator 和 checkpointing 假设？
 
-必须产出：从 `Qwen3-1.7B-Base/config.json` 抄 shape，不抄模型名里的“1.7B”，独立算一次参数量与每 token 训练 FLOPs。
+当日落地：基于 config 的模型与训练状态 accounting。
 
 <a id="day-03"></a>
 
-### Day 03 — Roofline 落到 H100（90 分钟 Core + 15 分钟 Optional）
+### Day 03 — Roofline 落到 H100
 
-读：
+阅读：[Rooflines](https://jax-ml.github.io/scaling-book/roofline/) 的 matmul/network roofline；[GPUs](https://jax-ml.github.io/scaling-book/gpus/) 的 GPU、memory 与 hardware specs。
 
-1. [Part 1](https://jax-ml.github.io/scaling-book/roofline/)：`Matrix multiplication`，25 分钟。
-2. 同页 `Network communication rooflines`，20 分钟。
-3. 同页 Problems：Question 3（画 roofline）与 Question 5（H100 critical batch），25 分钟；先算再展开答案。
-4. [Part 12: GPUs](https://jax-ml.github.io/scaling-book/gpus/)：`What Is a GPU?`、`Memory`、`Summary of GPU specs`，20 分钟。
+- **对象/数据题**：一次 SFT step 中哪些 tensor bytes 经过 HBM，哪些 bytes 经过 GPU 间链路？
+- **状态/训练题**：micro batch、sequence length 与 accumulation 如何改变 local tokens、activation 和单次 update？
+- **诊断/判断题**：`GPU utilization=99%` 但 tokens/s 低，哪些观测可以判断 MFU 低、padding 高或通信等待？
 
-必须产出：用实际 AutoDL H100 型号重算 `C/W_HBM`，并解释这里的 `B` 是 local tokens，不是 sequence count。
-
-Optional：读 Part 12 `Quiz 1: GPU hardware`，只做与 H100/显存层级相关的问题。
+当日落地：H100 worksheet 与后续实测所需字段。
 
 <a id="day-04"></a>
 
-### Day 04 — Sharding notation 与 collective 因果链（80–90 分钟）
+### Day 04 — Sharding 与 collective 的因果链
 
-读 [Part 3: Sharded Matrices](https://jax-ml.github.io/scaling-book/sharding/)：
+阅读：[Sharded Matrices](https://jax-ml.github.io/scaling-book/sharding/) 的统一记号、四类 matmul、AllGather/ReduceScatter/AllReduce/AllToAll。跳过 JAX API 和精确 ring 成本推导。
 
-1. `Partitioning Notation and Collective Operations` 与 `A unified notation for sharding`，25 分钟。
-2. `Computation With Sharded Arrays` 的 Case 1–4，35 分钟。
-3. `A Deeper Dive into TPU Communication Primitives` 中 AllGather、ReduceScatter、AllToAll 与 overlap，20 分钟。
-4. `Some Problems to Work` 任选一个矩阵 sharding 题，10 分钟。
+- **对象/数据题**：给定 `A[I,J]B[J,K]`，每个 rank 实际持有哪些 local shards，输出是完整块还是 partial sum？
+- **状态/训练题**：AllGather、AllReduce、ReduceScatter、AllToAll 分别改变复制、切分、未规约状态中的哪一项？
+- **诊断/判断题**：遇到 OOM 或多卡吞吐下降时，如何从 global/local shape、collective tensor bytes 和期望输出布局判断是分片不足还是通信过重？
 
-必须产出：对每个 Case 写出 global shape、local shape、需要的 collective、通信 bytes。跳过 `How do we describe this in code?` 的 JAX 语法细节。
+当日落地：把四种 collective 各映射到 DDP、FSDP/ZeRO、TP 或 MoE 的一个真实场景。
 
 <a id="day-05"></a>
 
-### Day 05 — DP/FSDP/TP/PP 的 roofline（70–80 分钟）
+### Day 05 — Training lifecycle 与框架职责
 
-读 [Part 5: Training](https://jax-ml.github.io/scaling-book/training/)：
+阅读：[Training](https://jax-ml.github.io/scaling-book/training/) 中 DP/FSDP/TP/PP 的概念段落；[ms-swift](https://github.com/modelscope/ms-swift)、[Open Instruct](https://allenai.github.io/open-instruct/)、[slime](https://thudm.github.io/slime/) 和 [verl](https://verl.readthedocs.io/) 的首页/架构入口。
 
-1. `What Do We Mean By Scaling?`，10 分钟。
-2. `Data Parallelism`，10 分钟。
-3. `Fully-Sharded Data Parallelism (FSDP)`，15 分钟。
-4. `Tensor Parallelism`，15 分钟。
-5. `Combining FSDP and Tensor Parallelism`，10 分钟。
-6. `Pipelining` 与 `Takeaways from LLM Training on TPUs`，10–20 分钟。
+- **对象/数据题**：SFT、DPO、在线 RL 各自消费什么样本对象，产出什么 checkpoint 和评测对象？
+- **状态/训练题**：training repo、训练 backend、rollout engine、通信库和 CUDA 各自决定什么，不决定什么？
+- **诊断/判断题**：一个 run 失败时，如何先按 data/framework/backend/runtime/hardware 分层，而不是直接归因 CUDA？
 
-阅读方式：每节只抓五件事——切什么、复制什么、通信什么、临界条件、最常见误用。公式里的 TPU `C/W` 保留符号，不背数字。
-
-必须产出：把同一个概念分别指到 Part 5 公式、Picotron/Nanotron 代码、ms-swift/DeepSpeed 参数。
+当日落地：`data -> collator -> model -> loss -> backward -> optimizer -> checkpoint -> eval` 图，以及框架 ownership 表。
 
 <a id="day-06"></a>
 
-### Day 06 — 周末：真实模型的参数、时间与成本（60 分钟）
+### Day 06 — 周末：Post-training Stage 与 Scaling 对读
 
-读 [Part 6: Training LLaMA 3](https://jax-ml.github.io/scaling-book/applied-training/)：
+对读：[Tülu 3](https://arxiv.org/abs/2411.15124) 的 SFT→DPO→RLVR pipeline 总览，以及 [Applied Training](https://jax-ml.github.io/scaling-book/applied-training/) 的 memory/compute/time feasibility 题型。目的不是复制 LLaMA 数字，而是判断不同训练 stage 为什么有不同的数据、状态与资源预算。
 
-1. `What does LLaMA 3 look like?`，10 分钟。
-2. `Counting parameters and FLOPs`，35 分钟；每个隐藏答案展开前先手算。
-3. 训练时间与 minimum-memory 问题，15 分钟。
+- **对象/数据题**：SFT、DPO、RLVR 分别消费什么数据对象；估算每阶段资源还需要 model shape、sequence/response length、label-token ratio 和 batch 中哪些字段？
+- **状态/训练题**：三个阶段的起始 checkpoint、训练中模型角色和需要保存的状态有什么不同；DP/FSDP/TP 只改变哪些 ownership？
+- **诊断/判断题**：面对一个阶段的 OOM/高成本，应先缩短数据/response、调 batch，还是引入新的并行维度？依据是什么？
 
-只回答：memory-feasible、compute-feasible、time/cost-feasible 为什么是三个不同判断。
+当日落地：`training stage × data × state × scaling pressure` 对照表。
 
 <a id="day-07"></a>
 
-### Day 07 — 周末：为真实模型选 sharding（60 分钟）
+### Day 07 — 周末：Week 1 复盘
 
-继续 Part 6：
+不读新章节；回看 Day 01–06 的 config、计算与问题。必要时只回查 [Scaling Book](https://jax-ml.github.io/scaling-book/) 对应段落。
 
-1. `How to shard LLaMA 3-70B for training`，40 分钟；依次判断 pure FSDP、FSDP+sequence、FSDP+TP。
-2. `Worked Problems` Question 1，只列方程和已知量，10 分钟。
-3. 把 LLaMA 变量替换为 Qwen3-32B config，写迁移限制，10 分钟。
+- **对象/数据题**：选一个未来 SFT run，列全输入对象、版本和最小证据。
+- **状态/训练题**：口述一个 update 中状态变化，并指出 DP/TP size 在 global batch 公式中的不同角色。
+- **诊断/判断题**：给出 OOM、低 throughput、loss 不降各自第一项最小验证，说明为什么。
 
-规则：先写自己的 topology，再展开原文答案；不要求在周末完成数值程序。
+当日落地：一张 `Base -> SFT -> preference/DPO -> online RL/RLVR -> eval` training-stage decision map，标明每条边何时进入、凭什么退出；再保留三项需要在真实训练中证伪的假设。
 
-## Week 2：把理论接到 Qwen SFT
+## Week 2：数据契约与受控 SFT
 
 <a id="day-08"></a>
 
-### Day 08 — Qwen/ms-swift 最小 SFT（60 分钟）
+### Day 08 — SFT 数据契约与 loss token
 
-今天不读 Scaling Book 新章节。读：
+阅读：[ms-swift Custom Dataset](https://swift.readthedocs.io/en/latest/Customization/Custom-dataset.html) 的 messages/schema、template 与 loss；[Open Instruct dataset transformations](https://allenai.github.io/open-instruct/algorithms/dataset_transformation/) 的 tokenize/filter 示例。
 
-1. [ms-swift README](https://github.com/modelscope/ms-swift/blob/main/README.md)：`Installation`、`Quick Start`、`Training`，20 分钟。
-2. [Qwen3 ms-swift recipe](https://github.com/QwenLM/Qwen3/discussions/1301)：只读 SFT command、parallel/config 与 checkpoint 部分，25 分钟。
-3. [PEFT LoRA conceptual guide](https://huggingface.co/docs/peft/conceptual_guides/lora)：rank、alpha、target modules，15 分钟。
+- **对象/数据题**：一条 raw messages 如何变成 rendered text、input IDs、labels、attention mask 与 source metadata？
+- **状态/训练题**：template、truncation、EOS、padding 和 `-100` mask 分别在哪一步改变可学习 token？
+- **诊断/判断题**：loss 正常下降但模型复读 user/system 内容时，怎样用一条 sample 的 token-level 审计定位问题？
 
-必须产出：逐个解释 launch command 中会改变 model state、activation、batch 和 checkpoint 的参数。
+当日落地：至少一条样本的五列对照，不启动长训练。
 
 <a id="day-09"></a>
 
-### Day 09 — Dataset、template 与 loss token（75 分钟）
+### Day 09 — 数据质量、mixture 与 lineage
 
-读 [ms-swift Custom Dataset](https://swift.readthedocs.io/en/latest/Customization/Custom-dataset.html)：
+阅读：[Open Instruct dataset transformations](https://allenai.github.io/open-instruct/algorithms/dataset_transformation/) 的 mixer/filter/cache；[Tülu 3](https://arxiv.org/abs/2411.15124) 的 SFT data mixture 与 decontamination 相关部分。
 
-1. messages/standard format 与 dataset registration，20 分钟。
-2. SFT 的 `loss`、多轮 loss、assistant-only loss 相关段落，30 分钟。
-3. DPO/preference format 只看 schema，不看算法，10 分钟。
-4. 用一条真实 sample 对照 tokenizer/chat template 源码，15 分钟。
+- **对象/数据题**：dataset manifest 如何记录 source、revision、license、split、过滤规则、样本数、token 数和 hash？
+- **状态/训练题**：mixture weight、shuffle、dedup、filter 与 truncation 如何改变模型在一个 epoch 实际看到的分布？
+- **诊断/判断题**：某能力上涨但 frozen benchmark 异常暴涨时，如何检查 contamination、重复和 source 过采样？
 
-必须产出：raw messages、rendered text、token IDs、labels、`-100` mask 五列对照。
+当日落地：数据审计表、长度/source 分布和一版可重建 mixture manifest。
 
 <a id="day-10"></a>
 
-### Day 10 — Eval generation 为什么是 inference 系统问题（60 分钟）
+### Day 10 — Frozen eval 与 Base baseline
 
-1. [Part 7: Inference](https://jax-ml.github.io/scaling-book/inference/)：`The Basics of Transformer Inference` 与 prefill/generation，15 分钟。
-2. `What do we actually want to optimize?`，10 分钟；重点区分 offline eval 与在线 latency。
-3. `Linear operations: what bottlenecks us?`，15 分钟。
-4. [Evaluation Guidebook](https://huggingface.co/spaces/OpenEvals/evaluation-guidebook)：dataset split、contamination、reproducible generation 相关部分，20 分钟。
+阅读：[LM Evaluation Harness](https://github.com/EleutherAI/lm-evaluation-harness) 的 task、few-shot、generation 与 sample logging；[Inference](https://jax-ml.github.io/scaling-book/inference/) 的 prefill/generation 基础。
 
-必须产出：为 frozen eval 固定 model/template/decoding/sample IDs 的原因，以及离线 eval 只追吞吐时仍必须记录的 latency 指标。
+- **对象/数据题**：frozen eval 要冻结哪些 sample IDs、prompt/template、decoder、stop、scorer 和 model revision？
+- **状态/训练题**：eval 时哪些模型状态必须只读，哪些缓存或随机状态会让两次结果不可比？
+- **诊断/判断题**：aggregate score 变化时，如何用逐样本 prediction 区分能力变化、抽取器错误和 decoding 漂移？
+
+当日落地：训练前 Base checkpoint 的逐样本 baseline。
 
 <a id="day-11"></a>
 
-### Day 11 — Full SFT 模型状态与预算（60 分钟）
+### Day 11 — 一个 SFT step 与 tiny overfit
 
-1. 重读 Part 4 `Global FLOPs and Params Calculation`，15 分钟。
-2. 重读 Part 5 `Data Parallelism` 开头关于 BF16 参数与 FP32 Adam state 的计算，15 分钟。
-3. [ms-swift command parameters](https://github.com/modelscope/ms-swift/blob/main/docs/source_en/Instruction/Command-line-parameters.md)：precision、optimizer、gradient accumulation、checkpoint 参数，30 分钟。
+阅读：[ms-swift command parameters](https://github.com/modelscope/ms-swift/blob/main/docs/source_en/Instruction/Command-line-parameters.md) 中 batch、precision、optimizer、loss、logging；[TRL SFTTrainer](https://huggingface.co/docs/trl/sft_trainer) 作为输入/输出对照。
 
-必须产出：在启动前写出权重、梯度、optimizer、activation 的估算表；日志实测后填 prediction error。
+- **对象/数据题**：一个 batch 中总 tokens、non-padding tokens、label tokens 与 samples 分别是多少？
+- **状态/训练题**：一次 accumulation window 内 gradient、optimizer step、scheduler step、global step 各更新几次？
+- **诊断/判断题**：tiny dataset 无法快速 overfit 时，按 label mask、LR、冻结参数、gradient、data repeat 的什么顺序排查？
+
+当日落地：同一小批样本的前向、反向、更新和生成闭环。
 
 <a id="day-12"></a>
 
-### Day 12 — Token budget、训练时间与 checkpoint 选择（45 分钟）
+### Day 12 — 受控 SFT 与 checkpoint 选择
 
-1. Part 6 `Counting parameters and FLOPs` 中 total training FLOPs/时间的三个问题，20 分钟。
-2. ms-swift 参数文档中的 epochs/max_steps、warmup、save/eval strategy，15 分钟。
-3. 自己完成 `steps <-> global tokens <-> estimated H100 hours` 换算，10 分钟。
+阅读：[ms-swift command parameters](https://github.com/modelscope/ms-swift/blob/main/docs/source_en/Instruction/Command-line-parameters.md) 的 `max_steps/epochs`、warmup、save/eval、best model 与 resume 参数；回读 [Transformer Math](https://jax-ml.github.io/scaling-book/transformers/) 的训练 FLOPs 近似用于预算。
 
-必须产出：early/middle/final checkpoint 的预注册选择规则，不允许只用 final train loss。
+- **对象/数据题**：一次受控 run 的 train/validation/frozen eval、token budget 和 early/middle/final checkpoint 如何绑定？
+- **状态/训练题**：每个 checkpoint 应包含哪些 model、optimizer、scheduler、scaler、RNG、progress 与 data-position 状态？
+- **诊断/判断题**：final train loss 最低但 frozen eval 退化时，如何选择 checkpoint，并排除 eval noise？
+
+当日落地：预注册一个主 SFT，只改变一个明确变量并保存 checkpoint 对比。
 
 <a id="day-13"></a>
 
-### Day 13 — 周末：Qwen post-training 全局图（60 分钟）
+### Day 13 — 周末：Tülu 3 与 Qwen3 Post-training 对读
 
-读 [Qwen3 Technical Report](https://arxiv.org/abs/2505.09388)：abstract/introduction 10 分钟、model architecture 10 分钟、pre-training overview 10 分钟、post-training pipeline 25 分钟、写 3 条差距 5 分钟。Benchmark 大表与逐项结果不是 Core。
+对读：[Tülu 3 paper](https://arxiv.org/abs/2411.15124) 的 pipeline、SFT、preference 与 RLVR，以及 [Qwen3 Technical Report](https://arxiv.org/abs/2505.09388) 的 post-training pipeline；用 [Open Instruct](https://allenai.github.io/open-instruct/) 对应 recipe 入口核对可复现细节，不抄 benchmark 大表。
+
+- **对象/数据题**：Tülu 3 与 Qwen3 的各阶段数据对象、来源和过滤有什么共同点与差异？
+- **状态/训练题**：两条 pipeline 每阶段从什么 checkpoint/模型角色开始，哪些状态跨阶段继承，哪些重新初始化？
+- **诊断/判断题**：哪些公开 recipe 结论可迁移到当前 Qwen 小模型，哪些因模型、数据或 reward 不同必须重新做 pilot？
+
+当日落地：把公开 pipeline 映射到本计划 Day 08–29，标注只参考不实跑的部分。
 
 <a id="day-14"></a>
 
-### Day 14 — 周末：SFT 复盘式阅读（60 分钟）
+### Day 14 — 周末：Week 2 复盘
 
-不读新长文：20 分钟重读 Day 08–12 自己的日志；20 分钟查 ms-swift 参数文档中 packing/checkpointing/precision；20 分钟把三个下周 ablation 写成 `假设—只改变的变量—指标—停止条件`。
+不读新材料；回看 Day 08–13 的样本审计、Base predictions、tiny overfit 和 SFT checkpoints。
 
-## Week 3：实验、恢复、多卡与 Profiler
+- **对象/数据题**：随机抽一条训练样本，能否从 manifest 一直追到 loss token 和 source？
+- **状态/训练题**：从 Base 到选中 SFT checkpoint，哪些状态和配置构成完整 lineage？
+- **诊断/判断题**：当前 SFT 提升最可能来自训练、数据选择还是评测波动？缺哪项证据？
+
+当日落地：Week 2 gate；从候选问题中只选 **一个** 最高优先级单变量实验进入 Day 15–16，其余放入 backlog。
+
+## Week 3：稳定训练、恢复与诊断
 
 <a id="day-15"></a>
 
-### Day 15 — Sequence length、attention 与 packing（60 分钟）
+### Day 15 — Packing、sequence length 与有效 label token
 
-读 Part 4：
+阅读：[Transformer Math](https://jax-ml.github.io/scaling-book/transformers/) 的 attention cost、context length 与 gradient checkpointing；ms-swift 参数文档中的 packing/max length。
 
-1. `Transformer Accounting -> Attention`，20 分钟。
-2. `Fractional cost of attention with context length`，20 分钟。
-3. `Key-Value (KV) caching`，10 分钟。
-4. 用自己的长度分布计算 padding ratio 与 attention FLOPs 变化，10 分钟。
+- **对象/数据题**：原始长度、截断长度、packed sequence、padding tokens 与 label tokens 如何统计？
+- **状态/训练题**：packing 改变 attention boundary、position/segment metadata 和 batch composition 中的哪些项？
+- **诊断/判断题**：tokens/s 上涨但效果下降时，如何检查 cross-sample attention、EOS、mask 和有效 label-token ratio？
 
-必须回答：packing 改变了哪些浪费，没改变哪些理论 FLOPs；为什么 `tokens/s` 不等于 `effective label tokens/s`。
+当日落地：保持有效训练 token budget 可比的 packed/unpacked 对照。
 
 <a id="day-16"></a>
 
-### Day 16 — Activation checkpointing 与 Flash Attention（60 分钟）
+### Day 16 — Optimizer、LR、warmup、batch 与梯度稳定性
 
-读 Part 4：
+阅读：[PyTorch AdamW](https://docs.pytorch.org/docs/stable/generated/torch.optim.AdamW.html)、[gradient clipping](https://docs.pytorch.org/docs/stable/generated/torch.nn.utils.clip_grad_norm_.html) 与 [AMP examples](https://docs.pytorch.org/docs/stable/notes/amp_examples.html)；Scaling Book 只回查 activation/FLOPs 对预算的影响。
 
-1. `Gradient checkpointing`，20 分钟。
-2. `Appendix A: How does Flash Attention work?`，25 分钟。
-3. 重读 Part 1 matmul/HBM roofline，把两项优化标在 compute/communication/memory 三轴上，15 分钟。
+- **对象/数据题**：对照实验必须固定哪些 dataset order、tokens、batch、checkpoint 与 eval inputs？
+- **状态/训练题**：LR、warmup、weight decay、clip、precision 分别在哪个时刻影响 gradient 或 parameter update？
+- **诊断/判断题**：loss spike/NaN 出现时，怎样用 grad norm、scale、LR、具体 batch 和参数统计区分数据异常与数值不稳定？
 
-必须产出：checkpointing、Flash Attention、LoRA 分别主要改变 model states、activation、FLOPs、HBM traffic 中的哪几项。
+当日落地：使用同一数据顺序和 label-token budget，对 AdamW baseline、2×LR、无 warmup 与 2×effective batch 做一次一变量对照，保留 grad/update/clip 证据。
 
 <a id="day-17"></a>
 
-### Day 17 — Megatron parallel ownership 与 checkpoint（45 分钟）
+### Day 17 — Exact checkpoint resume 与复现
 
-1. Part 5 `Data Parallelism`、`Tensor Parallelism`、`Pipeline Parallelism` 各回看关键时序，共 20 分钟。
-2. [Megatron Parallelism Guide](https://docs.nvidia.com/megatron-core/developer-guide/latest/user-guide/parallelism-guide.html)：TP/PP/DP/CP group 与 distributed optimizer，15 分钟。
-3. [Megatron-LM](https://github.com/NVIDIA/Megatron-LM) project structure 与 distributed checkpoint 文档入口，10 分钟。
+阅读：[PyTorch Saving and Loading](https://docs.pytorch.org/tutorials/beginner/saving_loading_models.html)、[Reproducibility](https://docs.pytorch.org/docs/stable/notes/randomness.html) 与 [ms-swift FAQ](https://github.com/modelscope/ms-swift/blob/main/docs/source_en/Instruction/Frequently-asked-questions.md) 的 resume。
 
-必须产出：TP/PP/DP rank-group 图、weight/gradient/optimizer ownership，以及 resume 需要的 tensor/non-tensor state。当天剩余时间按 README 通读源码，不继续扩展理论材料。
+- **对象/数据题**：checkpoint manifest 如何关联 shards、config、tokenizer、dataset/data position 与代码版本？
+- **状态/训练题**：model、optimizer、scheduler、scaler、RNG、global step、sampler/dataloader state 中漏哪项会怎样？
+- **诊断/判断题**：resume 后 loss/LR/样本顺序跳变时，如何用“连续 run vs 中断恢复 run”最小对照定位？
+
+当日落地：比较连续 40-step 与 20-step 中断后新进程恢复到 40-step，逐步核对 sample ID、LR、loss、model/optimizer/scheduler/RNG/dataloader state。
 
 <a id="day-18"></a>
 
-### Day 18 — Megatron 双卡 runtime（45 分钟）
+### Day 18 — Megatron minimum codepath、双卡 TP/DP 与 distributed checkpoint
 
-读 Part 12：
+阅读：[Megatron Core first training run](https://docs.nvidia.com/megatron-core/developer-guide/latest/get-started/quickstart.html)、[parallelism guide](https://docs.nvidia.com/megatron-core/developer-guide/latest/user-guide/parallelism-guide.html) 与 [distributed optimizer](https://docs.nvidia.com/megatron-core/developer-guide/latest/user-guide/features/dist_optimizer.html)；回读 Scaling Book Training 对应概念。
 
-1. `Networking -> At the node level`，10 分钟。
-2. `How Do Collectives Work on GPUs? -> Intra-node collectives`，15 分钟。
-3. `Quiz 2: GPU nodes` 与 `Quiz 4: Collectives` 各选一题，15 分钟。
-4. 用 `nvidia-smi topo -m`/NCCL 实测拓扑替换书中 DGX 假设，5 分钟。
+- **对象/数据题**：最小 run 中 dataset iterator、microbatch、model shard、gradient buffer 和 checkpoint shard 由哪些 rank 持有？
+- **状态/训练题**：TP/DP process groups、forward/backward schedule、reduce-scatter/all-gather 与 optimizer step 怎样连接？
+- **诊断/判断题**：2 卡 smoke OOM、hang 或不提速时，如何先判断 batch/状态复制、collective/group 配置还是环境问题？
 
-必须回答：为什么理论 link bandwidth 不等于 NCCL algorithm bandwidth；`TP=1,DP=2` 与 `TP=2,DP=1` 各触发哪些 group/collective；2 卡 scaling efficiency 的分母是什么。
+当日落地：一条能在日志中验证的最小 codepath，双卡 `TP=1/DP=2`、`TP=2/DP=1` 两个 smoke，以及 distributed checkpoint 新进程 reload；不做全仓逐文件通读。
 
 <a id="day-19"></a>
 
-### Day 19 — Megatron Profiler 与 runtime-to-source（60 分钟）
+### Day 19 — 训练诊断与 failure injection
 
-读 [Part 9: Profiling](https://jax-ml.github.io/scaling-book/profiling/)：
+阅读：[Scaling Book Profiling](https://jax-ml.github.io/scaling-book/profiling/) 的 trace/memory profile；[PyTorch Profiler](https://docs.pytorch.org/docs/stable/profiler.html) 与 [autograd anomaly detection](https://docs.pytorch.org/docs/stable/autograd.html#debugging-and-anomaly-detection)。
 
-1. `A Thousand-Foot View...` 只读编译/算子层次，5 分钟。
-2. `Trace Viewer`，15 分钟。
-3. `Looking at a real(ish) example profile`，20 分钟。
-4. `Memory Profile`，10 分钟。
-5. `Worked Problems` 任选一个 trace 问题，10 分钟。
+- **对象/数据题**：failure report 必须绑定哪个 batch/sample、run/config、rank、step、checkpoint 与 trace window？
+- **状态/训练题**：故意注入坏 mask、过高 LR、错误 resume 或慢 data source 时，预期哪些状态和指标首先变化？
+- **诊断/判断题**：怎样用最小复现把 loss 问题分到 data/objective/optimization，把慢分到 input/compute/communication/checkpoint I/O？
 
-迁移规则：把 XLA/HLO 名称翻译成 Megatron/PyTorch op、CUDA kernel、NCCL collective；不学习 JAX profiler 操作。必须把至少一个理论瓶颈与 Day 18 的 Megatron trace 对上或明确证伪，并从 trace 反向定位到源码 caller。
+当日落地：高 LR、错误 mask、数据分布偏移、吞吐退化四类单一 failure injection 及对应恢复 runbook。
 
 <a id="day-20"></a>
 
-### Day 20 — 周末：MoE active compute 与 EP（60 分钟）
+### Day 20 — 周末：训练失败案例复盘
 
-1. Part 4 `Sparsity and Mixture-of-Experts`，15 分钟。
-2. Part 12 `Expert Parallelism`，20 分钟。
-3. [Qwen3.5-35B-A3B-Base model card](https://huggingface.co/Qwen/Qwen3.5-35B-A3B-Base)，只看 architecture/config，20 分钟。
-4. 写三条结论，5 分钟。
+阅读：[PyTorch numerical accuracy](https://docs.pytorch.org/docs/stable/notes/numerical_accuracy.html)、[NCCL troubleshooting](https://docs.nvidia.com/deeplearning/nccl/user-guide/docs/troubleshooting.html) 与 ms-swift FAQ 中与 OOM/resume/packing 直接相关的条目。
 
-必须区分：total weight memory、activated expert FLOPs、token dispatch bytes。
+- **对象/数据题**：每个 failure case 缺失或损坏的对象是什么，如何在 run 前验证？
+- **状态/训练题**：OOM、NaN、hang、resume drift 分别涉及哪些状态边界？
+- **诊断/判断题**：为四类失败各写“症状 -> 证据 -> 最小验证 -> 停止条件”，避免只列可能原因。
+
+当日落地：一页 failure signature 表。
 
 <a id="day-21"></a>
 
-### Day 21 — 周末：Eval/rollout inference（60 分钟）
+### Day 21 — 周末：Eval 与 checkpoint selection 可靠性
 
-读 Part 7：
+阅读：[LM Evaluation Harness docs](https://lm-evaluation-harness.readthedocs.io/) 的 reproducibility、sample logging 与 task guide；回读自己的 Base/SFT predictions。
 
-1. `Theoretical estimates for LLM latency and throughput`，20 分钟。
-2. `What about memory?`，10 分钟。
-3. `Designing an Effective Inference Engine -> Continuous batching`，15 分钟。
-4. `Distributing Inference -> Prefill/Generation`，10 分钟。
-5. 写一张 eval generation 与 GRPO rollout 的共同资源表，5 分钟。
+- **对象/数据题**：capability、style、safety、regression 各需要什么样本和 metric，哪些不能混成一个总分？
+- **状态/训练题**：checkpoint、template、decoder、judge/scorer version 哪些必须冻结才能比较训练阶段？
+- **诊断/判断题**：如何在看结果前冻结 candidate set、primary metric、guardrails、最小差异、CI、tie-breaker 与 `inconclusive` 条件？
 
-## Week 4：30B+、可信 Eval 与 Alignment
+当日落地：一版 checkpoint-selection policy 和一次盲化 rehearsal；独立 held-out confirmation 不参与反复调参。
+
+## Week 4：Preference、DPO 与 Online RL
 
 <a id="day-22"></a>
 
-### Day 22 — 35B MoE capacity 的完整推演（75 分钟）
+### Day 22 — Preference provenance、length bias 与 held-out
 
-读 Part 12：
+阅读：[Open Instruct synthetic preference dataset](https://allenai.github.io/open-instruct/algorithms/synthetic_preference_dataset/)、[TRL dataset formats](https://huggingface.co/docs/trl/dataset_formats) 与 Tülu 3 的 preference data 部分。
 
-1. `Rooflines for LLM Scaling on GPUs -> Expert Parallelism`，20 分钟。
-2. `Pipeline Parallelism`，15 分钟。
-3. `Examples` 中 DeepSeek 与 LLaMA 的 topology，15 分钟。
-4. `TLDR of LLM Scaling on GPUs`，10 分钟。
-5. `Quiz 5` Question 2，只借题型并替换为 Qwen 35B-A3B，15 分钟。
+- **对象/数据题**：prompt/chosen/rejected、generator、judge、score/margin、source/license/creation method 与 policy version 如何组成可追踪 pair？
+- **状态/训练题**：pair 过滤、顺序交换、长度控制和 reference policy 选择如何改变 DPO 训练信号？
+- **诊断/判断题**：如何发现 chosen/rejected 反转、模板不一致、近重复、judge length/style bias，以及 prompt/source-family 跨 split 泄漏？
 
-必须产出：至少两个 topology，分别列 memory-feasible、roofline-feasible、工程风险；不要给没有 pilot benchmark 支撑的单点吞吐承诺。
+当日落地：preference schema、50-pair 盲审、length/source slices，以及训练前冻结的 group held-out。
 
 <a id="day-23"></a>
 
-### Day 23 — Public benchmark 与 offline inference（60 分钟）
+### Day 23 — DPO 理论与小模型 smoke
 
-1. Part 7 `Modeling throughput and latency...`，15 分钟。
-2. `Tricks for Improving Generation Throughput and Latency`，10 分钟。
-3. `Continuous batching`，10 分钟。
-4. [LM Evaluation Harness README/docs](https://github.com/EleutherAI/lm-evaluation-harness)：task、few-shot、model/backend、sample logging，25 分钟。
+阅读：[DPO paper](https://arxiv.org/abs/2305.18290) 的 objective 与 assumptions；[TRL DPOTrainer](https://huggingface.co/docs/trl/dpo_trainer) 或 ms-swift 官方参数作为实现对照。
 
-必须产出：benchmark config 中哪些选择会改变模型能力结论，哪些只改变吞吐/成本。
+- **对象/数据题**：chosen/rejected 的 policy/reference token logprob 怎样按同一 prompt、template 和 mask 对齐？
+- **状态/训练题**：DPO update 修改什么，reference model 是否更新，beta 如何改变 preference margin？
+- **诊断/判断题**：DPO loss/accuracy 变好但生成退化时，如何检查 pair quality、长度偏置、KL 漂移和 frozen eval？
+
+当日落地：同一小型 preference set 的 loss 单元检查与短 smoke。
 
 <a id="day-24"></a>
 
-### Day 24 — Pairwise/Judge/统计（60 分钟）
+### Day 24 — Online RL dataflow 与 reward/verifier contract
 
-今天不读 Scaling Book 新章节。读 [Evaluation Guidebook](https://huggingface.co/spaces/OpenEvals/evaluation-guidebook) 中 LLM-as-a-judge、pairwise、bias、human calibration；阅读时建立 `风险 -> 控制 -> 证据` 表，至少覆盖 position、length、style、self-preference 与 sample selection。
+阅读：[slime Quick Start](https://thudm.github.io/slime/get_started/quick_start.html) 的 rollout/train batch 关系与 reward 配置；[verl PPO architecture](https://verl.readthedocs.io/en/latest/examples/ppo_code_architecture.html) 作为角色边界对照。
+
+- **对象/数据题**：prompt、grouped responses、tokens、response mask、reward、old/ref/current logprob、advantage 与 policy version 如何关联？
+- **状态/训练题**：rollout policy、train policy、reference、reward/verifier、buffer 和 weight sync 在一轮中怎样变化？
+- **诊断/判断题**：reward 上升时，哪些独立证据才能排除 length hacking、格式投机、stale rollout 和 mask/logprob 错位？
+
+当日落地：带字段、数量、producer/consumer 的在线 RL 数据流图；实现可重算、可版本化、带 timeout/error semantics 的 verifier contract。
 
 <a id="day-25"></a>
 
-### Day 25 — DPO objective（90 分钟）
+### Day 25 — ms-swift 小模型 GRPO lab
 
-读 [DPO paper](https://arxiv.org/abs/2305.18290)：
+阅读：[ms-swift GRPO](https://swift.readthedocs.io/en/latest/Instruction/GRPO/GetStarted/GRPO.html) 与 [TRL GRPOTrainer](https://huggingface.co/docs/trl/grpo_trainer) 的数据/reward/config；Scaling Book 只回读 inference 的 KV cache 与 generation throughput。
 
-1. Abstract/Introduction，10 分钟。
-2. `Preliminaries` 的 reward modeling、RLHF、Bradley–Terry，20 分钟。
-3. `Direct Preference Optimization` objective 推导，35 分钟。
-4. Experiments 中数据/评测设置，15 分钟。
-5. Limitations/Discussion，10 分钟。
+- **对象/数据题**：每个 prompt 产生多少 completions，reward 如何绑定 response，group 内 advantage 如何生成？
+- **状态/训练题**：每轮采样和 update 之间哪些 policy/logprob/optimizer 状态必须一致，哪些可以重算？
+- **诊断/判断题**：zero reward variance、OOM、生成过长或 KL 快速增长时，各自第一项配置/数据验证是什么？
 
-必须手写 `log πθ - log πref` 在 chosen/rejected 两边的作用，并列出三个训练指标不能证明的真实能力结论。
+当日落地：可验证 reward 的小模型 GRPO run 与逐样本 rollout 表。
 
 <a id="day-26"></a>
 
-### Day 26 — slime 的 train/rollout/weight-sync 边界（45 分钟）
+### Day 26 — slime v0.3.0 主链路与最小运行准备
 
-1. [slime 架构文章](https://thudm.github.io/slime/blogs/introducing_slime.html)：Megatron training、SGLang rollout、Ray/Data Buffer，20 分钟。
-2. [slime Quick Start](https://thudm.github.io/slime/get_started/quick_start.html)：参数分组、colocated actor/rollout、weight conversion，15 分钟。
-3. 用 10 分钟写清算法层、训练 backend、rollout engine、orchestration 各自负责什么。
+阅读：[slime Releases](https://github.com/THUDM/slime/releases)、[Architecture](https://thudm.github.io/slime/blogs/introducing_slime.html)、[Quick Start](https://thudm.github.io/slime/get_started/quick_start.html) 和 [Customization](https://thudm.github.io/slime/get_started/customization.html)。先固定 `v0.3.0` 对应 SHA，再通过 symbol search 定位该 tag 的实际入口；不从滚动 main 硬编码文件路径。
 
-必须产出：一张 component ownership 图；随后按当天 README 进入源码主链路。
+- **对象/数据题**：slime `Sample`/buffer、Megatron batch 与 SGLang request/response 之间如何转换？
+- **状态/训练题**：Ray placement、rollout engine、trainer、reward 和 weight sync 各拥有何种 GPU/模型状态？
+- **诊断/判断题**：在租多卡前，哪些 CPU/config/schema/reward/debug-replay dry checks 能排除最昂贵的失败？
+
+当日落地：固定 tag/SHA/container，完成 Sample/DataSource/rollout/train/weight-version 图、reward tests、最小支持 recipe 与 Day 29 runbook。
 
 <a id="day-27"></a>
 
-### Day 27 — 周末：GRPO objective 与 slime objects（60 分钟）
+### Day 27 — 周末：GRPO 与 on-policy 边界
 
-35 分钟读 [DeepSeekMath](https://arxiv.org/abs/2402.03300) GRPO method/objective；25 分钟把 prompt、grouped completions、reward、advantage、old/ref logprob 映射到 Day 26 读到的 slime `Sample`/rollout fields。不得启动代码或 GPU。
+阅读：[DeepSeekMath](https://arxiv.org/abs/2402.03300) 的 GRPO method/objective；对照 slime Quick Start 的 batch invariant 和 reward fields。
+
+- **对象/数据题**：同一 prompt 的 group、response、reward、advantage 和 token mask 的 grain 分别是什么？
+- **状态/训练题**：old/reference/current policy 在 objective 中承担什么角色，哪些量来自 rollout 时刻？
+- **诊断/判断题**：generation、buffer、training 和 weight sync 的哪些延迟会让 rollout stale；importance correction 的有效边界是什么？
+
+当日落地：用自己的 Day 25 样本标出 rollout/old/current/reference policy，并画同步与 stale 两条 timeline。
 
 <a id="day-28"></a>
 
-### Day 28 — 周末：slime runtime 架构（60 分钟）
+### Day 28 — 周末：slime debug、replay、repro 与 observability
 
-1. `train.py`/`train_async.py` 与 `slime/ray/placement_group.py`，20 分钟。
-2. `slime/rollout/sglang_rollout.py` 与 `backends/megatron_utils/actor.py`，20 分钟。
-3. `backends/megatron_utils/update_weight/`，20 分钟。
+阅读 pinned slime repo 的 Debug、Trace/Profiling、Reproducibility 与 Fault-tolerance 文档；所有参数和路径以 Day 26 checkout 解析结果为准。
 
-唯一产物：`prompt -> rollouts -> reward -> Sample/buffer -> Megatron update -> weight sync -> next rollout`，每条边标 object 数量、GPU role、`file:function`、预期 runtime log；只读不运行。
+- **对象/数据题**：一轮中每条边传什么对象、多少条、由哪个 `file:function` 生产和消费？
+- **状态/训练题**：哪些组件持久、哪些每 rollout 重建、何时 policy version 发生变化？
+- **诊断/判断题**：rollout-only、reward replay、train-only replay、weight sync 与 next-version rollout 各需要什么证据，失败时在哪一层停止？
+
+当日落地：Day 29 五级 gate 表；周末不启动 GPU。
 
 <a id="day-29"></a>
 
-### Day 29 — slime runtime 与 failure signatures（45 分钟）
+### Day 29 — slime 最小闭环、reward 修改与 train-only replay
 
-1. 重读 Day 26/28 剩余 `STATIC_ONLY` 的 slime caller，20 分钟。
-2. Part 7 `Continuous batching` 与 `Distributing Inference -> Generation`，10 分钟。
-3. 预写 zero variance、reward hacking、length drift、KL explosion、rollout/weight-sync bottleneck 五种 signature，15 分钟。
+开机前重读 slime Quick Start 的 batch invariant、reward customization 与 checkpoint/debug 部分；需要 profiling 时只回查 [Inference](https://jax-ml.github.io/scaling-book/inference/) 的 generation bottleneck。
 
-必须产出：每种 failure 的观测指标、最小复现实验和停止条件。
+- **对象/数据题**：每轮 prompt/response/reward/sample 数是否满足 rollout 与 train 消费守恒，坏样本能否反查原 prompt？
+- **状态/训练题**：运行日志能否证明 rollout、reward、train、checkpoint 和 weight sync 的实际顺序与 policy version？
+- **诊断/判断题**：修改 reward 后指标变化，怎样判断代码确实生效且不是 sample mix、长度或旧权重造成？
+
+当日落地：按 rollout-only → train-only replay → full loop → reward change 顺序跑最小闭环；8×H100 官方规模仅 Stretch。
 
 <a id="day-30"></a>
 
-### Day 30 — 从题目变成 30B+ design review（45 分钟）
+### Day 30 — Post-training design、clean reproduction 与综合口述
 
-1. Part 12 `TLDR of LLM Scaling on GPUs`，10 分钟。
-2. Part 12 `Quiz 5` Question 2，改写成自己的 Qwen 32B/35B-A3B 配置，20 分钟。
-3. [Conclusion](https://jax-ml.github.io/scaling-book/conclusion/) 只读总结/进一步阅读，5 分钟。
-4. 用 10 分钟写清设计中的 `known / estimated / must benchmark`。
+阅读：[Scaling Book Conclusion](https://jax-ml.github.io/scaling-book/conclusion/)；回看 [Tülu 3](https://arxiv.org/abs/2411.15124) 的阶段设计和本月所有 manifest/run records，不引入新框架。
 
-最终标准：不是复述并行术语，而是能在评审中从 config、batch、硬件拓扑推到 memory、FLOPs、communication、step time range 和验证实验。
+- **对象/数据题**：clean reproduction 所需的 code/model/tokenizer/data/template/config/eval/checkpoint lineage 是否能被另一环境完整解析？
+- **状态/训练题**：设计如何定义每阶段初始状态、保存状态、恢复边界和从 SFT 到 DPO/RL 的交接？
+- **诊断/判断题**：哪些结论是已实测、哪些是估算、哪些扩到多卡或更大模型前必须重新 benchmark？
+
+当日落地：从干净环境跑一条最小训练链，完成可评审的 post-training design 和 15 分钟综合口述；30B capacity 只允许作为 Stretch appendix。
 
 ## 本月明确不做
 
-- 不通读 Part 2 TPU 硬件；遇到符号不懂时回查。
-- 不学习 Part 10 JAX API；只借用 sharding notation 和 profiler 思路。
-- 不背 TPU/H100 峰值数字；使用当日实例/官方 spec 并注明 precision、稀疏与否。
-- 不把每个网页答案直接复制进笔记；必须先留下自己的计算。
-- 不为“读完一章”牺牲 coding、训练或 Eval 证据。
+- 不构建 auto-train scheduler、自动搜索器或 auto-harness 产品。
+- 不把 30B+ full training 或 8×H100 slime 当 Core 验收。
+- 不通读 TPU/JAX API，不实现 NCCL collective 或手写 TP kernel。
+- 不以“章节读完”“loss 下降”或 aggregate score 单独作为完成标准。
+- 不让 Scaling Book 的纯推导挤占数据审计、训练恢复和 RL 数据流验证。

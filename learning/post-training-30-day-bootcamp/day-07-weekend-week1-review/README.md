@@ -1,20 +1,28 @@
-# Day 07 — 周末 Reading：Week 1 Review
+# Day 07 — 周末 Review：Training Stage Decision Map
 
-日期：`2026-08-02`  
-状态：`not_started`  
+日期：`2026-08-02`
+
+状态：`not_started`
+
 强度：1 小时，仅阅读/复盘
 
 ## 主要目标
 
-压缩 Week 1 的知识，确保下周开 GPU 前没有概念性阻塞。
+把 Week 1 的 accounting、roofline、parallelism 和 lifecycle 压缩成一张“该不该进入下一训练阶段”的决策图，为 Week 2 的数据与 SFT 实验设门槛。
 
-## 理论（60 分钟）
+## 理论 / 复盘（60 分钟）
 
-精读清单：[Day 07 — 为真实模型选 sharding](../SCALING-BOOK-READING-GUIDE.md#day-07)。Core 是 Part 6 的 pure FSDP、FSDP+sequence、FSDP+TP 三次判断，并迁移到 Qwen3-32B。
+精读清单：[Day 07 — Training stage decision map](../SCALING-BOOK-READING-GUIDE.md#day-07)。
 
-- 40 分钟：继续 [Training LLaMA 3 on TPUs](https://jax-ml.github.io/scaling-book/applied-training/) 的 `How to shard LLaMA 3-70B for training`；依次判断 pure FSDP、FSDP+sequence、FSDP+TP，先答再展开原文。
-- 10 分钟：`Worked Problems` Question 1，只列已知量、公式与 topology，不追完整数值。
-- 10 分钟：把 LLaMA config 替换为 Qwen3-32B，写出哪些公式可以迁移、哪些 TPU 数字必须换成 H100 实测。
+- 15 分钟：复查 Day 01–05 的核心证据，只保留能改变训练决策的结论。
+- 30 分钟：画阶段图
+  `Base -> SFT -> preference/DPO -> online RL/RLVR -> final eval`，每个节点写：
+  - 目标行为与适用条件；
+  - 所需 data contract 和上游 checkpoint；
+  - objective 与输出 artifact；
+  - 进入 gate、停止条件、主要 failure signal。
+- 10 分钟：把 sharding、显存和成本作为每个阶段的执行约束挂到图上，不把它们误写成新的训练阶段。
+- 5 分钟：写 Week 2 的证据顺序：`data contract -> data quality/lineage -> frozen eval -> tiny overfit -> controlled SFT`。
 
 ## Coding
 
@@ -22,16 +30,25 @@
 
 ## 训练 / 实验
 
-无；不要为了“预热”开卡。
+无；不要为“提前准备”启动 GPU。
 
 ## 资源与租卡
 
-CPU only。检查 Day 08 的 AutoDL 实例和存储是否可用，但不启动。
+CPU only。只确认 Day 10–12 所需模型缓存、磁盘和 GPU 窗口，不启动实例。
+
+## 产物
+
+- `../artifacts/reports/week1-training-stage-decision-map.mmd`
+- `../artifacts/reports/week1-gate-review.md`
 
 ## Week 1 Gate
 
-- [ ] 能逐项解释 parameter、gradient、optimizer、activation。
-- [ ] 能画出 DP/FSDP/TP/PP/CP/EP 的切分对象。
-- [ ] Day 08 的模型、数据、命令、成功条件已经明确。
+- [ ] 能区分 SFT、DPO 与 online RL/RLVR 改变模型的信号来源。
+- [ ] 能解释训练 lifecycle 与框架责任边界。
+- [ ] 能把 DP/FSDP/TP/PP 用于配置和故障定位，不要求自己实现 collective。
+- [ ] 能说明为什么 Day 08 必须先固定数据契约、Day 10 必须先冻结 eval，之后才能解释训练效果。
+- [ ] Week 2 的模型、数据候选、eval slices 和停止条件已写明；未知项被显式记录。
 
 ### 最大阻塞
+
+### Week 2 第一项证据

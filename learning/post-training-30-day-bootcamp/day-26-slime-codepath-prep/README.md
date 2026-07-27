@@ -1,58 +1,81 @@
-# Day 26 — slime 主链路通读与运行准备
+# Day 26 — slime v0.3.0 主链路与最小运行准备
 
 日期：`2026-08-21`  
 状态：`not_started`  
-强度：4–5 小时人工工作；训练可后台继续
+强度：4–5 小时
 
 ## 主要目标
 
-完成 slime 的第一遍端到端主链路通读，固定官方 Docker/commit，准备好 Qwen3-4B、数据、HF↔Megatron checkpoint 和 8 卡 runbook，使 Day 29 开机后直接验证系统而不是安装环境。
+以 slime `v0.3.0` 为学习基线，理解 `Sample → DataSource → rollout/reward → train → weight update/version` 主链路，并准备 Day 29 的最小可行运行。框架迭代快，必须先验证 tag/commit，再记录实际路径，不能依赖计划里硬编码的源码布局。
+
+## 版本 Gate（20 分钟）
+
+1. 查看 [官方 Releases](https://github.com/THUDM/slime/releases)，确认 `v0.3.0` tag 存在。
+2. checkout `v0.3.0`，记录 tag 对应 SHA、submodule/dependency versions、Docker digest。
+3. 若工作目标指定另一 commit，另外记录 diff；本日概念图仍以 pinned baseline 为准。
+4. 用该 checkout 的 README、examples、`--help` 和源码搜索验证所有符号/参数后再写命令。
 
 ## 理论（45 分钟）
 
-精读清单：[Day 26 — slime 的 train/rollout/weight-sync 系统边界](../SCALING-BOOK-READING-GUIDE.md#day-26)。先回答为什么 RL infra 不能等同于一个 GRPO loss 函数。
+精读清单：[Day 26 — slime pinned architecture](../SCALING-BOOK-READING-GUIDE.md#day-26)。
 
-## Repo 通读（180 分钟）
+- Megatron learner、SGLang rollout、Ray orchestration、DataSource/Data Buffer 的 ownership。
+- 同步 loop 与 pipelined/async loop 的差别。
+- 训练数据为什么必须携带 rollout/group ID、loss mask、reward 和 policy/weight version。
+- Weight sync 成功与“下一次 rollout 确实使用新权重”不是同一条证据。
 
-固定 slime commit 后按数据生命周期阅读：
+## Repo 主链路（150 分钟）
 
-1. **入口/参数（30 分钟）**：`train.py`、`train_async.py`、`slime/utils/arguments.py`；找到同步/异步分叉。
-2. **Ray 资源角色（40 分钟）**：`slime/ray/placement_group.py`、`actor_group.py`、`rollout.py`、`train_actor.py`；画 GPU/rank/actor ownership。
-3. **rollout/data/reward（50 分钟）**：`slime/rollout/base_types.py`、`sglang_rollout.py`、data source 与 `rm_hub`；记录 `Sample` 在每一步新增的字段。
-4. **training/weight sync（60 分钟）**：`backends/megatron_utils/actor.py`、`sglang.py`、`update_weight/`；区分 disk/tensor/distributed update，找到触发新权重生效的位置。
+不要按目录浏览。用 `rg`/symbol search 在 pinned checkout 中解析并记录下列符号的实际 `file:function`：
 
-每条边写 `producer -> object/schema -> transport -> consumer` 和 `file:function`。未验证的地方标 `STATIC_ONLY`，Day 29 用日志/trace 消除。
+1. 同步/异步入口和一次训练 loop。
+2. `Sample` schema、status、rollout/group ID、loss mask、reward、weight version。
+3. `DataSource` 取样、buffer/requeue 和 dataset cursor。
+4. rollout generation、reward/verifier、filter/group。
+5. rollout data 转成 train batch、advantage/loss、optimizer step。
+6. learner 权重同步到 rollout engine，以及下一轮 version 证据。
 
-## Coding / 运行准备（60–75 分钟）
+每条边写 `producer -> object/schema -> transport -> consumer -> observable evidence`。路径只写进当天 artifact；如果 tag 中名字变化，以搜索到的代码为准。
 
-- 使用官方 Docker，记录 image digest；固定 slime、Megatron、SGLang commits/patches。
-- 下载/确认 Qwen3-4B、数学数据集和 tokenizer，完成 checksum/磁盘预算。
-- 按官方工具完成或 dry-run HF → Megatron `torch_dist` 转换，并写回转 HF 命令。
-- 固化 8×H100 official-style config：placement、train/rollout GPUs、TP、batch、`n_samples_per_prompt`、max steps=5–10。
-- 准备两个 reward：原始 accuracy+format，以及受控修改版；为 reward 写 5 个 unit cases。
+## Coding / Day 29 准备（75 分钟）
+
+- 运行 pinned tag 自带的 CPU/contract tests 或最小 import/config check。
+- 从该 tag 的 examples 中选择**最小受支持**的 model、dataset、GPU topology；记录选择依据和预算上限。
+- 实现 Day 24 reward 的 slime adapter，并跑相同 unit cases。
+- 验证该 tag 的 rollout-only、train-only/replay、debug dump 和 full-loop 参数；保存 `--help`/docs 证据。
+- 准备 baseline reward 与单一受控修改版、1-rollout/1-update gate 和停止条件。
 
 ## 训练 / 实验
 
-- 今天不启动多卡 RL；只运行 CPU unit tests、Docker import/config check，以及必要的 checkpoint conversion。
-- 成功标准是 Day 29 开机后直接进入 1-rollout/1-update gate，不在 8 卡实例上下载、编译或首次理解参数。
+- 今天不启动正式 RL；允许 CPU tests、Docker import、两条 fake samples 的 schema/reward dry-run。
+- 不做大模型权重转换，除非 pinned 最小 recipe 明确要求且能在预算内完成。
 
 ## 资源与租卡
 
-- CPU/no-card 为主；checkpoint conversion 若 CPU 太慢，可用 1×H100 不超过 2 小时。
-- Day 29 推荐同机 8×H100 走官方 Qwen3-4B recipe；今天绝不提前租 8 卡。
-- Docker、模型、数据、转换后 checkpoint 必须放可靠存储，并确认 AutoDL 实例能直接挂载/复制。
+- CPU/no-card 为主；可选单卡不超过 1 小时做 import/权重加载 gate。
+- Day 29 Core 使用 Day 26 实测确认的最小受支持 topology。
+- 8×H100 官方规模 recipe 仅列为 Stretch，不是 Day 29 或毕业必做项。
+
+## Evidence-first 产物
+
+- `../artifacts/reports/day26-slime-pinned-codepath.md`
+- `../artifacts/configs/day26-slime-environment.json`
+- reward adapter tests、resolved example/config、Day 29 runbook
 
 ## 验收
 
-- [ ] 调用链覆盖 entry、Ray roles、rollout、buffer/sample、reward、Megatron train、weight sync。
-- [ ] 每条边有 object/schema 和 `file:function`；未知项明确标 `STATIC_ONLY`。
-- [ ] Docker/commits/patches、模型、数据、转换 checkpoint、8 卡 config 均已固定。
-- [ ] 原始/修改版 reward tests 通过，Day 29 第一条命令、5-step gate 和停机条件明确。
+- [ ] `v0.3.0` tag、SHA、dependencies 与 image digest 已固定。
+- [ ] Sample/DataSource/rollout/train/weight-version 每条边有实际 `file:function` 和 schema。
+- [ ] 所有 CLI/config 来自 pinned tag 验证，不依赖当前 main 或记忆。
+- [ ] 最小 topology、reward tests、debug/replay/full-loop gates 和预算已确定。
+- [ ] 8×H100 明确标为 Stretch。
 
 ## Daily Log
 
-### 读完的文件 / commits / image digest
+### Tag / SHA / image / resolved paths
 
-### STATIC_ONLY edges
+### Object lifecycle
 
-### Day 29 runbook / resource map
+### Minimum supported recipe
+
+### Day 29 gates

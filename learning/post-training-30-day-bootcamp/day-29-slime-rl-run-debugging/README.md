@@ -1,59 +1,71 @@
-# Day 29 — slime 多卡 RL 运行、插桩与 Reward 修改
+# Day 29 — 最小可行 slime 闭环、Reward 修改与 Train-only Replay
 
 日期：`2026-08-24`  
 状态：`not_started`  
-强度：4–5 小时人工工作；训练可继续 6–10 小时
+强度：4–5 小时人工工作；GPU wall time 由 Day 26 的最小 recipe 决定
 
 ## 主要目标
 
-用官方 slime/SGLang/Megatron 路径在真实多卡上跑通 RL 闭环，把 Day 26/28 的静态调用链与 runtime evidence 对齐；修改 reward 扩展点后重跑，证明不只是复制命令。
+在 pinned slime `v0.3.0` 上跑通最小真实闭环，并用 debug dump 做 train-only replay；随后只修改一个可单测的 reward component 重跑。Core 是正确性闭环，不是 8×H100 规模复现。
 
-## 理论（45 分钟）
+## 理论（30–45 分钟）
 
-精读清单：[Day 29 — slime runtime 与 failure signatures](../SCALING-BOOK-READING-GUIDE.md#day-29)。开卡前重读剩余 `STATIC_ONLY` 的 caller 和预期日志。
+精读清单：[Day 29 — slime runtime gates](../SCALING-BOOK-READING-GUIDE.md#day-29)。
 
-- On-policy、reference/KL、group-normalized advantage。
-- `num_generations`、completion-level batch、zero-variance groups。
-- Reward hacking、entropy/KL、length drift、rollout bottleneck。
+- 从 Day 28 gate 表复述 Sample/DataSource/rollout/reward/train/weight version。
+- 预写 zero variance、reward hacking、truncation、KL/entropy anomaly、stale weight 和 rollout bottleneck 的 signature。
+- 冻结 baseline/modified reward、frozen correctness prompts 和停止条件。
 
-## Coding / Runtime 插桩（60 分钟）
+## Coding / Runtime gates（60 分钟）
 
-- 验证 Day 26 的 accuracy/format reward unit tests。
-- 打开或增加轻量日志：Ray actor/GPU mapping、rollout ID、Sample count/schema、reward components、train step、weight version/sync duration。
-- 所有本地 slime 变更保存为最小 diff；先用原始 reward 跑，再替换为修改版。
+- 重新验证 reward adapter unit tests 和 pinned resolved config。
+- 使用框架已有 trace/debug 能力；若证据不足，只增加轻量、可移除的日志。
+- 必须记录 rollout/group IDs、status、reward components、loss mask、policy/weight version、train step 和 sync duration。
 
-## 训练 / 实验（180 分钟启动/分析）
+## 训练 / 实验（180 分钟启动与分析）
 
-- Model：官方 recipe 对应的 `Qwen/Qwen3-4B`；Data：小型可验证数学任务。
-- Run A：原始 accuracy+format reward，先 1 rollout/update gate，再完成 5–10 updates。
-- 沿日志逐边验证：SGLang generation → reward → Sample/buffer → Megatron loss/update → weight sync → 新 weight version rollout。
-- Run B：修改 reward 权重或增加一个可单测的 reward component，完成 2–5 updates。
-- 比较 reward components、group variance、KL、length、rollout/train/sync time 和逐样本行为。
-- 若时间允许，恒定 reward/zero-variance 只做 1-step failure injection；不追求收敛。
+严格按 gate 顺序：
 
-参数以固定 slime commit 的 [官方 Quick Start](https://thudm.github.io/slime/get_started/quick_start.html) 为准。
+1. **G0 config/import**：两条 prompt 能加载 model、tokenizer、reward 和资源 placement。
+2. **G1 rollout-only**：生成最小 batch，保存 raw trajectory/debug dump，离线重算 reward。
+3. **G2 train-only replay**：从同一 dump 启动 learner，完成 optimizer step；再次 replay 对比首 step loss/metrics，并说明 exactness。
+4. **G3 full loop**：完成 `rollout → reward → train update → weight sync → next rollout`，证明下一批使用新 weight version。
+5. **G4 controlled change**：只修改一个 reward component/权重，unit tests 通过后再完成至少一个 update，并比较逐样本行为和 frozen correctness。
+
+每个 gate 失败就停在该层，保留 dump/log；不跳过 replay 直接扩大规模。Core 只要求最小支持的 model/topology 和 1–3 updates，不要求收敛。
 
 ## 资源与租卡
 
-- Core：同机 8×H100 80GB，预计 4–8 wall-clock 小时，优先贴近官方 Qwen3-4B recipe 以减少适配时间。
-- 预算受限可缩为 4×H100，但必须在 Day 26 预先完成显存/placement 改造；不要当天临时缩容。
-- Stop：reward 无 variance、持续 OOM/NaN、rollout 输出不可解析、metrics 未落盘。
-- Run A/Run B、logs、diff、checkpoint/weight version、逐样本结果同步后关机。
+- Core：使用 Day 26 在 pinned tag 上验证的**最小受支持 topology**和最小 model/recipe；开卡前已有明确 GPU-hour 上限。
+- 如果最小 recipe 是多卡，优先同机拓扑；不得当天临时猜测缩容参数。
+- Stretch：8×H100 官方规模 recipe、5–10 updates 和吞吐分析。只有 Core 全部通过且预算明确时才做。
+- Reward 无有效 variance、持续 OOM/NaN、trajectory 无法落盘或 weight version 无法验证时停止。
+
+## Evidence-first 产物
+
+- `../artifacts/logs/day29-slime-trajectories/`
+- `../artifacts/reports/day29-slime-minimum-loop.md`
+- baseline/modified reward diff 与 tests
+- train-only replay comparison、weight-version timeline
 
 ## 验收
 
-- [ ] Online loop 真正完成 rollout→reward→Megatron update→weight sync→next rollout。
-- [ ] Day 26/28 静态图至少六条边获得 runtime log/trace 证据。
-- [ ] 原始与修改版 reward 都完成 update，diff、unit tests 和逐样本行为可审计。
-- [ ] Reward 与 frozen accuracy/length/KL/group variance 一起报告，不单独宣布成功。
-- [ ] `slime-runtime-report.md` 包含 resource map、call chain、weight-version timeline 和至少五种 failure signature。
+- [ ] G1 raw trajectory/reward 可离线重算。
+- [ ] G2 从保存 dump 真正完成 train-only optimizer step，并报告 replay exactness。
+- [ ] G3 完成闭环且下一轮 rollout 有新 weight-version 证据。
+- [ ] G4 只改变一个 reward component，并同时报告 frozen correctness、length、KL/entropy 和 group variance。
+- [ ] 8×H100 若未执行仍可完成 Core；不能把 Stretch 写成毕业条件。
 
 ## Daily Log
 
-### slime commits / Docker / GPU topology / hours
+### Pinned config / GPU topology / hours
 
-### Static call chain vs runtime evidence
+### Gate results
+
+### Train-only replay
 
 ### Reward 修改前后
+
+### Weight-version timeline
 
 ### Day 30 第一动作

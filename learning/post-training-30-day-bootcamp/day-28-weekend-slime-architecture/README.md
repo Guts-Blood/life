@@ -1,22 +1,31 @@
-# Day 28 — 周末 Reading：slime 架构与源码复核
+# Day 28 — 周末 Reading：slime Debug、Replay、Repro 与 Observability
 
 日期：`2026-08-23`  
 状态：`not_started`  
-强度：1 小时，仅阅读
+强度：1 小时，仅阅读/复盘
 
 ## 主要目标
 
-在不开 GPU 的前提下复核 Day 26 的 slime 主链路，重点消除 weight sync 与 Ray placement 两个 `STATIC_ONLY` 区域。
+把 Day 29 的调试顺序冻结：先验证 trajectory/reward，再 train-only replay，最后验证 weight sync 和下一轮 policy version。
 
-## 理论（60 分钟）
+## 理论与复盘（60 分钟）
 
-精读清单：[Day 28 — slime runtime 架构](../SCALING-BOOK-READING-GUIDE.md#day-28)。
+精读清单：[Day 28 — slime debug/replay/observability](../SCALING-BOOK-READING-GUIDE.md#day-28)。
 
-- 20 分钟：重读 `train.py`/`train_async.py` 与 `ray/placement_group.py`，画 actor/GPU placement。
-- 20 分钟：重读 `rollout/sglang_rollout.py` 与 `backends/megatron_utils/actor.py`，补齐 train/rollout handoff。
-- 20 分钟：重读 `backends/megatron_utils/update_weight/`，比较 disk/tensor/distributed sync 的触发和一致性风险。
+- 15 分钟：读 pinned tag 的 Debug 文档，确认 rollout-only、train-only 和 debug dump 的实际参数。
+- 15 分钟：读 Trace/Profiling 文档，列出 sample、reward、latency、actor/GPU 和 weight-sync 可观测点。
+- 15 分钟：读 Reproducibility/Fault-tolerance 文档，区分框架能恢复的 server failure 与完整 job/preemption resume。
+- 15 分钟：完成 Day 29 gate 表。
 
-最终图必须是：`prompt -> N rollouts -> reward -> buffer/Sample -> advantage/loss -> Megatron update -> weight sync -> next rollout`，每条边标数量、GPU role、函数和可观测日志。
+| Gate | 输入 | 必须看到的证据 | 失败时下一步 |
+|---|---|---|---|
+| rollout-only | | | |
+| reward replay | | | |
+| train-only replay | | | |
+| weight sync | | | |
+| next-version rollout | | | |
+
+参数和文件名只引用 Day 26 pinned checkout 实际验证的版本，不使用 main 分支截图。
 
 ## Coding
 
@@ -24,10 +33,16 @@
 
 ## 训练 / 实验
 
-无。
+无；不启动 GPU，不在周末临时修环境。
 
 ## 资源与租卡
 
-CPU only；确认 Day 29 的 Docker digest、Qwen3-4B、torch_dist checkpoint、dataset、两个 reward 和 8 卡 config 均在可靠存储，不开卡。
+CPU only；严格 60 分钟。
 
-### 最终静态架构图 / 剩余 STATIC_ONLY
+## 验收
+
+- [ ] Day 29 每个 gate 都有输入、证据、停止条件和下一步。
+- [ ] 知道哪些状态可 replay，哪些 nondeterminism 仍可能存在。
+- [ ] 知道 slime server restart 不等于完整训练 job resume。
+
+### Day 29 gate 表 / 剩余 UNKNOWN

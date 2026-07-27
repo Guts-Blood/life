@@ -1,130 +1,133 @@
 # 30-Day LLM Post-Training Bootcamp
 
-状态：`not_started`  
+状态：`in_progress`（Day 01–03 已由用户确认完成；当前 Day 04）
+
 执行日期：`2026-07-27`（周一）至 `2026-08-25`（周二）  
 建议投入：工作日 4–5 小时；周末严格控制为 1 小时 reading/review，不租 GPU  
-主线：`Qwen3/ms-swift 闭环 -> Megatron SFT 源码与多卡 -> Eval -> slime RL 源码与运行 -> 30B+ design`
+主线：`数据 -> SFT -> 训练诊断与恢复 -> Preference/DPO -> Online RL -> 可复现训练设计`
 
-## 为什么这样组织
+## 本月真正要补什么
 
-这不是一份只用于阅读的 syllabus。每一天都必须留下至少一种可复查的证据：配置、日志、计算表、预测结果、Profiler trace、Eval 报告或 runbook。
+本月目标是补全 training 判断力，不是构建 auto-train 或 auto-harness 系统。最终要能跟踪一条样本如何变成训练信号、一次训练如何改变模型状态、一次异常如何被证据定位，以及 SFT/DPO/在线 RL 各自需要什么数据和运行时组件。
 
-这是一份连续 30 个自然日的计划。Day 编号已绑定日期：22 个工作日承担理论、coding 和训练，8 个周末日只做 1 小时阅读或复盘。若某个工作日没有完成，先记录阻塞，再压缩后续 Stretch；不要占用周末补长训练。
+优先级固定为：
+
+1. 数据契约、模板、tokenization、loss mask、mixture 与 lineage。
+2. 训练 step、优化器、batch、checkpoint、resume、复现与失败诊断。
+3. Preference data、DPO 与在线 RL 的 rollout/reward/logprob/advantage 数据流。
+4. Eval 的冻结、逐样本证据和训练阶段之间的可比性。
+5. Sharding、collective 和 Megatron：学到能读配置、判断 OOM/吞吐、理解状态归属和排障；本月不追求手写并行框架。
+
+《How To Scale Your Model》仍贯穿 30 天，但 Day 04 以后按训练问题精选。Scaling 题必须落到 `OOM、throughput、global batch、并行配置或 checkpoint`，不再重复纯公式推导。
 
 ## 一个月后的毕业标准
 
-- [ ] 能解释并手算 Transformer 参数量、FLOPs 和主要显存项。
-- [ ] 能解释 DP、FSDP/ZeRO、TP、PP、CP、EP 的切分与通信。
-- [ ] 能独立跑通 Qwen3 全参 SFT、LoRA SFT、checkpoint resume 和推理。
-- [ ] 能构建 frozen eval、deterministic scorer、pairwise judge 和置信区间。
-- [ ] 能通读 Megatron SFT 的端到端主链路，在双卡上运行、插桩、恢复 checkpoint，并解释每个 rank 的职责。
-- [ ] 能通读 slime 的 rollout/train/weight-sync 主链路，在真实多卡上运行并修改 reward 后重跑。
-- [ ] 能推导 DPO objective，跑通一次 slime GRPO/RL 最小闭环，并判断 reward 是否被 hack。
-- [ ] 能为 Qwen3-32B dense 或 Qwen3.5-35B-A3B-Base MoE 写出可评审的训练设计，并说明与 Qwen3.6-35B-A3B 的差异。
-- [ ] 能从干净环境复现最小闭环，并用 15 分钟讲清楚整个项目。
+- [ ] 能从 raw sample 追到 rendered text、tokens、labels、loss mask、source/mixture metadata，并识别数据泄漏与模板错误。
+- [ ] 能解释 `forward -> loss -> backward -> gradient accumulation -> optimizer/scheduler -> checkpoint/eval`，并用 tiny overfit 验证训练链路。
+- [ ] 能设计并运行受控 SFT，对比 checkpoint，完成中断恢复，并判断 resume 是否真的连续。
+- [ ] 能根据 loss、grad norm、learning rate、tokens/s、显存、样本输出和 eval 区分数据、优化、系统与评测问题。
+- [ ] 能解释 DP/FSDP/ZeRO/TP/PP/CP/EP 切什么、通信什么，以及 global batch 为什么不乘 TP。
+- [ ] 能构造与审计 preference pair，解释 DPO objective，并跑通一次小模型 DPO smoke。
+- [ ] 能画出 `prompt -> rollout -> reward -> advantage/logprob -> update -> weight sync -> next rollout`，识别 stale rollout、mask/logprob 错位和 reward hacking。
+- [ ] 能用 ms-swift 跑 SFT、DPO 和小模型 GRPO，用 slime 跑一次受控在线 RL 闭环；能说明 Tulu/Open-Instruct、TRL、verl 提供的参照。
+- [ ] 能从干净环境复现一条最小训练链，并提交一份包含数据、状态、指标、失败处理和扩展边界的 training design。
 
-## 每天 README 的固定结构
+## 框架各自承担什么
 
-每一天都必须明确区分：
+| 角色 | 本月定位 | 是否实跑 |
+|---|---|---|
+| [modelscope/ms-swift](https://github.com/modelscope/ms-swift) | 统一的小模型 SFT、DPO、GRPO 实验入口 | Core |
+| [THUDM/slime](https://github.com/THUDM/slime) | 理解并运行 Megatron train、SGLang rollout、reward、buffer、weight sync 的在线 RL 闭环 | Core；8×H100 仅 Stretch |
+| [AllenAI Open Instruct/Tülu](https://allenai.github.io/open-instruct/) | 参照公开的 post-training stage、数据 mixture 与 recipe | 阅读/对照 |
+| [Hugging Face TRL](https://huggingface.co/docs/trl/) | 用紧凑 trainer API 对照 SFT/DPO/GRPO 的输入输出 | 阅读/小型对照 |
+| [verl](https://verl.readthedocs.io/) | 对照 actor/rollout/ref/reward/resource-pool 的职责边界 | 阅读/架构对照 |
+| [NVIDIA Megatron-LM](https://github.com/NVIDIA/Megatron-LM) | 建立最小多卡 codepath、rank/state/checkpoint 心智模型 | 最小 smoke，不做全仓通读 |
 
-1. **主要目标**：今天结束时新增的能力或产物。
-2. **理论**：公式、论文、系统概念和必须回答的问题。
-3. **Coding**：自己实现、读代码、写测试或整理可复现配置。
-4. **训练/实验**：要实际运行的 model、dataset、对照和成功标准。
-5. **资源与租卡**：CPU/GPU、卡数、显存、预计占用时间、关机条件。
+实操模型优先使用 `Qwen/Qwen3-0.6B-Base`；受控 SFT 资源允许时使用 `Qwen/Qwen3-1.7B-Base`。DPO 必须从已验证的 SFT checkpoint 起步；GRPO 先用最小可运行模型和可验证 reward。所有仓库、模型和数据都固定 revision/commit，不依赖滚动的 `main/latest`。slime 学习基线固定为 `v0.3.0`，运行时必须再核对 tag SHA、官方 examples 和实际 CLI。
 
-## 固定工作日节奏
+## 每天固定输出
+
+每个工作日保留至少一种可复查证据：dataset manifest、样本审计表、配置、结构化日志、checkpoint 对比、恢复记录、failure report、逐样本预测或 runbook。只跑出一个 loss 数字不算完成。
+
+每天 quiz 固定三题：
+
+1. **对象/数据题**：今天有哪些数据对象或字段，它们怎样变换和对齐？
+2. **状态/训练题**：哪些模型、优化器、调度器、RNG、dataloader 或 rollout 状态被读取和修改？
+3. **诊断/判断题**：给一个异常或两套方案，依据哪些观测作判断，下一项最小验证是什么？
+
+工作日建议节奏：
 
 | 时间 | 内容 |
 |---|---|
-| 75–90 分钟 | 理论：阅读、公式推导、回答当天问题 |
-| 120–150 分钟 | 工程：训练、代码阅读、实验或工具实现 |
-| 45–60 分钟 | 分析：Eval、Profiler、bad case 或容量计算 |
-| 20–30 分钟 | Tracking：整理证据、结论、阻塞和下一步 |
+| 60–75 分钟 | 定向阅读与三题 quiz |
+| 120–150 分钟 | 数据审计、训练、代码阅读或受控实验 |
+| 60–75 分钟 | 曲线、逐样本结果、恢复或 failure analysis |
+| 20–30 分钟 | 固化证据、结论、阻塞和下一步 |
 
-长训练放在当天最后启动。第二天先分析结果，再决定是否继续跑，不要在没有 baseline 和验收条件时扩大训练。
-
-周末只安排 60 分钟：45–50 分钟定向阅读，10–15 分钟写 5 条 takeaway 或一页复盘。周末没有 coding、训练和租卡要求。
-
-## 工程路线
-
-- 通用闭环：[modelscope/ms-swift](https://github.com/modelscope/ms-swift)
-- SFT infra：[NVIDIA/Megatron-LM](https://github.com/NVIDIA/Megatron-LM)；Qwen 适配/转换可借助 Megatron-SWIFT/Mcore-Bridge
-- RL infra：[THUDM/slime](https://github.com/THUDM/slime)，训练端 Megatron、rollout 端 SGLang
-- 快速 debug：`Qwen/Qwen3-0.6B-Base`
-- 全参 SFT：`Qwen/Qwen3-1.7B-Base`
-- LoRA smoke：`Qwen/Qwen3-4B-Instruct-2507`
-- GRPO：`Qwen/Qwen3-0.6B`，资源允许时升级到 1.7B
-- Scaling 推演：`Qwen3-32B` dense 与 `Qwen3.5-35B-A3B-Base` MoE；以 `Qwen3.6-35B-A3B` 作为当前架构参照
-
-版本策略：实际训练使用 Qwen3 的 0.6B/1.7B/4B 成熟阶梯，避免把一个月耗在新模型兼容性上；30B+ 设计使用有 Base checkpoint 的 Qwen3.5-35B-A3B-Base，并对照当前 Qwen3.6-35B-A3B。每次运行须同时固定 model revision、`ms-swift`、Megatron、slime、SGLang commit 和容器 digest，不依赖不断变化的 `main/latest`。
-
-“通读 repo”在本计划中不是逐文件浏览，而是完成三件事：画出带 `file:function` 的端到端调用链；在真实运行日志中证明调用链确实发生；修改一个关键扩展点或观测点后重跑并解释结果。只看 README、只复制命令或只跑出 loss 都不算完成。
-
-所有第三方仓库放在 `vendor/` 或工作区其他位置，不直接修改本目录中的计划文件。实验配置和证据集中放在 [`artifacts/`](artifacts/README.md)。
+周末只安排 60 分钟：45–50 分钟定向阅读，10–15 分钟写复盘。未完成的工作日先删 Stretch，不占用周末补长训练。
 
 ## 30 天导航
 
-### Week 1：Scaling 基础（07-27 至 08-02）
+### Week 1：Scaling 基础与 Training 全景（07-27 至 08-02）
 
-- [Day 01 · 07-27 — 环境与可复现基线](day-01-environment-baseline/README.md)
-- [Day 02 · 07-28 — Transformer 参数、FLOPs、显存](day-02-transformer-accounting/README.md)
-- [Day 03 · 07-29 — Roofline 与 H100](day-03-roofline-h100/README.md)
-- [Day 04 · 07-30 — 分布式并行地图](day-04-parallelism-map/README.md)
-- [Day 05 · 07-31 — Ultra-Scale 与三套框架分层](day-05-ultrascale-code-reading/README.md)
-- [Day 06 · 08-01（周末 1h）— Scaling 定向阅读](day-06-weekend-scaling-reading/README.md)
-- [Day 07 · 08-02（周末 1h）— Week 1 复盘](day-07-weekend-week1-review/README.md)
+- [x] [Day 01 · 07-27 — 环境与可复现基线](day-01-environment-baseline/README.md)
+- [x] [Day 02 · 07-28 — Transformer 参数、FLOPs、显存](day-02-transformer-accounting/README.md)
+- [x] [Day 03 · 07-29 — Roofline 与 H100](day-03-roofline-h100/README.md)
+- [ ] [Day 04 · 07-30 — 分布式并行地图](day-04-parallelism-map/README.md) ← current
+- [ ] [Day 05 · 07-31 — Training lifecycle 与框架职责图](day-05-training-lifecycle-framework-map/README.md)
+- [ ] [Day 06 · 08-01（周末 1h）— Post-training 中的 Scaling 问题](day-06-weekend-posttraining-scaling/README.md)
+- [ ] [Day 07 · 08-02（周末 1h）— Week 1 复盘](day-07-weekend-week1-review/README.md)
 
-### Week 2：跑通 Qwen SFT（08-03 至 08-09）
+### Week 2：数据契约与受控 SFT（08-03 至 08-09）
 
-- [Day 08 · 08-03 — Qwen SFT smoke test](day-08-qwen-sft-smoke/README.md)
-- [Day 09 · 08-04 — 数据、chat template、loss mask](day-09-data-and-loss-mask/README.md)
-- [Day 10 · 08-05 — Frozen eval 与 Base baseline](day-10-frozen-eval-baseline/README.md)
-- [Day 11 · 08-06 — Qwen3-1.7B 全参 SFT smoke](day-11-qwen17b-full-sft-smoke/README.md)
-- [Day 12 · 08-07 — Qwen3-1.7B 主 SFT](day-12-qwen17b-main-sft/README.md)
-- [Day 13 · 08-08（周末 1h）— Qwen3 技术报告阅读](day-13-weekend-sft-reading/README.md)
-- [Day 14 · 08-09（周末 1h）— Week 2 复盘](day-14-weekend-week2-review/README.md)
+- [ ] [Day 08 · 08-03 — SFT 数据契约与 loss token](day-08-sft-data-contract/README.md)
+- [ ] [Day 09 · 08-04 — 数据质量、mixture 与 lineage](day-09-data-quality-mixture-lineage/README.md)
+- [ ] [Day 10 · 08-05 — Frozen eval 与 Base baseline](day-10-frozen-eval-baseline/README.md)
+- [ ] [Day 11 · 08-06 — 一个 SFT step 与 tiny overfit](day-11-sft-step-tiny-overfit/README.md)
+- [ ] [Day 12 · 08-07 — 受控 SFT 与 checkpoint 选择](day-12-controlled-sft-checkpoints/README.md)
+- [ ] [Day 13 · 08-08（周末 1h）— Qwen/Tülu post-training 阅读](day-13-weekend-sft-reading/README.md)
+- [ ] [Day 14 · 08-09（周末 1h）— Week 2 复盘](day-14-weekend-week2-review/README.md)
 
-### Week 3：训练系统与多卡（08-10 至 08-16）
+### Week 3：稳定训练、恢复与诊断（08-10 至 08-16）
 
-- [Day 15 · 08-10 — Packing 与 sequence length ablation](day-15-packing-sequence-ablation/README.md)
-- [Day 16 · 08-11 — Batch 与显存优化 ablation](day-16-batch-memory-ablation/README.md)
-- [Day 17 · 08-12 — Megatron SFT 主链路通读与运行准备](day-17-megatron-codepath-prep/README.md)
-- [Day 18 · 08-13 — Megatron 双卡 SFT 运行与 runtime trace](day-18-megatron-multigpu-sft/README.md)
-- [Day 19 · 08-14 — Megatron checkpoint/Profiler 与 32B 规划](day-19-profiler-dense-capacity/README.md)
-- [Day 20 · 08-15（周末 1h）— MoE 阅读](day-20-weekend-moe-reading/README.md)
-- [Day 21 · 08-16（周末 1h）— Eval 阅读](day-21-weekend-eval-reading/README.md)
+- [ ] [Day 15 · 08-10 — Packing、length 与有效 label token ablation](day-15-packing-sequence-ablation/README.md)
+- [ ] [Day 16 · 08-11 — Optimizer/LR/warmup/batch 稳定性 ablation](day-16-optimization-stability-ablation/README.md)
+- [ ] [Day 17 · 08-12 — Exact checkpoint resume 与可复现](day-17-checkpoint-resume-repro/README.md)
+- [ ] [Day 18 · 08-13 — Megatron 最小源码链、双卡 TP/DP 与 distributed checkpoint](day-18-megatron-minimum-codepath/README.md)
+- [ ] [Day 19 · 08-14 — 训练诊断与 failure injection](day-19-training-diagnostics-failure-injection/README.md)
+- [ ] [Day 20 · 08-15（周末 1h）— Training failure signatures](day-20-weekend-training-failures/README.md)
+- [ ] [Day 21 · 08-16（周末 1h）— Eval 与 checkpoint selection 可靠性](day-21-weekend-eval-reading/README.md)
 
-### Week 4：30B+、Eval 与 Preference（08-17 至 08-23）
+### Week 4：Preference、DPO 与 Online RL（08-17 至 08-23）
 
-- [Day 22 · 08-17 — Qwen3.5/3.6 35B-A3B MoE 容量规划](day-22-moe-capacity/README.md)
-- [Day 23 · 08-18 — 公共 benchmark 与 deterministic eval](day-23-public-deterministic-eval/README.md)
-- [Day 24 · 08-19 — Pairwise、统计与 SFT Eval Report](day-24-pairwise-sft-report/README.md)
-- [Day 25 · 08-20 — DPO 理论与 preference data](day-25-dpo-theory-data/README.md)
-- [Day 26 · 08-21 — slime 主链路通读与运行准备](day-26-slime-codepath-prep/README.md)
-- [Day 27 · 08-22（周末 1h）— GRPO/Online RL 阅读](day-27-weekend-slime-rl-reading/README.md)
-- [Day 28 · 08-23（周末 1h）— slime 架构与源码复核](day-28-weekend-slime-architecture/README.md)
+- [ ] [Day 22 · 08-17 — Preference provenance、length bias 与 held-out](day-22-preference-data/README.md)
+- [ ] [Day 23 · 08-18 — DPO 推导与小模型真实 smoke](day-23-dpo-theory-smoke/README.md)
+- [ ] [Day 24 · 08-19 — Online RL dataflow 与 reward/verifier contract](day-24-online-rl-dataflow-reward/README.md)
+- [ ] [Day 25 · 08-20 — ms-swift 小模型 GRPO lab](day-25-grpo-small-model-lab/README.md)
+- [ ] [Day 26 · 08-21 — slime v0.3.0 主链路与最小运行准备](day-26-slime-codepath-prep/README.md)
+- [ ] [Day 27 · 08-22（周末 1h）— GRPO 与 on-policy 边界](day-27-weekend-slime-rl-reading/README.md)
+- [ ] [Day 28 · 08-23（周末 1h）— slime debug/replay/repro/observability](day-28-weekend-slime-architecture/README.md)
 
-### Final：GRPO 与综合设计（08-24 至 08-25）
+### Final：真实闭环与训练设计（08-24 至 08-25）
 
-- [Day 29 · 08-24 — slime 多卡 RL 运行、插桩与 reward 修改](day-29-slime-rl-run-debugging/README.md)
-- [Day 30 · 08-25 — 30B+ 设计、复现与模拟汇报](day-30-final-design-reproduction/README.md)
+- [ ] [Day 29 · 08-24 — slime 最小闭环、reward 修改与 train-only replay](day-29-slime-rl-run-debugging/README.md)
+- [ ] [Day 30 · 08-25 — Post-training design、clean reproduction 与综合口述](day-30-training-design-reproduction/README.md)
 
 ## Tracking 规则
 
-1. 开始一天前，在当天 README 填日期、状态、可用 GPU 和预计时长。
-2. 开始训练前，先写假设和成功条件。
-3. 所有运行都记录 model、dataset、code commit、seed 和完整 config。
-4. 不用“loss 看起来正常”作为结论；至少保存一张曲线或结构化日志。
-5. Eval 必须保存逐样本预测，不能只保存 aggregate score。
-6. 当天未完成时，写清楚阻塞，不要为了打勾隐藏失败。
-7. Day 07、14、21、28 使用 [`templates/weekly-review.md`](templates/weekly-review.md)；Day 21/28 的模板可以只填写阅读相关部分。
+1. 开始训练前写清输入数据版本、初始 checkpoint、唯一自变量、成功条件和停止条件。
+2. 每个 run 记录 code commit、容器/环境、model/tokenizer revision、dataset manifest、template、seed、完整配置与硬件。
+3. SFT 记录 raw/rendered/token/label/mask 审计；DPO 记录 prompt/chosen/rejected；RL 记录 prompt/response/reward/logprob/mask/policy version 对齐。
+4. 必须保存逐样本 eval 和 bad cases；aggregate score 不能单独驱动下一轮。
+5. Checkpoint 至少区分“仅可推理权重”和“可连续训练状态”；resume 后验证 step、LR、optimizer、数据位置与 RNG。
+6. 当天失败要保存最小证据和下一项验证，不为打勾隐藏失败。
+7. Day 07、14、21、28 使用 [`templates/weekly-review.md`](templates/weekly-review.md)。
 
 ## 配套文件
 
 - [整体进度表](PROGRESS.md)
-- [Scaling Book 逐日精读路线](SCALING-BOOK-READING-GUIDE.md)
-- [学习资源索引](RESOURCES.md)
+- [Scaling Book 与每日三题路线](SCALING-BOOK-READING-GUIDE.md)
+- [一手学习资源索引](RESOURCES.md)
 - [AutoDL 与 GPU 资源计划](AUTODL.md)
 - [每日记录模板](templates/daily-log.md)
 - [每周复盘模板](templates/weekly-review.md)
