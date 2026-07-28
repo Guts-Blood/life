@@ -42,6 +42,10 @@
 
 ## Quiz：对象、状态、诊断
 
+互动测验使用 [`DAY-04-READING-QUIZ.md`](./DAY-04-READING-QUIZ.md) 跟踪原始回答、点评和修正版结论。
+
+- [ ] Day 04 Reading Quiz：`in_progress`（从 D4-Q1 开始）。
+
 1. **对象/数据题**：FSDP 与 TP 分别切哪个对象？parameter、gradient、optimizer state、activation 在每个 rank 上是什么布局？
 2. **状态/训练题**：`A[I,J_X]B[J_X,K]` 为什么产生 partial sums？AllReduce 与 ReduceScatter 分别把它变成什么输出状态？
 3. **诊断/判断题**：分别面对 FSDP 后仍 OOM、部分 rank hang、改变 world size/TP degree 后 checkpoint 无法加载，第一轮要核对哪些 shape、buffer、rank 日志、collective 顺序、metadata 与 reshard 条件？
