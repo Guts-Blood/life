@@ -2,7 +2,7 @@
 
 开始日期：`2026-07-27`  
 目标完成日期：`2026-08-25`  
-当前 Phase：`Day 04 — distributed parallelism map`
+当前 Phase：`Day 05 — training lifecycle 与框架职责图`
 
 当前最大阻塞：`none`
 
@@ -13,8 +13,8 @@
 | 01 | 环境与可复现基线 | done | 2026-07-27 | | | |
 | 02 | Transformer accounting | done | 2026-07-28 | | | |
 | 03 | Roofline 与 H100 | done | 2026-07-29 | | | |
-| 04 | 分布式并行地图 | in_progress | 2026-07-30 | | | |
-| 05 | Training lifecycle 与框架职责图 | not_started | 2026-07-31 | | | |
+| 04 | 分布式并行地图 | done | 2026-07-30 | | `day-04-parallelism-map/DAY-04-READING-QUIZ.md` | 已完成 sharding、collective、状态布局、并行组与首轮故障诊断。 |
+| 05 | Training lifecycle 与框架职责图 | in_progress | 2026-07-31 | | `day-05-training-lifecycle-framework-map/DAY-05-READING-QUIZ.md` | Socratic quiz 已开始。 |
 | 06 | 周末：Post-training scaling | not_started | 2026-08-01 | | | |
 | 07 | 周末：Week 1 复盘 | not_started | 2026-08-02 | | | |
 | 08 | SFT 数据契约与 loss token | not_started | 2026-08-03 | | | |
