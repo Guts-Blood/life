@@ -1,0 +1,206 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1840" viewBox="0 0 1800 1840" role="img" aria-labelledby="title desc">
+  <title id="title">Day 02 Transformer accounting learning roadmap</title>
+  <desc id="desc">A six-stage roadmap from tensor shapes and FLOPs through GQA, MoE, memory accounting, distributed peak memory, corrected misconceptions, and final engineering takeaways for Qwen3-30B-A3B training.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+    <style>
+      text { font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; fill: #172033; }
+      .title { font-size: 34px; font-weight: 700; }
+      .subtitle { font-size: 18px; fill: #526078; }
+      .section { font-size: 23px; font-weight: 700; }
+      .step { font-size: 20px; font-weight: 700; }
+      .label { font-size: 16px; font-weight: 650; }
+      .body { font-size: 14px; }
+      .small { font-size: 12.5px; fill: #526078; }
+      .formula { font-family: "SFMono-Regular", Consolas, monospace; font-size: 13px; fill: #273449; }
+      .panel { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1.5; }
+      .shape { fill: #dbeafe; stroke: #2563eb; stroke-width: 1.5; }
+      .compute { fill: #ede9fe; stroke: #7c3aed; stroke-width: 1.5; }
+      .attention { fill: #e0f2fe; stroke: #0284c7; stroke-width: 1.5; }
+      .moe { fill: #fef3c7; stroke: #d97706; stroke-width: 1.5; }
+      .memory { fill: #fee2e2; stroke: #dc2626; stroke-width: 1.5; }
+      .system { fill: #dcfce7; stroke: #16a34a; stroke-width: 1.5; }
+      .neutral { fill: #f8fafc; stroke: #64748b; stroke-width: 1.3; }
+      .takeaway { fill: #f0fdf4; stroke: #16a34a; stroke-width: 1.8; }
+      .warning { fill: #fff7ed; stroke: #ea580c; stroke-width: 1.5; }
+      .line { fill: none; stroke: #475569; stroke-width: 2.4; marker-end: url(#arrow); }
+      .divider { stroke: #cbd5e1; stroke-width: 1.3; }
+    </style>
+  </defs>
+
+  <rect width="1800" height="1840" fill="#f5f7fb"/>
+  <text x="50" y="58" class="title">Day 02 Roadmap：从 tensor shape 到 30B MoE 训练账本</text>
+  <text x="50" y="90" class="subtitle">Scaling Book Transformer Math × Qwen3-30B-A3B config × full-SFT capacity / compute / distributed peak</text>
+
+  <rect x="40" y="116" width="1720" height="88" rx="16" class="panel"/>
+  <text x="70" y="151" class="label">North Star</text>
+  <text x="205" y="151" class="body">model config + batch/sequence/dtype</text>
+  <text x="478" y="151" class="label">→</text>
+  <text x="520" y="151" class="body">tensor shapes</text>
+  <text x="660" y="151" class="label">→</text>
+  <text x="700" y="151" class="body">parameters / FLOPs</text>
+  <text x="872" y="151" class="label">→</text>
+  <text x="912" y="151" class="body">total / trainable / active</text>
+  <text x="1130" y="151" class="label">→</text>
+  <text x="1170" y="151" class="body">distributed per-rank peak</text>
+  <text x="1391" y="151" class="label">→</text>
+  <text x="1430" y="151" class="body">租卡、配置、profiler 校准</text>
+  <text x="70" y="182" class="small">最终能力：看到一个真实 config，不加载权重，也能先做参数、计算、模型状态与显存的一阶预测。</text>
+
+  <!-- Step 1 -->
+  <rect x="60" y="234" width="520" height="294" rx="18" class="shape"/>
+  <text x="88" y="272" class="step">01 · Counting Dots</text>
+  <text x="88" y="301" class="label">从 shape 数参数与 forward FLOPs</text>
+  <text x="88" y="338" class="formula">X [N,D] @ W [D,F] → Y [N,F]</text>
+  <text x="88" y="369" class="formula">P_W = D×F</text>
+  <text x="88" y="400" class="formula">one dot = D mul + (D-1) add ≈ 2D FLOPs</text>
+  <text x="88" y="431" class="formula">F_forward ≈ 2NDF</text>
+  <line x1="88" y1="452" x2="552" y2="452" class="divider"/>
+  <text x="88" y="481" class="body">关键：FLOP count 与 BF16/FP32 无关。</text>
+  <text x="88" y="506" class="small">dtype 改变 bytes、数值精度和硬件可达到的 FLOPs/s。</text>
+
+  <!-- Step 2 -->
+  <rect x="640" y="234" width="520" height="294" rx="18" class="compute"/>
+  <text x="668" y="272" class="step">02 · Forward + Reverse</text>
+  <text x="668" y="301" class="label">用 chain rule 推出训练 matmul FLOPs</text>
+  <text x="668" y="338" class="formula">Y  = X  @ W</text>
+  <text x="668" y="369" class="formula">dX = dY @ Wᵀ</text>
+  <text x="668" y="400" class="formula">dW = Xᵀ @ dY</text>
+  <text x="668" y="431" class="formula">2NDF + 2NDF + 2NDF = 6NDF</text>
+  <line x1="668" y1="452" x2="1132" y2="452" class="divider"/>
+  <text x="668" y="481" class="body">令 P=DF、N=token 数：</text>
+  <text x="668" y="506" class="formula">training matmul FLOPs ≈ 6 × P × N</text>
+
+  <!-- Step 3 -->
+  <rect x="1220" y="234" width="520" height="294" rx="18" class="attention"/>
+  <text x="1248" y="272" class="step">03 · Attention / GQA</text>
+  <text x="1248" y="301" class="label">区分 token dimension 与 head dimension</text>
+  <text x="1248" y="334" class="formula">Q [B,Hq,T,d_k] @ Kᵀ [B,Hq,d_k,T]</text>
+  <text x="1248" y="362" class="formula">→ scores [B,Hq,T,T]</text>
+  <text x="1248" y="393" class="formula">Q/K/V width = Hq·d_k / Hkv·d_k / Hkv·d_v</text>
+  <text x="1248" y="424" class="formula">W_O [Hq·d_v, D] → residual width D</text>
+  <line x1="1248" y1="446" x2="1712" y2="446" class="divider"/>
+  <text x="1248" y="475" class="body">GQA：K/V projection 与 KV cache 随 Hkv 下降。</text>
+  <text x="1248" y="500" class="small">Hq 不变，因此核心 QKᵀ / AV 的逻辑计算不会同等下降。</text>
+
+  <path d="M 580 381 L 634 381" class="line"/>
+  <path d="M 1160 381 L 1214 381" class="line"/>
+  <path d="M 1740 381 L 1760 381 L 1760 559 L 1706 559" class="line"/>
+
+  <!-- Step 4 -->
+  <rect x="1220" y="570" width="520" height="294" rx="18" class="moe"/>
+  <text x="1248" y="608" class="step">04 · SwiGLU / MoE</text>
+  <text x="1248" y="637" class="label">从一个 expert 扩展到 total / active</text>
+  <text x="1248" y="671" class="formula">(SiLU(XW_gate) ⊙ XW_up) W_down</text>
+  <text x="1248" y="702" class="formula">W_gate [D,F] · W_up [D,F] · W_down [F,D]</text>
+  <text x="1248" y="733" class="formula">P_one_expert = 3DF</text>
+  <text x="1248" y="764" class="formula">P_total_experts = E·3DF</text>
+  <text x="1248" y="795" class="formula">P_active/token = K·3DF</text>
+  <line x1="1248" y1="815" x2="1712" y2="815" class="divider"/>
+  <text x="1248" y="843" class="small">gate/up/hidden 是 activations，不是 weight parameters。</text>
+
+  <!-- Step 5 -->
+  <rect x="640" y="570" width="520" height="294" rx="18" class="memory"/>
+  <text x="668" y="608" class="step">05 · Capacity vs Compute</text>
+  <text x="668" y="637" class="label">MoE 必须同时维护两本账</text>
+  <text x="668" y="674" class="formula">capacity / full-SFT states → P_total</text>
+  <text x="668" y="705" class="formula">per-token main matmul      → P_active</text>
+  <text x="668" y="742" class="formula">M_states = weights + grads + master + Adam</text>
+  <text x="668" y="773" class="formula">common planning range = 12 / 16 / 18 B/P</text>
+  <line x1="668" y1="795" x2="1132" y2="795" class="divider"/>
+  <text x="668" y="823" class="body">标准 teacher-forced SFT：persistent KV cache = 0。</text>
+  <text x="668" y="848" class="small">但 Q/K/V 与 backward saved activations 仍然存在。</text>
+
+  <!-- Step 6 -->
+  <rect x="60" y="570" width="520" height="294" rx="18" class="system"/>
+  <text x="88" y="608" class="step">06 · Per-rank Peak / Checkpoint</text>
+  <text x="88" y="637" class="label">从全局账本落到分布式训练</text>
+  <text x="88" y="674" class="formula">M_peak_rank ≈ sharded states</text>
+  <text x="88" y="700" class="formula">             + saved activations</text>
+  <text x="88" y="726" class="formula">             + temp/comm + runtime</text>
+  <text x="88" y="763" class="body">ZeRO/FSDP 分片 W/G/optimizer；TP/PP/EP 改变 ownership。</text>
+  <line x1="88" y1="787" x2="552" y2="787" class="divider"/>
+  <text x="88" y="816" class="body">Activation checkpoint：少存 activation，backward 重算。</text>
+  <text x="88" y="841" class="small">Disk training checkpoint 用于 resume，不降低 live GPU memory。</text>
+
+  <path d="M 1220 717 L 1166 717" class="line"/>
+  <path d="M 640 717 L 586 717" class="line"/>
+
+  <!-- Qwen worked example -->
+  <rect x="40" y="906" width="1720" height="318" rx="18" class="panel"/>
+  <text x="70" y="948" class="section">Qwen3-30B-A3B：把六步连成一份真实账本</text>
+  <line x1="900" y1="970" x2="900" y2="1192" class="divider"/>
+
+  <text x="75" y="991" class="label">Config → architecture accounting</text>
+  <text x="75" y="1023" class="formula">L=48 · D=2048 · Hq=32 · Hkv=4 · head_dim=128</text>
+  <text x="75" y="1054" class="formula">E=128 experts · top-K=8 · F_expert=768</text>
+  <text x="75" y="1085" class="formula">Q/K/V widths = 4096 / 512 / 512</text>
+  <text x="75" y="1116" class="formula">attention projections/layer = 18,874,368 ≈ 18.87M</text>
+  <text x="75" y="1147" class="formula">one expert = 3×2048×768 = 4,718,592 ≈ 4.72M</text>
+  <text x="75" y="1178" class="formula">experts total/active per layer = 603.98M / 37.75M</text>
+
+  <text x="935" y="991" class="label">Two ledgers → engineering decision</text>
+  <text x="935" y="1023" class="formula">P_total ≈ 30.532B · P_active ≈ 3.353B/token</text>
+  <text x="935" y="1054" class="formula">BF16 weights = 30.5B×2 ≈ 61GB</text>
+  <text x="935" y="1085" class="formula">full-SFT states = 366 / 488 / 549GB global</text>
+  <text x="935" y="1116" class="formula">1M tokens main matmul ≈ 6×3.3B×1M = 19.8 PFLOPs</text>
+  <text x="935" y="1147" class="formula">16-way perfect state shard: 22.9–34.3GB/rank ideal floor</text>
+  <text x="935" y="1178" class="small">仍需加 activations、AllGather/AllToAll buffers、workspace、复制项与 allocator peak。</text>
+
+  <!-- Misconceptions -->
+  <rect x="40" y="1246" width="1720" height="272" rx="18" class="panel"/>
+  <text x="70" y="1288" class="section">Day 02 被纠正的高价值误区</text>
+
+  <rect x="70" y="1312" width="520" height="78" rx="12" class="neutral"/>
+  <text x="92" y="1341" class="label">① 2D FLOPs 不是因为 BF16</text>
+  <text x="92" y="1368" class="small">来自 D 次乘法 + D-1 次加法；dtype 影响 bytes / throughput。</text>
+  <rect x="640" y="1312" width="520" height="78" rx="12" class="neutral"/>
+  <text x="662" y="1341" class="label">② attention scores 是 T×T，不是 d_k×d_k</text>
+  <text x="662" y="1368" class="small">d_k 被 dot product 收缩；i/j 是 query/key token positions。</text>
+  <rect x="1210" y="1312" width="520" height="78" rx="12" class="neutral"/>
+  <text x="1232" y="1341" class="label">③ W_O 位于 heads concat 之后</text>
+  <text x="1232" y="1368" class="small">[Hq·d_v,D]：投影回 residual width，并学习跨-head 混合。</text>
+
+  <rect x="70" y="1408" width="520" height="78" rx="12" class="neutral"/>
+  <text x="92" y="1437" class="label">④ GQA 不会让核心 attention FLOPs ÷8</text>
+  <text x="92" y="1464" class="small">KV storage/projection 降低；32 个 query heads 仍各自计算 scores。</text>
+  <rect x="640" y="1408" width="520" height="78" rx="12" class="neutral"/>
+  <text x="662" y="1437" class="label">⑤ Active parameters 不等于训练状态容量</text>
+  <text x="662" y="1464" class="small">MoE per-token compute 看 active；full-SFT weights/Adam 看 total。</text>
+  <rect x="1210" y="1408" width="520" height="78" rx="12" class="neutral"/>
+  <text x="1232" y="1437" class="label">⑥ 两种 checkpoint 不要混淆</text>
+  <text x="1232" y="1464" class="small">activation checkpoint 省显存；disk checkpoint 只负责保存/恢复。</text>
+
+  <!-- Final checklist -->
+  <rect x="40" y="1540" width="1720" height="258" rx="18" class="takeaway"/>
+  <text x="70" y="1582" class="section">最终 Takeaway：以后看到一个新模型，按这个顺序做一阶判断</text>
+
+  <rect x="70" y="1610" width="205" height="70" rx="11" class="panel"/>
+  <text x="94" y="1638" class="label">1 · Read config</text>
+  <text x="94" y="1663" class="small">D / L / heads / F / experts</text>
+  <rect x="310" y="1610" width="205" height="70" rx="11" class="panel"/>
+  <text x="334" y="1638" class="label">2 · Write shapes</text>
+  <text x="334" y="1663" class="small">先 shape，后背公式</text>
+  <rect x="550" y="1610" width="205" height="70" rx="11" class="panel"/>
+  <text x="574" y="1638" class="label">3 · Count P/FLOPs</text>
+  <text x="574" y="1663" class="small">forward / backward / active</text>
+  <rect x="790" y="1610" width="205" height="70" rx="11" class="panel"/>
+  <text x="814" y="1638" class="label">4 · Classify P</text>
+  <text x="814" y="1663" class="small">total / trainable / active</text>
+  <rect x="1030" y="1610" width="205" height="70" rx="11" class="panel"/>
+  <text x="1054" y="1638" class="label">5 · Choose B/P</text>
+  <text x="1054" y="1663" class="small">weights / grads / master / opt</text>
+  <rect x="1270" y="1610" width="205" height="70" rx="11" class="panel"/>
+  <text x="1294" y="1638" class="label">6 · Map sharding</text>
+  <text x="1294" y="1663" class="small">DP / ZeRO / TP / PP / EP</text>
+  <rect x="1510" y="1610" width="205" height="70" rx="11" class="panel"/>
+  <text x="1534" y="1638" class="label">7 · Add peak</text>
+  <text x="1534" y="1663" class="small">act / temp / comm / runtime</text>
+
+  <text x="70" y="1722" class="label">一句话总结</text>
+  <text x="220" y="1722" class="body">先用 config 建立 workload 账本，再用 dtype 与并行策略映射到硬件；最后必须用 profiler 校准，而不是只用参数量除以 GPU 数。</text>
+  <rect x="70" y="1746" width="1645" height="34" rx="9" class="warning"/>
+  <text x="92" y="1769" class="small">Day 02 的核心不是记住 6NP 或 12–18 B/P，而是能够说明这些近似从哪里来、忽略了什么、在哪个分析边界下成立。</text>
+</svg>

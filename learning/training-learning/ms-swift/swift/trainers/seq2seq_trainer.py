@@ -123,6 +123,11 @@ class Seq2SeqTrainer(SwiftMixin, DataLoaderMixin, HfSeq2SeqTrainer):
         return inputs
 
     def compute_loss(self, model, inputs, return_outputs=False, num_items_in_batch=None):
+        # Ordinary padded causal-LM shapes at this boundary are:
+        #   input_ids / labels / attention_mask: [B, T]
+        # The model forward below produces final hidden states [B, T, D] internally and normally exposes vocabulary
+        # logits [B, T, V]. Model-specific Q/K/V and attention activations live in the Transformers model class, not
+        # in this Trainer. Packing, multimodal and sequence-parallel paths may have different physical layouts.
         labels = None
         compute_loss_func: Callable = inputs.pop('compute_loss_func', None)
         loss_scale = inputs.pop('loss_scale', None)
@@ -148,6 +153,7 @@ class Seq2SeqTrainer(SwiftMixin, DataLoaderMixin, HfSeq2SeqTrainer):
             self._past = outputs[self.args.past_index]
 
         if labels is None:
+            # Default path: labels stayed in `inputs`, so the causal-LM model computed the shifted, masked scalar loss.
             labels = inputs['labels']
             if isinstance(outputs, dict) and 'loss' not in outputs:
                 raise ValueError(
@@ -156,6 +162,8 @@ class Seq2SeqTrainer(SwiftMixin, DataLoaderMixin, HfSeq2SeqTrainer):
             # We don't use .loss here since the model may return tuples instead of ModelOutput.
             loss = outputs['loss'] if isinstance(outputs, dict) else outputs[0]
         else:
+            # Custom path: labels were removed before model forward so ms-swift can derive a per-token loss from
+            # `outputs.logits`, then apply loss_scale/DFT/channel/SP behavior before reducing to one scalar.
             outputs.loss = None
             if (self.args.enable_dft_loss or loss_scale is not None or self.args.enable_channel_loss
                     or self.template.sequence_parallel_size > 1):
@@ -230,4 +238,8 @@ class Seq2SeqTrainer(SwiftMixin, DataLoaderMixin, HfSeq2SeqTrainer):
 
     def training_step(self, model, inputs, *args, **kwargs):
         with self.template.forward_context(self.model, inputs):
+            # The parent Transformers/Accelerate step calls `compute_loss`, scales the loss for accumulation and runs
+            # backward. At an accumulation boundary its outer loop synchronizes/clips gradients, calls optimizer.step
+            # and scheduler.step, clears gradients, and increments global_step. This wrapper only installs the
+            # template/model-specific forward context; it does not perform the parameter update itself.
             return super().training_step(model, inputs, *args, **kwargs)

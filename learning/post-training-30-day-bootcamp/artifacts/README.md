@@ -8,7 +8,7 @@
 | `data/` | 数据 schema、manifest、hash、split 说明；避免提交大数据 |
 | `eval/` | frozen eval、scorers、逐样本 predictions |
 | `logs/` | 精简日志、曲线导出、环境快照 |
-| `reports/` | SFT/DPO/GRPO/Eval/Capacity 正式报告 |
+| `reports/` | SFT/DPO/GRPO/Eval/Capacity 正式报告与每日 SVG 学习路线图 |
 | `runbooks/` | OOM、checkpoint、NCCL、reward collapse 排查手册 |
 | `scripts/` | memory estimator、数据验证、generation、scoring 等脚本 |
 
@@ -26,4 +26,3 @@ config-dayXX-<topic>.yaml
 - 为外部 checkpoint 保存绝对路径、模型 hash、config 和产生它的 command。
 - Eval 保存逐样本结果和 prompt/config hash。
 - 删除任何 checkpoint 前，先确认它是否是后续实验的唯一可复现依赖。
-

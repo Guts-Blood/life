@@ -60,6 +60,7 @@
 
 ## 产物
 
+- [`../artifacts/reports/day-roadmaps/day-04-parallelism-roadmap.svg`](../artifacts/reports/day-roadmaps/day-04-parallelism-roadmap.svg)
 - `../artifacts/reports/day04-parallel-state-map.md`
 - `../artifacts/reports/day04-rank-groups.mmd`
 - `../artifacts/reports/day04-distributed-failure-cards.md`

@@ -1,0 +1,353 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="2380" viewBox="0 0 1800 2380" role="img" aria-labelledby="title desc">
+  <title id="title">Day 5 training lifecycle and framework ownership roadmap</title>
+  <desc id="desc">A Chinese visual roadmap from raw SFT samples through template encoding, Transformer forward, shifted causal loss, backward and optimizer updates, checkpoint resume, framework ownership, diagnosis, and Day 5 completion gates.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2563eb"/>
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#15803d"/>
+    </marker>
+    <style>
+      text { font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; fill: #172033; }
+      .title { font-size: 34px; font-weight: 700; }
+      .subtitle { font-size: 18px; fill: #526078; }
+      .section { font-size: 23px; font-weight: 700; }
+      .label { font-size: 17px; font-weight: 650; }
+      .body { font-size: 15px; }
+      .small { font-size: 13px; fill: #526078; }
+      .tiny { font-size: 12px; fill: #526078; }
+      .formula { font-family: "SFMono-Regular", Consolas, monospace; font-size: 14px; fill: #273449; }
+      .panel { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1.5; }
+      .hero { fill: #eef2ff; stroke: #6366f1; stroke-width: 1.8; }
+      .data { fill: #dbeafe; stroke: #2563eb; stroke-width: 1.5; }
+      .model { fill: #f3e8ff; stroke: #9333ea; stroke-width: 1.5; }
+      .update { fill: #dcfce7; stroke: #16a34a; stroke-width: 1.5; }
+      .state { fill: #fef3c7; stroke: #d97706; stroke-width: 1.5; }
+      .runtime { fill: #e2e8f0; stroke: #64748b; stroke-width: 1.5; }
+      .warning { fill: #fff1f2; stroke: #e11d48; stroke-width: 1.5; }
+      .good { fill: #f0fdf4; stroke: #16a34a; stroke-width: 1.5; }
+      .partial { fill: #fffbeb; stroke: #d97706; stroke-width: 1.5; }
+      .line { fill: none; stroke: #475569; stroke-width: 2; marker-end: url(#arrow); }
+      .line-blue { fill: none; stroke: #2563eb; stroke-width: 2; marker-end: url(#arrow-blue); }
+      .line-green { fill: none; stroke: #15803d; stroke-width: 2; marker-end: url(#arrow-green); }
+      .dash { fill: none; stroke: #64748b; stroke-width: 1.6; stroke-dasharray: 7 5; marker-end: url(#arrow); }
+      .divider { stroke: #cbd5e1; stroke-width: 1.4; }
+      .track { fill: #e2e8f0; }
+      .track-done { fill: #16a34a; }
+      .track-partial { fill: #d97706; }
+    </style>
+  </defs>
+
+  <rect width="1800" height="2380" fill="#f5f7fb"/>
+  <text x="50" y="58" class="title">Day 5 · Training Lifecycle 与框架边界 Roadmap</text>
+  <text x="50" y="90" class="subtitle">从一条 raw sample 追到下一次可恢复的 optimizer update；目标是会重建、会定位、会诊断，而不是背完整仓库。</text>
+
+  <!-- Day 5 gate -->
+  <rect x="40" y="118" width="1720" height="100" rx="18" class="hero"/>
+  <text x="70" y="154" class="section">一句话 Gate</text>
+  <text x="275" y="154" class="label">能回答：模型看到了什么？哪些 token 产生 loss？参数何时改变？中断后怎样连续恢复？</text>
+  <text x="275" y="185" class="body">主线：data contract → model forward → shifted CE → backward/update → checkpoint/eval；横切面：framework ownership + failure routing。</text>
+
+  <!-- End-to-end lifecycle -->
+  <rect x="40" y="242" width="1720" height="768" rx="18" class="panel"/>
+  <text x="70" y="282" class="section">1 · End-to-end 主链：对象怎样变、状态何时改</text>
+  <text x="70" y="310" class="small">蓝色 = 数据与监督　·　紫色 = 模型 activation　·　绿色 = gradient/update　·　黄色 = 可恢复训练状态</text>
+
+  <!-- Data lane -->
+  <text x="72" y="374" class="label">DATA</text>
+  <rect x="150" y="336" width="245" height="82" rx="12" class="data"/>
+  <text x="175" y="368" class="label">Raw sample</text>
+  <text x="175" y="394" class="small">messages + metadata</text>
+
+  <path d="M 395 377 L 430 377" class="line-blue"/>
+  <rect x="430" y="336" width="260" height="82" rx="12" class="data"/>
+  <text x="455" y="368" class="label">Template / Render</text>
+  <text x="455" y="394" class="small">roles · BOS/EOS · truncation</text>
+
+  <path d="M 690 377 L 725 377" class="line-blue"/>
+  <rect x="725" y="336" width="310" height="82" rx="12" class="data"/>
+  <text x="750" y="366" class="label">Tokenize + supervision</text>
+  <text x="750" y="394" class="formula">input_ids [T] · labels [T]</text>
+  <text x="750" y="411" class="tiny">label = -100 → 不直接计入 CE</text>
+
+  <path d="M 1035 377 L 1070 377" class="line-blue"/>
+  <rect x="1070" y="336" width="300" height="82" rx="12" class="data"/>
+  <text x="1095" y="368" class="label">Collator / Padding</text>
+  <text x="1095" y="394" class="formula">[Tᵢ] → [B, T_max]</text>
+
+  <path d="M 1370 377 L 1405 377" class="line-blue"/>
+  <rect x="1405" y="336" width="305" height="82" rx="12" class="data"/>
+  <text x="1430" y="368" class="label">Microbatch tensors</text>
+  <text x="1430" y="394" class="small">input_ids · labels · attention_mask</text>
+
+  <!-- Model lane -->
+  <text x="72" y="537" class="label">MODEL</text>
+  <rect x="150" y="490" width="245" height="94" rx="12" class="model"/>
+  <text x="175" y="522" class="label">Embedding</text>
+  <text x="175" y="548" class="formula">[B,T] → [B,T,D]</text>
+  <text x="175" y="570" class="tiny">parameter lookup → activation</text>
+
+  <path d="M 395 537 L 430 537" class="line"/>
+  <rect x="430" y="490" width="310" height="94" rx="12" class="model"/>
+  <text x="455" y="522" class="label">Transformer blocks × N</text>
+  <text x="455" y="548" class="small">Q/K/V · attention · MLP · residual</text>
+  <text x="455" y="570" class="tiny">内部 activation 供 backward 使用</text>
+
+  <path d="M 740 537 L 775 537" class="line"/>
+  <rect x="775" y="490" width="270" height="94" rx="12" class="model"/>
+  <text x="800" y="522" class="label">Final hidden states</text>
+  <text x="800" y="550" class="formula">H_final [B,T,D]</text>
+
+  <path d="M 1045 537 L 1080 537" class="line"/>
+  <rect x="1080" y="490" width="270" height="94" rx="12" class="model"/>
+  <text x="1105" y="522" class="label">LM head</text>
+  <text x="1105" y="548" class="formula">D → vocabulary V</text>
+
+  <path d="M 1350 537 L 1385 537" class="line"/>
+  <rect x="1385" y="490" width="325" height="94" rx="12" class="model"/>
+  <text x="1410" y="522" class="label">Logits</text>
+  <text x="1410" y="548" class="formula">[B,T,V]</text>
+  <text x="1410" y="570" class="tiny">每个 (batch, position) 一次 V-way 预测</text>
+
+  <!-- Update lane -->
+  <text x="72" y="705" class="label">UPDATE</text>
+  <rect x="150" y="652" width="245" height="104" rx="12" class="update"/>
+  <text x="175" y="684" class="label">Shift + masked CE</text>
+  <text x="175" y="710" class="formula">logits[:,t] ↔ labels[:,t+1]</text>
+  <text x="175" y="735" class="tiny">全部有效 label token 求平均</text>
+
+  <path d="M 395 704 L 430 704" class="line-green"/>
+  <rect x="430" y="652" width="250" height="104" rx="12" class="update"/>
+  <text x="455" y="684" class="label">Backward</text>
+  <text x="455" y="710" class="small">autograd → parameter.grad</text>
+  <text x="455" y="735" class="tiny">参数此时还没改变</text>
+
+  <path d="M 680 704 L 715 704" class="line-green"/>
+  <rect x="715" y="652" width="285" height="104" rx="12" class="update"/>
+  <text x="740" y="684" class="label">Accumulate + Sync</text>
+  <text x="740" y="710" class="small">microsteps · DDP/FSDP/DeepSpeed</text>
+  <text x="740" y="735" class="tiny">global batch 只乘 DP degree</text>
+
+  <path d="M 1000 704 L 1035 704" class="line-green"/>
+  <rect x="1035" y="652" width="325" height="104" rx="12" class="update"/>
+  <text x="1060" y="684" class="label">Unscale / Clip / Optimizer</text>
+  <text x="1060" y="710" class="small">更新 parameters + Adam m/v</text>
+  <text x="1060" y="735" class="tiny">optimizer.step 才真正改变 θ</text>
+
+  <path d="M 1360 704 L 1395 704" class="line-green"/>
+  <rect x="1395" y="652" width="315" height="104" rx="12" class="update"/>
+  <text x="1420" y="684" class="label">Scheduler + zero_grad</text>
+  <text x="1420" y="710" class="small">LR progress · clear grad</text>
+  <text x="1420" y="735" class="tiny">global_step += 1</text>
+
+  <!-- State lane -->
+  <text x="72" y="879" class="label">STATE</text>
+  <rect x="150" y="814" width="300" height="124" rx="12" class="state"/>
+  <text x="175" y="846" class="label">Model state</text>
+  <text x="175" y="874" class="small">parameters · buffers · adapters</text>
+  <text x="175" y="902" class="tiny">只加载它 = warm start</text>
+
+  <rect x="475" y="814" width="385" height="124" rx="12" class="state"/>
+  <text x="500" y="846" class="label">Training state</text>
+  <text x="500" y="874" class="small">optimizer m/v · scheduler · scaler</text>
+  <text x="500" y="902" class="tiny">决定下一次 update 的数值轨迹</text>
+
+  <rect x="885" y="814" width="355" height="124" rx="12" class="state"/>
+  <text x="910" y="846" class="label">Progress state</text>
+  <text x="910" y="874" class="small">RNG · sampler · data cursor · step</text>
+  <text x="910" y="902" class="tiny">决定下一批数据与随机轨迹</text>
+
+  <path d="M 450 876 L 475 876" class="line"/>
+  <path d="M 860 876 L 885 876" class="line"/>
+  <path d="M 1240 876 L 1275 876" class="line"/>
+  <rect x="1275" y="814" width="435" height="124" rx="12" class="good"/>
+  <text x="1300" y="846" class="label">Full resume + Eval</text>
+  <text x="1300" y="874" class="small">恢复后核对 step、LR、样本位置、RNG</text>
+  <text x="1300" y="902" class="tiny">逐样本 eval 验证能力；aggregate 不单独决策</text>
+
+  <!-- Deep dive panels -->
+  <rect x="40" y="1035" width="850" height="455" rx="18" class="panel"/>
+  <text x="70" y="1075" class="section">2A · Multi-head：切投影后的 Q/K/V，不切原始 X</text>
+  <text x="70" y="1103" class="small">每个 head 都能通过自己的 projection 读取完整 D；多次独立 softmax 提供多种 position routing。</text>
+
+  <rect x="70" y="1130" width="210" height="82" rx="12" class="model"/>
+  <text x="95" y="1162" class="label">Hidden X</text>
+  <text x="95" y="1188" class="formula">[B,T,D]</text>
+
+  <path d="M 280 1171 L 320 1171" class="line"/>
+  <rect x="320" y="1130" width="250" height="82" rx="12" class="model"/>
+  <text x="345" y="1162" class="label">Dense Q/K/V projection</text>
+  <text x="345" y="1188" class="formula">D → H × D_h</text>
+
+  <path d="M 570 1171 L 610 1171" class="line"/>
+  <rect x="610" y="1130" width="245" height="82" rx="12" class="model"/>
+  <text x="635" y="1162" class="label">Reshape by heads</text>
+  <text x="635" y="1188" class="formula">[B,H,T,D_h]</text>
+
+  <rect x="70" y="1240" width="785" height="78" rx="12" class="hero"/>
+  <text x="95" y="1272" class="label">关键：W_Q^(h) shape = [D_h, D]</text>
+  <text x="95" y="1298" class="body">一个 head 虽只输出 D_h 维，但每个输出维都可以组合原始 D 个 hidden dimensions。</text>
+
+  <rect x="70" y="1345" width="235" height="92" rx="12" class="model"/>
+  <text x="95" y="1377" class="label">独立 attention maps</text>
+  <text x="95" y="1403" class="formula">A_h [B,T,T]</text>
+  <text x="95" y="1424" class="tiny">跨 position 路由</text>
+  <path d="M 305 1391 L 350 1391" class="line"/>
+  <rect x="350" y="1345" width="220" height="92" rx="12" class="model"/>
+  <text x="375" y="1377" class="label">Concat heads</text>
+  <text x="375" y="1403" class="formula">[B,T,H×D_v]</text>
+  <text x="375" y="1424" class="tiny">先保留各 head 消息</text>
+  <path d="M 570 1391 L 615 1391" class="line"/>
+  <rect x="615" y="1345" width="240" height="92" rx="12" class="model"/>
+  <text x="640" y="1377" class="label">W_O fusion</text>
+  <text x="640" y="1403" class="formula">H×D_v → D</text>
+  <text x="640" y="1424" class="tiny">同一 position 内混合</text>
+
+  <rect x="910" y="1035" width="850" height="455" rx="18" class="panel"/>
+  <text x="940" y="1075" class="section">2B · Logits / Shift：一行 tensor code 计算全部位置</text>
+  <text x="940" y="1103" class="small">没有 Python for-loop；batch 与 sequence positions 被展平后由 GPU kernel 并行执行。</text>
+
+  <rect x="940" y="1130" width="225" height="82" rx="12" class="data"/>
+  <text x="965" y="1162" class="label">labels</text>
+  <text x="965" y="1188" class="formula">[B,T]</text>
+  <rect x="1205" y="1130" width="245" height="82" rx="12" class="model"/>
+  <text x="1230" y="1162" class="label">logits</text>
+  <text x="1230" y="1188" class="formula">[B,T,V]</text>
+
+  <path d="M 1052 1212 L 1052 1248" class="line"/>
+  <path d="M 1327 1212 L 1327 1248" class="line"/>
+  <rect x="940" y="1248" width="250" height="88" rx="12" class="data"/>
+  <text x="965" y="1280" class="label">shift_labels</text>
+  <text x="965" y="1306" class="formula">labels[:, 1:]</text>
+  <rect x="1205" y="1248" width="270" height="88" rx="12" class="model"/>
+  <text x="1230" y="1280" class="label">shift_logits</text>
+  <text x="1230" y="1306" class="formula">logits[:, :-1, :]</text>
+
+  <path d="M 1190 1292 L 1205 1292" class="line"/>
+  <rect x="1500" y="1130" width="225" height="206" rx="12" class="update"/>
+  <text x="1525" y="1162" class="label">Vectorized CE</text>
+  <text x="1525" y="1192" class="formula">[B(T-1),V]</text>
+  <text x="1525" y="1218" class="formula">[B(T-1)]</text>
+  <line x1="1525" y1="1238" x2="1700" y2="1238" class="divider"/>
+  <text x="1525" y="1268" class="body">ignore -100</text>
+  <text x="1525" y="1294" class="body">mean over valid tokens</text>
+  <text x="1525" y="1320" class="formula">loss shape = ()</text>
+  <path d="M 1475 1292 L 1500 1292" class="line-green"/>
+
+  <rect x="940" y="1370" width="785" height="72" rx="12" class="good"/>
+  <text x="965" y="1400" class="label">Position t 的 logits 只看到 prefix 0..t，却监督 position t+1 的 target。</text>
+  <text x="965" y="1426" class="small">prompt labels 可被 mask，但 answer loss 仍会经 attention 向 prompt activations 反向传播。</text>
+
+  <!-- Ownership and diagnostics -->
+  <rect x="40" y="1515" width="1045" height="425" rx="18" class="panel"/>
+  <text x="70" y="1555" class="section">3A · Framework ownership：谁决定，谁执行</text>
+  <text x="70" y="1583" class="small">读生产代码时沿着 ownership 走；找不到 backward 往往意味着它被委托给父类/runtime。</text>
+
+  <rect x="70" y="1610" width="280" height="88" rx="12" class="runtime"/>
+  <text x="95" y="1642" class="label">User / Recipe</text>
+  <text x="95" y="1668" class="small">model · data · batch · LR · objective</text>
+  <path d="M 350 1654 L 385 1654" class="line"/>
+  <rect x="385" y="1610" width="300" height="88" rx="12" class="data"/>
+  <text x="410" y="1642" class="label">ms-swift</text>
+  <text x="410" y="1668" class="small">CLI · template · collator · Trainer assembly</text>
+  <path d="M 685 1654 L 720 1654" class="line"/>
+  <rect x="720" y="1610" width="330" height="88" rx="12" class="model"/>
+  <text x="745" y="1642" class="label">Transformers model</text>
+  <text x="745" y="1668" class="small">Q/K/V · activations · logits · default CE</text>
+
+  <path d="M 885 1698 L 885 1735" class="line"/>
+  <rect x="70" y="1735" width="300" height="92" rx="12" class="runtime"/>
+  <text x="95" y="1767" class="label">HF Trainer / Accelerate</text>
+  <text x="95" y="1793" class="small">loop · backward · accumulation cadence</text>
+  <path d="M 370 1781 L 405 1781" class="line"/>
+  <rect x="405" y="1735" width="300" height="92" rx="12" class="runtime"/>
+  <text x="430" y="1767" class="label">DDP / FSDP / DeepSpeed</text>
+  <text x="430" y="1793" class="small">process · sharding · sync · runtime state</text>
+  <path d="M 705 1781 L 740 1781" class="line"/>
+  <rect x="740" y="1735" width="310" height="92" rx="12" class="runtime"/>
+  <text x="765" y="1767" class="label">PyTorch → NCCL / CUDA</text>
+  <text x="765" y="1793" class="small">autograd/operator → collective/kernel</text>
+
+  <rect x="70" y="1855" width="980" height="56" rx="11" class="hero"/>
+  <text x="95" y="1889" class="body">目标函数由 model/Trainer 定义；runtime 组织 state 与通信；NCCL/CUDA 执行，不决定“应该训练哪些 token”。</text>
+
+  <rect x="1110" y="1515" width="650" height="425" rx="18" class="panel"/>
+  <text x="1140" y="1555" class="section">3B · Failure routing：第一项最小验证</text>
+
+  <rect x="1140" y="1590" width="590" height="66" rx="11" class="warning"/>
+  <text x="1165" y="1618" class="label">Loss 降但行为错</text>
+  <text x="1420" y="1618" class="body">→ rendered text / labels / mask</text>
+  <text x="1165" y="1642" class="tiny">先证伪监督信号，不先换 optimizer</text>
+
+  <rect x="1140" y="1672" width="590" height="66" rx="11" class="warning"/>
+  <text x="1165" y="1700" class="label">OOM</text>
+  <text x="1420" y="1700" class="body">→ local shape / activation / state ownership</text>
+  <text x="1165" y="1724" class="tiny">再决定 batch、checkpointing 或 sharding</text>
+
+  <rect x="1140" y="1754" width="590" height="66" rx="11" class="warning"/>
+  <text x="1165" y="1782" class="label">Multi-rank hang</text>
+  <text x="1420" y="1782" class="body">→ collective order / shape / rank logs</text>
+  <text x="1165" y="1806" class="tiny">某个 rank 提前失败也会表现为其他 rank 等待</text>
+
+  <rect x="1140" y="1836" width="590" height="66" rx="11" class="warning"/>
+  <text x="1165" y="1864" class="label">Resume 曲线跳变</text>
+  <text x="1420" y="1864" class="body">→ optimizer / LR / RNG / data cursor</text>
+  <text x="1165" y="1888" class="tiny">相同 weights 不等于相同下一次 update</text>
+
+  <!-- Progress and handoff -->
+  <rect x="40" y="1965" width="1720" height="360" rx="18" class="panel"/>
+  <text x="70" y="2005" class="section">4 · 当前学习进度与完成 Day 5 的最后三步</text>
+
+  <text x="70" y="2055" class="body">训练信号</text>
+  <rect x="210" y="2037" width="580" height="22" rx="11" class="track"/>
+  <rect x="210" y="2037" width="580" height="22" rx="11" class="track-done"/>
+  <text x="810" y="2055" class="small">已深入</text>
+
+  <text x="70" y="2100" class="body">模型 Forward</text>
+  <rect x="210" y="2082" width="580" height="22" rx="11" class="track"/>
+  <rect x="210" y="2082" width="580" height="22" rx="11" class="track-done"/>
+  <text x="810" y="2100" class="small">已深入</text>
+
+  <text x="70" y="2145" class="body">Loss / Update</text>
+  <rect x="210" y="2127" width="580" height="22" rx="11" class="track"/>
+  <rect x="210" y="2127" width="550" height="22" rx="11" class="track-done"/>
+  <text x="810" y="2145" class="small">接近完成</text>
+
+  <text x="70" y="2190" class="body">Ownership</text>
+  <rect x="210" y="2172" width="580" height="22" rx="11" class="track"/>
+  <rect x="210" y="2172" width="525" height="22" rx="11" class="track-done"/>
+  <text x="810" y="2190" class="small">生产源码已映射</text>
+
+  <text x="70" y="2235" class="body">Checkpoint / Resume</text>
+  <rect x="210" y="2217" width="580" height="22" rx="11" class="track"/>
+  <rect x="210" y="2217" width="355" height="22" rx="11" class="track-partial"/>
+  <text x="810" y="2235" class="small">需纸面演练</text>
+
+  <line x1="900" y1="2032" x2="900" y2="2278" class="divider"/>
+
+  <rect x="935" y="2035" width="250" height="112" rx="12" class="partial"/>
+  <text x="960" y="2067" class="label">① Resume 演练</text>
+  <text x="960" y="2095" class="small">分别遗漏 optimizer、RNG、</text>
+  <text x="960" y="2117" class="small">data cursor，预测轨迹变化</text>
+
+  <rect x="1205" y="2035" width="250" height="112" rx="12" class="partial"/>
+  <text x="1230" y="2067" class="label">② 固化三份产物</text>
+  <text x="1230" y="2095" class="small">lifecycle · ownership</text>
+  <text x="1230" y="2117" class="small">resume checklist</text>
+
+  <rect x="1475" y="2035" width="250" height="112" rx="12" class="partial"/>
+  <text x="1500" y="2067" class="label">③ 脱稿口述</text>
+  <text x="1500" y="2095" class="small">raw sample → checkpoint</text>
+  <text x="1500" y="2117" class="small">并给出异常的首查证据</text>
+
+  <rect x="935" y="2175" width="790" height="104" rx="13" class="good"/>
+  <text x="960" y="2208" class="label">完成标准</text>
+  <text x="960" y="2237" class="body">能重建一个 SFT update；能指出 sharding/collective 的决定层与执行层；</text>
+  <text x="960" y="2263" class="body">能区分 model-only warm start 与 continuous resume，并解释遗漏关键状态的后果。</text>
+
+  <text x="50" y="2350" class="tiny">30-Day LLM Post-Training Bootcamp · Day 05 · CPU/source-trace day · artifacts/reports/day05-training-lifecycle-roadmap.svg</text>
+</svg>

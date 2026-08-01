@@ -275,11 +275,15 @@ class SwiftMixin:
                         p.requires_grad = requires_grad_state[n]
 
     def _load_rng_state(self, *args, **kwargs):
+        # Model-only resume is a warm start: deliberately keep the new run's RNG stream instead of restoring the
+        # dropout/shuffle trajectory from the checkpoint. Exact continuation must restore this state.
         if self.args.resume_only_model:
             return
         return super()._load_rng_state(*args, **kwargs)
 
     def _load_optimizer_and_scheduler(self, *args, **kwargs):
+        # Adam moments, optimizer step and LR-scheduler progress determine the next update. Skipping them can recover
+        # identical model weights but cannot reproduce the uninterrupted training trajectory.
         if self.args.resume_only_model:
             return
         super()._load_optimizer_and_scheduler(*args, **kwargs)
@@ -588,6 +592,9 @@ class SwiftMixin:
         self.state.last_model_checkpoint = os.path.join(self.args.output_dir, f'checkpoint-{self.state.global_step}')
         self._fix_zero3_gather_all_parameters()
 
+        # The parent Trainer checkpoint path owns the complete training snapshot (model plus optimizer/scheduler,
+        # trainer progress, RNG and scaler where applicable). Distributed backends may shard those states and require
+        # matching metadata/resharding support on load; this wrapper records the path and handles backend-specific save.
         if self.args.use_flash_ckpt:
             result = self._save_flash_checkpoint(*args, **kwargs)
         else:

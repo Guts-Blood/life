@@ -28,6 +28,7 @@
 
 电子版结构与显存图：
 
+- [`../artifacts/reports/day-roadmaps/day-01-roofline-foundations-roadmap.svg`](../artifacts/reports/day-roadmaps/day-01-roofline-foundations-roadmap.svg)
 - [`../artifacts/reports/training-memory-visual-guide/dense-transformer-training-memory.svg`](../artifacts/reports/training-memory-visual-guide/dense-transformer-training-memory.svg)
 - [`../artifacts/reports/training-memory-visual-guide/qwen3-30b-a3b-moe-training-memory.svg`](../artifacts/reports/training-memory-visual-guide/qwen3-30b-a3b-moe-training-memory.svg)
 - [`../artifacts/reports/training-memory-visual-guide/README.md`](../artifacts/reports/training-memory-visual-guide/README.md)

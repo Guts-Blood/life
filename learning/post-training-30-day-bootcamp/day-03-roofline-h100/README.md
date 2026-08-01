@@ -27,6 +27,8 @@
 
 互动测验使用 [`DAY-03-READING-QUIZ.md`](./DAY-03-READING-QUIZ.md) 跟踪原始回答、点评和修正版结论。
 
+视觉路线图：[`day-03-roofline-h100-roadmap.svg`](../artifacts/reports/day-roadmaps/day-03-roofline-h100-roadmap.svg)。
+
 - [x] Day 03 Reading Quiz：`completed`（`2026-07-26`–`2026-07-27`）。
 
 - Compute/HBM/network roofline、arithmetic intensity、MFU 与 strong scaling。

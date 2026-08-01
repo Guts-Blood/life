@@ -96,6 +96,10 @@ class SwiftSft(SwiftPipeline, TunerMixin):
     @RayHelper.function(group='default')
     def _prepare_dataset(self):
         args = self.args
+        # Training-lifecycle boundary:
+        # `load_dataset()` returns semantic rows (for example `messages`, media and metadata). Template encoding below
+        # turns each row into variable-length 1-D `input_ids`/`labels` lists. Dense [batch, sequence] tensors do not
+        # exist yet; they are created later by `template.data_collator` inside the Trainer's DataLoader.
         # Defer encoding to the training phase
         pre_process = not (hasattr(args, 'rlhf_type') and args.rlhf_type in ['grpo', 'gkd'])
         if args.cached_dataset or args.cached_val_dataset:
@@ -134,6 +138,8 @@ class SwiftSft(SwiftPipeline, TunerMixin):
                 # val_dataset
                 continue
             if not args.streaming and args.truncation_strategy != 'split':
+                # `template.encode` is the row-level boundary where chat rendering/tokenization and the supervision
+                # mask are applied. A token copied into `labels` is supervised; a `-100` label is ignored by CE.
                 dataset = LazyLLMDataset(dataset, template.encode, strict=args.strict, random_state=args.data_seed)
             if args.packing:
                 packing_dataset_cls = IterablePackingDataset if args.streaming else PackingDataset
@@ -173,6 +179,9 @@ class SwiftSft(SwiftPipeline, TunerMixin):
         self.train_msg['model_parameter_info'] = model_parameter_info
         logger.info(f'model_parameter_info: {model_parameter_info}')
 
+        # For `task_type == "causal_lm"` this resolves to `swift.trainers.Seq2SeqTrainer`. The Trainer owns
+        # DataLoader iteration and delegates distributed preparation, backward, gradient accumulation/synchronization,
+        # clipping, optimizer/scheduler steps, logging and checkpoint cadence to Transformers/Accelerate backends.
         trainer_cls = TrainerFactory.get_trainer_cls(args)
         trainer = trainer_cls(
             model=self.model,
@@ -256,6 +265,9 @@ class SwiftSft(SwiftPipeline, TunerMixin):
         logger.info(f'The logging file will be saved in: {logging_path}')
         resume_checkpoint = self._get_resume_checkpoint(trainer)
         try:
+            # This is the hand-off to the upstream training loop. `resume_checkpoint` is not just a model-weight path:
+            # unless `resume_only_model` is selected, the Trainer also restores optimizer/scheduler, RNG and progress
+            # state so the run can continue rather than merely warm-start from the same weights.
             trainer.train(resume_checkpoint)
         finally:
             res = self._save_trainer_state(trainer)

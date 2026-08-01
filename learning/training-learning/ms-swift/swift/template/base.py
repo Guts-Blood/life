@@ -772,6 +772,10 @@ class Template(ProcessorMixin):
 
     def compute_sft_loss(self, model, inputs: Dict[str, Any], num_items_in_batch: Optional[int] = None, trainer=None):
         # Default SFT Loss Calculation Method
+        # On the ordinary padded text path, inputs contain `input_ids`, `attention_mask` and `labels`, each [B, T].
+        # The model-specific Transformers implementation creates embeddings/attention/MLP activations, final hidden
+        # states [B, T, D] and vocabulary logits [B, T, V]. Passing labels lets that model's causal-LM loss align every
+        # position with the next-token target and ignore `-100`; ms-swift does not itself construct Q/K/V here.
         outputs = model(**inputs)
         if 'labels' in inputs:
             labels = inputs['labels']
@@ -1089,6 +1093,12 @@ class Template(ProcessorMixin):
     def _encode_context_list(self,
                              context_list: List[Context],
                              loss_scale_list: Optional[List[float]] = None) -> Tuple[List[int], List[int], List[float]]:
+        # Training-lifecycle boundary (one unpadded sample):
+        #   input_ids:  [T] token ids consumed by the model
+        #   labels:     [T] targets aligned to the same positions before the causal one-token shift
+        #   loss_scale: [T] optional per-token weights
+        # `labels[i] == -100` removes that target from CE, but `input_ids[i]` remains visible as context. During
+        # causal-LM loss calculation, logits at position i-1 predict labels at position i.
         is_binary_loss_scale = self.is_binary_loss_scale
         if is_binary_loss_scale is None:
             is_binary_loss_scale = self.loss_scale.is_binary_loss_scale
@@ -1665,6 +1675,10 @@ class Template(ProcessorMixin):
 
     def data_collator(self, batch: List[Dict[str, Any]], *, padding_to: Optional[int] = None) -> Dict[str, Any]:
         from swift.dataset import RowPreprocessor
+        # Training-lifecycle boundary (rows -> model batch):
+        # each encoded row contains variable-length [T_i] lists; the selected collator pads/stacks them into tensors.
+        # For ordinary causal-LM training the main outputs are input_ids/labels/attention_mask with shape [B, T_max].
+        # Packing/padding-free, multimodal and sequence-parallel modes intentionally use different layouts.
         if self.packing and isinstance(batch[0], list):
             batch = sum(batch, start=[])
         if self.task_type == 'causal_lm':
@@ -1911,6 +1925,8 @@ class Template(ProcessorMixin):
             'attention_mask',
             'attention_mask_2d',
         ] + gather_keys
+        # The order matches `pad_keys`: token ids use the tokenizer pad id, attention masks use 0, labels use -100,
+        # and loss_scale uses 0. Thus padding is excluded both as attention context and as a supervised CE target.
         pad_values = [self.tokenizer.pad_token_id, 0., 0, 0] + [-100, 0., 0, 0, 0]
         # Convert to tensor and remove unnecessary dimensions.
         seq_lens = None

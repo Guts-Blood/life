@@ -9,6 +9,10 @@
 
 完成一个可以用于 0.6B、1.7B、4B、32B 和 35B-A3B 的模型 accounting 表。目标是看到 config 就能做一阶容量判断。
 
+Day 02 学习路线与 takeaway 总结：
+
+- [`DAY-02-LEARNING-ROADMAP.svg`](./DAY-02-LEARNING-ROADMAP.svg)
+
 ## 时间安排
 
 - 90 分钟：读 [All the Transformer Math You Need to Know](https://jax-ml.github.io/scaling-book/transformers/)。

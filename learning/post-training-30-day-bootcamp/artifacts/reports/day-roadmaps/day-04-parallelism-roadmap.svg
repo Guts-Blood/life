@@ -1,0 +1,258 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="2280" viewBox="0 0 1600 2280" role="img" aria-labelledby="title desc">
+  <title id="title">Day 04 distributed parallelism learning roadmap</title>
+  <desc id="desc">A six-stage roadmap from shard relationships and collectives through DP, FSDP, TP, PP, rank groups, global batch accounting, and evidence-first diagnosis for OOM, collective hangs, and checkpoint resharding failures.</desc>
+
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2563eb"/>
+    </marker>
+    <style>
+      text { font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; fill: #172033; }
+      .title { font-size: 34px; font-weight: 700; }
+      .subtitle { font-size: 18px; fill: #526078; }
+      .section { font-size: 22px; font-weight: 700; }
+      .stage { font-size: 15px; font-weight: 700; letter-spacing: .5px; fill: #475569; }
+      .label { font-size: 18px; font-weight: 700; }
+      .body { font-size: 15px; }
+      .small { font-size: 13px; fill: #526078; }
+      .tiny { font-size: 12px; fill: #526078; }
+      .formula { font-family: "SFMono-Regular", Consolas, monospace; font-size: 14px; fill: #273449; }
+      .panel { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1.5; }
+      .node { fill: #f8fafc; stroke: #64748b; stroke-width: 1.5; }
+      .blue { fill: #dbeafe; stroke: #2563eb; stroke-width: 1.5; }
+      .green { fill: #dcfce7; stroke: #16a34a; stroke-width: 1.5; }
+      .amber { fill: #fef3c7; stroke: #d97706; stroke-width: 1.5; }
+      .purple { fill: #f3e8ff; stroke: #9333ea; stroke-width: 1.5; }
+      .red { fill: #fee2e2; stroke: #dc2626; stroke-width: 1.5; }
+      .cyan { fill: #cffafe; stroke: #0891b2; stroke-width: 1.5; }
+      .muted { fill: #f1f5f9; stroke: #94a3b8; stroke-width: 1.2; }
+      .warning { fill: #fff7ed; stroke: #ea580c; stroke-width: 1.5; }
+      .arrow { fill: none; stroke: #475569; stroke-width: 2.2; marker-end: url(#arrow); }
+      .feedback { fill: none; stroke: #2563eb; stroke-width: 2.2; stroke-dasharray: 8 6; marker-end: url(#arrow-blue); }
+      .divider { stroke: #cbd5e1; stroke-width: 1.4; }
+    </style>
+  </defs>
+
+  <rect width="1600" height="2280" fill="#f5f7fb"/>
+  <text x="50" y="58" class="title">Day 04 Roadmap：分布式并行、Collective 与故障定位</text>
+  <text x="50" y="88" class="subtitle">目标：从“切了什么、每个 rank 有什么”推导通信与配置，再用证据链定位 OOM、hang 与 checkpoint mismatch</text>
+
+  <!-- North star -->
+  <rect x="40" y="115" width="1520" height="96" rx="16" class="panel"/>
+  <text x="70" y="151" class="label">North Star</text>
+  <text x="205" y="151" class="body">global tensor / model</text>
+  <text x="380" y="151" class="label">→</text>
+  <text x="420" y="151" class="body">local shard / partial</text>
+  <text x="605" y="151" class="label">→</text>
+  <text x="645" y="151" class="body">collective / send-recv</text>
+  <text x="850" y="151" class="label">→</text>
+  <text x="890" y="151" class="body">rank group / batch</text>
+  <text x="1065" y="151" class="label">→</text>
+  <text x="1105" y="151" class="body">memory / execution trace</text>
+  <text x="1310" y="151" class="label">→</text>
+  <text x="1350" y="151" class="body">first divergent evidence</text>
+  <text x="70" y="184" class="small">最终能力：看到一个真实训练配置或故障日志，先还原对象、布局与执行顺序，再决定该查哪种通信或状态。</text>
+
+  <!-- Main roadmap -->
+  <rect x="40" y="235" width="1520" height="585" rx="18" class="panel"/>
+  <text x="70" y="278" class="section">学习主链路</text>
+  <text x="70" y="304" class="small">shape relation → layout transform → strategy ownership → topology → batch semantics → diagnosis</text>
+
+  <text x="75" y="346" class="stage">01 · CLASSIFY THE LOCAL RESULT</text>
+  <rect x="75" y="362" width="430" height="190" rx="16" class="blue"/>
+  <text x="100" y="398" class="label">先判断 local tensor 是什么</text>
+  <line x1="100" y1="416" x2="480" y2="416" class="divider"/>
+  <text x="100" y="448" class="body">不同输出坐标：互不重叠的 shards</text>
+  <text x="100" y="477" class="body">相同输出坐标：来自不同 J 的 partial sums</text>
+  <text x="100" y="506" class="body">目的地变化：token / expert ownership 重排</text>
+  <text x="100" y="535" class="small">shape 相同不代表数值已经完整；先写求和范围。</text>
+
+  <text x="585" y="346" class="stage">02 · CHOOSE THE LAYOUT TRANSFORM</text>
+  <rect x="585" y="362" width="430" height="190" rx="16" class="amber"/>
+  <text x="610" y="398" class="label">Collective 不是名词表</text>
+  <line x1="610" y1="416" x2="990" y2="416" class="divider"/>
+  <text x="610" y="448" class="formula">coordinate shards → AllGather / concat</text>
+  <text x="610" y="477" class="formula">partial sums → AllReduce</text>
+  <text x="610" y="506" class="formula">partial sums → ReduceScatter</text>
+  <text x="610" y="535" class="formula">destination routing → AllToAll</text>
+
+  <text x="1095" y="346" class="stage">03 · MAP TRAINING OWNERSHIP</text>
+  <rect x="1095" y="362" width="430" height="190" rx="16" class="green"/>
+  <text x="1120" y="398" class="label">四类并行切不同对象</text>
+  <line x1="1120" y1="416" x2="1500" y2="416" class="divider"/>
+  <text x="1120" y="448" class="body">DP：数据 batch</text>
+  <text x="1120" y="477" class="body">FSDP / ZeRO：persistent model states</text>
+  <text x="1120" y="506" class="body">TP：同一层内部的 tensor / matmul</text>
+  <text x="1120" y="535" class="body">PP：模型 layers / pipeline stages</text>
+
+  <path d="M 505 457 L 570 457" class="arrow"/>
+  <path d="M 1015 457 L 1080 457" class="arrow"/>
+
+  <text x="75" y="604" class="stage">04 · BUILD THE RANK TOPOLOGY</text>
+  <rect x="75" y="620" width="430" height="160" rx="16" class="purple"/>
+  <text x="100" y="656" class="label">把一个整数 rank 还原成坐标</text>
+  <text x="100" y="692" class="formula">world_size = DP × PP × TP</text>
+  <text x="100" y="722" class="formula">rank ↔ (dp_rank, pp_rank, tp_rank)</text>
+  <text x="100" y="752" class="small">固定两个坐标，只改变一个坐标，即得到对应 group。</text>
+
+  <text x="585" y="604" class="stage">05 · PRESERVE BATCH SEMANTICS</text>
+  <rect x="585" y="620" width="430" height="160" rx="16" class="cyan"/>
+  <text x="610" y="656" class="label">只有 DP 扩大 global batch</text>
+  <text x="610" y="692" class="formula">B_global = B_micro × G × DP</text>
+  <text x="610" y="722" class="body">TP / PP 合作处理同一批 samples，不重复计入。</text>
+  <text x="610" y="752" class="small">固定 GPU 数时 TP↑ → DP↓ → batch 可能意外变小。</text>
+
+  <text x="1095" y="604" class="stage">06 · DIAGNOSE WITH EVIDENCE</text>
+  <rect x="1095" y="620" width="430" height="160" rx="16" class="red"/>
+  <text x="1120" y="656" class="label">按第一个分歧点排查</text>
+  <text x="1120" y="692" class="body">OOM：shape → timeline → materialization</text>
+  <text x="1120" y="722" class="body">Hang：collective order → control flow → culprit</text>
+  <text x="1120" y="752" class="body">Checkpoint：metadata → layouts → reshard ability</text>
+
+  <path d="M 505 700 L 570 700" class="arrow"/>
+  <path d="M 1015 700 L 1080 700" class="arrow"/>
+  <path d="M 1310 780 C 1310 805, 1260 806, 1200 806 L 190 806 C 125 806, 100 796, 100 782" class="feedback"/>
+
+  <!-- Parallel strategy map -->
+  <rect x="40" y="850" width="1520" height="360" rx="18" class="panel"/>
+  <text x="70" y="893" class="section">并行策略地图：切分对象、rank-local 状态与通信</text>
+  <text x="70" y="919" class="small">这些维度可以正交组合；必须分别说明 parameter、gradient、optimizer state 与 activation 的布局。</text>
+
+  <rect x="70" y="950" width="350" height="210" rx="15" class="blue"/>
+  <text x="95" y="986" class="label">DP · Data Parallelism</text>
+  <text x="95" y="1019" class="body">切数据：不同 replicas 处理不同 samples</text>
+  <text x="95" y="1048" class="body">普通 DDP：模型状态 replicated</text>
+  <text x="95" y="1077" class="body">Backward：gradient AllReduce</text>
+  <text x="95" y="1106" class="formula">batch contribution = B_micro × G × DP</text>
+  <text x="95" y="1138" class="small">一个 replica 可由多个 TP/PP ranks 联合组成。</text>
+
+  <rect x="440" y="950" width="350" height="210" rx="15" class="green"/>
+  <text x="465" y="986" class="label">FSDP / ZeRO-3</text>
+  <text x="465" y="1019" class="body">P / G / optimizer persistent state 分片</text>
+  <text x="465" y="1048" class="body">Forward：AllGather 当前 unit parameters</text>
+  <text x="465" y="1077" class="body">Backward：ReduceScatter aggregated gradients</text>
+  <text x="465" y="1106" class="body">计算时仍有临时 full-parameter working set</text>
+  <text x="465" y="1138" class="small">Persistent shard 变小，不代表 activation/peak 同比变小。</text>
+
+  <rect x="810" y="950" width="350" height="210" rx="15" class="amber"/>
+  <text x="835" y="986" class="label">TP · Tensor Parallelism</text>
+  <text x="835" y="1019" class="body">切同一层内部 parameters / matmul</text>
+  <text x="835" y="1048" class="body">Column-parallel：输出坐标 shards</text>
+  <text x="835" y="1077" class="body">Row-parallel：同坐标 partial sums</text>
+  <text x="835" y="1106" class="body">布局转换：AllGather / AllReduce / RS</text>
+  <text x="835" y="1138" class="small">Activation 是否分片取决于切分维和下游目标布局。</text>
+
+  <rect x="1180" y="950" width="350" height="210" rx="15" class="purple"/>
+  <text x="1205" y="986" class="label">PP · Pipeline Parallelism</text>
+  <text x="1205" y="1019" class="body">切 layers：每个 stage 只拥有本地层状态</text>
+  <text x="1205" y="1048" class="formula">forward: h → next stage</text>
+  <text x="1205" y="1077" class="formula">backward: dh → previous stage</text>
+  <text x="1205" y="1106" class="body">Micro-batches↑：overlap↑，bubble↓</text>
+  <text x="1205" y="1138" class="small">代价：in-flight activation memory 通常增加。</text>
+
+  <!-- Topology and batch -->
+  <rect x="40" y="1240" width="1520" height="390" rx="18" class="panel"/>
+  <text x="70" y="1283" class="section">Worked Example：TP=2 · PP=2 · DP=2</text>
+  <text x="70" y="1309" class="small">本题约定 global_rank = ((dp_rank × PP) + pp_rank) × TP + tp_rank</text>
+
+  <rect x="70" y="1340" width="920" height="250" rx="15" class="node"/>
+  <text x="95" y="1375" class="label">8-rank topology</text>
+
+  <text x="95" y="1421" class="body">DP replica 0</text>
+  <rect x="220" y="1393" width="250" height="60" rx="11" class="blue"/>
+  <text x="248" y="1419" class="small">PP stage 0 · TP group</text>
+  <text x="300" y="1441" class="formula">ranks [0,1]</text>
+  <path d="M 470 1423 L 555 1423" class="arrow"/>
+  <rect x="555" y="1393" width="250" height="60" rx="11" class="purple"/>
+  <text x="583" y="1419" class="small">PP stage 1 · TP group</text>
+  <text x="635" y="1441" class="formula">ranks [2,3]</text>
+
+  <text x="95" y="1500" class="body">DP replica 1</text>
+  <rect x="220" y="1472" width="250" height="60" rx="11" class="blue"/>
+  <text x="248" y="1498" class="small">PP stage 0 · TP group</text>
+  <text x="300" y="1520" class="formula">ranks [4,5]</text>
+  <path d="M 470 1502 L 555 1502" class="arrow"/>
+  <rect x="555" y="1472" width="250" height="60" rx="11" class="purple"/>
+  <text x="583" y="1498" class="small">PP stage 1 · TP group</text>
+  <text x="635" y="1520" class="formula">ranks [6,7]</text>
+
+  <text x="830" y="1398" class="small">TP groups</text>
+  <text x="830" y="1421" class="formula">[0,1] [2,3]</text>
+  <text x="830" y="1442" class="formula">[4,5] [6,7]</text>
+  <text x="830" y="1468" class="small">PP groups</text>
+  <text x="830" y="1491" class="formula">[0,2] [1,3]</text>
+  <text x="830" y="1512" class="formula">[4,6] [5,7]</text>
+  <text x="830" y="1538" class="small">DP groups</text>
+  <text x="830" y="1561" class="formula">[0,4] [1,5]</text>
+  <text x="830" y="1582" class="formula">[2,6] [3,7]</text>
+
+  <rect x="1015" y="1340" width="515" height="250" rx="15" class="cyan"/>
+  <text x="1040" y="1375" class="label">Batch 与配置变化</text>
+  <text x="1040" y="1410" class="formula">world_size = DP × PP × TP = 8</text>
+  <text x="1040" y="1442" class="formula">B_global = B_micro × G × DP</text>
+  <line x1="1040" y1="1462" x2="1505" y2="1462" class="divider"/>
+  <text x="1040" y="1492" class="body">16 GPUs · PP=2 · B_micro=2 · G=8</text>
+  <text x="1040" y="1521" class="formula">TP 2 → 4 · DP 4 → 2</text>
+  <text x="1040" y="1550" class="formula">B_global 64 → 32</text>
+  <text x="1260" y="1550" class="small">恢复 64：G 8 → 16</text>
+
+  <!-- Diagnostics -->
+  <rect x="40" y="1660" width="1520" height="360" rx="18" class="panel"/>
+  <text x="70" y="1703" class="section">三张故障卡：首查指标 → 可能原因 → 下一步验证</text>
+
+  <rect x="70" y="1735" width="460" height="235" rx="15" class="red"/>
+  <text x="95" y="1771" class="label">OOM · FSDP 后仍爆显存</text>
+  <text x="95" y="1806" class="body">① actual B/S/QKV/mask/attention backend</text>
+  <text x="95" y="1835" class="body">② per-rank allocated/reserved memory timeline</text>
+  <text x="95" y="1864" class="body">③ wrap unit、AllGather、prefetch concurrency</text>
+  <line x1="95" y1="1883" x2="505" y2="1883" class="divider"/>
+  <text x="95" y="1912" class="small">实验：B_micro↓ / S↓ / 限制 materialized units</text>
+  <text x="95" y="1944" class="formula">persistent shard ≠ per-rank peak</text>
+
+  <rect x="570" y="1735" width="460" height="235" rx="15" class="amber"/>
+  <text x="595" y="1771" class="label">Hang · 部分 ranks 卡在 collective</text>
+  <text x="595" y="1806" class="body">① 对齐最后 enter/exit 的 collective sequence</text>
+  <text x="595" y="1835" class="body">② 比较 valid labels、skip flag、dataloader</text>
+  <text x="595" y="1864" class="body">③ 核对 group、shape、dtype、numel 与异常</text>
+  <line x1="595" y1="1883" x2="1005" y2="1883" class="divider"/>
+  <text x="595" y="1912" class="small">寻找“第一个没有执行相同下一步”的 rank</text>
+  <text x="595" y="1944" class="formula">timeout reporter ≠ root cause</text>
+
+  <rect x="1070" y="1735" width="460" height="235" rx="15" class="purple"/>
+  <text x="1095" y="1771" class="label">Checkpoint · Topology 改变后加载失败</text>
+  <text x="1095" y="1806" class="body">① format/schema + canonical FQN/global shape</text>
+  <text x="1095" y="1835" class="body">② source mesh、shard axis/offset/placement</text>
+  <text x="1095" y="1864" class="body">③ target layout + model/optimizer reshard support</text>
+  <line x1="1095" y1="1883" x2="1505" y2="1883" class="divider"/>
+  <text x="1095" y="1912" class="small">不支持时：canonical full/global → target shards</text>
+  <text x="1095" y="1944" class="formula">same world size ≠ same topology</text>
+
+  <!-- Final takeaways -->
+  <rect x="40" y="2050" width="1520" height="180" rx="18" class="green"/>
+  <text x="70" y="2093" class="section">Day 04 Takeaways</text>
+
+  <rect x="70" y="2120" width="270" height="72" rx="11" class="panel"/>
+  <text x="92" y="2148" class="label">1 · 先对象，后通信</text>
+  <text x="92" y="2176" class="small">坐标 shard、partial sum、ownership</text>
+
+  <rect x="365" y="2120" width="270" height="72" rx="11" class="panel"/>
+  <text x="387" y="2148" class="label">2 · Collective 改布局</text>
+  <text x="387" y="2176" class="small">不是靠名字猜，而是从目标状态推</text>
+
+  <rect x="660" y="2120" width="270" height="72" rx="11" class="panel"/>
+  <text x="682" y="2148" class="label">3 · DP 才扩大 batch</text>
+  <text x="682" y="2176" class="small">TP / PP 共同处理同一 samples</text>
+
+  <rect x="955" y="2120" width="270" height="72" rx="11" class="panel"/>
+  <text x="977" y="2148" class="label">4 · Sharded ≠ 无 peak</text>
+  <text x="977" y="2176" class="small">activation / temp / comm 仍需计入</text>
+
+  <rect x="1250" y="2120" width="270" height="72" rx="11" class="panel"/>
+  <text x="1272" y="2148" class="label">5 · 找第一处分歧</text>
+  <text x="1272" y="2176" class="small">shape、timeline、collective、metadata</text>
+
+  <text x="50" y="2260" class="tiny">Day 04 · Distributed Parallelism · source: DAY-04-READING-QUIZ.md · generated for the 30-Day LLM Post-Training Bootcamp</text>
+</svg>

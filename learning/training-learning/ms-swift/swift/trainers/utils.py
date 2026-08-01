@@ -172,12 +172,19 @@ def per_token_loss_func_sp(outputs, labels, enable_dft_loss=False, **kwargs) -> 
 
 
 def per_token_loss_func(outputs, labels, enable_dft_loss: bool = False, **kwargs):
+    # Ordinary padded path:
+    #   outputs.logits: [B, T, V] -- one V-way next-token prediction vector at every position
+    #   labels:         [B, T]    -- same-position targets before causal alignment
     logits = outputs.logits
     # Upcast to float if we need to compute the loss to avoid potential precision issues
     logits = logits.float()
+    # Move every target one position left so logits[:, t, :] is paired with original labels[:, t + 1].
+    # `Template._encode` forces original labels[:, 0] to -100, so the roll's wrapped final target is ignored. This is
+    # vectorized over all B*T positions; it is equivalent to nested batch/position loops, not a single-token loss.
     labels = torch.roll(labels, shifts=-1, dims=-1).view(-1)
 
     # Flatten the tokens
+    # [B, T, V] -> [B*T, V]; reduction='none' below returns one loss per flattened position: [B*T].
     logits = logits.view(-1, logits.shape[-1])
     # Enable model parallelism
     labels = labels.to(logits.device)

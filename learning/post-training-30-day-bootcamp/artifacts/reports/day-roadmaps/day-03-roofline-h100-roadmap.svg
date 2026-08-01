@@ -1,0 +1,189 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1820" viewBox="0 0 1600 1820" role="img" aria-labelledby="title desc">
+  <title id="title">Day 03 Roofline and H100 learning roadmap</title>
+  <desc id="desc">A six-stage roadmap from workload and H100 inputs through matmul accounting, roofline bottleneck classification, local-token batch semantics, MFU step-time prediction, network overlap, and profiler calibration, followed by key takeaways and a Qwen3-1.7B worked example.</desc>
+
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2563eb"/>
+    </marker>
+    <style>
+      text { font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; fill: #172033; }
+      .title { font-size: 34px; font-weight: 700; }
+      .subtitle { font-size: 18px; fill: #526078; }
+      .section { font-size: 22px; font-weight: 700; }
+      .stage { font-size: 15px; font-weight: 700; letter-spacing: .5px; fill: #475569; }
+      .label { font-size: 18px; font-weight: 700; }
+      .body { font-size: 15px; }
+      .small { font-size: 13px; fill: #526078; }
+      .tiny { font-size: 12px; fill: #526078; }
+      .formula { font-family: "SFMono-Regular", Consolas, monospace; font-size: 14px; fill: #273449; }
+      .panel { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1.5; }
+      .node { fill: #f8fafc; stroke: #64748b; stroke-width: 1.5; }
+      .blue { fill: #dbeafe; stroke: #2563eb; stroke-width: 1.5; }
+      .green { fill: #dcfce7; stroke: #16a34a; stroke-width: 1.5; }
+      .amber { fill: #fef3c7; stroke: #d97706; stroke-width: 1.5; }
+      .purple { fill: #f3e8ff; stroke: #9333ea; stroke-width: 1.5; }
+      .red { fill: #fee2e2; stroke: #dc2626; stroke-width: 1.5; }
+      .cyan { fill: #cffafe; stroke: #0891b2; stroke-width: 1.5; }
+      .muted { fill: #f1f5f9; stroke: #94a3b8; stroke-width: 1.2; }
+      .arrow { fill: none; stroke: #475569; stroke-width: 2.2; marker-end: url(#arrow); }
+      .feedback { fill: none; stroke: #2563eb; stroke-width: 2.2; stroke-dasharray: 8 6; marker-end: url(#arrow-blue); }
+      .divider { stroke: #cbd5e1; stroke-width: 1.5; }
+    </style>
+  </defs>
+
+  <rect width="1600" height="1820" fill="#f5f7fb"/>
+  <text x="50" y="58" class="title">Day 03 Roadmap：从 Matmul Roofline 到 H100 训练预测</text>
+  <text x="50" y="88" class="subtitle">目标：先做一阶预测，再用真实 H100 与 profiler 校准；不把理论峰值当作实际吞吐</text>
+
+  <!-- Main roadmap -->
+  <rect x="40" y="115" width="1520" height="930" rx="18" class="panel"/>
+  <text x="70" y="158" class="section">学习主链路</text>
+  <text x="70" y="184" class="small">workload → FLOPs / bytes → bottleneck → configuration → step-time range → measurement loop</text>
+
+  <!-- Stage 1 -->
+  <text x="75" y="224" class="stage">01 · DEFINE INPUTS</text>
+  <rect x="75" y="240" width="420" height="220" rx="16" class="blue"/>
+  <text x="100" y="276" class="label">定义 workload 与硬件</text>
+  <line x1="100" y1="294" x2="470" y2="294" class="divider"/>
+  <text x="100" y="326" class="body">Workload</text>
+  <text x="100" y="352" class="formula">P, B_micro, sequence S, accumulation G, DP</text>
+  <text x="100" y="384" class="body">H100</text>
+  <text x="100" y="410" class="formula">C_peak, W_HBM, SKU, topology, dtype</text>
+  <text x="100" y="438" class="small">先固定单位与计时边界，再开始计算</text>
+
+  <!-- Stage 2 -->
+  <text x="590" y="224" class="stage">02 · BUILD THE LEDGER</text>
+  <rect x="590" y="240" width="420" height="220" rx="16" class="amber"/>
+  <text x="615" y="276" class="label">从 shape 推导 FLOPs 与 bytes</text>
+  <line x1="615" y1="294" x2="985" y2="294" class="divider"/>
+  <text x="615" y="326" class="formula">X [N,D] @ W [D,F] → Y [N,F]</text>
+  <text x="615" y="356" class="formula">F_math = 2NDF</text>
+  <text x="615" y="386" class="formula">M_HBM = 2(ND + DF + NF) bytes</text>
+  <text x="615" y="416" class="formula">I_op = F_math / M_HBM</text>
+  <text x="615" y="442" class="small">FLOPs 是总操作量；FLOPs/s 才是速度</text>
+
+  <!-- Stage 3 -->
+  <text x="1105" y="224" class="stage">03 · CLASSIFY THE BOTTLENECK</text>
+  <rect x="1105" y="240" width="420" height="220" rx="16" class="green"/>
+  <text x="1130" y="276" class="label">比较 operation 与 hardware</text>
+  <line x1="1130" y1="294" x2="1500" y2="294" class="divider"/>
+  <text x="1130" y="328" class="formula">I_hw = C / W_HBM</text>
+  <text x="1130" y="362" class="formula">I_op &gt; I_hw  → compute-bound</text>
+  <text x="1130" y="396" class="formula">I_op &lt; I_hw  → HBM-bound</text>
+  <text x="1130" y="430" class="small">等价检查：谁的时间更长，瓶颈就跟谁</text>
+  <text x="1130" y="450" class="formula">T_math=F/C · T_HBM=M/W</text>
+
+  <path d="M 495 350 L 575 350" class="arrow"/>
+  <path d="M 1010 350 L 1090 350" class="arrow"/>
+
+  <!-- Stage 4 -->
+  <text x="75" y="518" class="stage">04 · MAP TRAINING CONFIG</text>
+  <rect x="75" y="534" width="420" height="230" rx="16" class="purple"/>
+  <text x="100" y="570" class="label">Local tokens 决定单次 GEMM</text>
+  <line x1="100" y1="588" x2="470" y2="588" class="divider"/>
+  <text x="100" y="620" class="formula">N_local = B_micro × S</text>
+  <text x="100" y="650" class="formula">B_global = B_micro × G × DP</text>
+  <text x="100" y="684" class="body">增大 B_micro</text>
+  <text x="100" y="708" class="small">单次 GEMM 更大、weight 复用更好、activation 增加</text>
+  <text x="100" y="736" class="body">增大 G</text>
+  <text x="100" y="758" class="small">重复更多 micro-steps；不扩大单次 GEMM 的 N</text>
+
+  <!-- Stage 5 -->
+  <text x="590" y="518" class="stage">05 · PREDICT A RANGE</text>
+  <rect x="590" y="534" width="420" height="230" rx="16" class="cyan"/>
+  <text x="615" y="570" class="label">从 training FLOPs 到 step time</text>
+  <line x1="615" y1="588" x2="985" y2="588" class="divider"/>
+  <text x="615" y="620" class="formula">tokens/step = B_micro × S × G × DP</text>
+  <text x="615" y="650" class="formula">F_step ≈ 6P × tokens/step</text>
+  <text x="615" y="680" class="formula">T_step = F_step / (n_gpu × C_peak × MFU)</text>
+  <text x="615" y="714" class="body">预注册 MFU scenarios</text>
+  <text x="615" y="740" class="formula">30% / 40% / 50% → step-time range</text>
+
+  <!-- Stage 6 -->
+  <text x="1105" y="518" class="stage">06 · MEASURE AND CALIBRATE</text>
+  <rect x="1105" y="534" width="420" height="230" rx="16" class="red"/>
+  <text x="1130" y="570" class="label">用真实运行证伪预测</text>
+  <line x1="1130" y1="588" x2="1500" y2="588" class="divider"/>
+  <text x="1130" y="620" class="body">必须记录</text>
+  <text x="1130" y="646" class="small">step time · processed / label tokens/s</text>
+  <text x="1130" y="670" class="small">peak HBM · end-to-end MFU · GPU-Util</text>
+  <text x="1130" y="704" class="body">Profiler 分解</text>
+  <text x="1130" y="730" class="small">GEMM · HBM stall · optimizer · launch/sync</text>
+  <text x="1130" y="752" class="small">data loading · communication · bubble</text>
+
+  <path d="M 495 649 L 575 649" class="arrow"/>
+  <path d="M 1010 649 L 1090 649" class="arrow"/>
+
+  <!-- Feedback loop -->
+  <path d="M 1315 764 C 1315 815, 1270 836, 1210 836 L 190 836 C 115 836, 90 812, 90 779" class="feedback"/>
+  <text x="595" y="827" class="small">测量结果反馈：修正 C / W、FLOPs accounting、MFU scenario 与计时边界</text>
+
+  <!-- Network roofline strip -->
+  <rect x="75" y="870" width="1450" height="135" rx="15" class="muted"/>
+  <text x="100" y="908" class="label">Network Roofline：Day 3 只做到 M / W 与 overlap</text>
+  <text x="100" y="940" class="formula">T_network = M_network / W_effective</text>
+  <text x="530" y="940" class="formula">hidden = min(T_network, T_compute_window)</text>
+  <text x="1000" y="940" class="formula">exposed = max(T_network - T_compute_window, 0)</text>
+  <text x="100" y="975" class="small">Ring / AllReduce bytes、collective 实现与 NCCL algbw/busbw 属于 Day 4 / Day 18 的深入内容</text>
+
+  <!-- Takeaways -->
+  <rect x="40" y="1070" width="1520" height="685" rx="18" class="panel"/>
+  <text x="70" y="1114" class="section">Takeaways：真正要带走的判断框架</text>
+
+  <rect x="75" y="1145" width="700" height="126" rx="14" class="blue"/>
+  <text x="100" y="1180" class="label">1 · Roofline 是瓶颈语言，不是 utilization 截图</text>
+  <text x="100" y="1210" class="body">比较 I_op / I_hw，或比较 T_math / T_HBM；两种方法结论必须一致。</text>
+  <text x="100" y="1238" class="small">“能放下”回答 capacity；“跑多快”还取决于 bandwidth、compute 与 critical path。</text>
+
+  <rect x="75" y="1290" width="700" height="126" rx="14" class="purple"/>
+  <text x="100" y="1325" class="label">2 · Micro-batch 与 accumulation 改变不同东西</text>
+  <text x="100" y="1355" class="body">B_micro 改变单次 GEMM shape 与 activation；G 改变每次 optimizer update 的总 tokens。</text>
+  <text x="100" y="1383" class="small">相同 global batch 不代表相同 arithmetic intensity、MFU 或 peak memory。</text>
+
+  <rect x="75" y="1435" width="700" height="126" rx="14" class="green"/>
+  <text x="100" y="1470" class="label">3 · GPU-Util=99% 不等于 MFU 高</text>
+  <text x="100" y="1500" class="body">GPU 可以一直忙于 HBM-bound、小 GEMM、非 Tensor Core 算子、通信或同步。</text>
+  <text x="100" y="1528" class="small">MFU 衡量有用模型 FLOPs 相对理论峰值；GPU-Util 更接近采样窗口内是否繁忙。</text>
+
+  <rect x="75" y="1580" width="700" height="126" rx="14" class="amber"/>
+  <text x="100" y="1615" class="label">4 · Top-down 与 bottom-up 不能重复记账</text>
+  <text x="100" y="1645" class="body">End-to-end MFU 已吸收计时边界内的效率损失；再加同一 overhead 会 double count。</text>
+  <text x="100" y="1673" class="small">Top-down 用 MFU 预测 T；bottom-up 沿 critical path 预测 T，再反推 implied MFU。</text>
+
+  <!-- Worked example -->
+  <rect x="815" y="1145" width="710" height="561" rx="16" class="node"/>
+  <text x="845" y="1184" class="label">Qwen3-1.7B · 1×H100 worksheet 示例</text>
+  <text x="845" y="1212" class="small">教学口径：BF16 dense peak 暂取 1.0×10¹⁵ FLOPs/s；真实 SKU 必须核验</text>
+  <line x1="845" y1="1232" x2="1495" y2="1232" class="divider"/>
+
+  <text x="845" y="1265" class="body">Known</text>
+  <text x="845" y="1292" class="formula">P≈1.7B · B_micro=2 · S=2048 · G=4 · DP=1</text>
+  <text x="845" y="1320" class="formula">tokens/optimizer-step = 16,384</text>
+
+  <text x="845" y="1362" class="body">Estimated</text>
+  <text x="845" y="1389" class="formula">F_step ≈ 6P×tokens = 1.671168×10¹⁴ FLOPs</text>
+
+  <text x="845" y="1431" class="body">Predicted range</text>
+  <rect x="845" y="1452" width="195" height="58" rx="10" class="red"/>
+  <text x="865" y="1477" class="small">MFU 30%</text>
+  <text x="865" y="1498" class="formula">0.557 s/step</text>
+  <rect x="1060" y="1452" width="195" height="58" rx="10" class="green"/>
+  <text x="1080" y="1477" class="small">MFU 40% · center</text>
+  <text x="1080" y="1498" class="formula">0.418 s/step</text>
+  <rect x="1275" y="1452" width="195" height="58" rx="10" class="blue"/>
+  <text x="1295" y="1477" class="small">MFU 50%</text>
+  <text x="1295" y="1498" class="formula">0.334 s/step</text>
+
+  <rect x="845" y="1538" width="625" height="66" rx="12" class="cyan"/>
+  <text x="870" y="1566" class="label">预注册：约 0.33–0.56 s/optimizer-step</text>
+  <text x="870" y="1591" class="small">中心情景约 0.42s，对应 MFU≈40%；不是“MFU=0.42s”</text>
+
+  <text x="845" y="1640" class="body">最后一步：把预测变成可证伪实验</text>
+  <text x="845" y="1668" class="small">记录 steady-state step time、tokens/s、label tokens/s、peak HBM 与 profiler breakdown。</text>
+
+  <text x="50" y="1790" class="tiny">Day 03 · Roofline 与 H100 · source: DAY-03-READING-QUIZ.md · generated for the 30-Day LLM Post-Training Bootcamp</text>
+</svg>
