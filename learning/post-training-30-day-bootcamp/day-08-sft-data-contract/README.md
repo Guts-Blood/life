@@ -2,7 +2,7 @@
 
 日期：`2026-08-03`
 
-状态：`not_started`
+状态：`done`
 
 强度：工作日 4–5 小时
 
@@ -49,16 +49,22 @@
 
 ## 验收
 
-- [ ] 随机给一条 messages sample，能在编码前预测哪些文本会参与 loss。
-- [ ] 5 个 golden cases 都有 raw/rendered/token/label/mask 对照。
-- [ ] validator 能拒绝空监督、非法 role 顺序和截断后零有效 label 三类关键错误。
-- [ ] tokenizer revision、template hash、max length、EOS/padding/truncation policy 已冻结。
-- [ ] 没有在数据契约未通过时启动训练。
+- [x] 随机给一条 messages sample，能在编码前预测哪些文本会参与 loss。
+- [x] 5 个 golden cases 都有 raw/rendered/token/label/mask 对照。
+- [x] validator 能拒绝空监督、非法 role 顺序和截断后零有效 label 三类关键错误。
+- [x] tokenizer revision、template hash、max length、EOS/padding/truncation policy 已冻结。
+- [x] 没有在数据契约未通过时启动训练。
 
 ## Daily Log
 
 ### 一个此前误判的 loss 边界
 
+曾把 supervised/loss mask 与 causal attention mask 混淆，并把 label 位置当成同位置 logit 的预测目标。复核后固定：`labels[t] != -100` 表示位置 `t` 是有效目标，它由 `logits[t-1]` 预测；causal mask 另外负责阻止读取未来。
+
 ### 有效监督 token 统计
 
+20 条 edge cases 中 10 条接受、8 条 schema reject、2 条 encoded reject。人工审计 5 条：`single-turn` 为 `2/31` assistant/all-token loss terms，`multi-turn` 为 `10/52`，其余详见 token-label audit。
+
 ### Day 09 第一动作
+
+为真实 SFT 数据源固定 source、license、revision、split 与 content hash，生成可重建的 dataset manifest；不把 Day 08 手写 edge cases 当成训练 mixture。
