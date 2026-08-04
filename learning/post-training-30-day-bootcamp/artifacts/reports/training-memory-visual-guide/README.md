@@ -7,9 +7,11 @@
 
 ## 图
 
-- [`dense-transformer-training-memory.svg`](./dense-transformer-training-memory.svg)：Dense Transformer 数据流、forward/backward 保存项，以及 10B full SFT 显存账本。
-- [`qwen3-30b-a3b-moe-training-memory.svg`](./qwen3-30b-a3b-moe-training-memory.svg)：Qwen3-30B-A3B 风格 MoE block、router/expert/AllToAll，以及 total/active parameter 的显存与计算区别。
-- [`distributed-training-memory-checkpointing.svg`](./distributed-training-memory-checkpointing.svg)：从全局 weights/gradients/master/Adam 账本到 ZeRO/FSDP 每卡 peak，并解释 activation checkpointing 为什么省显存、disk training checkpoint 为什么不省。
+SVG 是可编辑源文件，同名 PNG 用于 Codex 手机端和其他不支持 SVG 的预览环境。
+
+- Dense Transformer：[PNG 预览](./dense-transformer-training-memory.png) · [SVG 源文件](./dense-transformer-training-memory.svg)——数据流、forward/backward 保存项，以及 10B full SFT 显存账本。
+- Qwen3-30B-A3B MoE：[PNG 预览](./qwen3-30b-a3b-moe-training-memory.png) · [SVG 源文件](./qwen3-30b-a3b-moe-training-memory.svg)——MoE block、router/expert/AllToAll，以及 total/active parameter 的显存与计算区别。
+- 分布式训练显存：[PNG 预览](./distributed-training-memory-checkpointing.png) · [SVG 源文件](./distributed-training-memory-checkpointing.svg)——从全局 weights/gradients/master/Adam 账本到 ZeRO/FSDP 每卡 peak，并解释 activation checkpointing 为什么省显存、disk training checkpoint 为什么不省。
 
 ## 首先固定口径
 
