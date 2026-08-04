@@ -6,6 +6,8 @@
 
 强度：1 小时，仅阅读
 
+视觉路线图：[`day-06-posttraining-scaling-decision-roadmap.svg`](../artifacts/reports/day-roadmaps/day-06-posttraining-scaling-decision-roadmap.svg)。
+
 ## 主要目标
 
 把“post-training 阶段为什么存在”与“训练是否放得下、跑得完、值得跑”放进同一张图。周末只做对读与判断，不新增代码或 GPU 任务。
