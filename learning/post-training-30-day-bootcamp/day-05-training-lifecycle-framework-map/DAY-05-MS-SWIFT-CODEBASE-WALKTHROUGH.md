@@ -1,10 +1,12 @@
 # Day 05 — ms-swift Codebase Walkthrough
 
-源码快照：`94f904c`
+上游源码：`modelscope/ms-swift@565a1ad586a21d24b23931c52d2c62b49c39bee8`
+
+Life repo 学习快照：`94f904c`；源码内联注释保存在 `learning/training-learning/patches/ms-swift-565a1ad-day05-comments.patch`。
 
 状态：`living_document`
 
-用途：把 ms-swift 全仓结构映射到 Day 05 的 training lifecycle、state ownership、framework boundaries 和故障检查点。源码工作区包含学习注释，后续行号可能移动，因此优先以函数名和对象边界定位。
+用途：把 ms-swift 全仓结构映射到 Day 05 的 training lifecycle、state ownership、framework boundaries 和故障检查点。外部源码 clone 默认保持干净；需要查看内联学习注释时应用 patch。后续行号可能移动，因此优先以函数名和对象边界定位。
 
 ## 0. 一句话模型
 

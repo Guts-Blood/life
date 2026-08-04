@@ -30,10 +30,18 @@ but they are not the final goal. They are one part of the broader life system.
 - `principles/`: ideas that have earned enough support to guide decisions
 - `reviews/`: periodic reflection and system maintenance
 - `templates/`: reusable note templates
-- `skill/`: workflow instructions for collaborating with Codex on this system
-- `skills/`: versioned personal Codex skills, including context-aware work planning
-- `work-planning/`: approved plans, event traces, and generated focus/review views
-- `work-tracking/`: concrete workstreams, launch tracking, and weekly execution logs
+- `artifacts/`: versioned final reports, presentations, resumes, and their essential sources
+- `skills/`: versioned Codex skills for the life system, task context, and work planning
+- `work-planning/`: canonical machine-readable plan state and append-only event traces
+- `work-tracking/`: human-maintained workstreams, execution logs, and historical context
+
+The three repository skills are:
+
+- `skills/life-system/`: maintain the assumption-to-principle workflow
+- `skills/agent-task-context/`: map knowns, gaps, silent context, and blind spots before complex work
+- `skills/plan-and-track-work/`: build and replay dependency-aware work plans
+
+Generated previews, local planner configuration, external source checkouts, and other disposable files stay outside version control. See `artifacts/README.md` for the final-artifact policy.
 
 ## Recommended Flow
 

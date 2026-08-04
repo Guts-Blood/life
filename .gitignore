@@ -1,4 +1,25 @@
 .DS_Store
 ~$*.docx
-tmp/
+
+# Local IDE state
+/.idea/
+
+# Python caches
 __pycache__/
+*.py[cod]
+
+# Local external repositories
+/finLLM-Eval/
+/vendor/ms-swift/
+/learning/training-learning/ms-swift/
+
+# Ephemeral and legacy generated outputs
+/tmp/
+/output/
+/outputs/
+/profile/render_*/
+
+# Local or deterministically generated planner state
+/work-planning/config.json
+/work-planning/views/
+/work-planning/runs/

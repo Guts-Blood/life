@@ -4,19 +4,22 @@
 
 ## ms-swift
 
-- 本地路径：`ms-swift/`
+- 本地路径：`../../vendor/ms-swift/`
 - Upstream：<https://github.com/modelscope/ms-swift.git>
-- Clone 日期：`2026-07-23`
-- 初始分支：`main`
-- 初始 commit：`565a1ad586a21d24b23931c52d2c62b49c39bee8`
-- 集成方式：上游源码快照，作为父级 `life` repo 的普通目录管理。
-- 当前只完成源码导入，尚未安装依赖或修改源码。
+- Pinned upstream commit：`565a1ad586a21d24b23931c52d2c62b49c39bee8`
+- 集成方式：被父级 `life` repo 忽略的独立 clone；不是 submodule。
+- 学习注释：`patches/ms-swift-565a1ad-day05-comments.patch`
 
-clone 完成后已移除嵌套 `.git`，因此 `ms-swift/` 不是 submodule 或独立 Git 仓库；源码、计划和后续笔记都由父级 `life` repo 统一提供 context。初始上游 commit 保留在本文件中，实验 run manifest 仍应记录这个 revision；升级上游前先保存已有实验对应的快照。
+最初的源码快照于 `2026-07-23` 导入 life repo（`5ccb102`），在 `94f904c` 时仍与 upstream 一致；`1dc0e4e` 只新增了 5 个文件、54 行教学注释。当前版本不再跟踪整份 upstream 源码，而是保留学习文档、revision 和可重放 patch。实验 run manifest 仍应记录 upstream revision；升级前先保存对应实验的快照。
 
-## 常用检查
+## 建立与检查本地源码
 
 ```bash
-git status --short -- learning/training-learning
-rg --files learning/training-learning/ms-swift | wc -l
+git init vendor/ms-swift
+git -C vendor/ms-swift remote add origin https://github.com/modelscope/ms-swift.git
+git -C vendor/ms-swift fetch --depth 1 origin 565a1ad586a21d24b23931c52d2c62b49c39bee8
+git -C vendor/ms-swift checkout --detach FETCH_HEAD
+git -C vendor/ms-swift apply --check ../../learning/training-learning/patches/ms-swift-565a1ad-day05-comments.patch
 ```
+
+默认保持外部 clone 干净。需要复盘源码内联注释时，再显式执行不带 `--check` 的 `git apply`；完成后可在外部 clone 中丢弃这些本地注释。

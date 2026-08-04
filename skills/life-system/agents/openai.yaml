@@ -1,0 +1,4 @@
+interface:
+  display_name: "Life System"
+  short_description: "Turn life ideas into evidence-backed principles"
+  default_prompt: "Use $life-system to turn this idea into a testable assumption, evidence plan, and durable principle."

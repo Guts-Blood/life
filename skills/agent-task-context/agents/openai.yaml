@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agent Task Context"
+  short_description: "Map knowns, gaps, context, and hidden risks"
+  default_prompt: "Use $agent-task-context to map the knowns, gaps, implicit context, and blind spots before acting."

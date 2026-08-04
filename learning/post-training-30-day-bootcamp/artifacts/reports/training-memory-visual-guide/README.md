@@ -262,9 +262,9 @@ dtype = BF16 = 2 bytes/element
 
 ## 与本地 ms-swift 训练路线的连接
 
-当前导入的 ms-swift snapshot 已包含 Qwen3-30B-A3B-Base 的 Megatron full-SFT 示例：
+Pinned ms-swift upstream snapshot 已包含 Qwen3-30B-A3B-Base 的 Megatron full-SFT 示例：
 
-- [`../../../../training-learning/ms-swift/examples/megatron/moe/qwen3_moe.sh`](../../../../training-learning/ms-swift/examples/megatron/moe/qwen3_moe.sh)
+- [`examples/megatron/moe/qwen3_moe.sh`](https://github.com/modelscope/ms-swift/blob/565a1ad586a21d24b23931c52d2c62b49c39bee8/examples/megatron/moe/qwen3_moe.sh)
 
 该参考脚本使用：
 
