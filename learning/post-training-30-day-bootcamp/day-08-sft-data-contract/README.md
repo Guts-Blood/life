@@ -43,6 +43,7 @@
 
 ## 产物
 
+- [`../artifacts/reports/day-roadmaps/day-08-sft-data-contract-roadmap.svg`](../artifacts/reports/day-roadmaps/day-08-sft-data-contract-roadmap.svg)
 - `../artifacts/data/day08-sft-data-contract.md`
 - `../artifacts/data/day08-template-golden-cases.jsonl`
 - `../artifacts/reports/day08-token-label-audit.md`

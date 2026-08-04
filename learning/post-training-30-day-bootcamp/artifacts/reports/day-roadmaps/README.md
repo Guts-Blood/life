@@ -15,3 +15,4 @@ day-XX-<topic>-roadmap.svg
 - [`day-03-roofline-h100-roadmap.svg`](./day-03-roofline-h100-roadmap.svg)：从 matmul accounting、H100 Roofline、local tokens 到 MFU scenario 与 profiler 校准。
 - [`day-04-parallelism-roadmap.svg`](./day-04-parallelism-roadmap.svg)：从 sharded tensor、collective、DP/FSDP/TP/PP 与 rank groups，到 OOM、hang、checkpoint mismatch 的证据化诊断。
 - [`day05-training-lifecycle-roadmap.svg`](../day05-training-lifecycle-roadmap.svg)：从数据边界、forward/backward、optimizer/checkpoint 到 ms-swift、DeepSpeed、NCCL 与 CUDA 的职责分层。
+- [`day-08-sft-data-contract-roadmap.svg`](./day-08-sft-data-contract-roadmap.svg)：从 raw schema、冻结 Chat Template、role-aware labels 与 causal shift，到三种 mask 分工、逐 token 审计和两阶段 validator。
