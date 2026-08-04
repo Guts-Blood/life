@@ -23,14 +23,14 @@ but they are not the final goal. They are one part of the broader life system.
 
 ## Core Areas
 
-- `profile/`: stable and seasonal personal context
+- `profile/`: stable and seasonal personal context, plus current resume sources and exports
+- `learning/`: study notes, bootcamps, and durable research deliverables
 - `assumptions/`: ideas waiting to be tested
 - `experiments/`: concrete verification plans
 - `evidence/`: observations, logs, and source material
 - `principles/`: ideas that have earned enough support to guide decisions
 - `reviews/`: periodic reflection and system maintenance
 - `templates/`: reusable note templates
-- `artifacts/`: versioned final reports, presentations, resumes, and their essential sources
 - `skills/`: versioned Codex skills for the life system, task context, and work planning
 - `work-planning/`: canonical machine-readable plan state and append-only event traces
 - `work-tracking/`: human-maintained workstreams, execution logs, and historical context
@@ -41,7 +41,7 @@ The three repository skills are:
 - `skills/agent-task-context/`: map knowns, gaps, silent context, and blind spots before complex work
 - `skills/plan-and-track-work/`: build and replay dependency-aware work plans
 
-Generated previews, local planner configuration, external source checkouts, and other disposable files stay outside version control. See `artifacts/README.md` for the final-artifact policy.
+Final deliverables live with the domain that owns them, such as `profile/resumes/` and `learning/research/`. Generated previews, local planner configuration, external source checkouts, and other disposable files stay outside version control.
 
 ## Recommended Flow
 
