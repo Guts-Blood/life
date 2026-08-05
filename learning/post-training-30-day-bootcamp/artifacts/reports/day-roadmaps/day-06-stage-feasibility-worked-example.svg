@@ -1,0 +1,272 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="2860" viewBox="0 0 1800 2860" role="img" aria-labelledby="title desc">
+  <title id="title">Day 06 stage feasibility worked example</title>
+  <desc id="desc">A Chinese worked example that starts from a seven-billion-parameter policy and compares SFT, DPO, lean RLVR, and classic PPO role-state footprints, logical work multipliers, rollout KV cache, and colocated versus disaggregated two-H100 placement.</desc>
+
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2563eb"/>
+    </marker>
+    <style>
+      text { font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; fill: #172033; }
+      .title { font-size: 34px; font-weight: 700; }
+      .subtitle { font-size: 18px; fill: #526078; }
+      .section { font-size: 23px; font-weight: 700; }
+      .stage { font-size: 14px; font-weight: 700; letter-spacing: .5px; fill: #475569; }
+      .label { font-size: 17px; font-weight: 650; }
+      .body { font-size: 15px; }
+      .small { font-size: 13px; fill: #526078; }
+      .tiny { font-size: 12px; fill: #526078; }
+      .metric { font-size: 25px; font-weight: 750; }
+      .metric-small { font-size: 20px; font-weight: 720; }
+      .formula { font-family: "SFMono-Regular", Consolas, monospace; font-size: 14px; fill: #273449; }
+      .formula-small { font-family: "SFMono-Regular", Consolas, monospace; font-size: 12px; fill: #273449; }
+      .panel { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1.5; }
+      .hero { fill: #eef2ff; stroke: #6366f1; stroke-width: 1.8; }
+      .blue { fill: #dbeafe; stroke: #2563eb; stroke-width: 1.5; }
+      .cyan { fill: #cffafe; stroke: #0891b2; stroke-width: 1.5; }
+      .purple { fill: #f3e8ff; stroke: #9333ea; stroke-width: 1.5; }
+      .green { fill: #dcfce7; stroke: #16a34a; stroke-width: 1.5; }
+      .amber { fill: #fef3c7; stroke: #d97706; stroke-width: 1.5; }
+      .red { fill: #fee2e2; stroke: #dc2626; stroke-width: 1.5; }
+      .muted { fill: #f1f5f9; stroke: #94a3b8; stroke-width: 1.3; }
+      .good { fill: #f0fdf4; stroke: #16a34a; stroke-width: 1.5; }
+      .warning { fill: #fff7ed; stroke: #ea580c; stroke-width: 1.5; }
+      .line { fill: none; stroke: #475569; stroke-width: 2; marker-end: url(#arrow); }
+      .line-blue { fill: none; stroke: #2563eb; stroke-width: 2; marker-end: url(#arrow-blue); }
+      .divider { stroke: #cbd5e1; stroke-width: 1.4; }
+      .grid { stroke: #cbd5e1; stroke-width: 1; }
+      .pass { fill: #15803d; font-size: 14px; font-weight: 750; }
+      .fail { fill: #b91c1c; font-size: 14px; font-weight: 750; }
+    </style>
+  </defs>
+
+  <rect width="1800" height="2860" fill="#f5f7fb"/>
+  <text x="50" y="58" class="title">Day 06 · Stage Feasibility Worked Example</text>
+  <text x="50" y="90" class="subtitle">从“一份 policy 多大”推进到“一个 stage 有几种角色、做多少次 pass、哪些 tensor 同时驻留”。</text>
+
+  <!-- Central message -->
+  <rect x="40" y="118" width="1720" height="140" rx="18" class="hero"/>
+  <text x="70" y="157" class="section">核心边界</text>
+  <text x="245" y="157" class="label">Day 02 回答一份训练 policy 的参数、状态与 activation；Day 06 回答整个阶段的角色、pass、placement 与 rollout KV。</text>
+  <text x="245" y="193" class="body">one-policy ledger → stage roles → logical work → simultaneous placement → per-rank peak → pilot measurement</text>
+  <text x="245" y="226" class="small">本图所有 GB 使用十进制；所有比例都是明确假设下的 planning envelope，不是实测 H100 峰值或 wall-clock 保证。</text>
+
+  <!-- Anchor inputs -->
+  <rect x="40" y="282" width="1720" height="408" rx="18" class="panel"/>
+  <text x="70" y="322" class="section">1 · 输入锚点：7B policy 只提供容量基数，不重复 Day 02 全部账本</text>
+  <text x="70" y="350" class="small">P=7.0B 是容量代理；L/D/Hq/Hkv/dhead 用于 activation 与 KV 示例，不宣称组成某个精确公开模型 config。</text>
+
+  <rect x="70" y="380" width="510" height="250" rx="15" class="blue"/>
+  <text x="96" y="417" class="stage">MODEL / LOCAL-SHAPE ASSUMPTIONS</text>
+  <text x="96" y="456" class="metric">P = 7.0B parameters</text>
+  <text x="96" y="492" class="body">L=32 · D=4096 · Hq=32 · Hkv=8 · dhead=128</text>
+  <text x="96" y="524" class="body">BF16 weights / grads · FP32 Adam m/v + master</text>
+  <text x="96" y="557" class="small">B_local=1 · S=2048 · activation checkpoint envelope k=1</text>
+  <text x="96" y="587" class="small">Hq=D/dhead；FFN、vocab 与 tying 未用于反推参数总量</text>
+
+  <path d="M 580 505 L 632 505" class="line-blue"/>
+
+  <rect x="645" y="380" width="510" height="250" rx="15" class="purple"/>
+  <text x="671" y="417" class="stage">ONE TRAINABLE POLICY · INPUT ONLY</text>
+  <text x="671" y="456" class="metric">16 B/P = 112 GB global</text>
+  <text x="671" y="492" class="body">BF16 weights 14 + grads 14 + Adam m/v 56</text>
+  <text x="671" y="524" class="body">+ optional FP32 master 28 = 112 GB</text>
+  <text x="671" y="553" class="formula-small">M_act = B_local × S × D × L × 2B × k</text>
+  <text x="671" y="580" class="formula-small">S=2048 → 0.537GB/rank；S=8192 → 2.147GB/rank</text>
+  <text x="671" y="603" class="tiny">activation-only teaching envelope；不是完整 training activation 峰值</text>
+  <text x="671" y="622" class="tiny">112GB 仅作角色账本输入；真实 dtype / multiplier 须打印验证</text>
+
+  <path d="M 1155 505 L 1207 505" class="line-blue"/>
+
+  <rect x="1220" y="380" width="510" height="250" rx="15" class="amber"/>
+  <text x="1246" y="417" class="stage">DAY 06 QUESTION</text>
+  <text x="1246" y="456" class="label">一份 policy 之外，还要同时放什么？</text>
+  <text x="1246" y="492" class="body">DPO：chosen/rejected + fixed reference</text>
+  <text x="1246" y="524" class="body">RLVR：trainer + rollout + ref + verifier / value</text>
+  <text x="1246" y="557" class="body">系统：KV cache + rollout buffers + weight sync</text>
+  <text x="1246" y="587" class="small">峰值取决于 role placement 与 tensor lifetime，不取决于角色名称总数</text>
+
+  <rect x="70" y="646" width="1660" height="26" rx="8" fill="#c7d2fe"/>
+
+  <!-- Aggregate role states -->
+  <rect x="40" y="714" width="1720" height="571" rx="18" class="panel"/>
+  <text x="70" y="754" class="section">2 · Stage role-state 总账：先数角色，再决定它们住在哪里</text>
+  <text x="70" y="782" class="small">统一假设：trainable full model = 16 B/P；frozen BF16 model = 2 B/P；所有角色同为 7B。以下不含 activation、KV、buffer 与 runtime。</text>
+
+  <rect x="70" y="810" width="1660" height="52" rx="10" class="muted"/>
+  <text x="92" y="843" class="stage">STAGE</text>
+  <text x="266" y="843" class="stage">ROLE-STATE LEDGER · BYTES/P</text>
+  <text x="1060" y="843" class="stage">AGGREGATE</text>
+  <text x="1292" y="843" class="stage">VS SFT</text>
+  <text x="1438" y="843" class="stage">WHAT CHANGES PEAK?</text>
+
+  <rect x="70" y="862" width="1660" height="88" fill="#eff6ff"/>
+  <text x="92" y="899" class="label">SFT</text>
+  <text x="266" y="899" class="body">trainable policy 16</text>
+  <text x="266" y="927" class="small">teacher-forced training；persistent generation KV = 0</text>
+  <text x="1060" y="913" class="metric-small">112 GB</text>
+  <text x="1292" y="913" class="metric-small">1.00×</text>
+  <text x="1438" y="899" class="body">B_local · S · checkpointing</text>
+  <text x="1438" y="927" class="small">FSDP unit / temp / comm</text>
+
+  <rect x="70" y="950" width="1660" height="92" fill="#faf5ff"/>
+  <text x="92" y="988" class="label">DPO</text>
+  <text x="266" y="983" class="body">policy 16 + live reference 2</text>
+  <text x="266" y="1013" class="small">若 reference logprobs 已缓存：仅 policy 16 留在训练窗口</text>
+  <text x="1060" y="983" class="metric-small">126 GB</text>
+  <text x="1060" y="1014" class="small">cached ref → 112GB</text>
+  <text x="1292" y="983" class="metric-small">1.125×</text>
+  <text x="1292" y="1014" class="small">cached → 1.00×</text>
+  <text x="1438" y="983" class="body">pair 是否并发处理</text>
+  <text x="1438" y="1013" class="small">reference colocate / offload</text>
+
+  <rect x="70" y="1042" width="1660" height="92" fill="#fff7ed"/>
+  <text x="92" y="1080" class="label">Lean RLVR</text>
+  <text x="266" y="1075" class="body">policy trainer 16 + rollout copy 2 + fixed ref 2</text>
+  <text x="266" y="1105" class="small">critic-free；verifier 假设为非神经程序，不另计同规模 model</text>
+  <text x="1060" y="1089" class="metric-small">140 GB</text>
+  <text x="1292" y="1089" class="metric-small">1.25×</text>
+  <text x="1438" y="1075" class="body">rollout KV / concurrency</text>
+  <text x="1438" y="1105" class="small">trainer↔rollout weight sync</text>
+
+  <rect x="70" y="1134" width="1660" height="92" fill="#fef2f2"/>
+  <text x="92" y="1172" class="label">Classic PPO</text>
+  <text x="266" y="1167" class="body">actor 16 + critic 16 + reference 2 + reward model 2</text>
+  <text x="266" y="1197" class="small">若另有 rollout inference copy，再加 2 B/P = 14GB</text>
+  <text x="1060" y="1167" class="metric-small">252 GB</text>
+  <text x="1060" y="1198" class="small">+ rollout → 266GB</text>
+  <text x="1292" y="1167" class="metric-small">2.25×</text>
+  <text x="1292" y="1198" class="small">+ rollout → 2.375×</text>
+  <text x="1438" y="1167" class="body">critic / reward model size</text>
+  <text x="1438" y="1197" class="small">shared trunk / separate pools</text>
+
+  <line x1="240" y1="810" x2="240" y2="1226" class="grid"/>
+  <line x1="1040" y1="810" x2="1040" y2="1226" class="grid"/>
+  <line x1="1270" y1="810" x2="1270" y2="1226" class="grid"/>
+  <line x1="1420" y1="810" x2="1420" y2="1226" class="grid"/>
+  <rect x="70" y="1239" width="1660" height="28" rx="8" class="warning"/>
+  <text x="94" y="1259" class="small">AGGREGATE ROLE BYTES ≠ PER-RANK PEAK：角色分属不同 resource pools 时不能把总字节除以总 GPU；同卡 colocate 时只加同一时刻实际驻留的状态。</text>
+
+  <!-- Logical work multipliers -->
+  <rect x="40" y="1309" width="1720" height="576" rx="18" class="panel"/>
+  <text x="70" y="1349" class="section">3 · Logical work multiplier：一次 prompt 在各阶段经过多少次 forward / backward</text>
+  <text x="70" y="1377" class="small">假设：F=一条等长 prompt+response 的一次 full-sequence forward；一次 train pass≈3F；K=4 rollouts/prompt；E=1 update epoch；old logprobs 随 rollout 返回。</text>
+
+  <rect x="70" y="1405" width="1660" height="50" rx="10" class="muted"/>
+  <text x="92" y="1437" class="stage">STAGE</text>
+  <text x="300" y="1437" class="stage">LOGICAL WORK UNDER THESE ASSUMPTIONS</text>
+  <text x="1160" y="1437" class="stage">TOTAL</text>
+  <text x="1330" y="1437" class="stage">VS SFT</text>
+  <text x="1480" y="1437" class="stage">BOUNDARY</text>
+
+  <rect x="70" y="1455" width="1660" height="66" fill="#eff6ff"/>
+  <text x="92" y="1496" class="label">SFT</text>
+  <text x="300" y="1496" class="formula">one policy train pass = forward F + backward ≈ 2F</text>
+  <text x="1160" y="1496" class="metric-small">3F</text>
+  <text x="1330" y="1496" class="metric-small">1.00×</text>
+  <text x="1480" y="1496" class="small">one completion</text>
+
+  <rect x="70" y="1521" width="1660" height="66" fill="#faf5ff"/>
+  <text x="92" y="1562" class="label">DPO · cached ref</text>
+  <text x="300" y="1562" class="formula">chosen + rejected policy train = 2 × 3F</text>
+  <text x="1160" y="1562" class="metric-small">6F</text>
+  <text x="1330" y="1562" class="metric-small">2.00×</text>
+  <text x="1480" y="1562" class="small">ref work moved earlier</text>
+
+  <rect x="70" y="1587" width="1660" height="66" fill="#f5f3ff"/>
+  <text x="92" y="1628" class="label">DPO · live ref</text>
+  <text x="300" y="1628" class="formula">policy 6F + reference chosen/rejected 2F</text>
+  <text x="1160" y="1628" class="metric-small">8F</text>
+  <text x="1330" y="1628" class="metric-small">2.67×</text>
+  <text x="1480" y="1628" class="small">same-length anchor</text>
+
+  <rect x="70" y="1653" width="1660" height="66" fill="#fff7ed"/>
+  <text x="92" y="1694" class="label">Lean RLVR</text>
+  <text x="300" y="1694" class="formula">K × (rollout F + policy update 3EF + reference F)</text>
+  <text x="1160" y="1694" class="metric-small">20F</text>
+  <text x="1330" y="1694" class="metric-small">6.67×</text>
+  <text x="1480" y="1694" class="small">K=4 · E=1</text>
+
+  <rect x="70" y="1719" width="1660" height="66" fill="#fef2f2"/>
+  <text x="92" y="1760" class="label">Classic PPO</text>
+  <text x="300" y="1760" class="formula">K × (rollout F + actor 3EF + critic 3EF + ref F + reward F)</text>
+  <text x="1160" y="1760" class="metric-small">36F</text>
+  <text x="1330" y="1760" class="metric-small">12.0×</text>
+  <text x="1480" y="1760" class="small">same-size critic/RM</text>
+
+  <line x1="275" y1="1405" x2="275" y2="1785" class="grid"/>
+  <line x1="1138" y1="1405" x2="1138" y2="1785" class="grid"/>
+  <line x1="1308" y1="1405" x2="1308" y2="1785" class="grid"/>
+  <line x1="1458" y1="1405" x2="1458" y2="1785" class="grid"/>
+
+  <rect x="70" y="1801" width="1660" height="60" rx="10" class="warning"/>
+  <text x="94" y="1826" class="label">FLOPs MULTIPLIER ≠ WALL-CLOCK MULTIPLIER</text>
+  <text x="94" y="1849" class="small">自回归 decode 常因小 GEMM、KV movement 与同步获得更低 MFU；长度、E、old-logprob 重算、verifier 类型和 rollout 并发都会改变真实时间。</text>
+
+  <!-- KV and placement -->
+  <rect x="40" y="1909" width="1720" height="746" rx="18" class="panel"/>
+  <text x="70" y="1949" class="section">4 · Rollout KV × role placement：同一份 aggregate 总账可以得到完全不同的单卡峰值</text>
+  <text x="70" y="1977" class="small">下面把 SFT trainer 与 rollout engine 放进一个 2×H100 80GB 规划题；reserve 明确排除 rollout KV 与第二份 inference weights。</text>
+
+  <rect x="70" y="2010" width="510" height="278" rx="15" class="cyan"/>
+  <text x="96" y="2047" class="stage">ROLLOUT KV CACHE · BF16</text>
+  <text x="96" y="2084" class="formula-small">M_KV = Nseq × Tcache × L × 2(K+V)</text>
+  <text x="96" y="2108" class="formula-small">       × Hkv × dhead × dtype_bytes</text>
+  <text x="96" y="2145" class="body">64 seq × 2048 cached tokens × 32 layers</text>
+  <text x="96" y="2175" class="body">× 2 × 8 KV heads × 128 × 2 bytes</text>
+  <text x="96" y="2216" class="metric">= 17.180 GB total</text>
+  <text x="96" y="2248" class="small">Tcache = prompt + generated tokens；paged-block 碎片另计</text>
+  <text x="96" y="2274" class="small">标准 teacher-forced SFT persistent generation KV = 0</text>
+
+  <rect x="645" y="2010" width="1085" height="278" rx="15" class="blue"/>
+  <text x="671" y="2047" class="stage">2×H100 TRAINER · ZeRO-3 / FSDP PLANNING ENVELOPE</text>
+  <text x="671" y="2084" class="body">16 B/P policy states 完美分片到 D_shard=2；B_local=1，S=2048，checkpoint activation k=1</text>
+  <text x="671" y="2116" class="body">显式假设 temp + communication + runtime reserve R = 8 GB/rank</text>
+  <rect x="671" y="2140" width="1033" height="74" rx="12" fill="#ffffff" stroke="#93c5fd" stroke-width="1.3"/>
+  <text x="695" y="2170" class="formula">M_plan/rank = 112/2 + 0.536870912 + 8</text>
+  <text x="695" y="2199" class="metric-small">= 64.536870912 GB ≈ 64.537 GB/rank</text>
+  <text x="671" y="2248" class="pass">PASS · nominal 80GB headroom = 15.463GB/rank</text>
+  <text x="671" y="2274" class="small">前提：8GB reserve 足以覆盖当前 FSDP wrap unit 的 materialization / workspace，且没有未计的 model copy。</text>
+
+  <rect x="70" y="2316" width="510" height="282" rx="15" class="good"/>
+  <text x="96" y="2353" class="stage">COLOCATED · 64 SEQ TOTAL / 2 RANKS</text>
+  <text x="96" y="2390" class="body">KV 均分：17.180 / 2 = 8.590 GB/rank</text>
+  <text x="96" y="2422" class="formula">64.537 + 8.590 = 73.127 GB/rank</text>
+  <text x="96" y="2461" class="pass">CONDITIONAL PASS · 6.873GB nominal headroom</text>
+  <text x="96" y="2494" class="small">仅当 requests/KV 确实均分，且 rollout 复用 trainer weights、</text>
+  <text x="96" y="2518" class="small">没有第二份 engine allocation；若再加 BF16 copy 14GB → FAIL。</text>
+  <text x="96" y="2551" class="small">真实判断需用 actual placement + peak allocated/reserved 校准。</text>
+
+  <rect x="645" y="2316" width="510" height="282" rx="15" class="red"/>
+  <text x="671" y="2353" class="stage">COLOCATED · 64 SEQ ON EACH RANK</text>
+  <text x="671" y="2390" class="body">KV 未按两 rank 均分：17.180 GB/rank</text>
+  <text x="671" y="2422" class="formula">64.537 + 17.180 = 81.717 GB/rank</text>
+  <text x="671" y="2461" class="fail">FAIL · 已超过名义 80GB，尚未计第二份 weights</text>
+  <text x="671" y="2494" class="small">“集群总 KV 是 17.18GB”不足以判断单卡；必须写清</text>
+  <text x="671" y="2518" class="small">sequence ownership、KV-head sharding、TP/PP 与并发调度。</text>
+  <text x="671" y="2551" class="small">weight sync 的 staging / transfer buffer 也可能形成额外峰值。</text>
+
+  <rect x="1220" y="2316" width="510" height="282" rx="15" class="green"/>
+  <text x="1246" y="2353" class="stage">DISAGGREGATED · SEPARATE ROLLOUT GPU</text>
+  <text x="1246" y="2390" class="body">Trainer ranks 保持 64.537 GB/rank</text>
+  <text x="1246" y="2422" class="formula">rollout = weights 14 + KV 17.180 + R 8</text>
+  <text x="1246" y="2454" class="metric-small">= 39.180 GB on rollout GPU</text>
+  <text x="1246" y="2491" class="pass">PASS · 同卡再放 BF16 ref → 53.180GB</text>
+  <text x="1246" y="2524" class="small">代价转为额外 GPU、weight-sync bandwidth、freshness 与</text>
+  <text x="1246" y="2548" class="small">调度等待；memory pass 仍不等于 time/cost pass。</text>
+  <text x="1246" y="2577" class="small">量化 rollout/ref 需另证数值一致性，不可按理想 INT4 直接拍板。</text>
+
+  <rect x="70" y="2614" width="1660" height="24" rx="8" fill="#bbf7d0"/>
+
+  <!-- Final interpretation -->
+  <rect x="40" y="2679" width="1720" height="136" rx="18" class="hero"/>
+  <text x="70" y="2718" class="section">最终读图顺序</text>
+  <text x="260" y="2718" class="label">① 一份 policy 账本　→　② stage 角色与 pass　→　③ placement / lifetime　→　④ per-rank peak　→　⑤ pilot 校准</text>
+  <text x="260" y="2754" class="body">Aggregate role bytes 只回答“整个 stage 管理多少状态”；per-rank peak 才回答“某张卡某一时刻是否 OOM”。</text>
+  <text x="260" y="2786" class="small">FLOPs 给算术工作下界；autoregressive efficiency、通信、同步、eval/checkpoint 与单价共同决定 wall-clock / cost。</text>
+
+  <text x="50" y="2842" class="tiny">Illustrative planning example · decimal GB · assumptions must be replaced by pinned model config, actual role placement, measured dtypes, memory snapshots and profiler evidence.</text>
+</svg>

@@ -1,0 +1,229 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="3400" viewBox="0 0 1800 3400" role="img" aria-labelledby="title desc">
+  <title id="title">Day 09 mixture composition and experimental implications</title>
+  <desc id="desc">A Chinese visual companion comparing example, input-token, and supervised-token shares across four skills, synthetic-data exposure, equal-supervised-token Mix A and Mix B workloads, the finance budget bottleneck, and the scoped meaning of duplicate and contamination checks.</desc>
+
+  <defs>
+    <linearGradient id="heroGradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#17354b"/>
+      <stop offset="1" stop-color="#244f63"/>
+    </linearGradient>
+    <linearGradient id="mixGradient" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#e6f6f0"/>
+      <stop offset="1" stop-color="#edf4ff"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="160%">
+      <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#17354b" flood-opacity="0.12"/>
+    </filter>
+    <style>
+      text { font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; fill: #183247; }
+      .title { font-size: 52px; font-weight: 760; fill: #ffffff; }
+      .subtitle { font-size: 23px; font-weight: 520; fill: #d6e8f0; }
+      .eyebrow { font-size: 17px; font-weight: 760; letter-spacing: 2.1px; fill: #8ed8cf; }
+      .section { font-size: 30px; font-weight: 760; }
+      .section-sub { font-size: 18px; fill: #5b7384; }
+      .card-title { font-size: 23px; font-weight: 740; }
+      .body { font-size: 19px; }
+      .small { font-size: 16px; fill: #5b7384; }
+      .tiny { font-size: 14px; fill: #6c8291; }
+      .metric { font-size: 39px; font-weight: 780; }
+      .metric-small { font-size: 28px; font-weight: 760; }
+      .metric-label { font-size: 15px; font-weight: 650; fill: #607989; }
+      .mono { font-family: "SFMono-Regular", Consolas, monospace; font-size: 16px; fill: #385366; }
+      .bar-label { font-size: 17px; font-weight: 720; fill: #ffffff; }
+      .table-head { font-size: 15px; font-weight: 760; letter-spacing: .8px; fill: #607989; }
+      .table-cell { font-size: 17px; font-weight: 620; }
+      .panel { fill: #ffffff; stroke: #d7e2e8; stroke-width: 1.5; }
+      .soft { fill: #edf3f6; stroke: #d7e2e8; stroke-width: 1.3; }
+      .general { fill: #4a95c2; }
+      .math { fill: #8b63b8; }
+      .code { fill: #49a97e; }
+      .finance { fill: #d17843; }
+      .divider { stroke: #d7e2e8; stroke-width: 1.4; }
+      .dash { stroke: #8ba1af; stroke-width: 2; stroke-dasharray: 8 8; fill: none; }
+    </style>
+  </defs>
+
+  <rect width="1800" height="3400" fill="#f3f7f9"/>
+
+  <!-- Hero -->
+  <rect width="1800" height="310" fill="url(#heroGradient)"/>
+  <circle cx="1585" cy="20" r="210" fill="#53a6a2" opacity="0.14"/>
+  <circle cx="1700" cy="178" r="150" fill="#e2b56c" opacity="0.11"/>
+  <text x="90" y="72" class="eyebrow">POST-TRAINING BOOTCAMP · DAY 09 · FINDINGS COMPANION</text>
+  <text x="90" y="150" class="title">Mixture 口径、训练权重与实验成本</text>
+  <text x="90" y="202" class="subtitle">样本数接近均衡，不代表监督信号均衡；等 supervised tokens，也不代表等 forward compute。</text>
+  <rect x="90" y="238" width="675" height="46" rx="23" fill="#3f8d83"/>
+  <circle cx="118" cy="261" r="8" fill="#9ce8cf"/>
+  <text x="140" y="268" font-size="17" font-weight="700" style="fill:#ffffff">CLEAN POOL 7,860 · MIX BUDGET 246,936 SUPERVISED TOKENS</text>
+
+  <!-- Three takeaways -->
+  <g filter="url(#shadow)">
+    <rect x="70" y="350" width="1660" height="210" rx="28" class="panel"/>
+  </g>
+  <line x1="623" y1="388" x2="623" y2="522" class="divider"/>
+  <line x1="1176" y1="388" x2="1176" y2="522" class="divider"/>
+  <text x="115" y="420" class="metric" style="fill:#8b63b8">66.52%</text>
+  <text x="115" y="455" class="metric-label">clean supervised tokens from math</text>
+  <text x="115" y="500" class="body">math 仅占 23.89% examples，却主导训练信号。</text>
+  <text x="668" y="420" class="metric" style="fill:#2c7b76">+14.46%</text>
+  <text x="668" y="455" class="metric-label">Mix B input tokens versus Mix A</text>
+  <text x="668" y="500" class="body">两组监督预算相等，但 B 的 forward 工作量更大。</text>
+  <text x="1221" y="420" class="metric" style="fill:#c26c37">8.90%</text>
+  <text x="1221" y="455" class="metric-label">common budget as share of clean pool</text>
+  <text x="1221" y="500" class="body">finance token 供给是共同预算的 binding constraint。</text>
+
+  <!-- Section 1 -->
+  <text x="90" y="650" class="section">01 · 三种分母，得到三种完全不同的 mixture</text>
+  <text x="90" y="684" class="section-sub">Cohort：Step 10 clean parent pool。input tokens 包含 frozen template；supervised tokens 是 labels ≠ -100。</text>
+
+  <g filter="url(#shadow)">
+    <rect x="70" y="722" width="1660" height="860" rx="28" class="panel"/>
+  </g>
+
+  <!-- Legend -->
+  <circle cx="130" cy="785" r="10" class="general"/>
+  <text x="150" y="792" class="body">General</text>
+  <circle cx="335" cy="785" r="10" class="math"/>
+  <text x="355" y="792" class="body">Math</text>
+  <circle cx="500" cy="785" r="10" class="code"/>
+  <text x="520" y="792" class="body">Code</text>
+  <circle cx="660" cy="785" r="10" class="finance"/>
+  <text x="680" y="792" class="body">Finance</text>
+  <text x="1660" y="792" text-anchor="end" class="small">每条 bar = 100%</text>
+
+  <!-- Examples bar -->
+  <text x="120" y="865" class="card-title">Examples</text>
+  <text x="120" y="894" class="small">7,860 records</text>
+  <rect x="410" y="838" width="1250" height="72" rx="16" fill="#e7eef2"/>
+  <path d="M426 838 H726 V910 H426 Q410 910 410 894 V854 Q410 838 426 838 Z" class="general"/>
+  <rect x="726" y="838" width="299" height="72" class="math"/>
+  <rect x="1025" y="838" width="318" height="72" class="code"/>
+  <path d="M1343 838 H1644 Q1660 838 1660 854 V894 Q1660 910 1644 910 H1343 Z" class="finance"/>
+  <text x="568" y="882" text-anchor="middle" class="bar-label">25.24%</text>
+  <text x="876" y="882" text-anchor="middle" class="bar-label">23.89%</text>
+  <text x="1184" y="882" text-anchor="middle" class="bar-label">25.45%</text>
+  <text x="1502" y="882" text-anchor="middle" class="bar-label">25.42%</text>
+
+  <!-- Input bar -->
+  <text x="120" y="1015" class="card-title">Input tokens</text>
+  <text x="120" y="1044" class="small">4,351,883 tokens</text>
+  <rect x="410" y="988" width="1250" height="72" rx="16" fill="#e7eef2"/>
+  <path d="M426 988 H628 V1060 H426 Q410 1060 410 1044 V1004 Q410 988 426 988 Z" class="general"/>
+  <rect x="628" y="988" width="696" height="72" class="math"/>
+  <rect x="1324" y="988" width="224" height="72" class="code"/>
+  <path d="M1548 988 H1644 Q1660 988 1660 1004 V1044 Q1660 1060 1644 1060 H1548 Z" class="finance"/>
+  <text x="519" y="1032" text-anchor="middle" class="bar-label">17.45%</text>
+  <text x="976" y="1032" text-anchor="middle" class="bar-label">55.69%</text>
+  <text x="1436" y="1032" text-anchor="middle" class="bar-label">17.95%</text>
+  <text x="1604" y="1032" text-anchor="middle" class="bar-label">8.91%</text>
+
+  <!-- Supervised bar -->
+  <text x="120" y="1165" class="card-title">Supervised tokens</text>
+  <text x="120" y="1194" class="small">2,774,246 tokens</text>
+  <rect x="410" y="1138" width="1250" height="72" rx="16" fill="#e7eef2"/>
+  <path d="M426 1138 H682 V1210 H426 Q410 1210 410 1194 V1154 Q410 1138 426 1138 Z" class="general"/>
+  <rect x="682" y="1138" width="831" height="72" class="math"/>
+  <rect x="1513" y="1138" width="119" height="72" class="code"/>
+  <path d="M1632 1138 H1644 Q1660 1138 1660 1154 V1194 Q1660 1210 1644 1210 H1632 Z" class="finance"/>
+  <text x="546" y="1182" text-anchor="middle" class="bar-label">21.73%</text>
+  <text x="1098" y="1182" text-anchor="middle" class="bar-label">66.52%</text>
+  <text x="1573" y="1182" text-anchor="middle" class="bar-label">9.53%</text>
+  <path d="M1646 1210 L1646 1242 L1588 1242" class="dash"/>
+  <text x="1578" y="1248" text-anchor="end" class="small" style="fill:#b85f2e">finance 2.23%</text>
+
+  <!-- Exact table -->
+  <rect x="105" y="1280" width="1590" height="240" rx="20" fill="#f7fafb" stroke="#d7e2e8"/>
+  <text x="155" y="1325" class="table-head">SKILL</text>
+  <text x="470" y="1325" class="table-head">EXAMPLES</text>
+  <text x="850" y="1325" class="table-head">INPUT TOKENS</text>
+  <text x="1270" y="1325" class="table-head">SUPERVISED TOKENS</text>
+  <line x1="130" y1="1345" x2="1670" y2="1345" class="divider"/>
+  <circle cx="155" cy="1382" r="8" class="general"/><text x="177" y="1389" class="table-cell">General</text>
+  <text x="470" y="1389" class="table-cell">1,984 · 25.24%</text><text x="850" y="1389" class="table-cell">759,411 · 17.45%</text><text x="1270" y="1389" class="table-cell">602,901 · 21.73%</text>
+  <circle cx="155" cy="1424" r="8" class="math"/><text x="177" y="1431" class="table-cell">Math</text>
+  <text x="470" y="1431" class="table-cell">1,878 · 23.89%</text><text x="850" y="1431" class="table-cell">2,423,402 · 55.69%</text><text x="1270" y="1431" class="table-cell">1,845,315 · 66.52%</text>
+  <circle cx="155" cy="1466" r="8" class="code"/><text x="177" y="1473" class="table-cell">Code</text>
+  <text x="470" y="1473" class="table-cell">2,000 · 25.45%</text><text x="850" y="1473" class="table-cell">781,180 · 17.95%</text><text x="1270" y="1473" class="table-cell">264,296 · 9.53%</text>
+  <circle cx="155" cy="1508" r="8" class="finance"/><text x="177" y="1515" class="table-cell">Finance</text>
+  <text x="470" y="1515" class="table-cell">1,998 · 25.42%</text><text x="850" y="1515" class="table-cell">387,890 · 8.91%</text><text x="1270" y="1515" class="table-cell">61,734 · 2.23%</text>
+
+  <!-- Section 2 -->
+  <text x="90" y="1675" class="section">02 · Synthetic provenance：example share 低估了训练信号暴露</text>
+  <text x="90" y="1709" class="section-sub">Cohort：Step 3 pre-filter accepted pool（7,864）。来源声明是 provenance，不是逐样本质量判定。</text>
+  <g filter="url(#shadow)">
+    <rect x="70" y="1748" width="1660" height="360" rx="28" class="panel"/>
+  </g>
+  <text x="120" y="1825" class="card-title">Declared synthetic · example share</text>
+  <rect x="620" y="1788" width="1000" height="62" rx="15" fill="#e7eef2"/>
+  <rect x="620" y="1788" width="746" height="62" rx="15" fill="#8b63b8"/>
+  <text x="1332" y="1829" text-anchor="end" class="bar-label">74.57%</text>
+  <text x="120" y="1933" class="card-title">Declared synthetic · supervised-token share</text>
+  <rect x="620" y="1896" width="1000" height="62" rx="15" fill="#e7eef2"/>
+  <rect x="620" y="1896" width="978" height="62" rx="15" fill="#8b63b8"/>
+  <text x="1564" y="1937" text-anchor="end" class="bar-label">97.77%</text>
+  <rect x="120" y="2000" width="1500" height="72" rx="16" fill="#f5effa"/>
+  <text x="150" y="2030" class="body">含义：来源层面的 synthetic 风险会被长 response 放大。</text>
+  <text x="150" y="2057" class="small">不能把 “74.57% examples” 当成训练 exposure；也不能仅凭 synthetic 标签自动删除样本。</text>
+
+  <!-- Section 3 -->
+  <text x="90" y="2200" class="section">03 · Mix A vs Mix B：监督预算相等，实际 workload 不相等</text>
+  <text x="90" y="2234" class="section-sub">两组都从同一 clean parent pool、相同 preprocessing 与无放回选择构建；唯一目标变量是 slice ratio。</text>
+  <g filter="url(#shadow)">
+    <rect x="70" y="2272" width="1660" height="650" rx="28" fill="url(#mixGradient)" stroke="#cadce5" stroke-width="1.5"/>
+  </g>
+
+  <!-- Mix A -->
+  <rect x="105" y="2320" width="755" height="410" rx="24" fill="#ffffff" stroke="#9bcfba" stroke-width="2"/>
+  <text x="145" y="2370" class="eyebrow" style="fill:#2e8d70">MIX A · BALANCED</text>
+  <text x="145" y="2425" class="metric-small">25% · 25% · 25% · 25%</text>
+  <line x1="145" y1="2450" x2="820" y2="2450" class="divider"/>
+  <text x="145" y="2500" class="metric">246,936</text><text x="390" y="2500" class="metric-label">supervised tokens</text>
+  <text x="145" y="2570" class="metric-small">728,317</text><text x="340" y="2570" class="metric-label">input tokens</text>
+  <text x="145" y="2632" class="metric-small">2,730</text><text x="275" y="2632" class="metric-label">occurrences</text>
+  <rect x="145" y="2660" width="675" height="42" rx="12" fill="#e5f5ef"/>
+  <rect x="145" y="2660" width="229" height="42" rx="12" fill="#49a97e"/>
+  <text x="800" y="2688" text-anchor="end" class="body">label density 33.91%</text>
+
+  <!-- Mix B -->
+  <rect x="940" y="2320" width="755" height="410" rx="24" fill="#ffffff" stroke="#97b6e8" stroke-width="2"/>
+  <text x="980" y="2370" class="eyebrow" style="fill:#4b71a9">MIX B · CODE-TARGETED</text>
+  <text x="980" y="2425" class="metric-small">12.5% · 12.5% · 50% · 25%</text>
+  <line x1="980" y1="2450" x2="1655" y2="2450" class="divider"/>
+  <text x="980" y="2500" class="metric">246,936</text><text x="1225" y="2500" class="metric-label">supervised tokens</text>
+  <text x="980" y="2570" class="metric-small">833,607</text><text x="1175" y="2570" class="metric-label">input tokens</text>
+  <text x="980" y="2632" class="metric-small">3,078</text><text x="1110" y="2632" class="metric-label">occurrences</text>
+  <rect x="980" y="2660" width="675" height="42" rx="12" fill="#e8eef9"/>
+  <rect x="980" y="2660" width="200" height="42" rx="12" fill="#5b84c4"/>
+  <text x="1635" y="2688" text-anchor="end" class="body">label density 29.62%</text>
+
+  <rect x="105" y="2760" width="1590" height="116" rx="20" fill="#173f54"/>
+  <text x="145" y="2807" font-size="24" font-weight="760" style="fill:#ffffff">Mix B − Mix A</text>
+  <text x="390" y="2807" font-size="24" font-weight="760" style="fill:#9ce8cf">+105,290 input tokens · +14.46%</text>
+  <text x="1080" y="2807" font-size="24" font-weight="760" style="fill:#f4ca80">+348 occurrences · +12.75%</text>
+  <text x="145" y="2848" font-size="17" style="fill:#d6e8f0">训练比较应同时报告 supervised tokens、input tokens、optimizer updates、padding/packing 与 wall-clock；否则只控制了 objective 分母。</text>
+
+  <!-- Section 4 -->
+  <text x="90" y="3035" class="section">04 · Binding constraint 与证据边界</text>
+  <text x="90" y="3069" class="section-sub">预算结论来自 frozen manifests；duplicate / contamination 结论只在冻结 matcher contract 内成立。</text>
+
+  <!-- Finance chain -->
+  <rect x="70" y="3110" width="805" height="220" rx="26" fill="#fff8ec" stroke="#e4bd7a" stroke-width="1.8"/>
+  <text x="110" y="3160" class="card-title" style="fill:#a75c2d">Finance 是共同预算瓶颈</text>
+  <text x="110" y="3205" class="metric-small">61,734 available</text>
+  <text x="360" y="3205" class="body">÷ 25% required share</text>
+  <text x="110" y="3252" class="metric-small">= 246,936 common budget</text>
+  <text x="110" y="3294" class="small">仅占 clean pool 2,774,246 supervised tokens 的 8.90%；无放回、无答案截断。</text>
+
+  <!-- Evidence boundary -->
+  <rect x="905" y="3110" width="825" height="220" rx="26" fill="#f5f0fa" stroke="#b79ad1" stroke-width="1.8"/>
+  <text x="945" y="3160" class="card-title" style="fill:#76519a">“0 overlap” 的正确读法</text>
+  <text x="945" y="3202" class="body">0 exact · 0 near train/eval candidates</text>
+  <text x="945" y="3240" class="small">仅覆盖 frozen fields、NFKC/lowercase/whitespace normalization、</text>
+  <text x="945" y="3270" class="small">RapidFuzz ratio threshold 与三个已登记 boundary；不证明不存在语义改写污染。</text>
+  <text x="945" y="3306" class="tiny">Step 7：812 pairs = 20 manual keep_both + 792 policy-retained · 0 removals</text>
+
+  <!-- Footer -->
+  <rect x="0" y="3360" width="1800" height="40" fill="#17354b"/>
+  <text x="70" y="3387" font-size="14" style="fill:#c7dce6">Sources · day09-data-quality-audit.md · day09-decontamination-report.md · frozen Day 09 manifests</text>
+  <text x="1730" y="3387" text-anchor="end" font-size="14" font-weight="700" style="fill:#f4ca80">Gate C remains waived · 0 / 60 final occurrences reviewed</text>
+</svg>

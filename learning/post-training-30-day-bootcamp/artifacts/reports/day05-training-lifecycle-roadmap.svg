@@ -171,41 +171,41 @@
 
   <!-- Deep dive panels -->
   <rect x="40" y="1035" width="850" height="455" rx="18" class="panel"/>
-  <text x="70" y="1075" class="section">2A · Multi-head：切投影后的 Q/K/V，不切原始 X</text>
-  <text x="70" y="1103" class="small">每个 head 都能通过自己的 projection 读取完整 D；多次独立 softmax 提供多种 position routing。</text>
+  <text x="70" y="1075" class="section">2A · 真实 ms-swift codepath：从入口走到 backend</text>
+  <text x="70" y="1103" class="small">沿对象与委托关系定位；不在 wrapper 中寻找它交给 Trainer、Accelerate 或 backend 的工作。</text>
 
-  <rect x="70" y="1130" width="210" height="82" rx="12" class="model"/>
-  <text x="95" y="1162" class="label">Hidden X</text>
-  <text x="95" y="1188" class="formula">[B,T,D]</text>
+  <rect x="70" y="1130" width="210" height="82" rx="12" class="runtime"/>
+  <text x="95" y="1162" class="label">sft_main(args)</text>
+  <text x="95" y="1188" class="formula">CLI → SftArguments</text>
 
   <path d="M 280 1171 L 320 1171" class="line"/>
-  <rect x="320" y="1130" width="250" height="82" rx="12" class="model"/>
-  <text x="345" y="1162" class="label">Dense Q/K/V projection</text>
-  <text x="345" y="1188" class="formula">D → H × D_h</text>
+  <rect x="320" y="1130" width="250" height="82" rx="12" class="data"/>
+  <text x="345" y="1162" class="label">SwiftSft(args).main()</text>
+  <text x="345" y="1188" class="formula">pipeline orchestration</text>
 
   <path d="M 570 1171 L 610 1171" class="line"/>
   <rect x="610" y="1130" width="245" height="82" rx="12" class="model"/>
-  <text x="635" y="1162" class="label">Reshape by heads</text>
-  <text x="635" y="1188" class="formula">[B,H,T,D_h]</text>
+  <text x="635" y="1162" class="label">prepare model/template</text>
+  <text x="635" y="1188" class="formula">revision · dtype · adapter</text>
 
   <rect x="70" y="1240" width="785" height="78" rx="12" class="hero"/>
-  <text x="95" y="1272" class="label">关键：W_Q^(h) shape = [D_h, D]</text>
-  <text x="95" y="1298" class="body">一个 head 虽只输出 D_h 维，但每个输出维都可以组合原始 D 个 hidden dimensions。</text>
+  <text x="95" y="1272" class="label">SwiftSft.run：load dataset → template.encode → data_collator → Seq2SeqTrainer</text>
+  <text x="95" y="1298" class="body">Template 决定 token/label contract；Trainer 拥有通用 loop，model forward 产生 logits / loss。</text>
 
-  <rect x="70" y="1345" width="235" height="92" rx="12" class="model"/>
-  <text x="95" y="1377" class="label">独立 attention maps</text>
-  <text x="95" y="1403" class="formula">A_h [B,T,T]</text>
-  <text x="95" y="1424" class="tiny">跨 position 路由</text>
+  <rect x="70" y="1345" width="235" height="92" rx="12" class="data"/>
+  <text x="95" y="1377" class="label">compute_loss</text>
+  <text x="95" y="1403" class="formula">model(**batch)</text>
+  <text x="95" y="1424" class="tiny">目标函数与有效 token</text>
   <path d="M 305 1391 L 350 1391" class="line"/>
-  <rect x="350" y="1345" width="220" height="92" rx="12" class="model"/>
-  <text x="375" y="1377" class="label">Concat heads</text>
-  <text x="375" y="1403" class="formula">[B,T,H×D_v]</text>
-  <text x="375" y="1424" class="tiny">先保留各 head 消息</text>
+  <rect x="350" y="1345" width="220" height="92" rx="12" class="update"/>
+  <text x="375" y="1377" class="label">accelerator.backward</text>
+  <text x="375" y="1403" class="formula">delegate backward</text>
+  <text x="375" y="1424" class="tiny">accumulation / scaling</text>
   <path d="M 570 1391 L 615 1391" class="line"/>
-  <rect x="615" y="1345" width="240" height="92" rx="12" class="model"/>
-  <text x="640" y="1377" class="label">W_O fusion</text>
-  <text x="640" y="1403" class="formula">H×D_v → D</text>
-  <text x="640" y="1424" class="tiny">同一 position 内混合</text>
+  <rect x="615" y="1345" width="240" height="92" rx="12" class="runtime"/>
+  <text x="640" y="1377" class="label">DeepSpeed / FSDP</text>
+  <text x="640" y="1403" class="formula">shard · sync · step</text>
+  <text x="640" y="1424" class="tiny">PyTorch → NCCL / CUDA</text>
 
   <rect x="910" y="1035" width="850" height="455" rx="18" class="panel"/>
   <text x="940" y="1075" class="section">2B · Logits / Shift：一行 tensor code 计算全部位置</text>
@@ -298,56 +298,37 @@
   <text x="1420" y="1864" class="body">→ optimizer / LR / RNG / data cursor</text>
   <text x="1165" y="1888" class="tiny">相同 weights 不等于相同下一次 update</text>
 
-  <!-- Progress and handoff -->
+  <!-- Resume and evaluation boundaries -->
   <rect x="40" y="1965" width="1720" height="360" rx="18" class="panel"/>
-  <text x="70" y="2005" class="section">4 · 当前学习进度与完成 Day 5 的最后三步</text>
+  <text x="70" y="2005" class="section">4 · Continuous Resume 与 Eval correctness：同一份 weights 还不够</text>
 
-  <text x="70" y="2055" class="body">训练信号</text>
-  <rect x="210" y="2037" width="580" height="22" rx="11" class="track"/>
-  <rect x="210" y="2037" width="580" height="22" rx="11" class="track-done"/>
-  <text x="810" y="2055" class="small">已深入</text>
+  <rect x="70" y="2035" width="815" height="248" rx="14" class="state"/>
+  <text x="95" y="2070" class="label">Resume state × 遗漏后果</text>
+  <line x1="95" y1="2088" x2="860" y2="2088" class="divider"/>
+  <text x="95" y="2120" class="body">model parameters / buffers</text>
+  <text x="465" y="2120" class="small">只有它 = warm start，不保证下一次 update 连续</text>
+  <text x="95" y="2154" class="body">optimizer m/v · scaler</text>
+  <text x="465" y="2154" class="small">动量与缩放丢失；下一步梯度相同也会更新不同</text>
+  <text x="95" y="2188" class="body">scheduler · global_step</text>
+  <text x="465" y="2188" class="small">LR 与 cadence 错位</text>
+  <text x="95" y="2222" class="body">RNG · sampler · data cursor</text>
+  <text x="465" y="2222" class="small">下一批样本、dropout 与数据顺序分歧</text>
+  <text x="95" y="2256" class="body">layout / shard metadata</text>
+  <text x="465" y="2256" class="small">拓扑变化时需要 canonical state 或 reshard support</text>
 
-  <text x="70" y="2100" class="body">模型 Forward</text>
-  <rect x="210" y="2082" width="580" height="22" rx="11" class="track"/>
-  <rect x="210" y="2082" width="580" height="22" rx="11" class="track-done"/>
-  <text x="810" y="2100" class="small">已深入</text>
-
-  <text x="70" y="2145" class="body">Loss / Update</text>
-  <rect x="210" y="2127" width="580" height="22" rx="11" class="track"/>
-  <rect x="210" y="2127" width="550" height="22" rx="11" class="track-done"/>
-  <text x="810" y="2145" class="small">接近完成</text>
-
-  <text x="70" y="2190" class="body">Ownership</text>
-  <rect x="210" y="2172" width="580" height="22" rx="11" class="track"/>
-  <rect x="210" y="2172" width="525" height="22" rx="11" class="track-done"/>
-  <text x="810" y="2190" class="small">生产源码已映射</text>
-
-  <text x="70" y="2235" class="body">Checkpoint / Resume</text>
-  <rect x="210" y="2217" width="580" height="22" rx="11" class="track"/>
-  <rect x="210" y="2217" width="355" height="22" rx="11" class="track-partial"/>
-  <text x="810" y="2235" class="small">需纸面演练</text>
-
-  <line x1="900" y1="2032" x2="900" y2="2278" class="divider"/>
-
-  <rect x="935" y="2035" width="250" height="112" rx="12" class="partial"/>
-  <text x="960" y="2067" class="label">① Resume 演练</text>
-  <text x="960" y="2095" class="small">分别遗漏 optimizer、RNG、</text>
-  <text x="960" y="2117" class="small">data cursor，预测轨迹变化</text>
-
-  <rect x="1205" y="2035" width="250" height="112" rx="12" class="partial"/>
-  <text x="1230" y="2067" class="label">② 固化三份产物</text>
-  <text x="1230" y="2095" class="small">lifecycle · ownership</text>
-  <text x="1230" y="2117" class="small">resume checklist</text>
-
-  <rect x="1475" y="2035" width="250" height="112" rx="12" class="partial"/>
-  <text x="1500" y="2067" class="label">③ 脱稿口述</text>
-  <text x="1500" y="2095" class="small">raw sample → checkpoint</text>
-  <text x="1500" y="2117" class="small">并给出异常的首查证据</text>
-
-  <rect x="935" y="2175" width="790" height="104" rx="13" class="good"/>
-  <text x="960" y="2208" class="label">完成标准</text>
-  <text x="960" y="2237" class="body">能重建一个 SFT update；能指出 sharding/collective 的决定层与执行层；</text>
-  <text x="960" y="2263" class="body">能区分 model-only warm start 与 continuous resume，并解释遗漏关键状态的后果。</text>
+  <rect x="915" y="2035" width="815" height="248" rx="14" class="good"/>
+  <text x="940" y="2070" class="label">Eval mode × Autograd：两个正交开关</text>
+  <line x1="940" y1="2088" x2="1705" y2="2088" class="divider"/>
+  <text x="940" y="2120" class="formula">model.eval()</text>
+  <text x="1175" y="2120" class="small">改变 dropout 等 module behavior；不冻结参数</text>
+  <text x="940" y="2154" class="formula">torch.no_grad()</text>
+  <text x="1175" y="2154" class="small">停止 graph recording；降低 eval activation memory</text>
+  <text x="940" y="2194" class="body">Continuous resume smoke</text>
+  <text x="1175" y="2194" class="small">核对 step / LR / sample ID / RNG；首个 loss 应可解释</text>
+  <text x="940" y="2228" class="body">Capability evidence</text>
+  <text x="1175" y="2228" class="small">逐样本结果 + denominator + generation config</text>
+  <text x="940" y="2262" class="body">结论</text>
+  <text x="1175" y="2262" class="small">相同 weights ≠ 相同训练轨迹；aggregate metric ≠ 完整证据</text>
 
   <text x="50" y="2350" class="tiny">30-Day LLM Post-Training Bootcamp · Day 05 · CPU/source-trace day · artifacts/reports/day05-training-lifecycle-roadmap.svg</text>
 </svg>
