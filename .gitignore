@@ -4,6 +4,9 @@
 # Local IDE state
 /.idea/
 
+# Local service credentials
+/.env.e2b
+
 # Python caches
 __pycache__/
 *.py[cod]

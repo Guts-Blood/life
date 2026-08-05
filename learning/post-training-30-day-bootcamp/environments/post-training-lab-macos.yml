@@ -1,0 +1,47 @@
+name: post_training_lab
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11.15
+  - pip=26.2
+  - pip:
+      - accelerate==1.12.0
+      - addict==2.4.0
+      - attrdict==2.0.1
+      - binpacking==2.0.1
+      - dacite==1.9.2
+      - datasets==4.1.1
+      - einops==0.8.2
+      - fastapi==0.141.1
+      - gradio==5.50.0
+      - importlib_metadata==9.0.0
+      - json_repair==0.61.7
+      - matplotlib==3.11.1
+      - modelscope==1.39.1
+      - msgspec==0.21.1
+      - nltk==3.10.1
+      - numpy==2.3.4
+      - openai==2.53.0
+      - oss2==2.19.1
+      - pandas==2.3.3
+      - peft==0.18.0
+      - pyarrow==21.0.0
+      - pytest==7.4.4
+      - PyYAML==6.0.3
+      - RapidFuzz==3.14.3
+      - rfc8785==0.1.4
+      - rouge==1.0.1
+      - safetensors==0.7.0
+      - scipy==1.17.1
+      - sentencepiece==0.2.2
+      - simplejson==4.1.1
+      - sortedcontainers==2.4.0
+      - tensorboard==2.21.0
+      - tiktoken==0.13.0
+      - tokenizers==0.22.1
+      - torch==2.9.1
+      - transformers==4.57.3
+      - transformers_stream_generator==0.0.5
+      - trl==0.29.1
+      - uvicorn==0.52.1
+      - zstandard==0.25.0

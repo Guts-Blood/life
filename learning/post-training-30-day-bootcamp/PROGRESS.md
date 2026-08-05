@@ -2,9 +2,9 @@
 
 开始日期：`2026-07-27`  
 目标完成日期：`2026-08-25`  
-当前 Phase：`Week 2 Day 09 已完成；Day 10 Frozen eval baseline 为下一执行项`
+当前 Phase：`Week 2 Day 10 核心产物已完成；Day 11 tiny overfit 为下一执行项`
 
-当前最大阻塞：`Day 10 的持久化 model cache 与 GPU 运行窗口尚未固定；Day 09 Gate C 仍按 waiver 记录`
+当前最大阻塞：`none；Day 10 自动评测已完成，30 条人工复核保留为补充 gate，不阻塞 Day 11`
 
 状态使用：`not_started`、`in_progress`、`blocked`、`done`。Day 01–03 的 `done` 来自用户确认；未据此补写不存在的 artifact 或用时。
 
@@ -19,7 +19,7 @@
 | 07 | 周末：Week 1 复盘 | done | 2026-08-02 | | `artifacts/reports/week1-training-stage-decision-map.mmd`、`artifacts/reports/week1-gate-review.md` | Day 7 产物完成；Week 1 Gate 4/5，仅 stage-signal 独立口述复核待完成。 |
 | 08 | SFT 数据契约与 loss token | done | 2026-08-03 | | `inspect_sft_sample.py`、data contract、20 条 edge cases、token-label audit | 已冻结 Qwen tokenizer/template 契约，验证 role-aware assistant loss、causal shift、截断与零监督拒绝逻辑。 |
 | 09 | 数据质量、mixture 与 lineage | done | 2026-08-04 | | `artifacts/data/day09-dataset-manifest.json`、`artifacts/reports/day09-pipeline.svg`、`artifacts/reports/day09-mixture-findings.svg` | 完成 7,860 条 clean parent pool、等 supervised-token A/B mixture 与 frozen lineage/rebuild evidence。 |
-| 10 | Frozen eval baseline | not_started | 2026-08-05 | | | |
+| 10 | Frozen eval baseline | done | 2026-08-05 | | `artifacts/eval/day10-frozen-eval-manifest.json`、Base predictions、E2B code sidecar、`artifacts/reports/day10-base-baseline.md` | 冻结 160 条 eval；完成 112 条 dev Base 自动评测与重复性/重建验证，四-slice 15/112（code 0/28）；30 条人工复核仍为补充 gate，48 条 frozen_test 未消费。 |
 | 11 | SFT step 与 tiny overfit | not_started | 2026-08-06 | | | |
 | 12 | 受控 SFT 与 checkpoint 选择 | not_started | 2026-08-07 | | | |
 | 13 | 周末：Qwen/Tülu post-training | not_started | 2026-08-08 | | | |

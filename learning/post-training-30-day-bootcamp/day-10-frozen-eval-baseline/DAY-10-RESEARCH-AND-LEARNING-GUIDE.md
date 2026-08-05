@@ -3,7 +3,7 @@
 - 日期：`2026-08-04`
 - 适用任务：`Day 10 — Frozen Eval 与 Qwen3-0.6B Base Baseline`
 - 性质：学习路线、实验协议设计、文献预研与后续复用指南
-- 状态：`research_complete / execution_pending`
+- 状态：`base_dev_automated_eval_complete / human_review_pending`
 
 ## 0. Executive Summary
 
@@ -23,7 +23,7 @@ Day 10 的本质不是“跑一次 benchmark”，而是在第一次 SFT 前建�
 三个最重要的调研结论是：
 
 - `frozen_test` 的独立性来自开发期间**没有看过结果**，不只是没有把它写进 checkpoint-selection 代码；
-- 90–150 条样本适合作为学习型 pilot，但不足以可靠判断几个百分点的变化；
+- 当前 160 条、四 slice 样本适合作为学习型 pilot，但不足以可靠判断几个百分点的变化；
 - Qwen3-0.6B-Base 的 chat-template free-form baseline 是后续 SFT 的纵向锚点，不等同于 Base 能力的公平横向测量。
 
 ## 1. Repository Readiness
@@ -42,25 +42,21 @@ Day 08 已冻结以下真实资产，不应在 Day 10 重新研究或从远端 `
 
 来源：[`day08-sft-data-contract.md`](../artifacts/data/day08-sft-data-contract.md)。
 
-### 1.2 当前阻塞
+### 1.2 当前 readiness
 
-Day 09 的正式产物尚未生成。Day 10 可以先完成阅读、schema 和 protocol 草案，但在以下内容具备前，不应正式冻结 eval 或启动完整 Base baseline：
+Day 09 已以 `complete_with_gate_c_waiver` 完成：A/B manifests、四个 slice、160 条 candidate eval pool 与 train ↔ eval exact/near-overlap report 均已生成，自动验收为 44/44 tests 与 11/11 rebuild checks。Gate C 是用户接受的 0/60 occurrence-review 残余风险，不得改写成人工 QA passed，但不阻塞本轮学习实验。
 
-- `mix-A-balanced` 与 `mix-B-targeted` 的训练 manifest；
-- general/math/code 的 slice 定义；
-- candidate eval pool；
-- train ↔ eval exact/near-overlap report；
-- 对 overlap 的处理结果及处理后的新 hash。
+因此 Day 10 的 manifest/protocol 工程已 ready；pinned model config/weights 也已缓存并通过 exact hash。5-sample dry run、10-sample repeatability、112 条 dev Base generation 与 28 条 E2B HumanEval 强隔离评分均已完成。code 为 0/28，完整四-slice macro 为 13.39%。30 条 dev-only 人审 packet 已生成，但 human judgment 仍为 pending。
 
-原因是去污染会改变训练或评测样本集合。正确顺序必须是：
+Day 09/10 已完成的真实顺序是：
 
 ```text
 candidate pool
   -> overlap 检查
-  -> 人工确认
-  -> 删除/替换污染项
+  -> 20 个 near-pair 人工判定 keep_both（无删除）
+  -> Gate C 0/60 occurrence review 由用户 waiver
   -> 重算 train/eval hashes
-  -> 最终冻结 manifest
+  -> Day 10 最终冻结 manifest
 ```
 
 来源：[`Day 09 README`](../day-09-data-quality-mixture-lineage/README.md)。
@@ -130,7 +126,7 @@ Day 13 的 Tülu 3 × Qwen3 阅读属于外部校准旁支，不阻塞 Day 10。
 
 - sample IDs、split、slice、reference；
 - raw prompt 与最终 rendered prompt/input IDs；
-- base lineage、模型架构/config 与 tokenizer revision；被评测 checkpoint 的权重/hash 是唯一计划变化项；
+- tokenizer revision、rendering contract 与逐样本 rendered inputs；被评测 checkpoint/model identity 单独进入 run identity，不进入必须跨 checkpoint 相同的 measurement protocol；
 - template 内容、system 注入、`add_generation_prompt` 等 render flags；
 - max input/output length、EOS、stop strings/token IDs；
 - `do_sample`、temperature/top-p/top-k（不适用时也明确记录）；
@@ -174,7 +170,7 @@ sample identity
 
 Day 10 只能覆盖前两类；Day 12 的单 seed A/B 不能估计训练随机性。
 
-这里的“sample CI”有前提：只有样本从明确定义的任务总体按相应设计随机抽取时，区间才具有常规的重复抽样覆盖解释。若 90–150 条是人工 curated manifest，Wilson/bootstrap 更适合作为**固定 pilot 集上的敏感度与不确定性提示**，不能冒充对完整用户任务总体的概率推断。
+这里的“sample CI”有前提：只有样本从明确定义的任务总体按相应设计随机抽取时，区间才具有常规的重复抽样覆盖解释。若当前 160 条是配额选择的 manifest，Wilson/bootstrap 更适合作为**固定 pilot 集上的敏感度与不确定性提示**，不能冒充对完整用户任务总体的概率推断。
 
 ### 3.5 训练前决策
 
@@ -183,7 +179,7 @@ Day 10 只能覆盖前两类；Day 12 的单 seed A/B 不能估计训练随机�
 - eligible checkpoints；
 - primary metric；
 - target slice；
-- general/math/code guardrails；
+- code target 与 general/math/finance guardrails；
 - 最小有意义差异；
 - 允许退化阈值；
 - CI 与 paired-comparison 方法；
@@ -210,7 +206,6 @@ Day 10 只能覆盖前两类；Day 12 的单 seed A/B 不能估计训练随机�
 
 包含：
 
-- base lineage 与模型架构/config hash（不含本次被评测的权重）；
 - tokenizer/template revision/hash；
 - render flags；
 - decoding/stop/max length；
@@ -224,13 +219,12 @@ Day 10 只能覆盖前两类；Day 12 的单 seed A/B 不能估计训练随机�
 {
   "domain": "day10.measurement_protocol",
   "schema_version": 1,
-  "manifest_hash": "sha256:...",
-  "base_lineage_hash": "sha256:...",
-  "model_config_hash": "sha256:...",
-  "tokenizer_template_render": {},
+  "dataset_context_hash": "sha256:...",
+  "rendered_inputs_hash": "sha256:...",
+  "rendering_contract": {},
   "generation": {},
-  "extraction_scoring": {},
-  "aggregation_uncertainty": {}
+  "scorer_registry_hash": "sha256:...",
+  "aggregation_uncertainty_hash": "sha256:..."
 }
 ```
 
@@ -329,18 +323,21 @@ aggregation / report 改动
 ```json
 {
   "sample_id": "math-0001",
-  "split": "dev",
+  "evaluation_split": "dev",
   "slice": "math",
-  "source": "source-name",
-  "source_revision": "immutable-revision",
+  "source_lineage": {
+    "source": "source-name",
+    "revision": "immutable-revision",
+    "source_split": "upstream-test"
+  },
   "raw_prompt": "...",
   "raw_prompt_hash": "sha256:...",
   "rendered_prompt_hash": "sha256:...",
   "input_ids_hash": "sha256:...",
   "reference": "...",
   "reference_hash": "sha256:...",
-  "extractor_version": "math-answer-v1",
-  "scorer_version": "math-exact-v1",
+  "extractor_version": "gsm8k_final_number_extractor_v1",
+  "scorer_version": "gsm8k_numeric_exact_v1",
   "overlap_check": {
     "status": "no_unhandled_matches",
     "checked_against_manifest_hashes": ["sha256:mix-a...", "sha256:mix-b..."],
@@ -388,17 +385,16 @@ aggregation / report 改动
 
 ## 6. Scorer Contract by Slice
 
-### 6.1 General Instruction
+### 6.1 General Knowledge MCQ
 
-最容易成为协议盲区。
+本轮 general slice 实际是 MMLU knowledge MCQ proxy，不是完整的 instruction-following 评测。固定：
 
-优先级：
+- 只接受最终 `A/B/C/D` option label；
+- extractor：`mmlu_option_extractor_v2`；
+- scorer：`mmlu_exact_option_v2`；
+- 无法抽取计 `parse_error`，抽取成功但选项不同计 `wrong_answer`。
 
-1. 可机器验证的 instruction constraints；
-2. 明确、短小、可复核的 rubric；
-3. 最后才使用 model judge。
-
-如果使用 judge，必须冻结：judge model/revision、system/user prompt、decoding、rubric、aggregation，并用人工小样本校准 false positive/negative。judge 输出不能只保留最终分数。
+报告只能称它为 general-knowledge proxy，不能外推成通用指令遵循能力。
 
 ### 6.2 Math
 
@@ -411,7 +407,16 @@ aggregation / report 改动
 
 `parse_error` 与 `wrong_answer` 必须分开。
 
-### 6.3 Code
+### 6.3 Finance
+
+本轮使用 TAT-QA conservative normalized exact match：
+
+- 解析冻结的 `answer/answer_type/scale` reference；
+- 数字、千/百万/十亿和百分比 scale 必须一致；
+- multi-span 允许顺序无关，但不做 fuzzy/partial-credit matching；
+- extractor：`tatqa_final_answer_extractor_v3`；scorer：`tatqa_normalized_exact_v3`。
+
+### 6.4 Code
 
 固定：
 
@@ -423,20 +428,21 @@ aggregation / report 改动
 - compile/runtime/test failure taxonomy。
 
 生成代码应在隔离环境执行，不在宿主工作区直接运行不受信任输出。
+本机只有已废弃的 `sandbox-exec`，且没有可靠硬内存上限，因此本轮没有把它包装成强安全边界。正式评分使用固定 E2B template、逐样本 fresh sandbox、禁公网与 CPU/wall/memory/file/process limits；28 条均得到有效分数，25 条 syntax error、3 条 runtime error、0 条 infrastructure failure。
 
 ## 7. Statistical Plan
 
 ### 7.1 样本量边界
 
-90–150 条拆到三个 slice 后统计能力有限。以二元 score、真实率约 50% 的最不利位置估算：
+当前 160 条拆到四个 slice，并进一步分为每 slice 28 dev + 12 frozen_test，统计能力仍然有限。以二元 score、真实率约 50% 的最不利位置估算：
 
 | 每个 slice 样本数 | 95% Wilson interval 近似半宽 |
 |---:|---:|
-| 30 | ±16.8pp |
+| 12（每 slice frozen_test） | ±24.6pp |
+| 28（每 slice dev） | ±17.4pp |
 | 40 | ±14.8pp |
-| 50 | ±13.4pp |
-| 120（总体） | ±8.8pp |
-| 150（总体） | ±7.9pp |
+| 112（dev 总体） | ±9.1pp |
+| 160（总体） | ±7.7pp |
 
 上表按独立 Bernoulli 随机样本计算，只用于展示量级。对人工挑选、配额抽样或来源相关的 manifest，它不是完整总体置信区间；报告必须同时写明 sampling frame、挑选规则与来源聚类等限制。
 
@@ -584,10 +590,11 @@ Qwen3-0.6B-Base
 
 ### Gate 0 — Readiness（15–20 分钟）
 
-- [ ] 回读 Day 08 frozen contract，不重新下载 latest template；
-- [ ] 确认 Day 09 manifests/slices/overlap report；
-- [ ] 明确哪些内容仍是草案，哪些可以 freeze；
-- [ ] 确认磁盘、环境、模型缓存和输出路径。
+- [x] 回读 Day 08 frozen contract，不重新下载 latest template；
+- [x] 确认 Day 09 manifests/slices/overlap report；
+- [x] 明确哪些内容仍是草案，哪些可以 freeze；
+- [x] 确认磁盘、`post_training_lab` 环境和输出路径；
+- [x] 缓存 pinned model config/weights 并核对 exact hash。
 
 ### Step 1 — Directed Reading（45–50 分钟）
 
@@ -604,14 +611,16 @@ Qwen3-0.6B-Base
 
 ### Step 2 — Protocol First（55–65 分钟）
 
-- [ ] manifest schema；
-- [ ] per-slice scorer contract；
-- [ ] generation config；
-- [ ] output JSONL schema；
-- [ ] `protocol_hash/execution_protocol_hash/comparison_key/run_hash`；
-- [ ] selection-policy 草案。
+- [x] manifest schema；
+- [x] per-slice scorer contract；
+- [x] generation config；
+- [x] output JSONL schema；
+- [x] `protocol_hash/execution_protocol_hash/comparison_key/run_hash`；
+- [x] selection-policy 已预注册并冻结。
 
 ### Step 3 — Five-sample Dry Run（20–25 分钟）
+
+状态：已完成；dry run 发现并修复 MMLU/TAT-QA extractor 缺陷后，正式协议升级并冻结为 scorer registry v3。
 
 逐条人工检查：
 
@@ -628,6 +637,8 @@ raw prompt
 
 ### Step 4 — Dev Baseline（60–80 分钟）
 
+状态：112/112 dev generation 已完成；48 条 frozen_test 未生成。
+
 - deterministic generation；
 - 保存 raw token IDs/text；
 - 不因 Base bad case 临时优化 prompt；
@@ -636,13 +647,13 @@ raw prompt
 
 ### Step 5 — Audit and Pre-registration（45–55 分钟）
 
-- [ ] 10 条重复性；
-- [ ] dev 人审 30 条；
-- [ ] error taxonomy；
-- [ ] aggregate/slice/CI；
-- [ ] paired-comparison 方法；
-- [ ] Day 12 selection policy；
-- [ ] limitations/known blind spots。
+- [x] 10 条重复性；
+- [ ] dev 人审 30 条（packet 已生成，human judgment pending）；
+- [x] 自动证据支持的初始 error taxonomy；
+- [x] aggregate/slice/CI（完整四-slice macro 13.39%；宏平均的 stratified bootstrap 尚未计算）；
+- [x] paired-comparison 方法；
+- [x] Day 12 selection policy；
+- [x] limitations/known blind spots。
 
 ## 12. Literature Review
 
@@ -714,7 +725,7 @@ OLMES 在多种 Base 模型和 10 个 MCQA 任务上系统比较：
 
 #### 迁移边界
 
-OLMES 主要研究 MCQA。Day 10 的 general/math/code 是生成式协议，因此应复用 OLMES 的**标准化原则**，不应把其具体 suite 当成现成替代品。
+OLMES 主要研究 MCQA。Day 10 的 general knowledge/math/code/finance 使用统一 chat-generation 纵向协议，因此应复用 OLMES 的**标准化原则**，不应把其具体 suite 当成现成替代品。
 
 ### 12.3 P0 — Tülu 3: Pushing Frontiers in Open Language Model Post-Training
 
@@ -867,7 +878,7 @@ Day 10 只需读 §2、§3.3 和 0.6B 相关表格；完整 post-training §4 �
 
 不建议 Day 10 为了“学 harness”通读全仓或构建 auto-eval 系统。课程目标是 measurement contract，而不是框架工程。
 
-如果自定义三类 scorer 与 lm-eval 集成成本过高，可以写窄范围 eval driver，但必须保留同等级别的 config 展开、逐样本 logging 和 hash。
+如果自定义四类 scorer 与 lm-eval 集成成本过高，可以写窄范围 eval driver，但必须保留同等级别的 config 展开、逐样本 logging 和 hash。
 
 ### 13.2 OLMES 应如何使用
 
@@ -878,7 +889,7 @@ Day 10 只需读 §2、§3.3 和 0.6B 相关表格；完整 post-training §4 �
 - prompt/few-shot/normalization 如何标准化；
 - instance-level outputs 如何保存。
 
-不要求跑完整 OLMES 10-task suite，也不应拿其 MCQA average 替代当前 general/math/code 目标。
+不要求跑完整 OLMES 10-task suite，也不应拿其 MCQA average 替代当前 general knowledge/math/code/finance 目标。
 
 ### 13.3 Version Pinning
 
@@ -898,7 +909,7 @@ Day 10 只需读 §2、§3.3 和 0.6B 相关表格；完整 post-training §4 �
 # Day 12 Checkpoint Selection Policy
 
 ## Questions
-1. Matched-budget causal contrast：只改变 SFT mixture 比例时，B 相对 A 是否改善预注册 target slice，且不造成不可接受的 general/math/code 回退？
+1. Matched-budget causal contrast：只改变 SFT mixture 比例时，B 相对 A 是否改善预注册 code target slice，且不造成不可接受的 general/math/finance 回退？
 2. Within-run selection：A、B 各自哪一个训练进度最符合预注册的 checkpoint 选择规则？
 3. End-to-end policy：A-selected 与 B-selected 的最终表现如何？若二者 token budget 不同，只作选择策略比较，不声称是纯 mixture 效应。
 
@@ -963,8 +974,11 @@ Day 10 只需读 §2、§3.3 和 0.6B 相关表格；完整 post-training §4 �
 
 - `../artifacts/eval/day10-frozen-eval-manifest.json`（冻结 dev/frozen 分配；Day 10 不揭示 frozen 结果）
 - `../artifacts/eval/day10-qwen3-0.6b-base-predictions.jsonl`（**仅含 dev**，hash 后不可追加 frozen rows）
+- `../artifacts/eval/day10-base-human-review-packet-30.jsonl`（dev-only；judgment 当前全部 pending）
+- `../artifacts/reports/day10-base-baseline-summary.json`
 - `../artifacts/reports/day10-base-baseline.md`（只报告 Base dev）
 - `../artifacts/reports/day10-eval-protocol.md`
+- `../artifacts/configs/day12-checkpoint-selection-policy.json`
 
 ### 15.2 Day 12 downstream frozen artifacts
 
@@ -989,27 +1003,29 @@ Day 10 只需读 §2、§3.3 和 0.6B 相关表格；完整 post-training §4 �
 
 ### 15.4 Day 10 final gate
 
-- [ ] Day 09 manifests 与 overlap report 已完成；
-- [ ] eval manifest 的 sample/split/slice/reference/source 均可追溯；
-- [ ] raw/rendered prompt 与 input IDs 有 hash；
-- [ ] template、render flags、generation、extractor、scorer、aggregation 与 execution protocol 均冻结；
-- [ ] 5-sample dry run 逐层检查通过；
-- [ ] 10 条重复 generation/raw IDs/parsed answers 已核对；
-- [ ] Base dev 逐样本 evidence 已保存；
-- [ ] 30 条人工审查仅来自 dev/audit split；
-- [ ] aggregate、slice、CI 与 failure taxonomy 齐全；
-- [ ] 对记录的 Day 09 manifest hashes 与 matcher/threshold，train/eval 无未处理高相似 overlap；
-- [ ] Day 12 metric/guardrail/selection/inconclusive 已预注册；
-- [ ] 当前 A/B manifests 与训练配置未因 Base dev 结果被原地改写；
-- [ ] frozen_test 未在 checkpoint selection 前泄露。
+- [x] Day 09 manifests 与 overlap report 已完成；
+- [x] eval manifest 的 sample/split/slice/reference/source 均可追溯；
+- [x] raw/rendered prompt 与 input IDs 有 hash；
+- [x] template、render flags、generation、extractor、scorer、aggregation 与 execution protocol 均冻结；
+- [x] 5-sample dry run 逐层检查通过；
+- [x] 10 条重复 generation/raw IDs/parsed answers 已核对；
+- [x] Base dev 逐样本 evidence 已保存；
+- [x] 30 条待审 packet 仅来自 dev/audit split；
+- [ ] 用户完成 30 条人工 judgment 并确认 failure taxonomy；
+- [x] aggregate、slice、CI 与初始 failure taxonomy 齐全；四-slice macro 为 13.39%；
+- [x] 对记录的 Day 09 manifest hashes 与 matcher/threshold，train/eval 无未处理高相似 overlap；
+- [x] Day 12 metric/guardrail/selection/inconclusive 已预注册；
+- [x] 当前 A/B manifests 与训练配置未因 Base dev 结果被原地改写；
+- [x] frozen_test 未在 checkpoint selection 前泄露。
+- [x] HumanEval 在固定强隔离 E2B sandbox 中完成评分（0/28）。
 
 ## 16. Recommended Decisions
 
 1. **采用严格 held-out 方案**：Day 10 不生成/查看 frozen outputs；Day 12 为 A/B 两个 run 各自选完 checkpoint 后，同时跑 Base、A-selected 与 B-selected。
 2. **Core 使用 chat-generation 纵向基线**；可选增加 loglikelihood sidecar，但分开报告。
-3. **将 150 条作为优先上限**，仍把小差异判为 `inconclusive`，不为得出 winner 扭曲统计解释。
+3. **冻结并使用全部 160 条；Day 10 只运行其中 112 条 dev**，仍把小差异判为 `inconclusive`，不为得出 winner 扭曲统计解释。
 4. **人工 taxonomy 只基于 dev**，并显式区分 generation/parse/scorer/capability。
-5. **general slice 优先采用可机器验证 constraints**，避免 Day 10 就引入未校准 LLM judge。
+5. **general slice 是 MMLU knowledge MCQ proxy**，采用 exact-option scorer；不要把它写成完整 instruction-following 能力。
 6. **保存 raw token IDs 和 raw text**，使 extractor/scorer 迭代不必重新租 GPU。
 7. **使用 `protocol_hash + execution_protocol_hash + comparison_key + run_hash`**，后续 Day 11/12/DPO/GRPO 只引用稳定 context，不复制后私改。
 8. **提前吸收 Day 21 policy**：minimum difference、tie-breaker、`inconclusive` 和 held-out confirmation 不应等到 Day 21 才首次定义。
