@@ -1,0 +1,43 @@
+{
+  "calibration_version": "day09_near_review_calibration_v1",
+  "decision_counts": {
+    "pending": 20
+  },
+  "inputs": {
+    "config_sha256": "7be1925b4ffc7893b5060e45cbd499ade88e0878b05ecfe5eeb83aa53dd44b25",
+    "near_candidate_jsonl_sha256": "12ad9b0ddcfb1d66105e68da6ee669ca0f7e97336d9934c1d0a58eaf19434b14",
+    "near_candidate_summary_sha256": "e7ffb19a1047a372a5dce2a5153d8221513bd5f37a181205391d38b2688a1a75",
+    "step6_summary_sha256": "a20c7828c6b1707d0baa91e0db4ee752b88f456766c50f26cac93bec9fc398a0"
+  },
+  "output": {
+    "path": "learning/post-training-30-day-bootcamp/artifacts/reports/day09-step7-near-review.jsonl",
+    "sha256": "1ce12035e4c862b3655e2b35ba87ef9cabad2482ed9f8b4c9f6ab2c4649cd1f6"
+  },
+  "pair_count": 20,
+  "selection_method": "within each ordered stratum, sort unique pairs by sha256(version + NUL + stratum name + NUL + candidate_id); exclude pairs already selected by an earlier stratum",
+  "source_pair_counts": {
+    "code / code": 10,
+    "finance / finance": 10
+  },
+  "status": "complete_review_package_pending_decisions",
+  "stratum_counts": {
+    "code_answer_90_95": 3,
+    "code_answer_95_100": 3,
+    "code_answer_exact": 3,
+    "code_prompt_90_95": 1,
+    "finance_answer_90_95": 1,
+    "finance_answer_95_100": 1,
+    "finance_complete_90_95": 2,
+    "finance_complete_95_100": 2,
+    "finance_prompt_90_95": 2,
+    "finance_prompt_95_100": 2
+  },
+  "training_pool_changed": false,
+  "validation_checks": {
+    "all_decisions_pending": true,
+    "pair_count_passed": true,
+    "pairs_unique": true,
+    "review_ids_unique": true,
+    "training_pool_unchanged": true
+  }
+}

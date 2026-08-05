@@ -2,7 +2,7 @@
 
 日期：`2026-08-04`
 
-状态：`not_started`
+状态：`complete_with_gate_c_waiver`
 
 强度：工作日 4–5 小时
 
@@ -26,15 +26,15 @@
 - 生成 source、skill、language、长度和 supervised-token 分布；每个 source 人工抽样 10 条并记录 accept/reject reason。
 - 做 exact dedup；对 near-duplicate 和 eval overlap 先输出候选及相似度，再人工确认，不静默删除。
 - 冻结 Day 12 的两个 manifest：
-  - `mix-A-balanced`：general/math/code 三个 slice 等 supervised-token 配比；
-  - `mix-B-targeted`：提高一个预注册目标 slice 的配比。
+  - `mix-A-balanced`：general/math/code/finance 四个 slice 各占 25% supervised tokens；
+  - `mix-B-targeted`：finance 固定 25%，code 从 25% 提高到 50%。
 
   两组使用相同 source pool、质量过滤、总 supervised tokens 和 preprocessing；唯一实验变量是 mixture 比例。
 
 ## 训练 / 实验（45–60 分钟）
 
 - 不训练模型。
-- 对 A/B manifest 各抽样 30 条，验证内容质量和实际 supervised-token 比例。
+- 原计划对 A/B manifest 各抽样 30 条；用户明确豁免 Gate C，因此实际为 0/60，不声称人工 QA 通过。
 - 将 Day 10 的候选 eval pool 与两个 train manifest 做 exact + near-overlap 检查；今天发现 overlap 就修训练 manifest 并重新计算 hash，Day 10 再冻结通过检查的 eval split。
 
 ## 资源与租卡
@@ -46,6 +46,8 @@
 
 ## 产物
 
+- [Day 09 完整 Pipeline（SVG）](../artifacts/reports/day09-pipeline.svg)
+- [Day 09 完整 Pipeline（PNG）](../artifacts/reports/day09-pipeline.png)
 - `../artifacts/data/day09-dataset-manifest.json`
 - `../artifacts/reports/day09-data-quality-audit.md`
 - `../artifacts/data/day09-mix-A-balanced.json`
@@ -54,16 +56,27 @@
 
 ## 验收
 
-- [ ] 任意训练 sample 都能追溯到 source、revision 和变换链。
-- [ ] 报告 example 数与 supervised-token 数两种分布，不用样本数代替训练权重。
-- [ ] exact duplicate、near-duplicate candidate、train/eval overlap 分开报告。
-- [ ] A/B 的总 supervised tokens 相同，除 mixture 比例外的训练输入条件一致。
-- [ ] 所有过滤和去污染都有 before/after count 与可复查的删除记录。
+- [x] 任意训练 sample 都能追溯到 source、revision 和变换链。
+- [x] 报告 example 数与 supervised-token 数两种分布，不用样本数代替训练权重。
+- [x] exact duplicate、near-duplicate candidate、train/eval overlap 分开报告。
+- [x] A/B 的总 supervised tokens 相同，除 mixture 比例外的训练输入条件一致。
+- [x] 所有过滤和去污染都有 before/after count 与可复查的删除记录。
+
+复现性验收：11/11 checks、44 tests 通过。Gate C 是显式 waiver，不是 passed review。
 
 ## Daily Log
 
 ### 最大的数据质量风险
 
+- Gate C 0/60 reviewed，是最终产物最大的残余质量风险。
+- Near matcher 的 0 contamination 结论只适用于冻结的 normalization、字段和 threshold。
+- A/B supervised tokens 相等，但 input tokens 为 728,317 vs 833,607；Day 12 仍需报告 compute 差异。
+
 ### A/B 实际 supervised-token 比例
 
+- Mix A：general/math/code/finance = 61,734/61,734/61,734/61,734，合计 246,936。
+- Mix B：general/math/code/finance = 30,867/30,867/123,468/61,734，合计 246,936。
+
 ### Day 10 第一动作
+
+冻结通过 Day 09 overlap audit 的 160 条 eval candidates 的完整 decoder/scorer/protocol，并在训练前运行 Base checkpoint per-sample baseline。
