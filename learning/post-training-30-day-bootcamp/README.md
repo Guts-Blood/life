@@ -1,6 +1,6 @@
 # 30-Day LLM Post-Training Bootcamp
 
-状态：`in_progress`（Day 01–03 已由用户确认完成；当前 Day 04）
+状态：`in_progress`（Week 1 Day 01–07 与 Week 2 Day 08–09 已完成；下一执行项为 Day 10）
 
 执行日期：`2026-07-27`（周一）至 `2026-08-25`（周二）  
 建议投入：工作日 4–5 小时；周末严格控制为 1 小时 reading/review，不租 GPU  
@@ -73,16 +73,16 @@
 - [x] [Day 01 · 07-27 — 环境与可复现基线](day-01-environment-baseline/README.md)
 - [x] [Day 02 · 07-28 — Transformer 参数、FLOPs、显存](day-02-transformer-accounting/README.md)
 - [x] [Day 03 · 07-29 — Roofline 与 H100](day-03-roofline-h100/README.md)
-- [ ] [Day 04 · 07-30 — 分布式并行地图](day-04-parallelism-map/README.md) ← current
-- [ ] [Day 05 · 07-31 — Training lifecycle 与框架职责图](day-05-training-lifecycle-framework-map/README.md)
-- [ ] [Day 06 · 08-01（周末 1h）— Post-training 中的 Scaling 问题](day-06-weekend-posttraining-scaling/README.md)
-- [ ] [Day 07 · 08-02（周末 1h）— Week 1 复盘](day-07-weekend-week1-review/README.md)
+- [x] [Day 04 · 07-30 — 分布式并行地图](day-04-parallelism-map/README.md)
+- [x] [Day 05 · 07-31 — Training lifecycle 与框架职责图](day-05-training-lifecycle-framework-map/README.md)
+- [x] [Day 06 · 08-01（周末 1h）— Post-training 中的 Scaling 问题](day-06-weekend-posttraining-scaling/README.md)
+- [x] [Day 07 · 08-02（周末 1h）— Week 1 复盘](day-07-weekend-week1-review/README.md)
 
 ### Week 2：数据契约与受控 SFT（08-03 至 08-09）
 
-- [ ] [Day 08 · 08-03 — SFT 数据契约与 loss token](day-08-sft-data-contract/README.md)
-- [ ] [Day 09 · 08-04 — 数据质量、mixture 与 lineage](day-09-data-quality-mixture-lineage/README.md)
-- [ ] [Day 10 · 08-05 — Frozen eval 与 Base baseline](day-10-frozen-eval-baseline/README.md)
+- [x] [Day 08 · 08-03 — SFT 数据契约与 loss token](day-08-sft-data-contract/README.md)
+- [x] [Day 09 · 08-04 — 数据质量、mixture 与 lineage](day-09-data-quality-mixture-lineage/README.md)
+- [ ] [Day 10 · 08-05 — Frozen eval 与 Base baseline](day-10-frozen-eval-baseline/README.md) ← next
 - [ ] [Day 11 · 08-06 — 一个 SFT step 与 tiny overfit](day-11-sft-step-tiny-overfit/README.md)
 - [ ] [Day 12 · 08-07 — 受控 SFT 与 checkpoint 选择](day-12-controlled-sft-checkpoints/README.md)
 - [ ] [Day 13 · 08-08（周末 1h）— Qwen/Tülu post-training 阅读](day-13-weekend-sft-reading/README.md)

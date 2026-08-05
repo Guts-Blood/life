@@ -2,9 +2,9 @@
 
 开始日期：`2026-07-27`  
 目标完成日期：`2026-08-25`  
-当前 Phase：`Day 05 — training lifecycle 与框架职责图`
+当前 Phase：`Week 2 Day 09 已完成；Day 10 Frozen eval baseline 为下一执行项`
 
-当前最大阻塞：`none`
+当前最大阻塞：`Day 10 的持久化 model cache 与 GPU 运行窗口尚未固定；Day 09 Gate C 仍按 waiver 记录`
 
 状态使用：`not_started`、`in_progress`、`blocked`、`done`。Day 01–03 的 `done` 来自用户确认；未据此补写不存在的 artifact 或用时。
 
@@ -14,11 +14,11 @@
 | 02 | Transformer accounting | done | 2026-07-28 | | | |
 | 03 | Roofline 与 H100 | done | 2026-07-29 | | | |
 | 04 | 分布式并行地图 | done | 2026-07-30 | | `day-04-parallelism-map/DAY-04-READING-QUIZ.md` | 已完成 sharding、collective、状态布局、并行组与首轮故障诊断。 |
-| 05 | Training lifecycle 与框架职责图 | in_progress | 2026-07-31 | | `day-05-training-lifecycle-framework-map/DAY-05-READING-QUIZ.md` | Socratic quiz 已开始。 |
-| 06 | 周末：Post-training scaling | not_started | 2026-08-01 | | | |
-| 07 | 周末：Week 1 复盘 | not_started | 2026-08-02 | | | |
-| 08 | SFT 数据契约与 loss token | not_started | 2026-08-03 | | | |
-| 09 | 数据质量、mixture 与 lineage | not_started | 2026-08-04 | | | |
+| 05 | Training lifecycle 与框架职责图 | done | 2026-07-31 | | `day-05-training-lifecycle-framework-map/DAY-05-READING-QUIZ.md`、codepath walkthrough、tiny causal LM | 已完成 guided quiz、`swift sft` 边界追踪与 training-state walkthrough。 |
+| 06 | 周末：Post-training scaling | done | 2026-08-01 | | `day-06-weekend-posttraining-scaling/README.md` | 完成 Tülu 3 × Applied Training crosswalk，区分 stage signal 与 memory/compute/time-cost feasibility。 |
+| 07 | 周末：Week 1 复盘 | done | 2026-08-02 | | `artifacts/reports/week1-training-stage-decision-map.mmd`、`artifacts/reports/week1-gate-review.md` | Day 7 产物完成；Week 1 Gate 4/5，仅 stage-signal 独立口述复核待完成。 |
+| 08 | SFT 数据契约与 loss token | done | 2026-08-03 | | `inspect_sft_sample.py`、data contract、20 条 edge cases、token-label audit | 已冻结 Qwen tokenizer/template 契约，验证 role-aware assistant loss、causal shift、截断与零监督拒绝逻辑。 |
+| 09 | 数据质量、mixture 与 lineage | done | 2026-08-04 | | `artifacts/data/day09-dataset-manifest.json`、`artifacts/reports/day09-pipeline.svg`、`artifacts/reports/day09-mixture-findings.svg` | 完成 7,860 条 clean parent pool、等 supervised-token A/B mixture 与 frozen lineage/rebuild evidence。 |
 | 10 | Frozen eval baseline | not_started | 2026-08-05 | | | |
 | 11 | SFT step 与 tiny overfit | not_started | 2026-08-06 | | | |
 | 12 | 受控 SFT 与 checkpoint 选择 | not_started | 2026-08-07 | | | |
