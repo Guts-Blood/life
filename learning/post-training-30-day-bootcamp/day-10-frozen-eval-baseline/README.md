@@ -49,6 +49,8 @@
 - `../artifacts/reports/day10-base-baseline-summary.json`
 - `../artifacts/reports/day10-base-baseline.md`
 - `../artifacts/reports/day10-eval-protocol.md`
+- [Day 10 Frozen Eval 总结图（SVG，可编辑）](../artifacts/reports/day10-frozen-eval-baseline.svg)
+- [Day 10 Frozen Eval 总结图（PNG，手机预览）](../artifacts/reports/day10-frozen-eval-baseline.png)
 - `../artifacts/configs/day12-checkpoint-selection-policy.json`
 - `day10_e2b_sandbox_config.json`
 - `score_day10_code_e2b.py`

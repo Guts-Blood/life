@@ -25,3 +25,4 @@ day-XX-<topic>-roadmap.svg
 - Day 07：周复盘与 Gate Review；复用 Day 01–06 的图和证据，不单独制作 SVG。
 - Day 08：[PNG 预览](./day-08-sft-data-contract-roadmap.png) · [SVG 源文件](./day-08-sft-data-contract-roadmap.svg)——从 raw schema、冻结 Chat Template、role-aware labels 与 causal shift，到三种 mask 分工、逐 token 审计和两阶段 validator。
 - Day 09：[流水线 PNG](../day09-pipeline.png) · [流水线 SVG](../day09-pipeline.svg) · [Mixture findings PNG](../day09-mixture-findings.png) · [Mixture findings SVG](../day09-mixture-findings.svg)——流水线图说明数据治理状态机；findings 图把三种 mixture 分母、synthetic exposure、等监督预算下的 workload 差异和证据边界展开为可核验结论。
+- Day 10：[PNG 预览](../day10-frozen-eval-baseline.png) · [SVG 源文件](../day10-frozen-eval-baseline.svg)——从冻结 suite、deterministic Base generation 与 E2B code scoring，到四-slice failure taxonomy、comparison identity 和 Day 12 gate。
