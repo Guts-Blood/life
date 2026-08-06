@@ -1,7 +1,7 @@
 # Scaling Book 与 Training 精读路线
 
 主教材：[How To Scale Your Model](https://jax-ml.github.io/scaling-book/)  
-适用范围：Day 01–30
+适用范围：30-Day Core（Day 01–30）+ Optional Scaled Teacher–Student Capstone（Day 31–42）
 
 状态：Day 01–03 已由用户确认完成；从 Day 04 起按本路线继续。
 
@@ -402,10 +402,158 @@ Daily Log 至少留下：三题答案、一个工程映射、一个证据路径�
 
 当日落地：从干净环境跑一条最小训练链，完成可评审的 post-training design 和 15 分钟综合口述；30B capacity 只允许作为 Stretch appendix。
 
-## 本月明确不做
+## Optional Week 5：Scale-up Teacher
+
+<a id="day-31"></a>
+
+### Day 31 — Capstone Charter、Domain Eval 与版本冻结
+
+阅读：[GKD/On-Policy Distillation](https://arxiv.org/abs/2306.13649) 的问题定义；当前 pinned 候选框架的官方 distillation/config 文档；回读 Day 10 held-out hygiene。
+
+- **对象/数据题**：`sft_train/policy_train/teacher_probe/trace_cold_start/dev/frozen` 为什么必须分开，哪些允许 teacher/student 消费？
+- **状态/训练题**：T0/T1/T2/S0/S1/S2/S3 的 parent checkpoint、objective 与 immutable identity 如何组成 DAG？
+- **诊断/判断题**：teacher/student 同系列但 token IDs 不同，为什么必须停止 token-level OPD？
+
+当日落地：charter、模型/框架 compatibility manifest、新 capstone eval suite 与预算/selection policy。
+
+<a id="day-32"></a>
+
+### Day 32 — Single/TP2 Parity 与 8B Capacity Plan
+
+阅读：[Megatron parallelism guide](https://docs.nvidia.com/megatron-core/developer-guide/latest/user-guide/parallelism-guide.html)、distributed optimizer 与 Day 18 runtime evidence。
+
+- **对象/数据题**：single 与 TP2 中 parameter/gradient/optimizer/activation shards、sample IDs 和 label tokens 如何对应？
+- **状态/训练题**：TP degree、sequence parallel、RNG、loss reduction 与 checkpoint metadata 如何改变可复现状态？
+- **诊断/判断题**：TP2 loss 分叉或更慢时，怎样区分数值错误、batch 口径、collective 和小模型通信开销？
+
+当日落地：4B parity report、checkpoint conversion evidence 与 measured 8B topology plan。
+
+<a id="day-33"></a>
+
+### Day 33 — 8B TP SFT Gate
+
+阅读：Day 08/11/17 的 token trace、tiny-overfit 和 resume contract；只回查 pinned framework 的 TP SFT/save/resume 文档。
+
+- **对象/数据题**：8B batch 如何从 raw sample 追到各 TP rank 的 input/label/loss？
+- **状态/训练题**：full-parameter update、distributed optimizer、RNG/data cursor 和 inference export 分别保存在哪里？
+- **诊断/判断题**：one-step 能跑但 resume/export 失败时，为什么不能启动长 SFT？
+
+当日落地：forward→update→overfit→save/reload→eval export 五级 gate。
+
+<a id="day-34"></a>
+
+### Day 34 — 8B Controlled SFT 与 T1 Selection
+
+阅读：Day 12/21 checkpoint selection policy、Day 15/16 的 packing/optimizer measured defaults。
+
+- **对象/数据题**：T0、SFT manifest、early/mid/final candidates 与 dev predictions 如何绑定？
+- **状态/训练题**：哪些 Day 15/16 参数只是小模型起始假设，哪些在 8B smoke 后才能冻结？
+- **诊断/判断题**：final loss 更低但 domain/general dev 不通过时，如何选择 T1 或返回 inconclusive？
+
+当日落地：T1 promotion manifest，包含 resumable state 和 inference export。
+
+<a id="day-35"></a>
+
+### Day 35 — Domain RL Contract 与 Teacher Readiness
+
+阅读：Day 24–29 的 trajectory/reward/replay/weight-version evidence；pinned RL backend 的 resource placement 文档。
+
+- **对象/数据题**：tool trajectory 中 assistant/tool/environment tokens、reward components 和 train mask 如何关联？
+- **状态/训练题**：8B learner TP2、rollout TP2、reference/reward workers 与 policy version 如何流动？
+- **诊断/判断题**：reward 提升时怎样排除格式、长度、伪造 observation 与 stale weight hacking？
+
+当日落地：8B RL runbook、placement map、teacher-promotion policy 与 hacking tests。
+
+<a id="day-36"></a>
+
+### Day 36 — 8B Domain RL 与 T2 Candidate Freeze
+
+阅读：pinned GRPO/RLVR objective、weight-sync 和 checkpoint 文档；不临时更换算法论文。
+
+- **对象/数据题**：每个 candidate 的 prompts、rollouts、rewards、logprobs、checkpoint 与 dev evidence 如何追踪？
+- **状态/训练题**：T1→T2 哪些 policy/optimizer/RNG/buffer 状态改变，teacher-serving 状态如何冻结？
+- **诊断/判断题**：T2 相对 T1 提升但尚无 S1 时，哪些结论可以写，哪些 teacher-advantage 结论必须延迟？
+
+当日落地：T2 candidate manifest；只 hash-lock，不提前宣称可蒸馏。
+
+## Optional Week 6：Student Controls、OPD 与 Final Comparison
+
+<a id="day-37"></a>
+
+### Day 37 — Common S1、Teacher Promotion 与 Direct RL
+
+阅读：Day 12 SFT promotion、Day 25 direct RL 和 Day 31 teacher-probe contract。
+
+- **对象/数据题**：T1/S1 如何共享 SFT manifest/token budget，S2/S3 如何共享 policy prompt universe？
+- **状态/训练题**：S1 分叉时哪些 checkpoint states 必须完全相同，S2 direct RL 更新哪些状态？
+- **诊断/判断题**：T2 分数更高但与 S1 token/output mode 不兼容时，为什么仍不能 promote 为 OPD teacher？
+
+当日落地：S1/S2 manifests、T2-vs-S1 advantage probe 与 frozen student budgets。
+
+<a id="day-38"></a>
+
+### Day 38 — Teacher-trace Cold-start Ablation
+
+阅读：[Rethinking OPD](https://arxiv.org/abs/2604.13016) 的 compatibility/cold-start 结论与 Day 09 lineage 方法。
+
+- **对象/数据题**：teacher trace 的 prompt、teacher hash、raw tokens、environment、reward 和接受理由如何版本化？
+- **状态/训练题**：S1→S1d 改变了 student 权重和预算，为什么不能仍把它叫共同起点？
+- **诊断/判断题**：如何区分 offline teacher imitation 的收益与后续 OPD 的增量？
+
+当日落地：trace manifest/audit 与独立 S1d ablation，不覆盖 Core S1。
+
+<a id="day-39"></a>
+
+### Day 39 — OPD One-update 与 Replay
+
+阅读：pinned OPD implementation 的 loss、teacher serving、same-tokenizer、resource pool 和 checkpoint 文档。
+
+- **对象/数据题**：student rollout token IDs、teacher payload、student logprob、distill mask 与 environment spans 如何逐 token 对齐？
+- **状态/训练题**：teacher 为什么必须只读，student rollout/train policy version 与 policy lag 如何限制？
+- **诊断/判断题**：distillation loss 非零但 teacher signal 错位时，哪条 replay evidence能最早发现？
+
+当日落地：student-generated one-update、teacher scoring payload、replay pack 与 version timeline。
+
+<a id="day-40"></a>
+
+### Day 40 — Controlled OPD 与 S3 Selection
+
+阅读：只回查 Day 39 已 pin 的 OPD recipe；不在长 run 期间引入新的 KL estimator 或 async mode。
+
+- **对象/数据题**：S3 candidates 如何绑定 S1/T2/policy prompts、teacher payloads、trained/rollout tokens 与 dev predictions？
+- **状态/训练题**：student optimizer、rollout buffer、teacher server 和 checkpoint cadence 如何同步？
+- **诊断/判断题**：teacher/student divergence 下降但 task success 不升时，怎样判断无效 imitation、capacity gap 或 scorer 盲区？
+
+当日落地：S3 selection、token-divergence slices 与完整成本账本。
+
+<a id="day-41"></a>
+
+### Day 41 — Matched Frozen Eval 与 Cost Accounting
+
+阅读：Day 10/21 held-out 与 paired comparison；不再阅读训练 recipe。
+
+- **对象/数据题**：`eval_suite_hash` 与 model-specific render/execution keys 为什么必须分开？
+- **状态/训练题**：所有 candidates 锁定、frozen 首次揭盲和 consumption record 的顺序是什么？
+- **诊断/判断题**：S3 更强但 teacher compute 更高时，怎样分开能力结论、效率结论和摊销假设？
+
+当日落地：T0/T1/T2/S0/S1/S2/S3 paired frozen evidence 与 fully-loaded/amortized cost report。
+
+<a id="day-42"></a>
+
+### Day 42 — Clean Reproduction 与 Capstone Report
+
+阅读：只使用 pinned manifests、runbooks、framework docs 和已有 evidence；不新增方法。
+
+- **对象/数据题**：另一环境重建 checkpoint DAG、OPD batch 和 E2E tool trajectory 需要哪些不可变对象？
+- **状态/训练题**：distributed restore、teacher/student versions、replay 与 scorer state 如何证明连续？
+- **诊断/判断题**：哪些 failure 是 scale/TP/teacher scoring 才暴露，哪些在 0.6B Core 已可提前阻止？
+
+当日落地：clean restore/replay/score、final report 与 evidence index。
+
+## 30-Day Core 明确不做
 
 - 不构建 auto-train scheduler、自动搜索器或 auto-harness 产品。
-- 不把 30B+ full training 或 8×H100 slime 当 Core 验收。
+- 不把 30B+ full training 或 8×H100 slime 当 30-Day Core 验收；Optional Capstone 仍限制为单节点 8B teacher/<=4B student，不自动扩到 30B。
 - 不通读 TPU/JAX API，不实现 NCCL collective 或手写 TP kernel。
 - 不以“章节读完”“loss 下降”或 aggregate score 单独作为完成标准。
 - 不让 Scaling Book 的纯推导挤占数据审计、训练恢复和 RL 数据流验证。

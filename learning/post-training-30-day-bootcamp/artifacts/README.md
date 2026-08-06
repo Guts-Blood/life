@@ -18,6 +18,7 @@
 run-YYYYMMDD-HHMM-<model>-<purpose>
 report-dayXX-<topic>.md
 config-dayXX-<topic>.yaml
+capstone-<T0|T1|T2|S0|S1|S2|S3>-<purpose>.<ext>
 ```
 
 ## 大文件规则
@@ -26,3 +27,18 @@ config-dayXX-<topic>.yaml
 - 为外部 checkpoint 保存绝对路径、模型 hash、config 和产生它的 command。
 - Eval 保存逐样本结果和 prompt/config hash。
 - 删除任何 checkpoint 前，先确认它是否是后续实验的唯一可复现依赖。
+
+## Capstone 外部 Checkpoint Registry
+
+8B/4B 权重不提交到 Git。每个外部 checkpoint manifest 至少记录：
+
+- role/ID（`T0/T1/T2/S0/S1/S2/S3`）与 parent checkpoint hash；
+- model/config/tokenizer/template revisions；
+- training framework/config/code/container/hardware；
+- TP/DP/PP、distributed optimizer 与 checkpoint shard metadata；
+- resumable state 路径和 inference export 路径；
+- conversion command、source/destination hashes 与 parity evidence；
+- dataset/eval suite、teacher 或 policy version（适用时）；
+- train/rollout/teacher-scoring GPU-hours。
+
+`artifacts/checkpoints/` 只存 registry/manifest，不存大权重本体。

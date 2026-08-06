@@ -78,6 +78,7 @@ environment + pinned versions
 - `../artifacts/reports/clean-reproduction.md`
 - 15 分钟口述录音/提纲与 evidence index
 - 可选 `30b-capacity-stretch-appendix.md`
+- `../artifacts/reports/phase1-capstone-handoff.md`（只列接口/readiness，不要求执行 Capstone）
 
 ## 最终验收
 
@@ -87,6 +88,19 @@ environment + pinned versions
 - [ ] slime Core 与 reward/replay evidence 可复查；8×H100 不作为毕业条件。
 - [ ] 30B capacity 仅为可选 appendix。
 - [ ] 完成 [`../PROGRESS.md`](../PROGRESS.md)，并列出五个仍需用实验回答的问题。
+
+## Optional Capstone Handoff
+
+Day 30 仍是 30-Day Core final，不因 Day 31–42 未执行而降级。额外生成 `phase1-capstone-handoff.md`，只汇总：
+
+- 可复用的 eval/scorer/consumption schema 与需新建的 capstone eval v2；
+- SFT recipe lock、selected-checkpoint promotion manifest 与 inference/resumable 两类路径；
+- length/packing、optimizer、resume state inventory 的 measured defaults 和禁止外推边界；
+- TP parity launcher、checkpoint conversion、trajectory/reward/replay/weight-version contracts；
+- pinned environment/container、known-good commands、evidence index；
+- 尚未满足的 4B/8B model/data/license/cache/topology/framework compatibility 和预算项。
+
+该 handoff 是 Day 31 readiness 输入，不预先宣称 OPD framework、teacher checkpoint 或 capstone dataset 已存在。
 
 ## Final Log
 

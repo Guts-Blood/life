@@ -55,6 +55,10 @@
 - [ ] 能解释 observed metrics 与 GRPO 公式中每个量的映射。
 - [ ] 没有把 TRL 和 ms-swift 的参数名或实现细节混为一谈。
 
+## Optional Capstone Handoff
+
+复用 direct-RL reward adapter、逐 trajectory/group 日志、offline reward audit、one-update gate 和 dev selection 方法。Day 25 的 0.6B math/format checkpoint 不是正式 S2；Day 37 必须从 capstone 的 exact 4B S1、shared policy prompts 和冻结 student budget重跑 direct-RL control。
+
 ## Daily Log
 
 ### Pinned versions / resolved config

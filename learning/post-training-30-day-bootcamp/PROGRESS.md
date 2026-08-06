@@ -41,6 +41,25 @@
 | 29 | slime min loop/reward/replay | not_started | 2026-08-24 | | | |
 | 30 | Post-training design/clean reproduction | not_started | 2026-08-25 | | | |
 
+## Optional Scaled Teacher–Student Capstone
+
+Day 31–42 无固定日期，在 30-Day Core 后按 readiness 与预算执行；不改变 `2026-08-25` Core 目标日期。
+
+| Day | 主题 | 状态 | 日期 | 用时 | 核心产物 | 一句话结论 |
+|---:|---|---|---|---:|---|---|
+| 31 | Capstone charter/domain eval/version freeze | not_started | unscheduled | | | |
+| 32 | 4B single/TP2 parity + 8B capacity plan | not_started | unscheduled | | | |
+| 33 | 8B TP SFT one-step/resume gate | not_started | unscheduled | | | |
+| 34 | 8B controlled SFT/T1 selection | not_started | unscheduled | | | |
+| 35 | Domain RL contract/teacher readiness | not_started | unscheduled | | | |
+| 36 | 8B domain RL/T2 candidate freeze | not_started | unscheduled | | | |
+| 37 | 4B anchor/teacher promotion/direct-RL S2 | not_started | unscheduled | | | |
+| 38 | Teacher-trace cold-start ablation | not_started | unscheduled | | | |
+| 39 | OPD one-update/teacher scoring/replay | not_started | unscheduled | | | |
+| 40 | Controlled OPD/S3 selection | not_started | unscheduled | | | |
+| 41 | Matched frozen eval/cost accounting | not_started | unscheduled | | | |
+| 42 | Capstone clean reproduction/final report | not_started | unscheduled | | | |
+
 ## 每周 Gate
 
 - [ ] Week 1：能从一个 training step 说明数据、模型、优化器、checkpoint 与 eval 的职责边界；能把 sharding 映射到 OOM、batch 和吞吐问题。
@@ -48,3 +67,5 @@
 - [ ] Week 3：能完成可验证 resume，做只改变一个变量的优化实验，并通过 failure injection 区分数据、数值、状态和系统故障。
 - [ ] Week 4：能审计 preference data、跑通 DPO 与小模型 GRPO，并画出 slime 的在线 RL 数据和状态流。
 - [ ] Final：能运行 slime 受控闭环，从干净环境复现最小 post-training pipeline，并用证据讲清数据、状态、Eval、RL 和失败归因。
+- [ ] Optional Capstone Week 5：4B single/TP2 parity 通过；8B 完成 TP SFT、domain RL，并冻结有可测 advantage 的 T2 teacher。
+- [ ] Optional Capstone Week 6：S2/S3 从共同 S1 分叉；完成 OPD replay、一次性 frozen confirmation、能力/成本对照与 clean reproduction。

@@ -63,6 +63,22 @@ prompt/data source
 - [ ] 至少一个 reward-hacking case 被 frozen correctness metric 揭示。
 - [ ] producer→schema→consumer 图可用于 Day 25/26 对照真实框架。
 
+## Optional Capstone Trajectory Schema v2
+
+保留 Day 24 RL schema v1，不覆盖。为 Day 31–42 fork [`../templates/opd-trajectory-schema-v2.json`](../templates/opd-trajectory-schema-v2.json)，在既有字段上增加可选：
+
+- `student_rollout_checkpoint_hash/policy_version`；
+- `teacher_key/checkpoint_hash/tokenizer_template_hash`；
+- exact rendered input/token IDs 与 alignment hash；
+- teacher sampled-token log-prob 或 top-k payload/hash；
+- student old/current log-prob；
+- KL/divergence estimator、direction、temperature/top-k/coefficient；
+- `distillation_mask` 与 tool/environment spans；
+- task reward 与 distillation signal 的不同字段；
+- deterministic replay key、policy lag 和 teacher-serving status。
+
+Day 24 Core 只需保证 schema 可向后扩展；不启动 teacher，不假定 slime v0.3.0 原生支持 OPD。
+
 ## Daily Log
 
 ### Object contracts

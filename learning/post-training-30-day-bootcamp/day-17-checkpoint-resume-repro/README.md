@@ -57,6 +57,10 @@
 - [ ] 给出 exactness 等级和逐 step 证据，不只给最终 loss。
 - [ ] 故障注入能在预期位置造成并定位分叉。
 
+## Optional Capstone Handoff
+
+Checkpoint audit schema 为 Capstone 增加：framework/model role、parent checkpoint hash、DP/TP/PP、distributed shard metadata、HF/inference export hash、conversion command/parity、rollout/data cursor 与 policy version。Teacher 权重本身只读，但 teacher serving revision/config 也属于冻结状态。Day 32/33 必须验证 distributed checkpoint → inference export → reload 的数值/生成 parity。
+
 ## Daily Log
 
 ### State inventory

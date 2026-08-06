@@ -230,6 +230,22 @@ Day 10 只能覆盖前两类；Day 12 的单 seed A/B 不能估计训练随机�
 
 `protocol_hash = H_canonical(上述结构化对象)`。不要用字符串拼接计算指纹。
 
+#### 跨模型规模的 suite identity
+
+`protocol_hash` 有意排除被评测 checkpoint/model identity；模型 ID、revision、config/weight hashes 进入 `run_hash`。因此 Base 与 SFT 在相同 inputs/rendering/generation/scorer/execution 下可以共享 `comparison_key`，而不会被误认为同一个 run。为 Day 31–42 的跨规模 outcome comparison，另定义不绑定 tokenizer、模板和渲染实现的 suite identity：
+
+```text
+eval_suite_hash = H_canonical({
+  domain, schema_version,
+  raw_task_manifest_hash,
+  references_and_tool_environment_hash,
+  scorer_registry_hash,
+  aggregation_uncertainty_hash
+})
+```
+
+跨模型 outcome table 至少要求相同 `eval_suite_hash`、sample IDs、references、scorer 与 aggregation。若 tokenizer/template、rendered inputs 和 execution 也相同，各模型可以共享 `comparison_key`；任一项不同就各自保留不同 key，并明确这只是同任务尺子的 outcome comparison，不是逐 token matched protocol。无论哪种情况，model/config/weight identity 都由各自 `run_hash` 区分。
+
 ### 4.3 EvalRunContext
 
 包含：

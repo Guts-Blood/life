@@ -57,6 +57,10 @@
 - [ ] 报告包含 LR、grad norm、clip、update/weight、loss 和吞吐时间线。
 - [ ] 给出“稳定默认值”和至少两个不应外推的边界。
 
+## Optional Capstone Handoff
+
+输出 optimizer/scheduler/batch assertion 的 resolved default 与稳定边界。Capstone 可把它作为 first smoke config，但 8B/4B full-parameter run 必须重新做 short LR/grad/update safety gate；不得把小模型的最佳 LR、microbatch 或 warmup 当作 scale-invariant 结论。
+
 ## Daily Log
 
 ### 预注册假设

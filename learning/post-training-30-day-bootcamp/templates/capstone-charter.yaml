@@ -1,0 +1,103 @@
+schema_version: 1
+status: draft
+experiment_id: null
+domain: tool_calling
+
+models:
+  teacher_base:
+    checkpoint_id: T0
+    model_id: null
+    revision: null
+    config_hash: null
+  student_base:
+    checkpoint_id: S0
+    model_id: null
+    revision: null
+    config_hash: null
+
+tokenizer_compatibility:
+  teacher_tokenizer_hash: null
+  student_tokenizer_hash: null
+  vocab_token_id_map_hash: null
+  added_special_tokens_hash: null
+  tool_chat_template_hash: null
+  golden_prompt_manifest_hash: null
+  golden_prompt_count: 20
+  exact_match_required: true
+  verified: false
+
+data_manifests:
+  sft_train: null
+  policy_train: null
+  teacher_advantage_probe: null
+  trace_cold_start: null
+  capstone_dev: null
+  capstone_frozen: null
+  overlap_report: null
+
+evaluation:
+  eval_suite_hash: null
+  scorer_registry_hash: null
+  environment_hash: null
+  primary_metric: executable_end_to_end_task_success
+  aggregation: null
+  guardrails: {}
+  minimum_meaningful_difference: null
+  confidence_interval: null
+  selection_policy_hash: null
+  frozen_consumption_record: null
+
+checkpoint_graph:
+  T1:
+    parent: T0
+    objective: full_parameter_sft
+  T2:
+    parent: T1
+    objective: domain_rl
+  S1:
+    parent: S0
+    objective: full_parameter_sft
+  S2:
+    parent: S1
+    objective: direct_domain_rl
+  S3:
+    parent: S1
+    objective: on_policy_distillation
+    teacher: T2
+  S1d:
+    parent: S1
+    objective: offline_teacher_trace_cold_start
+    optional: true
+  S3d:
+    parent: S1d
+    objective: on_policy_distillation_recovery
+    teacher: T2
+    optional: true
+
+matched_student_budgets:
+  student_trained_tokens: null
+  student_optimizer_updates: null
+  unique_policy_prompt_ids: null
+  prompt_exposures: null
+  student_rollout_token_cap: null
+  max_response_tokens: null
+  max_tool_turns: null
+  checkpoint_cadence: null
+
+cost_accounting:
+  teacher_preparation_gpu_hours: null
+  teacher_trace_gpu_hours: null
+  teacher_scoring_gpu_hours: null
+  student_rollout_gpu_hours: null
+  student_training_gpu_hours: null
+  evaluation_gpu_hours: null
+  amortization_assumption: null
+
+runtime:
+  framework_tag: null
+  framework_sha: null
+  container_digest: null
+  torch_cuda_nccl_lock: null
+  inference_backend_lock: null
+  single_node_core: true
+  gpu_hour_hard_cap: null

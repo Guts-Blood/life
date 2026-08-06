@@ -57,6 +57,10 @@
 - [ ] Frozen test 只评 selected checkpoints，保存逐样本结果和 slice 变化。
 - [ ] 结论包含支持证据、反例/bad cases 和适用边界；没有把两次小实验写成通用规律。
 
+## Optional Capstone Handoff（不增加 Day 12 Core）
+
+Day 12 额外固化一个通用 `selected-checkpoint-promotion` manifest 模板，至少包含 parent checkpoint、data/config/template hashes、累计 label tokens、dev selection evidence、可推理 export 路径/hash、可继续训练 state 路径/hash与转换 parity。0.6B checkpoint 不能成为 4B/8B 权重起点；可复用的是 SFT recipe/selection/checkpoint contract。Capstone 的 S1 必须用同一个 exact manifest 分叉 direct RL 与 OPD。
+
 ## Daily Log
 
 ### 预注册假设与阈值

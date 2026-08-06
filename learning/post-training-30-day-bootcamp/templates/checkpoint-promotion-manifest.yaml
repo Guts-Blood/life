@@ -1,0 +1,63 @@
+schema_version: 1
+checkpoint_id: null
+role: null
+status: candidate
+
+lineage:
+  parent_checkpoint_id: null
+  parent_checkpoint_hash: null
+  objective: null
+  model_id: null
+  model_revision: null
+  model_config_hash: null
+  tokenizer_hash: null
+  template_hash: null
+  dataset_manifest_hash: null
+  policy_prompt_manifest_hash: null
+  teacher_checkpoint_hash: null
+
+training:
+  framework_tag: null
+  framework_sha: null
+  resolved_config_hash: null
+  code_commit: null
+  container_digest: null
+  hardware_topology_hash: null
+  dp: null
+  tp: null
+  pp: null
+  trained_label_tokens: null
+  optimizer_updates: null
+  rollout_tokens: null
+  policy_version: null
+
+state:
+  resumable_checkpoint_path: null
+  resumable_checkpoint_hash: null
+  optimizer_state_present: false
+  scheduler_state_present: false
+  rng_state_present: false
+  data_or_rollout_cursor_present: false
+  distributed_shard_metadata_hash: null
+
+inference_export:
+  path: null
+  artifact_hash: null
+  conversion_command_hash: null
+  conversion_source_hash: null
+  parity_report: null
+
+selection:
+  eval_suite_hash: null
+  model_protocol_hash: null
+  comparison_key: null
+  dev_prediction_artifact_hash: null
+  selection_policy_hash: null
+  decision: null
+  guardrails_passed: false
+  frozen_consumed: false
+
+cost:
+  learner_gpu_hours: null
+  rollout_gpu_hours: null
+  teacher_scoring_gpu_hours: null

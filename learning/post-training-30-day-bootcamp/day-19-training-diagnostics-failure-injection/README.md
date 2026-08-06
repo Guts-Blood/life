@@ -57,6 +57,10 @@
 - [ ] 能区分“loss 正常但数据错”和“系统慢但优化正常”。
 - [ ] 输出可复用的五分钟/三十分钟诊断顺序。
 
+## Optional Capstone Failure Backlog
+
+将 Day 19 diagnostic bundle 扩展模板预留给：TP rank hang/shape mismatch、teacher OOM/timeout、teacher/student tokenizer or token-ID mismatch、teacher log-prob alignment、stale student rollout/weight sync 与 checkpoint conversion drift。今天不注入这些昂贵故障，只定义未来 evidence slots 和停止顺序。
+
 ## Daily Log
 
 ### Failure matrix

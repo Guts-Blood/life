@@ -33,6 +33,14 @@ Owner：Jiawei
 - GPU topology:
 - framework versions:
 - seed:
+- model role / checkpoint ID:
+- parent checkpoint hash:
+- teacher checkpoint hash（适用时）:
+- eval suite hash / model-specific comparison key:
+- DP/TP/PP and role placement:
+- student trained/update tokens:
+- student rollout tokens:
+- learner / rollout / teacher-scoring GPU-hours:
 
 ## Results
 
@@ -54,4 +62,3 @@ Owner：Jiawei
 ## Decision
 
 `adopt | reject | rerun | inconclusive`
-

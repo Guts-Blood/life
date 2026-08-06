@@ -70,6 +70,10 @@
 - [ ] 最小 topology、reward tests、debug/replay/full-loop gates 和预算已确定。
 - [ ] 8×H100 明确标为 Stretch。
 
+## Optional Capstone Handoff
+
+输出 runtime lock、resource-placement map、rollout/train object schema、debug/replay entrypoints 和 weight-sync evidence contract。当前 slime 主链只作为 RL runtime reference；除非 Day 31 对 pinned release 的官方代码确认 teacher scoring 与 OPD objective，不能假定 `v0.3.0` 能直接承担 Capstone OPD。Framework-selection spike 必须基于官方 release/docs/runtime dry run。
+
 ## Daily Log
 
 ### Tag / SHA / image / resolved paths

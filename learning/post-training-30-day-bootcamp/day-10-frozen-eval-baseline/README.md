@@ -63,6 +63,13 @@
 - [x] 对冻结的 Day 09 train manifests 与 matcher/threshold，train/eval 无未处理的高相似 overlap。
 - [x] Day 12 的成功阈值和 checkpoint 选择规则已在训练前冻结，并要求匹配 generation `comparison_key`、code execution protocol 与 `complete_comparison_key`。
 
+## Optional Capstone Handoff（不增加 Day 10 Core）
+
+- 复用 eval manifest/scorer registry、逐样本 prediction、selection policy 与 frozen-consumption ledger 的 schema。
+- Day 12 一旦揭盲 `frozen_test`，它只能作为已消费 regression suite；Day 31 必须建立新的 capstone domain/tool `dev/frozen` confirmation set。
+- 跨 8B/4B 比较使用同一个 `eval_suite_hash` 对齐 raw task IDs、references、environment/scorer 和 aggregation；只有 inputs/rendering/execution 也相同时才共享 `comparison_key`，model/config/weight identity 由各自 `run_hash` 区分。
+- Capstone baseline 要在训练前保存 T0/S0 dev evidence，并在所有 stage checkpoints 选定后一次性运行新 frozen suite。
+
 ## Daily Log
 
 ### Base 的四个主要 failure slice

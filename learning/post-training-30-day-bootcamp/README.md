@@ -4,7 +4,9 @@
 
 执行日期：`2026-07-27`（周一）至 `2026-08-25`（周二）  
 建议投入：工作日 4–5 小时；周末严格控制为 1 小时 reading/review，不租 GPU  
-主线：`数据 -> SFT -> 训练诊断与恢复 -> Preference/DPO -> Online RL -> 可复现训练设计`
+后置扩展：Day 31–42 无固定日期，有空且 readiness/budget 通过后执行
+
+主线：`数据 -> SFT -> 训练诊断与恢复 -> Preference/DPO -> Online RL -> 可复现训练设计 ->（Optional）8B Teacher RL -> 4B OPD`
 
 ## 本月真正要补什么
 
@@ -20,7 +22,7 @@
 
 《How To Scale Your Model》仍贯穿 30 天，但 Day 04 以后按训练问题精选。Scaling 题必须落到 `OOM、throughput、global batch、并行配置或 checkpoint`，不再重复纯公式推导。
 
-## 一个月后的毕业标准
+## 30-Day Core 毕业标准
 
 - [ ] 能从 raw sample 追到 rendered text、tokens、labels、loss mask、source/mixture metadata，并识别数据泄漏与模板错误。
 - [ ] 能解释 `forward -> loss -> backward -> gradient accumulation -> optimizer/scheduler -> checkpoint/eval`，并用 tiny overfit 验证训练链路。
@@ -32,18 +34,27 @@
 - [ ] 能用 ms-swift 跑 SFT、DPO 和小模型 GRPO，用 slime 跑一次受控在线 RL 闭环；能说明 Tulu/Open-Instruct、TRL、verl 提供的参照。
 - [ ] 能从干净环境复现一条最小训练链，并提交一份包含数据、状态、指标、失败处理和扩展边界的 training design。
 
+## Optional Capstone 毕业标准
+
+- [ ] 能用 single-GPU reference 验证 TP2 数值/状态 parity，并用 8B full-parameter TP run 解释真实容量与通信压力。
+- [ ] 能从 8B SFT checkpoint 运行 domain RL/RLVR，依据 dev、guardrails 和 reward-hacking audit 冻结 teacher。
+- [ ] 能从共同 <=4B SFT anchor 分叉 direct RL 与 OPD，保存 student rollout、teacher log-prob、mask、版本和 replay evidence。
+- [ ] 能在新 frozen suite 上比较 8B teacher、4B direct-RL、4B OPD 的能力与总 GPU 成本，并允许结论为 `inconclusive`。
+
 ## 框架各自承担什么
 
 | 角色 | 本月定位 | 是否实跑 |
 |---|---|---|
-| [modelscope/ms-swift](https://github.com/modelscope/ms-swift) | 统一的小模型 SFT、DPO、GRPO 实验入口 | Core |
+| [modelscope/ms-swift](https://github.com/modelscope/ms-swift) | 统一的小模型 SFT、DPO、GRPO 实验入口；Capstone 候选 SFT/GRPO/GKD/OPD 主栈 | 30-Day Core；Capstone 运行时 pin 正式支持版本 |
 | [THUDM/slime](https://github.com/THUDM/slime) | 理解并运行 Megatron train、SGLang rollout、reward、buffer、weight sync 的在线 RL 闭环 | Core；8×H100 仅 Stretch |
 | [AllenAI Open Instruct/Tülu](https://allenai.github.io/open-instruct/) | 参照公开的 post-training stage、数据 mixture 与 recipe | 阅读/对照 |
 | [Hugging Face TRL](https://huggingface.co/docs/trl/) | 用紧凑 trainer API 对照 SFT/DPO/GRPO 的输入输出 | 阅读/小型对照 |
-| [verl](https://verl.readthedocs.io/) | 对照 actor/rollout/ref/reward/resource-pool 的职责边界 | 阅读/架构对照 |
+| [verl](https://verl.readthedocs.io/) | 对照 actor/rollout/ref/reward/teacher resource-pool；可用 frozen S1/T2 做 OPD systems migration smoke | 30-Day 阅读；Capstone Systems Stretch |
 | [NVIDIA Megatron-LM](https://github.com/NVIDIA/Megatron-LM) | 建立最小多卡 codepath、rank/state/checkpoint 心智模型 | 最小 smoke，不做全仓通读 |
 
 实操模型优先使用 `Qwen/Qwen3-0.6B-Base`；受控 SFT 资源允许时使用 `Qwen/Qwen3-1.7B-Base`。DPO 必须从已验证的 SFT checkpoint 起步；GRPO 先用最小可运行模型和可验证 reward。所有仓库、模型和数据都固定 revision/commit，不依赖滚动的 `main/latest`。slime 学习基线固定为 `v0.3.0`，运行时必须再核对 tag SHA、官方 examples 和实际 CLI。
+
+Optional Capstone 运行时再冻结同一家族的 `8B teacher / <=4B student` exact revisions；第一版优先共享 tokenizer/vocabulary，先断言 vocab、special tokens、template 和 golden prompt token IDs 完全兼容。8B 默认做 full-parameter TP SFT 与 domain RL，4B 从共同 SFT anchor 分叉 direct RL/OPD。模型名称、框架版本和 GPU topology 以 Day 31–33 的 runtime gate 为准，不把这里的示例当滚动 API。
 
 ## 每天固定输出
 
@@ -113,6 +124,28 @@
 - [ ] [Day 29 · 08-24 — slime 最小闭环、reward 修改与 train-only replay](day-29-slime-rl-run-debugging/README.md)
 - [ ] [Day 30 · 08-25 — Post-training design、clean reproduction 与综合口述](day-30-training-design-reproduction/README.md)
 
+## Optional Scaled Teacher–Student Capstone（Day 31–42，无固定日期）
+
+完整章程：[Scaled Teacher–Student Post-Training Capstone](SCALED-TEACHER-STUDENT-CAPSTONE.md)
+
+### Week 5：8B Scale-up Teacher
+
+- [ ] [Day 31 — Capstone charter、domain eval 与版本冻结](day-31-capstone-charter-eval/README.md)
+- [ ] [Day 32 — 4B single/TP2 parity 与 8B capacity plan](day-32-tp-parity-scale-accounting/README.md)
+- [ ] [Day 33 — 8B TP SFT one-step/resume gate](day-33-8b-tp-sft-gate/README.md)
+- [ ] [Day 34 — 8B controlled SFT 与 T1 selection](day-34-8b-sft-selection/README.md)
+- [ ] [Day 35 — Domain RL contract 与 teacher readiness](day-35-domain-rl-teacher-readiness/README.md)
+- [ ] [Day 36 — 8B domain RL、T2 selection 与 teacher candidate freeze](day-36-8b-domain-rl-teacher-freeze/README.md)
+
+### Week 6：4B Controls、OPD 与 Final Comparison
+
+- [ ] [Day 37 — 4B common anchor、teacher promotion 与 direct-RL control](day-37-4b-direct-rl-control/README.md)
+- [ ] [Day 38 — Teacher-trace cold-start ablation](day-38-teacher-trace-cold-start/README.md)
+- [ ] [Day 39 — OPD one-update、teacher scoring 与 replay gate](day-39-opd-one-update-replay/README.md)
+- [ ] [Day 40 — Controlled OPD run 与 S3 selection](day-40-opd-controlled-run/README.md)
+- [ ] [Day 41 — Matched eval、frozen confirmation 与 cost accounting](day-41-matched-eval-cost/README.md)
+- [ ] [Day 42 — Clean reproduction、failure review 与 capstone report](day-42-capstone-clean-reproduction/README.md)
+
 ## Tracking 规则
 
 1. 开始训练前写清输入数据版本、初始 checkpoint、唯一自变量、成功条件和停止条件。
@@ -122,6 +155,7 @@
 5. Checkpoint 至少区分“仅可推理权重”和“可连续训练状态”；resume 后验证 step、LR、optimizer、数据位置与 RNG。
 6. 当天失败要保存最小证据和下一项验证，不为打勾隐藏失败。
 7. Day 07、14、21、28 使用 [`templates/weekly-review.md`](templates/weekly-review.md)。
+8. OPD 额外记录 student rollout/policy version、teacher checkpoint/log-prob、token alignment、distillation mask/objective 和 teacher/student/rollout GPU-hours；`S2/S3` 必须从同一 `S1` 分叉。
 
 ## 配套文件
 
@@ -133,3 +167,4 @@
 - [每周复盘模板](templates/weekly-review.md)
 - [实验记录模板](templates/experiment-record.md)
 - [Artifacts 说明](artifacts/README.md)
+- [Optional Scaled Teacher–Student Capstone](SCALED-TEACHER-STUDENT-CAPSTONE.md)

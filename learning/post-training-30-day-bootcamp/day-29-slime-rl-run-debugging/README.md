@@ -56,6 +56,10 @@
 - [ ] G4 只改变一个 reward component，并同时报告 frozen correctness、length、KL/entropy 和 group variance。
 - [ ] 8×H100 若未执行仍可完成 Core；不能把 Stretch 写成毕业条件。
 
+## Optional Capstone Export Contract（不扩大 Day 29 Core）
+
+保留 runtime/container lock、resolved placement、raw token IDs/text、response/tool/environment masks、rollout/reward/train replay pack、policy/weight-version timeline 与 next-version evidence。Day 39 OPD 复用同一 gate 形状，但会增加只读 teacher scoring role；不得把 slime 的 reference/reward model 自动等同于 OPD teacher。
+
 ## Daily Log
 
 ### Pinned config / GPU topology / hours

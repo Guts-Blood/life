@@ -49,6 +49,10 @@ CPU only；严格 60 分钟，不启动 eval GPU。
 - [ ] held-out confirmation 不参与反复调参。
 - [ ] 能解释为什么 lowest train loss 不一定是最佳 checkpoint。
 
+## Optional Capstone Handoff
+
+将 selection-policy 模板推广为分别选择 T1、T2、S1、S2、S3 的独立 candidate sets；teacher promotion 另需 T2-vs-S1 advantage probe。所有 candidates 锁定后才一次性揭盲 capstone frozen suite，任何路线都允许 `inconclusive`。跨模型使用共同 `eval_suite_hash`，但保留各自 comparison keys。
+
 ### 五类选择风险
 
 1. 

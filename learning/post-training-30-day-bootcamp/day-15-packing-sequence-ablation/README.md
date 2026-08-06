@@ -58,6 +58,10 @@
 - [ ] 所有 loss 比较使用相同 label-token budget。
 - [ ] 选出后续默认 max length/packing，并写清适用长度分布和反例。
 
+## Optional Capstone Handoff
+
+输出可继承的 length/packing default、适用长度分布和 batch-audit tests。它们只是 8B/4B 的起始假设；Day 32–33 必须用新模型和 TP topology 重测 memory/throughput/correctness，不能直接迁移最大长度或 microbatch。
+
 ## Daily Log
 
 ### 预注册假设

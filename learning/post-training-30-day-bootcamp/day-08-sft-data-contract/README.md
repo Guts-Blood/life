@@ -56,6 +56,10 @@
 - [x] tokenizer revision、template hash、max length、EOS/padding/truncation policy 已冻结。
 - [x] 没有在数据契约未通过时启动训练。
 
+## Optional Capstone Handoff（不增加 Day 08 Core）
+
+Day 31 复用今天的 contract 格式，另生成 teacher/student tokenizer compatibility manifest。不能仅比较 `vocab_size`；必须比较 tokenizer JSON/hash、完整 `token -> id` map、added/special tokens、chat/tool template，并让至少 20 条 multi-turn/tool golden prompts 得到完全相同的 rendered input IDs。Day 08 现有 Qwen3-0.6B snapshot 只提供方法，不自动证明未来 8B/4B revisions 兼容。
+
 ## Daily Log
 
 ### 一个此前误判的 loss 边界

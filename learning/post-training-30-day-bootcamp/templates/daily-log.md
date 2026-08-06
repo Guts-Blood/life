@@ -37,8 +37,10 @@ AutoDL 实例/卡型：
 
 ## 资源与租卡
 
-- 所需：`CPU only | 1×GPU | 2×GPU | 4×GPU`
+- 所需：`CPU only | 1×GPU | 2×GPU | 4×GPU | 8×GPU | custom`
+- Role placement（learner/rollout/teacher/reward）与 DP/TP/PP：
 - 预计 GPU wall time：
+- Learner / rollout / teacher-scoring 分项 GPU-hours：
 - 数据/权重磁盘：
 - 训练结束后的备份与关机：
 
@@ -75,4 +77,3 @@ AutoDL 实例/卡型：
 - 下一检查：
 
 ## 明日第一步
-

@@ -9,7 +9,7 @@
 - [Tülu 3 paper](https://arxiv.org/abs/2411.15124)：公开的 SFT → DPO → RLVR pipeline 参照
 - [Open Instruct 官方文档](https://allenai.github.io/open-instruct/) / [官方仓库](https://github.com/allenai/open-instruct)：数据和训练 recipe 参照
 
-本月 Core 是数据、SFT、恢复/诊断、DPO、在线 RL。auto-train/auto-harness 构建、30B+ full training 和 8×H100 slime 不属于 Core。
+本月 Core 是数据、SFT、恢复/诊断、DPO、在线 RL。auto-train/auto-harness 构建、30B+ full training 和 8×H100 slime 不属于 30-Day Core。Day 31–42 另有可选的 8B teacher→<=4B student OPD capstone。
 
 ## 数据、模板与 Lineage
 
@@ -109,6 +109,20 @@ Eval 的最低证据是 frozen config 加逐样本 prediction。aggregate score�
 - [verl PPO architecture](https://verl.readthedocs.io/en/latest/examples/ppo_code_architecture.html)
 
 ms-swift 和 slime 要实际运行；Tülu/Open-Instruct、TRL、verl 用于比较 stage、schema、角色和设计选择，不要求本月把四套框架都跑一遍。
+
+## On-Policy Distillation（Optional Capstone）
+
+- [GKD / On-Policy Distillation of Language Models（ICLR 2024）](https://arxiv.org/abs/2306.13649)：student-generated states、teacher feedback 与 divergence 选择的基础。
+- [Rethinking On-Policy Distillation（2026）](https://arxiv.org/abs/2604.13016)：teacher/student compatibility、teacher novelty、cold-start 与 prompt selection 风险。
+- [ms-swift stable distillation docs](https://swift.readthedocs.io/en/v4.4/Instruction/Distillation.html)：GKD/OPD-RL 入口；运行时必须 pin release、SHA 和 resolved config。
+- [ms-swift v4.4.2 release](https://github.com/modelscope/ms-swift/releases/tag/v4.4.2)：当前审计过的起始版本候选，不代表 Day 31 必须使用旧版本。
+- [ms-swift v4.4.2 Megatron OPD-RL example](https://github.com/modelscope/ms-swift/blob/v4.4.2/examples/megatron/grpo/opd_rl.sh)：只作 pinned baseline；示例中的 checkpoint/RNG 保存选项不得直接复制到正式可恢复 run。
+- [verl OPD docs](https://verl.readthedocs.io/en/latest/algo/opd.html)：teacher resource pool、same-tokenizer约束、loss modes 与 systems migration 参照。
+- [verl v0.8.0 release](https://github.com/verl-project/verl/releases/tag/v0.8.0)：当前审计过的 OPD systems-stretch 起点；完整训练不与 ms-swift Core 重复。
+- [TRL DistillationTrainer](https://huggingface.co/docs/trl/main/en/distillation_trainer)：小型 API/correctness 对照；experimental API 不作为多卡 Core 的稳定承诺。
+- [NeMo-RL On-policy Distillation](https://docs.nvidia.com/nemo/rl/latest/about/algorithms/on-policy-distillation.html)：独立实现与当前 backend 边界参照。
+
+Capstone 第一次运行前冻结 compatibility manifest：framework tag/SHA、container digest、Torch/CUDA/NCCL、Megatron、vLLM/SGLang、model/tokenizer revisions、template、verifier 和 dataset hashes。文档的 `latest/main` 只用于发现入口。
 
 ## AutoDL
 

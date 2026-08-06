@@ -67,6 +67,10 @@ entry/config
 - [ ] distributed checkpoint 在新进程成功恢复并继续三步。
 - [ ] 清楚列出未深入的 Megatron 区域，不把一天阅读称为全仓通读。
 
+## Optional Capstone Export Contract（不扩大 Day 18 Core）
+
+保留下列可复用接口：TP/DP resolved launcher、per-rank topology/state manifest、global-batch/label-token assertion、distributed save/reload、新进程 resume 和 inference-conversion parity。Day 18 的 synthetic/small-model smoke 只证明方法；真正的 4B single-vs-TP2 parity 与 8B genuine TP pressure 在 Day 32–34 重跑。
+
 ## Daily Log
 
 ### Pinned environment / topology
