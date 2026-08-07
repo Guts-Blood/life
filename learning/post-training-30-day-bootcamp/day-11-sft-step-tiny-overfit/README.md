@@ -2,7 +2,7 @@
 
 日期：`2026-08-06`
 
-状态：`not_started`
+状态：`ready_for_gpu`（CPU 前置、冻结输入、脚本和上传包已于 2026-08-05 准备）
 
 强度：工作日 4–5 小时
 
@@ -39,15 +39,41 @@
 
 - [Transformers Trainer](https://huggingface.co/docs/transformers/main_classes/trainer)
 - [ms-swift SFT documentation](https://swift.readthedocs.io/en/latest/Instruction/Pre-training-and-Fine-tuning.html)
-- 推荐 1×H100 80GB，预计 2–3 小时；0.6B 也可使用更便宜的 24/40GB GPU。
+- 推荐 1×RTX 4090 24GB；本实验拒绝低于 20 GiB、无原生 BF16 或非 CUDA 的设备。预计租卡窗口 1–3 小时。
 - 完成后同步 config、tiny manifest、step trace 和 checkpoints，再关机。
+
+## 已完成的 CPU 前置
+
+- 冻结 18 条 tiny 样本：Day 08 的 10 条正向 golden cases，以及逐条内容检查的 Day 09 general/code/finance/math 各 2 条。
+- 使用 exact Qwen3 tokenizer/template 审计得到 2,194 个 encoded tokens、904 个 shifted supervised tokens，所有样本无截断。
+- 冻结 Base revision、模型文件 hash、数据 hash、chat-template hash、loss mask、FP32 参数/梯度/Adam state + BF16 autocast compute + FP32 loss、batch/accumulation、warmup、clip、停止阈值和磁盘 gate。
+- 实现 supervised-token-weighted accumulation；不会把不同 label 数的 microbatch 做错误的等权平均。
+- 实现前 3 optimizer steps 的逐步 trace、Base/early/final 同协议评估和 deterministic generation。
+- 实现 6-step uninterrupted vs `3 + fresh-process resume + 3` 的 exact comparison；恢复 model、optimizer、scheduler、RNG 与 sampler cursor。
+- 本地 7 个单元测试和 frozen-data deterministic rebuild 已通过。
+
+## 明日唯一流程
+
+详细命令见 [`AUTODL-RUNBOOK.md`](./AUTODL-RUNBOOK.md)。上传本地已准备的 `tmp/day11-ready-upload.tar` 和同名 `.sha256` 文件到 AutoDL 的 `/root/autodl-tmp/`，然后执行：
+
+```bash
+cd /root/autodl-tmp
+sha256sum -c day11-ready-upload.tar.sha256
+tar -xf day11-ready-upload.tar
+cd /root/autodl-tmp/day11-ready
+bash run-day11.sh
+```
+
+入口脚本会自动完成依赖检查、preflight、resume probe、main tiny overfit 和最终验收。只有 `DAY11-PASS.json` 存在且状态为 `day11_pass` 才算完成。
 
 ## 产物
 
 - `../artifacts/configs/day11-qwen3-0.6b-tiny-overfit.yaml`
+- `../artifacts/data/day11-tiny-overfit.jsonl`
 - `../artifacts/data/day11-tiny-overfit-manifest.json`
 - `../artifacts/logs/day11-first-three-steps.jsonl`
 - `../artifacts/reports/day11-sft-step-audit.md`
+- `../artifacts/reports/day11-resume-audit.md`
 
 ## 验收
 

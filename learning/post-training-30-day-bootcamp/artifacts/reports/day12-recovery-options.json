@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "domain": "day12.recovery_options",
+  "generated_date": "2026-08-06",
+  "decision": "Choose the next action after all Day 12 SFT checkpoints failed the Base-relative math guardrail.",
+  "recommended_course_route": {
+    "action": "Close Day 12 as an informative negative result, keep frozen test unconsumed, complete Day 13 reading, and carry the optimizer hypothesis into Day 16.",
+    "reason": "This preserves the preregistered experiment and avoids spending GPU time on an unplanned rescue run that cannot support a clean causal claim."
+  },
+  "recommended_recovery_route": {
+    "name": "Day12b recovery",
+    "principle": "Diagnose cheaply, repair the dominant data-format failure, then add retention controls one at a time.",
+    "promotion_gate": {
+      "math_correct_minimum_out_of_28": 10,
+      "code_correct_minimum_out_of_28": 5,
+      "four_slice_total_minimum_out_of_112": 15,
+      "maximum_math_regression_vs_base_cases": 2,
+      "frozen_test_access": "Only after one checkpoint passes all dev gates"
+    }
+  },
+  "options": [
+    {
+      "priority": 1,
+      "option": "Existing-checkpoint routing diagnostic",
+      "change": "No training. Re-evaluate only A-25/B-25 math with an explicit step-by-step math instruction and a controlled stopping variant; retain the original protocol as the selection result.",
+      "tests": "Whether reasoning is still latent and the observed regression is mainly task routing / premature EOS rather than erased capability.",
+      "gpu_cost": "very low",
+      "causal_clarity": "high",
+      "expected_value": "high",
+      "decision_rule": "If math materially recovers, prioritize prompt/data routing. If it does not, prioritize capability retention and data quality."
+    },
+    {
+      "priority": 2,
+      "option": "Format-only repaired SFT",
+      "change": "Keep Base, seed, token budget, optimizer and source pool fixed. Add task-specific routing and remove the globally reusable FinQA Calculation template; save 5/10/15/25% checkpoints.",
+      "tests": "The highest-confidence diagnosis: finance answer-format leakage into GSM8K.",
+      "gpu_cost": "low",
+      "causal_clarity": "high",
+      "expected_value": "high",
+      "decision_rule": "Stop at 25% unless math reaches at least 10/28 while code reaches at least 5/28."
+    },
+    {
+      "priority": 3,
+      "option": "Retention-focused optimizer ablation",
+      "change": "Using the repaired data only, compare the current constant 2e-5 schedule with one conservative schedule such as 1e-5 plus cosine decay; keep full-parameter training for this comparison.",
+      "tests": "Whether continued constant-peak updates are causing avoidable Base-capability drift.",
+      "gpu_cost": "low to medium",
+      "causal_clarity": "high if only scheduler/LR changes",
+      "expected_value": "medium to high",
+      "decision_rule": "Prefer the conservative schedule only if it improves the guardrail frontier, not merely train loss."
+    },
+    {
+      "priority": 4,
+      "option": "Adapter / Base-anchor protection",
+      "change": "After the data and LR questions are resolved, compare full fine-tuning with LoRA or add a small Base/replay or KL anchor.",
+      "tests": "Whether parameter-efficient updates or an explicit reference constraint reduce catastrophic interference in the 0.6B model.",
+      "gpu_cost": "medium",
+      "causal_clarity": "medium unless LoRA and anchoring are tested separately",
+      "expected_value": "medium",
+      "decision_rule": "Adopt only if code gains remain while math and aggregate gates pass."
+    },
+    {
+      "priority": 5,
+      "option": "Performance-first model path",
+      "change": "First evaluate an instruction-tuned checkpoint as a new baseline; if the goal is utility rather than the Base-to-SFT lesson, fine-tune that checkpoint with LoRA and repaired task routing, or move to a larger model.",
+      "tests": "Whether the 0.6B Base starting point is the limiting product choice rather than the specific Day 12 recipe.",
+      "gpu_cost": "medium to high",
+      "causal_clarity": "low as a Day 12 ablation, high practical relevance",
+      "expected_value": "highest for utility",
+      "decision_rule": "Treat this as a new experiment family with a fresh baseline and gates; do not compare it as if only the mixture changed."
+    }
+  ],
+  "not_recommended": [
+    "Continue A or B beyond 100% with the same constant-LR full-parameter recipe.",
+    "Change data format, LR, model, LoRA and mixture in one run if the goal is to learn which mechanism mattered.",
+    "Select B-25 only because it has the best code score; it still fails the math guardrail and aggregate Base baseline.",
+    "Consume the frozen test before a dev-eligible checkpoint exists."
+  ],
+  "evidence_paths": [
+    "artifacts/reports/day12-training-diagnostics-evidence.json",
+    "artifacts/reports/day12-cloud-dev-selection-outcome.json",
+    "day-12-controlled-sft-checkpoints/README.md",
+    "day-13-weekend-sft-reading/README.md",
+    "day-16-optimization-stability-ablation/README.md"
+  ],
+  "confidence": "Share with caveats: the ordering is evidence-based, but expected recovery is unverified until the proposed controlled runs are executed."
+}

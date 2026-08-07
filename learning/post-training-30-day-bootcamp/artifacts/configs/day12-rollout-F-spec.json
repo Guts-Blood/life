@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "domain": "day12.recovery_rollout_spec",
+  "ordinal": 4,
+  "run_id": "F",
+  "parent_run_id": "E",
+  "status": "planned",
+  "hypothesis": "The positive retention trend continues at lower update magnitude; 5e-6 should recover more Base math while retaining enough code gain to pass all gates.",
+  "primary_change": {
+    "path": "optimizer.learning_rate",
+    "parent_value": 0.00001,
+    "rollout_value": 0.000005
+  },
+  "fixed_invariants": [
+    "Run E model, repaired data, token schedule and seed",
+    "AdamW family and all non-LR optimizer settings",
+    "12,347-token linear warmup followed by constant learning rate",
+    "training implementation and frozen evaluation protocol"
+  ],
+  "first_gate": {
+    "checkpoint": "25_percent",
+    "math_correct_minimum_out_of_28": 10,
+    "code_correct_minimum_out_of_28": 5,
+    "four_slice_total_minimum_out_of_112": 15
+  }
+}

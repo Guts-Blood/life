@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "domain": "day12.format_repair_spec",
+  "run_id": "D",
+  "mix_name": "mix_D_format_repaired",
+  "manifest_name": "day12-mix-D-format-repaired",
+  "format_repair_version": "day12_task_routing_finqa_natural_reasoning_v1",
+  "selection_version": "day12_format_repair_exact_budget_v1",
+  "parent_manifest_path": "learning/post-training-30-day-bootcamp/artifacts/data/day12-mix-C-finance-reduced.json",
+  "clean_pool_path": "learning/post-training-30-day-bootcamp/artifacts/data/day09-dataset-manifest.json",
+  "total_supervised_tokens": 246936,
+  "target_ratios": {
+    "general": "7/24",
+    "math": "7/24",
+    "code": "7/24",
+    "finance": "1/8"
+  },
+  "routing_suffixes": {
+    "general": "\n\nFollow the user's requested constraints and response format exactly.",
+    "math": "\n\nSolve the mathematical problem carefully and make the final result explicit.",
+    "code": "\n\nProvide a correct solution that satisfies the requested interface and output constraints.",
+    "finance": "\n\nUse only the supplied financial evidence. Explain the arithmetic in natural language and make the final result explicit."
+  },
+  "finance_response_contract": {
+    "prefix": "Reasoning:",
+    "final_answer_prefix": "Final answer:",
+    "forbidden_fragments": [
+      "Calculation:",
+      "add(",
+      "subtract(",
+      "multiply(",
+      "divide(",
+      "exp(",
+      "greater(",
+      "table_average(",
+      "table_sum(",
+      "table_max(",
+      "table_min("
+    ]
+  },
+  "comparison_boundary": "Run D is a post-hoc format-only recovery experiment. It preserves the C token ratios and training recipe but rematerializes finance examples because rewritten supervised lengths change.",
+  "first_gate": {
+    "checkpoint": "25_percent",
+    "math_correct_minimum_out_of_28": 10,
+    "code_correct_minimum_out_of_28": 5,
+    "four_slice_total_minimum_out_of_112": 15,
+    "action_if_failed": "Stop Run D; do not continue to 60_percent or 100_percent."
+  }
+}

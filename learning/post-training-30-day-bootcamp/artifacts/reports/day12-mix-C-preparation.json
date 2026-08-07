@@ -1,0 +1,84 @@
+{
+  "comparison_boundary": "Run C is a post-hoc recovery experiment. It does not alter the preregistered Day 12 A/B conclusion and must be reported separately.",
+  "config_file_sha256": "a5d91a6b9fbfdfad62a77fae7f3afe89d2f019a75c5dbe9a556bc9711f0fdaa9",
+  "config_path": "learning/post-training-30-day-bootcamp/artifacts/configs/day12-controlled-sft-C.yaml",
+  "distribution_by_skill": {
+    "code": {
+      "actual_ratio": "7/24",
+      "actual_ratio_decimal": 0.2916666666666667,
+      "input_tokens": 210378,
+      "occurrences": 538,
+      "raw_tokens": 199080,
+      "supervised_tokens": 72023,
+      "target_ratio": "7/24",
+      "unique_canonical_examples": 538
+    },
+    "finance": {
+      "actual_ratio": "1/8",
+      "actual_ratio_decimal": 0.125,
+      "input_tokens": 194182,
+      "occurrences": 991,
+      "raw_tokens": 173371,
+      "supervised_tokens": 30867,
+      "target_ratio": "1/8",
+      "unique_canonical_examples": 991
+    },
+    "general": {
+      "actual_ratio": "7/24",
+      "actual_ratio_decimal": 0.2916666666666667,
+      "input_tokens": 90496,
+      "occurrences": 241,
+      "raw_tokens": 85435,
+      "supervised_tokens": 72023,
+      "target_ratio": "7/24",
+      "unique_canonical_examples": 241
+    },
+    "math": {
+      "actual_ratio": "7/24",
+      "actual_ratio_decimal": 0.2916666666666667,
+      "input_tokens": 93732,
+      "occurrences": 71,
+      "raw_tokens": 92241,
+      "supervised_tokens": 72023,
+      "target_ratio": "7/24",
+      "unique_canonical_examples": 71
+    }
+  },
+  "first_gate": {
+    "action_if_failed": "Stop Run C; do not continue to 60_percent or 100_percent.",
+    "checkpoint": "25_percent",
+    "code_correct_minimum_out_of_28": 5,
+    "four_slice_total_minimum_out_of_112": 15,
+    "math_correct_minimum_out_of_28": 10
+  },
+  "hypothesis": "Halving the finance supervised-token share while distributing the released budget equally across general, math, and code will reduce FinQA answer-format interference and retain the early code gain with materially less math regression.",
+  "manifest_file_sha256": "8d1d5527236599959e0527b1893d28ae2e6485e7e49c37fe969cefdb7b1d894b",
+  "manifest_hash": "f0336dc95892ff3b1519ebbb7fd1e94d2b4fecbb046635c1ff270a26152d6257",
+  "manifest_path": "learning/post-training-30-day-bootcamp/artifacts/data/day12-mix-C-finance-reduced.json",
+  "schedule_file_sha256": "10576e2a3d8af809acf332f61919fe0f25c6e946d07333f13c832a9333adcf5d",
+  "schedule_hash": "7c4c9534e0dd662ab77169def7a192da84755e88f39ac985b9775d91ed58b19c",
+  "schedule_path": "learning/post-training-30-day-bootcamp/artifacts/data/day12-training-schedule-C.json",
+  "status": "day12_mix_c_preparation_pass",
+  "summary_hash": "d642149cbd7487a8a5ec0e42686f48631d04e7382d90a4d93abb54d5de212c3f",
+  "target_ratios": {
+    "code": "7/24",
+    "finance": "1/8",
+    "general": "7/24",
+    "math": "7/24"
+  },
+  "total_supervised_tokens": 246936,
+  "validation_checks": {
+    "canonical_ids_preserved": true,
+    "manifest_hash_valid": true,
+    "occurrence_counts_recorded": true,
+    "occurrence_ids_unique": true,
+    "occurrence_order_hash_valid": true,
+    "ratios_exact": true,
+    "schedule_total_exact": true,
+    "slice_ratios_exact": true,
+    "slice_targets_exact": true,
+    "supervised_total_exact": true,
+    "total_exact": true,
+    "without_replacement": true
+  }
+}

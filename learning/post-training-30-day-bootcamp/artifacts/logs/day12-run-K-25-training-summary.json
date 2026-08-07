@@ -1,0 +1,37 @@
+{
+  "checkpoint_manifest_sha256": "91f655acc9adf7214b5fb778ff3cdc0df868973e4eacca091f6018ae63f6bb5a",
+  "checkpoint_name": "25_percent",
+  "checkpoint_path": "/root/autodl-tmp/runs/day12-20260806/run-K/checkpoints/checkpoint-25_percent",
+  "cumulative_supervised_tokens": 61734,
+  "inference_export_manifest_sha256": "0ef73e7744a65365244fbb05cb4d13fcb6fd53e83838d90b0fdc31d41765a35d",
+  "inference_export_path": "/root/autodl-tmp/runs/day12-20260806/inference-exports/K-25_percent",
+  "maximum_cuda_memory_gib": 6.805515289306641,
+  "optimizer_step": 79,
+  "parameter_counts": {
+    "frozen": 596049920,
+    "total": 608589824,
+    "trainable": 12539904
+  },
+  "parameterization": {
+    "alpha": 32,
+    "bias": "none",
+    "dropout": 0.0,
+    "peft_version": "0.17.1",
+    "rank": 16,
+    "target_modules": [
+      "q_proj",
+      "k_proj",
+      "v_proj",
+      "o_proj",
+      "gate_proj",
+      "up_proj",
+      "down_proj",
+      "lm_head"
+    ],
+    "task_type": "CAUSAL_LM",
+    "type": "lora"
+  },
+  "run_id": "K",
+  "schedule_cursor": 315,
+  "status": "day12_stage_complete"
+}

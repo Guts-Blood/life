@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "domain": "day12.recovery_rollout_outcome",
+  "ordinal": 6,
+  "run_id": "H",
+  "status": "failed_math_and_code_gates",
+  "hypothesis": "Increasing only LoRA learning rate from 1e-5 to 5e-5 will add at least five executable code solutions while the frozen Base keeps math at or above ten.",
+  "primary_change": {"path": "optimizer.learning_rate", "parent": 0.00001, "rollout": 0.00005},
+  "fixed_parent": "Run G rank-16 all-linear LoRA, repaired data, exact schedule and every non-LR invariant",
+  "scores": {
+    "G_25_percent": {"general": 2, "math": 12, "code": 0, "finance": 0, "total": 14},
+    "H_25_percent": {"general": 8, "math": 8, "code": 3, "finance": 0, "total": 19},
+    "H_minus_G": {"general": 6, "math": -4, "code": 3, "finance": 0, "total": 5},
+    "base": {"general": 2, "math": 12, "code": 0, "finance": 1, "total": 15}
+  },
+  "gate": {
+    "math": {"actual": 8, "minimum": 10, "passed": false},
+    "code": {"actual": 3, "minimum": 5, "passed": false},
+    "total": {"actual": 19, "minimum": 15, "passed": true},
+    "accepted": false
+  },
+  "diagnostics": {
+    "general_parse_errors": 7,
+    "math_parse_errors": 0,
+    "math_ceiling_hits": 28,
+    "code_ceiling_hits": 28,
+    "finance_parse_errors": 16,
+    "finance_ceiling_hits": 28,
+    "all_slice_ceiling_hits": 112,
+    "output_tokens": 43904,
+    "generation_latency_seconds": 1126.6154441274703,
+    "parameter_counts": {"total": 606142464, "trainable": 10092544, "frozen": 596049920},
+    "maximum_cuda_memory_gib": 6.957935810089111
+  },
+  "training": {
+    "checkpoint": "25_percent",
+    "supervised_tokens": 61734,
+    "optimizer_steps": 110,
+    "checkpoint_manifest_sha256": "7392ab4c6ad082825828d756ace78e5bab52df4fbabd65986ca811bbffd2a350",
+    "inference_export_manifest_sha256": "8672940e0423b987c815631f11bb25e1155a97e1d1607d403552da9da0dc80e2",
+    "summary_path": "artifacts/logs/day12-run-H-25-training-summary.json",
+    "summary_file_sha256": "73306035981c455550c3ba80ccc70efa94615dae7c6d07106bfc158c518178c7",
+    "preflight_path": "artifacts/logs/day12-preflight-H.json",
+    "preflight_file_sha256": "7275e3e2f132c7224eafa26633076037192319f65abd4ddce9396518961b38f7"
+  },
+  "eval": {
+    "summary_hash": "sha256:7d1ffc2071509469adf3e78fc3cdf02d21e334fbd1aba017b34ffb33c5997375",
+    "predictions": {"path": "artifacts/eval/H-25_percent-dev-predictions.jsonl", "records": 112, "file_sha256": "59071c93b466784b90cbc478dcbbc199e378718834d6618c43a6c06b9904e9a5"},
+    "code_results": {"path": "artifacts/eval/H-25_percent-dev-code-e2b.jsonl", "records": 28, "file_sha256": "f2376cc8b772765cec7e278d234781ad9c7da440d35274a45cea12bc3e86bb29"},
+    "summary": {"path": "artifacts/eval/H-25_percent-dev-summary.json", "file_sha256": "bdf3bbf1d29ab81469641c9a26a99f519b823e154b491b9518dedf2e7138b307"}
+  },
+  "interpretation": {
+    "supported": "Raising LoRA LR added capability: general rose by six, code by three and total by five while keeping Base weights frozen.",
+    "remaining_failure": "The gain/loss frontier missed both constrained gates by two: math fell from 12 to 8 while code rose only from 0 to 3. All outputs still hit the frozen ceiling.",
+    "next_rollout": "Keep H optimization fixed and change only the supervised-token mixture to emphasize math and code while sharply reducing general and finance exposure."
+  },
+  "frozen_test_consumed": false
+}

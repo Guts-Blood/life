@@ -2,7 +2,7 @@
 
 日期：`2026-08-07`
 
-状态：`not_started`
+状态：`dev_eval_complete_no_eligible_checkpoint / frozen_test_unconsumed`
 
 强度：工作日 4–5 小时人工工作；短训练可在当天稍后继续
 
@@ -48,14 +48,15 @@
 - `../artifacts/reports/day12-config-diff.md`
 - `../artifacts/reports/day12-checkpoint-trajectory.md`
 - `../artifacts/reports/day12-mixture-ablation.md`
+- `../artifacts/reports/day12-cloud-dev-selection-outcome.json`
 
 ## 验收
 
-- [ ] 自动 diff 证明 A/B 唯一有意变量是 mixture manifest/比例。
-- [ ] 两个 run 的累计 supervised tokens、优化器设置和硬件一致。
-- [ ] A/B 均保存 early/mid/final，并用同一 dev protocol 选出 checkpoint。
-- [ ] Frozen test 只评 selected checkpoints，保存逐样本结果和 slice 变化。
-- [ ] 结论包含支持证据、反例/bad cases 和适用边界；没有把两次小实验写成通用规律。
+- [x] 自动 diff 证明 A/B 唯一有意变量是 mixture manifest/比例。
+- [x] 两个 run 的累计 supervised tokens、优化器设置和硬件一致。
+- [x] A/B 均保存并评估 early/mid/final；同一 dev protocol 判定两条 run 均无 eligible checkpoint。
+- [x] 因没有 eligible selected checkpoint，按预注册规则不读取 Frozen test。
+- [x] 结论包含支持证据、反例/bad cases 和适用边界；没有把两次小实验写成通用规律。
 
 ## Optional Capstone Handoff（不增加 Day 12 Core）
 
@@ -67,6 +68,16 @@ Day 12 额外固化一个通用 `selected-checkpoint-promotion` manifest 模板�
 
 ### Selected checkpoints
 
+A：无；B：无。两条 run 的全部 checkpoint 均因 math slice 相对 Cloud
+Base 退化超过 2 个 correct cases 而不合格。A-25/B-25 只记录为 descriptive
+code peak，不晋级 frozen confirmation。
+
 ### 最可信和最不可信的结论
+
+最可信：两条 SFT recipe 都显著改善 code，并把 Base 的普遍 max-token
+ceiling 行为降下来；但同时严重损害 math，且 code 都在 25% 后回退。
+
+最不可信：B mixture 普遍优于 A。三个 matched-budget code 净胜为
+`+2/-1/+2`，没有一次达到预注册的 +3 threshold，且两边都未通过 guardrail。
 
 ### Day 13 Reading 问题

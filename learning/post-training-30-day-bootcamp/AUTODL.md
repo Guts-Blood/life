@@ -19,7 +19,7 @@ AutoDL 按实例开关机时间计费，不按 GPU kernel 活跃时间计费。�
 | 场景 | 默认资源 | 说明 |
 |---|---|---|
 | 数据审计、manifest、quiz、配置 review | CPU/无卡模式 | 不能用 GPU 掩盖数据准备不足 |
-| 0.6B tiny overfit、DPO smoke、eval | 1×H100 80GB | A100 80GB 可替代，但同一对照组不要换硬件 |
+| 0.6B tiny overfit、DPO smoke、eval | 1×RTX 4090 24GB | Day 11 默认卡；短样本全参 mixed-precision 足够，低于 20 GiB 不进入冻结配置 |
 | 1.7B 受控全参 SFT | 1×H100 80GB | 先用 accounting 与短 smoke 确认 optimizer/activation 余量 |
 | Packing、优化、resume 对照 | 1×H100 80GB | 保持卡型与 baseline 相同 |
 | Megatron minimum codepath | 2×H100 同机 | 只验证 process group、collective、state ownership 与 checkpoint |
@@ -42,7 +42,7 @@ AutoDL 按实例开关机时间计费，不按 GPU kernel 活跃时间计费。�
 | Block | Days | 配置 | 建议 wall time | 目标 | 关机 Gate |
 |---|---|---|---:|---|---|
 | A | 08–10 | CPU；eval 时 1×H100 | 2–4h GPU | 数据契约、manifest、Base 逐样本 baseline | sample audit 与 frozen eval 已落盘 |
-| B | 11–12 | 1×H100 | 8–14h | tiny overfit、受控 SFT、checkpoint 对比 | loss/mask/生成闭环与 early/mid/final 证据完整 |
+| B | 11–12 | 1×RTX 4090 24GB | 8–14h | tiny overfit、受控 SFT、checkpoint 对比 | loss/mask/生成闭环与 early/mid/final 证据完整 |
 | C | 15–17 | 1×H100 | 8–12h | packing/优化单变量对照、中断恢复 | baseline 可比，resume continuity 通过 |
 | D | 18 | 2×H100 同机 | 2–4h | Megatron 最小多卡 codepath | rank/group/collective/checkpoint 有 runtime evidence |
 | E | 19 | 1×H100；必要时复用 2 卡 | 3–5h | failure injection 与 profiler | 高 LR、mask、distribution、throughput 四类 failure 可识别、可恢复 |

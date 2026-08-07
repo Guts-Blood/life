@@ -1,0 +1,13 @@
+{
+  "checkpoint_manifest_sha256": "3aedea17ff104bc159e4e9df6fa603a989cce883dededd160a3941aea6ed0dc6",
+  "checkpoint_name": "25_percent",
+  "checkpoint_path": "/root/autodl-tmp/runs/day12-20260806/run-D/checkpoints/checkpoint-25_percent",
+  "cumulative_supervised_tokens": 61734,
+  "inference_export_manifest_sha256": "f06e570588492204cdbd41df27f9fb5c13307f7fe76111909e01279c2d62ebbf",
+  "inference_export_path": "/root/autodl-tmp/runs/day12-20260806/inference-exports/D-25_percent",
+  "maximum_cuda_memory_gib": 13.483318328857422,
+  "optimizer_step": 110,
+  "run_id": "D",
+  "schedule_cursor": 437,
+  "status": "day12_stage_complete"
+}

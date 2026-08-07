@@ -1,0 +1,55 @@
+flowchart LR
+    BASE["Base checkpoint<br/>Role: immutable starting point and baseline<br/>Input: pinned model and tokenizer revisions<br/>Artifact: config, hashes, and per-sample Base predictions<br/>Failure: unknown revision, template drift, or no comparable baseline"]
+
+    G_SFT{"Enter SFT?<br/>A supervised behavior gap is named<br/>Data contract and loss mask pass audit<br/>Frozen eval protocol exists<br/>Memory, time, and cost fit the budget"}
+
+    SFT["SFT<br/>Signal: assistant target tokens from demonstrations<br/>Upstream: pinned Base checkpoint<br/>Objective: masked causal-LM loss<br/>Artifact: training-state checkpoints, traces, and predictions<br/>Stop: NaN, zero labels or gradients, invalid resume, or dev regression<br/>Failure: prompt leakage, truncation, contamination, or memorization only"]
+
+    G_DPO{"Enter preference or DPO?<br/>SFT checkpoint passes its gate<br/>Chosen and rejected responses share a prompt<br/>Pair provenance, quality, and held-out eval pass audit<br/>A preference gap remains that demonstrations alone do not resolve"}
+
+    DPO["Preference tuning or DPO<br/>Signal: relative chosen versus rejected preference<br/>Upstream: validated SFT policy plus fixed reference policy<br/>Objective: increase preferred response likelihood relative to rejected<br/>Artifact: pair audit, beta and config, checkpoints, per-sample deltas<br/>Stop: pair errors, mask or logprob mismatch, collapse, or slice regression<br/>Failure: length bias, noisy preference, stale reference, or overoptimization"]
+
+    G_RL{"Enter online RL or RLVR?<br/>Offline preference stage is insufficient or not the right tool<br/>Reward or verifier contract is testable<br/>Rollout, policy version, masks, and logprobs align<br/>Budget covers generation, update, and evaluation"}
+
+    RL["Online RL or RLVR<br/>Signal: on-policy rollouts scored by reward or verifier<br/>Upstream: validated policy checkpoint and frozen reward contract<br/>Objective: reward-weighted policy update with versioned rollouts<br/>Artifact: rollout and reward traces, policy versions, checkpoints, eval<br/>Stop: reward hacking, zero variance, stale rollout, divergence, or budget cap<br/>Failure: verifier bug, mask or logprob misalignment, collapse, or mode gaming"]
+
+    G_FINAL{"Select for final eval?<br/>Checkpoint chosen on dev evidence only<br/>Run manifest and per-sample outputs are complete<br/>No unresolved data overlap or protocol drift"}
+
+    EVAL["Final eval<br/>Input: selected checkpoint and frozen test manifest<br/>Objective: estimate generalization under the frozen protocol<br/>Artifact: per-sample predictions, slice metrics, bad cases, uncertainty<br/>Stop or reject: scorer drift, non-reproducible decoding, overlap, or regression<br/>No parameter, optimizer, or scheduler update"]
+
+    HOLD["Do not advance<br/>Record the failed gate, cheapest next evidence, owner, and budget<br/>Fix the current stage instead of adding a new training stage"]
+
+    BASE --> G_SFT
+    G_SFT -->|pass| SFT
+    G_SFT -->|fail| HOLD
+    SFT --> G_DPO
+    G_DPO -->|pass| DPO
+    G_DPO -->|fail| HOLD
+    DPO --> G_RL
+    G_RL -->|pass| RL
+    G_RL -->|fail| HOLD
+    RL --> G_FINAL
+    G_FINAL -->|pass| EVAL
+    G_FINAL -->|fail| HOLD
+
+    CONSTRAINT["Execution constraints, not training stages<br/>Capacity: weights, optimizer, gradients, activations, temporary working set<br/>Parallelism: DP or FSDP for replicas and state; TP or PP only when justified<br/>Batch: global batch = micro batch x accumulation x DP; never multiply TP or PP<br/>Performance: measure step time, processed and label tokens per second, MFU, peak HBM<br/>Operations: pinned code and data, complete checkpoint state, disk headroom, hard budget"]
+
+    CONSTRAINT -. constrains .-> SFT
+    CONSTRAINT -. constrains .-> DPO
+    CONSTRAINT -. constrains .-> RL
+    CONSTRAINT -. constrains .-> EVAL
+
+    HYP["Hypotheses that still require real evidence<br/>H1: the audited 16 to 32 sample tiny set reaches at least 95 percent assistant-token accuracy within 150 updates<br/>H2: a selected SFT checkpoint improves a preregistered dev slice without exceeding the allowed general-slice regression<br/>H3: targeted mixture improves its target slice over balanced mixture at equal supervised-token budget"]
+
+    SFT -. test H1 and H2 .-> HYP
+    DPO -. preserve as later-stage evidence .-> HYP
+    RL -. preserve as later-stage evidence .-> HYP
+
+    classDef stage fill:#e8f1ff,stroke:#2563eb,color:#0f172a,stroke-width:1.5px;
+    classDef gate fill:#fff7d6,stroke:#b7791f,color:#422006,stroke-width:1.5px;
+    classDef stop fill:#fee2e2,stroke:#dc2626,color:#450a0a,stroke-width:1.5px;
+    classDef note fill:#f3f4f6,stroke:#6b7280,color:#111827;
+    class BASE,SFT,DPO,RL,EVAL stage;
+    class G_SFT,G_DPO,G_RL,G_FINAL gate;
+    class HOLD stop;
+    class CONSTRAINT,HYP note;

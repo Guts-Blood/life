@@ -1,0 +1,77 @@
+{
+  "authorized_differences": {
+    "adapter.alpha": {
+      "parent": null,
+      "rollout": 32
+    },
+    "adapter.bias": {
+      "parent": null,
+      "rollout": "none"
+    },
+    "adapter.dropout": {
+      "parent": null,
+      "rollout": 0.0
+    },
+    "adapter.peft_version": {
+      "parent": null,
+      "rollout": "0.17.1"
+    },
+    "adapter.rank": {
+      "parent": null,
+      "rollout": 16
+    },
+    "adapter.target_modules": {
+      "parent": null,
+      "rollout": "all-linear"
+    },
+    "adapter.task_type": {
+      "parent": null,
+      "rollout": "CAUSAL_LM"
+    },
+    "adapter.type": {
+      "parent": null,
+      "rollout": "lora"
+    },
+    "run.id": {
+      "parent": "E",
+      "rollout": "G"
+    }
+  },
+  "checkpoint_budgets": {
+    "100_percent": 246936,
+    "25_percent": 61734,
+    "60_percent": 148162
+  },
+  "config_hash": "04a2c76c134b25c314d89c8dcf1ae4210b5638edc1fbfbefd846f9760558ed29",
+  "first_gate": "25_percent",
+  "hypothesis": "Freezing the Base model and training a small all-linear LoRA adapter will preserve Base math capability while retaining enough of the repaired dataset's code and routing gains to pass the dev gate.",
+  "manifest_hash": "f76e6a9538f10b245a831d891899a1d825bf687d7e2eeb4bb949bbf83141b369",
+  "ordinal": 5,
+  "parent_run_id": "E",
+  "primary_change": {
+    "implementation": {
+      "alpha": 32,
+      "bias": "none",
+      "dropout": 0.0,
+      "peft_version": "0.17.1",
+      "rank": 16,
+      "target_modules": "all-linear"
+    },
+    "parent_value": "full_parameters",
+    "path": "training.parameterization",
+    "rollout_value": "lora"
+  },
+  "run_id": "G",
+  "schedule_file_sha256": "f7917950a32370cd4c2dca5d7f0507d701c69a0027563843e9384c04fd3d6135",
+  "schedule_hash": "8a5c38ef011e6702076e36b7ba1eab815f90956b0b78f1e952dbcb9275ee37f0",
+  "schedule_path": "learning/post-training-30-day-bootcamp/artifacts/data/day12-training-schedule-G.json",
+  "status": "day12_run_g_preparation_pass",
+  "summary_hash": "094efa5cea30ed34f012a379816954f11a8e3f4c33290ab43e9cf1043b917565",
+  "validation_checks": {
+    "manifest_reused_exactly": true,
+    "occurrence_order_reused_exactly": true,
+    "only_identity_and_parameterization_changed": true,
+    "optimizer_reused_exactly": true,
+    "schedule_total_exact": true
+  }
+}

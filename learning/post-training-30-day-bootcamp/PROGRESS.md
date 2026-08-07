@@ -62,7 +62,7 @@ Day 31–42 无固定日期，在 30-Day Core 后按 readiness 与预算执行�
 
 ## 每周 Gate
 
-- [ ] Week 1：能从一个 training step 说明数据、模型、优化器、checkpoint 与 eval 的职责边界；能把 sharding 映射到 OOM、batch 和吞吐问题。
+- [x] Week 1：能从一个 training step 说明数据、模型、优化器、checkpoint 与 eval 的职责边界；能把 sharding 映射到 OOM、batch 和吞吐问题。（guided quiz/review evidence；runtime evidence 后补。）
 - [ ] Week 2：能审计 SFT 数据契约，从 Base baseline 经 tiny overfit 到受控 SFT，并用逐样本 eval 选择 checkpoint。
 - [ ] Week 3：能完成可验证 resume，做只改变一个变量的优化实验，并通过 failure injection 区分数据、数值、状态和系统故障。
 - [ ] Week 4：能审计 preference data、跑通 DPO 与小模型 GRPO，并画出 slime 的在线 RL 数据和状态流。

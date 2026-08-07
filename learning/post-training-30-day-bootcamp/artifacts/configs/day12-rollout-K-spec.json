@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "domain": "day12.recovery_rollout_spec",
+  "ordinal": 9,
+  "run_id": "K",
+  "parent_run_id": "J",
+  "status": "planned",
+  "hypothesis": "J's decoder-only all-linear LoRA does not directly adapt the tied output projection; adding lm_head to otherwise identical rank-16 LoRA coverage will improve executable code and termination behavior without giving up J's math-retention gain.",
+  "primary_change": {
+    "path": "adapter.target_modules",
+    "parent_value": "all-linear",
+    "rollout_value": ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj", "lm_head"]
+  },
+  "fixed_invariants": [
+    "Run J learning rate 3e-5 and complete optimizer/scheduler recipe",
+    "Run I target ratios and exact manifest/occurrence order",
+    "rank-16 alpha-32 LoRA with frozen Base weights",
+    "61,734 supervised-token first checkpoint",
+    "base revision, seed, loss mask, frozen dev and E2B protocols"
+  ],
+  "first_gate": "25_percent",
+  "acceptance_gate_source": "artifacts/configs/day12-recovery-rollout-policy.json"
+}

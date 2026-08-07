@@ -2,7 +2,7 @@
 
 日期：`2026-07-31`
 
-状态：`in_progress`
+状态：`done`（guided quiz、`swift sft` codepath walkthrough 与 tiny causal-LM 状态机完成）
 
 强度：工作日 4–5 小时
 

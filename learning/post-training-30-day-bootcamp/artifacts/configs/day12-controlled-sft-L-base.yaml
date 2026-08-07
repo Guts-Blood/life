@@ -1,0 +1,71 @@
+schema_version: 1
+experiment: day12-controlled-sft-checkpoints
+seed: 20260807
+
+model:
+  id: Qwen/Qwen3-0.6B-Base
+  revision: ddc928429ed09d9ad603fd762053d0434c15e865
+  parameter_dtype: float32
+  compute_dtype: bfloat16
+  loss_compute_dtype: float32
+  attention_implementation: eager
+  gradient_checkpointing: true
+  files:
+    config.json: 504a6b58c4271583724e66584b6b7698aea18450209df6b2f7582df0e89cee59
+    generation_config.json: 8c970692323e3ea0e9b8b0a4dca79388d31226e41f83c9fd6014804280ebf6e8
+    model.safetensors: cd2a512003e2f9f3cd3c32a9c3573f820bb28c940f73c57b1ddaa983d9223eba
+    tokenizer.json: c0382117ea329cdf097041132f6d735924b697924d6f6fc3945713e96ce87539
+    tokenizer_config.json: 7d0fc4691628c9f6b0c77f8138a80517896a307e074dd5ac87e279ea85515774
+    vocab.json: ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910
+  tokenizer_class: Qwen2TokenizerFast
+  chat_template_sha256: 44d5f08f3f72b837eaad09f13a54c1f9f4eb58d75240334548b7fd52a5437fa5
+
+adapter:
+  type: lora
+  peft_version: 0.17.1
+  task_type: CAUSAL_LM
+  rank: 32
+  alpha: 32
+  dropout: 0.0
+  target_modules: all-linear
+  bias: none
+
+data:
+  max_length: 2048
+  padding: right
+  packing: false
+  loss_mask: all_assistant_turns_plus_im_end
+  truncation: reject_if_final_assistant_boundary_removed
+
+optimizer:
+  name: AdamW
+  learning_rate: 5.0e-5
+  betas: [0.9, 0.95]
+  epsilon: 1.0e-8
+  weight_decay: 0.1
+  max_grad_norm: 1.0
+
+scheduler:
+  name: linear_warmup_by_supervised_tokens_then_constant
+  warmup_supervised_tokens: 12347
+
+training:
+  micro_batch_size: 1
+  gradient_accumulation_steps: 4
+  deterministic_algorithms: true
+  checkpoint_budgets:
+    25_percent: 61734
+    60_percent: 148162
+    100_percent: 246936
+  checkpoint_order: [25_percent, 60_percent, 100_percent]
+
+checkpoint:
+  full_state_model_dtype: float32
+  inference_export_dtype: bfloat16
+  minimum_free_disk_gib: 50
+
+hardware:
+  required_cuda: true
+  required_bf16: true
+  minimum_gpu_memory_gib: 20
+  expected_gpu: NVIDIA GeForce RTX 4090

@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "domain": "day12.recovery_rollout_spec",
+  "ordinal": 7,
+  "run_id": "I",
+  "parent_run_id": "H",
+  "status": "planned",
+  "mix_name": "mix_I_math_code_focused",
+  "manifest_name": "day12-mix-I-math-code-focused",
+  "selection_version": "day12_math_code_focused_exact_budget_v1",
+  "format_repair_version": "day12_task_routing_finqa_natural_reasoning_v1",
+  "parent_manifest_path": "learning/post-training-30-day-bootcamp/artifacts/data/day12-mix-D-format-repaired.json",
+  "clean_pool_path": "learning/post-training-30-day-bootcamp/artifacts/data/day09-dataset-manifest.json",
+  "total_supervised_tokens": 246936,
+  "target_ratios": {
+    "general": "1/8",
+    "math": "5/12",
+    "code": "5/12",
+    "finance": "1/24"
+  },
+  "routing_suffixes": {
+    "general": "\n\nFollow the user's requested constraints and response format exactly.",
+    "math": "\n\nSolve the mathematical problem carefully and make the final result explicit.",
+    "code": "\n\nProvide a correct solution that satisfies the requested interface and output constraints.",
+    "finance": "\n\nUse only the supplied financial evidence. Explain the arithmetic in natural language and make the final result explicit."
+  },
+  "finance_response_contract": {
+    "prefix": "Reasoning:",
+    "final_answer_prefix": "Final answer:",
+    "forbidden_fragments": [
+      "Calculation:", "add(", "subtract(", "multiply(", "divide(", "exp(",
+      "greater(", "table_average(", "table_sum(", "table_max(", "table_min("
+    ]
+  },
+  "hypothesis": "Keeping H's LoRA and 5e-5 optimization fixed while reallocating supervised tokens toward math and code will recover the two missing math cases and add the two missing code cases needed to pass every gate.",
+  "primary_change": {
+    "path": "data.target_ratios",
+    "parent_value": {"general": "7/24", "math": "7/24", "code": "7/24", "finance": "1/8"},
+    "rollout_value": {"general": "1/8", "math": "5/12", "code": "5/12", "finance": "1/24"}
+  },
+  "first_gate": "25_percent",
+  "acceptance_gate_source": "artifacts/configs/day12-recovery-rollout-policy.json"
+}

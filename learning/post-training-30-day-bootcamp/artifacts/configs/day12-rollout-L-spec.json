@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "domain": "day12.recovery_rollout_spec",
+  "ordinal": 10,
+  "run_id": "L",
+  "parent_run_id": "I",
+  "status": "planned_final_rollout",
+  "hypothesis": "I's rank-16 adapter has insufficient code capacity at the only LR that produced three executable solutions; doubling rank to 32 while holding alpha at 32 will add capacity and halve alpha/r scaling, recovering math retention while lifting code to the acceptance gate.",
+  "primary_change": {
+    "path": "adapter.rank",
+    "parent_value": 16,
+    "rollout_value": 32
+  },
+  "fixed_invariants": [
+    "Run I learning rate 5e-5 and complete optimizer/scheduler recipe",
+    "Run I target ratios and exact manifest/occurrence order",
+    "alpha 32, dropout 0, all-linear targets and frozen Base weights",
+    "61,734 supervised-token early checkpoint",
+    "base revision, seed, loss mask, frozen dev and E2B protocols"
+  ],
+  "derived_scaling_change": {"parent_alpha_over_rank": 2.0, "rollout_alpha_over_rank": 1.0},
+  "first_gate": "25_percent",
+  "acceptance_gate_source": "artifacts/configs/day12-recovery-rollout-policy.json"
+}

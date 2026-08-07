@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "domain": "day12.recovery_rollout_spec",
+  "ordinal": 3,
+  "run_id": "E",
+  "parent_run_id": "D",
+  "status": "planned",
+  "hypothesis": "The remaining math regression is driven mainly by excessive full-parameter update magnitude; halving peak learning rate should retain Base math while preserving the format-repaired code gain.",
+  "primary_change": {
+    "path": "optimizer.learning_rate",
+    "parent_value": 0.00002,
+    "rollout_value": 0.00001
+  },
+  "fixed_invariants": [
+    "Qwen3-0.6B-Base model and revision",
+    "Run D format-repaired manifest",
+    "246,936 supervised-token total and 25/60/100 boundaries",
+    "seed 20260807",
+    "AdamW family, betas, epsilon, weight decay and gradient clipping",
+    "12,347-token linear warmup followed by constant learning rate",
+    "batching, precision, deterministic algorithms and checkpoint format",
+    "frozen dev and E2B evaluation protocol"
+  ],
+  "first_gate": {
+    "checkpoint": "25_percent",
+    "math_correct_minimum_out_of_28": 10,
+    "code_correct_minimum_out_of_28": 5,
+    "four_slice_total_minimum_out_of_112": 15
+  }
+}

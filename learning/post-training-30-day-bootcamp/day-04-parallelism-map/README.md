@@ -2,7 +2,7 @@
 
 日期：`2026-07-30`
 
-状态：`in_progress`
+状态：`done`（Quiz Core 完成；真实分布式 runtime evidence 留待后续实验）
 
 强度：工作日 4–5 小时
 

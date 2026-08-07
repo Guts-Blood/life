@@ -2,7 +2,7 @@
 
 日期：`2026-08-02`
 
-状态：`not_started`
+状态：`done`（Week 1 Gate `4/5 passed; 1 partial`；stage-signal 独立口述复核待完成）
 
 强度：1 小时，仅阅读/复盘
 
@@ -38,17 +38,21 @@ CPU only。只确认 Day 10–12 所需模型缓存、磁盘和 GPU 窗口，不
 
 ## 产物
 
-- `../artifacts/reports/week1-training-stage-decision-map.mmd`
-- `../artifacts/reports/week1-gate-review.md`
+- [`../artifacts/reports/week1-training-stage-decision-map.mmd`](../artifacts/reports/week1-training-stage-decision-map.mmd)
+- [`../artifacts/reports/week1-gate-review.md`](../artifacts/reports/week1-gate-review.md)
 
 ## Week 1 Gate
 
-- [ ] 能区分 SFT、DPO 与 online RL/RLVR 改变模型的信号来源。
-- [ ] 能解释训练 lifecycle 与框架责任边界。
-- [ ] 能把 DP/FSDP/TP/PP 用于配置和故障定位，不要求自己实现 collective。
-- [ ] 能说明为什么 Day 08 必须先固定数据契约、Day 10 必须先冻结 eval，之后才能解释训练效果。
-- [ ] Week 2 的模型、数据候选、eval slices 和停止条件已写明；未知项被显式记录。
+- [ ] 能区分 SFT、DPO 与 online RL/RLVR 改变模型的信号来源。（Day 06 crosswalk 与决策图已写，仍需独立口述复核。）
+- [x] 能解释训练 lifecycle 与框架责任边界。（Day 05 guided quiz evidence。）
+- [x] 能把 DP/FSDP/TP/PP 用于配置和故障定位，不要求自己实现 collective。（Day 04 quiz evidence；runtime evidence 后补。）
+- [x] 能说明为什么 Day 08 必须先固定数据契约、Day 10 必须先冻结 eval，之后才能解释训练效果。
+- [x] Week 2 的模型、数据候选、eval slices 和停止条件已写明；未知项被显式记录。
 
 ### 最大阻塞
 
+Week 2 的具体 dataset source/license/revision，以及 model/tokenizer cache、磁盘和 GPU 窗口尚未固定。
+
 ### Week 2 第一项证据
+
+完成一条 `raw messages -> rendered text -> input IDs/tokens -> labels -> supervised mask -> shifted targets` 的人工可核验 trace，并固定 tokenizer revision 与 template hash。
