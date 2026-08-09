@@ -1,0 +1,20 @@
+{
+  "local_files_only": true,
+  "local_paths": {
+    "gsm8k": "/root/autodl-tmp/qwen35-v2/day20-raw/gsm8k",
+    "mbpp": "/root/autodl-tmp/qwen35-v2/day20-raw/mbpp",
+    "mmlu": "/root/autodl-tmp/qwen35-v2/day20-raw/mmlu",
+    "tatqa": "/root/autodl-tmp/qwen35-v2/day20-raw/tatqa",
+    "tulu": "/root/autodl-tmp/qwen35-v2/day20-raw/tulu_if",
+    "tulu_code": "/root/autodl-tmp/qwen35-v2/day20-raw/tulu_code"
+  },
+  "local_revisions": {
+    "gsm8k": "740312add88f781978c0658806c59bc2815b9866",
+    "mbpp": "4bb6404fdc6cacfda99d4ac4205087b89d32030c",
+    "mmlu": "c30699e8356da336a370243923dbaf21066bb9fe",
+    "tatqa": "c96247f5077eac447f63527fd3dcfdc58bb56d6a",
+    "tulu": "fe0c7d350c9b4542b8d829a6f1daa1c259f0ba0e",
+    "tulu_code": "1412abe88dd2976af977260788e033013449f7b2"
+  },
+  "model": "/root/autodl-tmp/Qwen--Qwen3.5-4B-Base/1001bb4d826a52d1f399e183466143f4da7b741b"
+}

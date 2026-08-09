@@ -1,0 +1,33 @@
+{
+  "ok": true,
+  "delivery_mode": "portable_html",
+  "report": {
+    "path": "report.html",
+    "bytes": 564967,
+    "sha256": "24df8be1ef161d841cb4240e675aeb23b0d05ef4589cb719ba4adbe370635899"
+  },
+  "artifact": {
+    "path": "artifact.json",
+    "bytes": 29956,
+    "sha256": "ef466c6bfce310d4d87ab1a9113b4e5d76033b11f81ff6df97e4fe2723428aad"
+  },
+  "stages": {
+    "validation": "passed",
+    "package": "passed",
+    "verification": "passed"
+  },
+  "counts": {
+    "blocks": 22,
+    "charts": 1,
+    "html": 0,
+    "metrics": 3,
+    "tables": 6
+  },
+  "browser_qa": {
+    "source_dialog": "passed",
+    "source_interaction": "keyboard_menu_semantic_click",
+    "viewports": [1440, 390],
+    "external_requests": 0
+  },
+  "generated_at_utc": "2026-08-09T05:55:00Z"
+}

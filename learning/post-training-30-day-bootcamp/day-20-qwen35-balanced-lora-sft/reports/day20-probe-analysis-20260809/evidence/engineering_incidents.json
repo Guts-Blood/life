@@ -1,0 +1,30 @@
+[
+  {
+    "stage": 1,
+    "incident": "来源清单路径漂移",
+    "impact": "原子发布后清单仍指向 staging 目录，prepare 在写训练产物前 fail closed；一次修复还引入了字面量 \\n。",
+    "fix": "将四个 canonical 输出路径重新绑定并重签自哈希清单。",
+    "verification": "最终 source manifest content SHA-256 为 3971777b376495ece3212ffec8e77bd6768184943c018eb77b4f67bc76ac368b。"
+  },
+  {
+    "stage": 2,
+    "incident": "训练参数语义错位",
+    "impact": "dataset_shuffle 不属于 HF trainer args；ms-swift 启用模型 gradient checkpointing 后会清除 trainer 侧旗标，旧断言误报。",
+    "fix": "把合同改为核验数据管线实际设置，以及模型 is_gradient_checkpointing 的最终状态。",
+    "verification": "三组 probe 均完成 103 optimizer steps，训练证据摘要 status=pass。"
+  },
+  {
+    "stage": 3,
+    "incident": "cuDNN 动态库混用",
+    "impact": "系统 cuDNN 9.1.0 与 venv cuDNN 9.10.2.21 混载，step 0 因 cudnnGetLibConfig 符号缺失终止。",
+    "fix": "不安装依赖，fresh process 前置 venv nvidia/cudnn/lib 到 LD_LIBRARY_PATH。",
+    "verification": "进程映射中的 8 个 cuDNN so 全来自 venv；BF16 forward/backward 与后续训练通过。"
+  },
+  {
+    "stage": 4,
+    "incident": "warmup 首步零更新误判",
+    "impact": "cosine warmup 的首个 optimizer step 实际 LR 为 0，旧安全门将 lora_update_ratio=0 误判为训练失效。",
+    "fix": "step 1 允许非负；step 2–5 继续强制正更新与有限数值。",
+    "verification": "1e-5 最终 attempt-005 通过；3e-5 与 1e-4 均在 attempt-001 通过。"
+  }
+]
