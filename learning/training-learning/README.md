@@ -2,6 +2,10 @@
 
 用于把大模型训练框架源码、学习计划和实验笔记放在同一个 `life` repo/context 中，并配合 [30-Day LLM Post-Training Bootcamp](../post-training-30-day-bootcamp/README.md) 做代码阅读和实验。
 
+## Frontier training reports
+
+- [GLM-5/5.2、Kimi K3、DeepSeek-V4：training pipeline roadmap 与 walk-through](reports/frontier-training-2026-08/README.md)
+
 ## ms-swift
 
 - 本地路径：`../../vendor/ms-swift/`
