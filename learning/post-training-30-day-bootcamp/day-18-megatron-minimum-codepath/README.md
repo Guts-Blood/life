@@ -1,84 +1,96 @@
-# Day 18 — Megatron 最小源码链、双卡 TP/DP 与 Distributed Checkpoint
+# Day 18 — Megatron × Qwen3.5 Compatibility and Learnability
 
-日期：`2026-08-13`
-状态：`not_started`
-强度：4–5 小时人工工作；双卡实例 3–5 小时
+计划日期：`2026-08-13`；独立提前执行：`2026-08-08`
+状态：`done`（standalone pull-forward；不回填 Day 15）
+强度：4–5 小时人工工作；双卡窗口由 compatibility preflight 决定
 
 ## 主要目标
 
-把 Megatron 压缩为一天的最小必要理解：从入口走到 data/model/loss/optimizer/checkpoint，并在双卡上分别做 DP 与 TP smoke。今天不追求“通读 Megatron”。
+把 Megatron 学习落到 active model：验证 pinned ms-swift/Megatron stack 能否正确解析 `Qwen/Qwen3.5-4B-Base` 的 conditional-generation wrapper、GatedDeltaNet（GDN）、text-only/vision freeze policy、batch/loss、TP/DP state 与 distributed checkpoint。C0–C4 是 compatibility/correctness gate；C5 追加同入口 150-step tiny-overfit learnability gate，但不外推泛化或 scaling speedup。Day 01–12 的旧 Megatron/模型结果保留为历史背景，不能代替 Qwen3.5 evidence。
 
-## 理论（45 分钟）
+## 版本与支持 Gate（45 分钟）
 
-精读清单：[Day 18 — Megatron minimum codepath](../SCALING-BOOK-READING-GUIDE.md#day-18)。
+- 本次作为 standalone pull-forward，使用本次运行独立冻结并记录的 runtime；Day 15 runtime lock 仍未完成。对照 [Qwen3.5 Best Practice](https://github.com/modelscope/ms-swift/blob/main/docs/source_en/BestPractices/Qwen3_5-Best-Practice.md) 与 pinned checkout 的 examples/`--help`，记录 ms-swift、Megatron Core、mcore-bridge、Transformers、CUDA/NCCL 和 GDN implementation。
+- 用 pinned code 搜索并记录 model conversion/provider、conditional loader、processor/template、GDN、loss、optimizer、distributed save/load 的实际 `file:function`。
+- 验证 TP degree 对 attention/KV/GDN layout 的约束；未经运行验证的组合标成 `UNKNOWN`，不凭文档示例宣称支持。
+- 明确 text-only sample path 不训练或插入视觉 token；ViT/aligner freeze 与参数 ownership 要由 runtime inventory 证明。
 
-- TP=1/DP=2 与 TP=2/DP=1 的 parameter、gradient、optimizer ownership。
-- 两种配置分别需要的 collective，以及小模型 TP 可能变慢的原因。
-- Distributed checkpoint 为什么必须同时记录 sharding metadata 与非 tensor state。
-
-## 最小源码链（75 分钟）
-
-固定 Megatron commit/镜像，用该 commit 的搜索结果确认实际文件路径，只追以下符号和调用关系：
+## 最小源码链与插桩（75 分钟）
 
 ```text
-entry/config
-  -> dataset provider / batch
-  -> model provider / forward step
-  -> loss
+HF Base revision + processor/template
+  -> conversion/model provider
+  -> Qwen3.5 conditional wrapper + language model + GDN
+  -> text-only batch / labels / loss
   -> backward / optimizer step
   -> distributed save/load
+  -> HF/inference export + parity
 ```
 
-每个节点只记录 `file:function`、输入/输出 shape、运行在哪些 ranks、拥有哪类 state。Parallel schedules、tensor mapping 和 kernels 只在真实 stack 经过时展开一层；其余标为 `OUT_OF_SCOPE`。
+每个节点记录 `file:function`、输入/输出 shape、运行 ranks、拥有的 state 和 evidence path。插桩记录 rank、TP/DP group、trainable/frozen params、batch/label shape、loss、optimizer step、GDN backend、checkpoint save/load 与 export。
 
-## Coding / 插桩（45 分钟）
+## Compatibility Gates（120–150 分钟）
 
-- 记录 pinned commit、image digest、GPU topology 和完整启动 config。
-- 用可开关 hook/logger 记录 rank、TP/DP group、batch/label shape、loss、optimizer step、checkpoint save/load。
-- 准备两组只改变 TP/DP 的 config，并断言 global batch 与 label-token budget 一致。
+严格按顺序执行：
 
-## 训练 / 实验（120–150 分钟）
+1. **C0 config/conversion**：exact Base revision 可转换或由官方 bridge 加载；参数数、关键 tensor names 与 hash inventory 可解释。
+2. **C1 single-rank parity**：对 Day 18 独立冻结的两行 text-only fixture 比较 Transformers reference 与 Megatron path 的 logits/loss；预先写 tolerance。
+3. **C2 DP smoke**：同机 2 ranks，`TP=1, DP=2`，完成 3–5 optimizer steps并保存 per-rank state。
+4. **C3 TP smoke**：只在 pinned stack 正式支持时运行 `TP=2, DP=1` 的 3–5 steps；保持 global label-token budget 与 C2 一致。
+5. **C4 distributed checkpoint**：退出进程、reload、继续 2 steps，并做 inference export/reload parity。
+6. **C5 tiny overfit**：从 C0 Base 独立启动同一 `megatron sft`/TP2 recipe，固定 150 updates；fresh-process HF export/reload 后，teacher-forced token accuracy ≥95%、loss 相对 Base 至少下降 80%，且 main/MTP changed、vision/aligner bitwise unchanged。
 
-1. 先用 pinned commit 的官方最小 GPT/synthetic recipe 完成 5-step 单配置 gate。
-2. Run A：2 ranks，`TP=1, DP=2`，10–20 optimizer steps。
-3. Run B：2 ranks，`TP=2, DP=1`，10–20 optimizer steps。
-4. 比较 rank groups、loss、per-GPU memory、step time 和 exposed communication；不把两卡 scaling 当主目标。
-5. 保存 distributed checkpoint，退出所有进程，新进程恢复并再跑 3 steps；审计 model/optimizer/scheduler/RNG/iteration metadata。
-
-若 Qwen adapter/转换在预定 30 分钟内已有可用 recipe，可增加 5-step Qwen smoke；它是 Stretch，不得挤掉 TP/DP 和 checkpoint Core。
+任一 gate 失败即保存最小 reproducer、resolved config 和错误证据，状态写 `compatibility_blocked_at_Cx`。不得退回 synthetic GPT 或另一 Qwen 型号后把结果记作 Qwen3.5 通过；synthetic recipe只能用于区分环境损坏与 model-adapter 问题。
 
 ## 资源与租卡
 
-- 同机 2×H100 80GB，预计 3–5 小时；可替代同机 2×A100 80GB。
-- 不跨节点、不做四卡、不做长训练。
-- import/config/topology gate 未通过时不开正式 run；证据同步后立即关机。
+- 先完成本地 CPU/config gate；租用同机 2×H800 80GB 或 2×H100 80GB（均为 Hopper CC 9.0）后，C0/C1 只暴露 GPU 0，二者通过后才让 C2–C5 使用两张卡。
+- 不跨节点、不做四卡、不做长训练。双卡窗口默认 2–4 小时，实际以 smoke 预算和停止条件为准。
+- import/conversion/topology gate 未通过时不开 optimizer run；证据同步后立即关机。
+
+## 实际结果（standalone pull-forward）
+
+- Run `day18-qwen35-20260808T073811Z`：C0–C5 与 fail-closed final gate 全部通过；完整数值、版本、问题记录和 evidence SHA 见 [兼容性报告](../artifacts/reports/day18-qwen35-megatron-compatibility.md)。
+- 同一 Megatron SFT 入口覆盖 HF↔MCore parity、`TP=1/DP=2`、`TP=2/DP=1`、fresh-process full-state resume/export，以及从 Base 独立启动的 150-step two-row tiny overfit；vision/aligner ownership 保持冻结。
+- 结论只限于此次冻结的 Qwen3.5-4B Base、两行 text-only fixture、BF16、2×H800、TP/DP/MTP/checkpoint/export 路径：未检出训练代码 bug 且能完成同 fixture overfit；不证明泛化、长训、视觉路径、任意拓扑、exact-resume 等价或“全仓无 bug”。
+- Day 15 仍为 `not_started`；本结果不补齐 Day 15 M1–M5、不解锁 Day 16/S1，也不改变 Day 13 为下一顺序执行项。
 
 ## Evidence-first 产物
 
-- `../artifacts/reports/day18-megatron-minimum-codepath.md`
-- 两组 per-rank logs/configs
-- distributed-checkpoint manifest 与 reload 证据
+- `../artifacts/reports/day18-qwen35-megatron-compatibility.md`
+- `../artifacts/configs/day18-qwen35-megatron/`
+- C0–C5 per-rank logs、parameter/layout manifest 与 C5 teacher-forced Base/final evidence
+- `problems.jsonl`、fail-closed final summary 与 immutable `DAY18-PASS.json`
+- distributed checkpoint、HF export 与 reload parity evidence
+- 本地准备、上传与逐 Gate 命令见 [AUTODL-RUNBOOK.md](AUTODL-RUNBOOK.md)；脚本准备完成不等于 GPU compatibility 已通过。
 
 ## 验收
 
-- [ ] 最小调用链每条边有 pinned `file:function` 和 runtime 证据。
-- [ ] TP/DP 两组都真正完成 optimizer step。
-- [ ] 能解释两组 rank ownership 与 collective 差异。
-- [ ] distributed checkpoint 在新进程成功恢复并继续三步。
-- [ ] 清楚列出未深入的 Megatron 区域，不把一天阅读称为全仓通读。
-
-## Optional Capstone Export Contract（不扩大 Day 18 Core）
-
-保留下列可复用接口：TP/DP resolved launcher、per-rank topology/state manifest、global-batch/label-token assertion、distributed save/reload、新进程 resume 和 inference-conversion parity。Day 18 的 synthetic/small-model smoke 只证明方法；真正的 4B single-vs-TP2 parity 与 8B genuine TP pressure 在 Day 32–34 重跑。
+- [x] conditional loader、processor/template、GDN 和 conversion 每条边有 pinned `file:function` 与 runtime evidence。
+- [x] C1 reference parity 有预注册 tolerance 和逐 tensor/loss 结果。
+- [x] C2 完成真实 optimizer step；C3 若不支持则有明确官方/运行证据，而非静默跳过。
+- [x] distributed checkpoint 在新进程恢复并完成 export/reload parity，或准确记录阻塞 gate。
+- [x] C5 同 fixture learnability 阈值、参数 ownership 与 fresh export/reload gate 全部通过；结果未被写成泛化或 exact-resume 证明。
+- [x] synthetic control 未被冒充为 active-model success。
 
 ## Daily Log
 
-### Pinned environment / topology
+### Pinned environment / GDN backend
 
-### Minimum codepath
+2×H800 PCIe、Python 3.12.13、PyTorch 2.10.0+cu126、Megatron Core 0.18.0、mcore-bridge 1.6.0；`USE_MCORE_GDN=1`，实际类为 `mcore_bridge.model.modules.gated_delta_net.GatedDeltaNet`。
 
-### TP vs DP
+### Conditional loader / conversion chain
 
-### Distributed resume
+8-node runtime codepath manifest 通过；见兼容性报告与 evidence bundle 中的 `codepath-runtime-evidence.json`。
 
-### Day 19 第一动作
+### C0–C5 gate results
+
+10/10 required gates 通过；C5 fresh HF reload 达到 72/72 teacher-forced tokens，loss `3.31137e-08`。
+
+### DP/TP ownership and parity
+
+C2 `TP1/DP2` 与 C3 `TP2/DP1` 均完成 3 个成功 update；first-loss difference `0.00330782`。
+
+### Compatibility blocker or supported envelope
+
+无开放 blocker。支持范围和 17 类已解决/观察问题见 [最终报告](../artifacts/reports/day18-qwen35-megatron-compatibility.md)。
