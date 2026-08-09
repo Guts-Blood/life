@@ -62,6 +62,12 @@
 
 Day 12 额外固化一个通用 `selected-checkpoint-promotion` manifest 模板，至少包含 parent checkpoint、data/config/template hashes、累计 label tokens、dev selection evidence、可推理 export 路径/hash、可继续训练 state 路径/hash与转换 parity。0.6B checkpoint 不能成为 4B/8B 权重起点；可复用的是 SFT recipe/selection/checkpoint contract。Capstone 的 S1 必须用同一个 exact manifest 分叉 direct RL 与 OPD。
 
+## Qwen3.5-4B v2 Handoff
+
+本日正式关闭 `qwen3-0.6b-day01-12-v1`：十轮 recovery C–L 全部完成，0 个候选通过联合 gate，frozen test 未消费。后续不会把 0.6B Base、Run E 或其他 descriptive peak 当作 4B policy parent。
+
+Day 13+ 建立 `qwen35-4b-day13-plus-v2`。原始数据/provenance、scorer 思路和 promotion policy 可以重新审核后复用；旧 tokenizer/template 产出的 rendered text、token IDs、label spans、supervised-token schedule、comparison key 和 aggregate score 均不可沿用。完整迁移 gate 见 [`../QWEN35-4B-MIGRATION-PLAN.md`](../QWEN35-4B-MIGRATION-PLAN.md)。
+
 ## Daily Log
 
 ### 预注册假设与阈值

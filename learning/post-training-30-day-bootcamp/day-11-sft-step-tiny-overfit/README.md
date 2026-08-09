@@ -2,7 +2,7 @@
 
 日期：`2026-08-06`
 
-状态：`ready_for_gpu`（CPU 前置、冻结输入、脚本和上传包已于 2026-08-05 准备）
+状态：`done / day11_pass`（Step 50；teacher-forced accuracy `98.89%`；exact fresh-process resume `PASS`）
 
 强度：工作日 4–5 小时
 
@@ -52,7 +52,7 @@
 - 实现 6-step uninterrupted vs `3 + fresh-process resume + 3` 的 exact comparison；恢复 model、optimizer、scheduler、RNG 与 sampler cursor。
 - 本地 7 个单元测试和 frozen-data deterministic rebuild 已通过。
 
-## 明日唯一流程
+## 历史执行流程
 
 详细命令见 [`AUTODL-RUNBOOK.md`](./AUTODL-RUNBOOK.md)。上传本地已准备的 `tmp/day11-ready-upload.tar` 和同名 `.sha256` 文件到 AutoDL 的 `/root/autodl-tmp/`，然后执行：
 
@@ -77,11 +77,13 @@ bash run-day11.sh
 
 ## 验收
 
-- [ ] 前 3 个 optimizer steps 的 sample、有效 label、accumulation、gradient、LR 和参数变化能逐项对应。
-- [ ] tiny set 达到预注册的过拟合阈值；默认目标为 non-padding assistant tokens 的 teacher-forced accuracy ≥95%，否则解释阻塞。
-- [ ] checkpoint resume 恢复训练状态与样本进度，而不是仅能加载模型做 inference。
-- [ ] Base/early/final 在完全相同 template 和 decoding 下可比较。
-- [ ] 不把 command 成功、loss 有数字或 tiny-set 记忆当作真实 SFT 效果。
+- [x] 前 3 个 optimizer steps 的 sample、有效 label、accumulation、gradient、LR 和参数变化能逐项对应。
+- [x] Step 20 首次超过 95%；按冻结规则训练至 Step 50，最终 `894/904 = 98.89%`。
+- [x] checkpoint resume 恢复训练状态与样本进度；6-step continuous 与 `3 + fresh-process resume + 3` 的逐步比较无 mismatch。
+- [x] Base/early/final 在完全相同 template 和 decoding 下可比较，并保留 54 条 deterministic generation。
+- [x] 结论限定为 v1 pipeline learnability；不把 tiny-set 记忆当作泛化或 Qwen3.5 兼容证据。
+
+完整回顾与实测曲线见 [`DAY11-LOOKBACK.md`](DAY11-LOOKBACK.md) 和 [`../artifacts/reports/day11-tiny-overfit-retrospective.svg`](../artifacts/reports/day11-tiny-overfit-retrospective.svg)。Day 13+ 的 Qwen3.5 v2 必须重跑 processor/mask、one-step、tiny-overfit 与 resume gate。
 
 ## Daily Log
 
