@@ -1,0 +1,157 @@
+{
+  "surface": "report",
+  "manifest": {
+    "version": 1,
+    "surface": "report",
+    "title": "Day 19 4B 退化根因诊断",
+    "description": "区分 Qwen3.5-4B 的模板/评测契约问题、SFT 数据迁移问题与真实能力问题，并给出 Day 20 最小验证方案。",
+    "generatedAt": "2026-08-08T11:22:34Z",
+    "charts": [
+      {
+        "id": "code_contract_chart",
+        "title": "诊断规范化后可重新组成合法 Python 的代码输出",
+        "subtitle": "每个配方 28 条；legacy 原始语法有效数均为 0，虚线代表全部 28 条",
+        "type": "bar",
+        "dataset": "code_contract",
+        "sourceId": "diagnostic_sql",
+        "question": "Day 19 的代码零分有多少由输出形状与 frozen continuation 契约不匹配造成？",
+        "rationale": "三个配方是离散类别，单指标竖向柱状图能直接比较规范化后的语法可组合数量。",
+        "encodings": {
+          "x": {"field": "recipe", "type": "nominal", "label": "配方"},
+          "y": {"field": "diagnostic_syntax_salvageable", "type": "quantitative", "label": "可组合输出数", "unit": "条"},
+          "tooltip": [
+            {"field": "raw_syntax_valid", "type": "quantitative", "label": "Legacy 原始语法有效"},
+            {"field": "denominator", "type": "quantitative", "label": "样本总数"}
+          ]
+        },
+        "layout": "full",
+        "labels": {"values": "all"},
+        "palette": {"kind": "sequential", "name": "blue"},
+        "referenceLines": [{"axis": "y", "value": 28, "label": "全部样本"}],
+        "settings": {"orientation": "vertical", "showValues": true, "sort": "none"}
+      },
+      {
+        "id": "baseline_b_chart",
+        "title": "Baseline B 各切片的格式有效与答对数量",
+        "subtitle": "每个切片 28 条；数学与金融大多可解析，但正确数仍为 0",
+        "type": "bar",
+        "dataset": "baseline_b_by_slice",
+        "sourceId": "diagnostic_sql",
+        "question": "Baseline B 的低分主要来自格式失败，还是答案本身错误？",
+        "rationale": "分组柱状图把同一切片的格式有效数和正确数放在同一尺度上，直接显示两者缺口。",
+        "encodings": {
+          "x": {"field": "slice", "type": "nominal", "label": "评测切片"},
+          "y": {"field": "response_count", "type": "quantitative", "label": "响应数", "unit": "条"},
+          "color": {"field": "metric", "type": "nominal", "label": "指标"},
+          "tooltip": [{"field": "denominator", "type": "quantitative", "label": "样本总数"}]
+        },
+        "layout": "full",
+        "labels": {"values": "all"},
+        "legend": {"position": "bottom", "sort": "spec", "title": "指标"},
+        "palette": {"kind": "categorical", "name": "blue-gold"},
+        "referenceLines": [{"axis": "y", "value": 28, "label": "全部样本"}],
+        "settings": {"groupMode": "grouped", "orientation": "vertical", "showValues": true, "sort": "none"}
+      }
+    ],
+    "sources": [
+      {"id": "diagnostic_sql", "label": "Day 19 诊断指标投影", "path": "day19_diagnostic_metrics.sql"},
+      {"id": "day19_results", "label": "Day 19 canonical results", "path": "AutoDL/day19-qwen35-20260808T100142Z/DAY19-RESULTS.json"},
+      {"id": "day19_predictions", "label": "Day 19 retained predictions", "path": "AutoDL/day19-qwen35-20260808T100142Z/eval/predictions.jsonl"},
+      {"id": "day19_training", "label": "Day 19 selected SFT messages", "path": "AutoDL/day19-qwen35-20260808T100142Z/data/selected-sft.jsonl"},
+      {"id": "frozen_contract", "label": "Day 10 frozen evaluation manifest", "path": "bootcamp/artifacts/eval/day10-frozen-eval-manifest.json"}
+    ],
+    "blocks": [
+      {
+        "id": "title",
+        "type": "markdown",
+        "body": "# Day 19 4B 退化根因诊断"
+      },
+      {
+        "id": "technical_summary",
+        "type": "markdown",
+        "body": "## 技术结论：代码先修契约，数学与金融再查能力\n\n**这不是单一的 template 问题，也不能归因于 4B 天生指令遵从差。** 代码的 0/84 被两项系统性错位显著放大：全部输出都带有空的 `<think>...</think>` 前缀，且全部返回完整 `def`，而 frozen HumanEval 要求只返回函数体续写。诊断性移除包装并把完整函数映射回 continuation 后，63/84（75%）已能重新组成合法 Python；这仍不是正确率，也没有执行候选代码。\n\n**数学和金融则不是 parser 能修好的。** Baseline B 的数学 28/28、金融 24/28 都能被 scorer 解析，但两者仍是 0/28。因此 Day 20 应先对 untouched C0/Base 做同协议评测，再决定是否进行一版以 B 为锚点的 contract-repair SFT；Best-E 不应继续推广。"
+      },
+      {
+        "id": "code_contract_finding",
+        "type": "markdown",
+        "sourceId": "diagnostic_sql",
+        "body": "## 代码零分首先暴露的是输出契约错位\n\n84 条代码输出中，84/84 都有空 thinking 包装，移除包装后 84/84 都从完整函数定义开始。仅做有边界的语法诊断后，A、B、E 分别有 15/28、25/28、23/28 可以重新组成合法 Python。\n\n这说明 legacy 0/28 不能直接解释成“模型不会写代码”。它更准确地表示：**模型返回完整函数，但评测器按旧 0.6B 的函数体续写协议拼接。**"
+      },
+      {"id": "code_contract_visual", "type": "chart", "chartId": "code_contract_chart"},
+      {
+        "id": "noncode_finding",
+        "type": "markdown",
+        "sourceId": "diagnostic_sql",
+        "body": "## B 的数学与金融失败不是格式假象\n\nBaseline B 在 General 上有 21/28 格式有效、15/28 正确，说明这套 4B checkpoint 并非普遍失去指令遵从。数学 28/28 格式有效却 0/28 正确；金融 24/28 格式有效却 0/28 正确。这里的主问题是答案内容、任务分布或 SFT 后能力回退，而不是输出解析。"
+      },
+      {"id": "baseline_b_visual", "type": "chart", "chartId": "baseline_b_chart"},
+      {
+        "id": "best_e_regression",
+        "type": "markdown",
+        "sourceId": "day19_predictions",
+        "body": "## Best-E 还出现了独立的响应风格回退\n\nBest-E 的 General 只有 3/28 格式有效，并有 25/28 触及生成上限；这更像 E 配方迁移造成的冗长响应风格回退，不能作为 Day 20 锚点。"
+      },
+      {
+        "id": "scope_definitions",
+        "type": "markdown",
+        "sourceId": "day19_results",
+        "body": "## 比较范围与指标边界\n\n- **总体样本：**每个 checkpoint 使用同一 frozen dev，共 112 条，General、Math、Code、Finance 各 28 条。\n- **格式有效：**非代码由 frozen parser 成功提取答案；代码由原始 HumanEval prompt 与提取 completion 能否组成合法 Python 决定。\n- **正确：**非代码使用 frozen exact scorer；代码使用隔离 E2B 执行结果。\n- **诊断语法可挽救：**只表示规范化后能通过语法组合检查，不代表测试通过。\n- **历史 0.6B：**只作目标参照；模型、模板和训练阶段不同，不能用于直接归因。"
+      },
+      {
+        "id": "training_contract_finding",
+        "type": "markdown",
+        "sourceId": "diagnostic_sql",
+        "body": "## 训练数据明确强化了完整函数回答\n\nDay 19 实际选中的代码 SFT 记录中，A/B/E 分别有 115/221/142 条；三套数据的 continuation-only prompt 都是 0 条，assistant target 以缩进函数体开头的也都是 0 条。模型统一返回完整 `def` 与训练分布一致，但违背了 frozen HumanEval 的一次性提示要求。\n\n因此这里应被标记为 **SFT 数据契约诱发的指令遵从失败**，而不是直接归因于 4B 基座能力。"
+      },
+      {
+        "id": "methodology",
+        "type": "markdown",
+        "body": "## 根因判别方法\n\n1. 复算每个切片的 parse、format、correct 与 generation-ceiling 分布。\n2. 对代码只做静态诊断：移除一个开头的空 thinking 包装；识别与 entry point 同名的单一完整函数；检查其函数体与 frozen prompt 的语法可组合性。\n3. 将 Day 19 实际选中的 SFT 消息映射回历史数据源，检查代码目标形状。\n4. 保留 legacy 分数不变，把上述结果标记为 diagnostic，不覆写 frozen 结果。"
+      },
+      {
+        "id": "limitations",
+        "type": "markdown",
+        "body": "## 当前证据仍不能证明 4B 本体更差\n\n- Day 19 没有在同一 112 条 dev 上评估 untouched Qwen3.5 C0/Base，因此尚不能区分 base 弱、SFT 遗忘和提示模板不适配。\n- 63/84 的语法可组合性没有经过 E2B 语义测试；它只证明 legacy 语法零分被协议错位放大。\n- 每个切片只有 28 条，适合作为工程门控，不足以声明总体模型排序。\n- 数学与金融的错误可能同时来自训练样本质量、任务分布差异和模型能力；目前没有单因果证据。"
+      },
+      {
+        "id": "next_steps",
+        "type": "markdown",
+        "body": "## Day 20 最小解决方案\n\n1. **零训练基线：**用现有 C0/Base、A、B、E 对同一 frozen dev 推理；不创建新 checkpoint。每条同时保留 `legacy_v1` 与 `normalized_v2` 两套结果。\n2. **评测适配器：**`normalized_v2` 只允许移除一个开头空 thinking 包装和 Markdown fence；若输出定义了唯一且同名 entry point，就在 E2B 中按完整函数执行；否则按原 continuation 协议拼接。记录所有变换和哈希，绝不在 AutoDL 本机执行候选代码。\n3. **先判因再训练：**若 C0 在数学/金融明显高于 B，则判为 SFT 回退；若 C0 同样接近 0，则优先修 prompt/数据与 base 适配。若 normalized code 显著恢复，则保留双分数，不把 legacy 0 分当能力结论。\n4. **只训练一个修复分支：**以 B 为锚，保持 64,608 supervised tokens；在 code 的 token 预算内把约 40% 替换为无泄漏的 continuation-only 样本，其余保留完整函数。数学改用经验证的短多步算术；金融按 number/percent/text/count 分层并校验 program-answer 一致性；General 保留 B 风格。\n5. **晋级门槛：**General 至少 13/28；Math 至少 4/28；Finance 至少 2/28；normalized Code 至少 9/28；总体格式不低于 B 的 65.18%，异常率不高于 30%。不满足则不进入更大规模训练。"
+      },
+      {
+        "id": "further_questions",
+        "type": "markdown",
+        "body": "## 下一步最能增加置信度的问题\n\n- Untouched C0 在 legacy 与 normalized 两套协议下，各切片是多少分？\n- 63 条语法可组合代码中，E2B 实际能通过多少条？\n- B 的数学/金融错误相对 C0 是能力遗忘，还是两者都不适应该 frozen prompt？\n- 同一批历史 0.6B 输出用 normalized_v2 重评分后，9/28 的 E 是否仍是合理参照？"
+      }
+    ]
+  },
+  "snapshot": {
+    "version": 1,
+    "generatedAt": "2026-08-08T11:22:34Z",
+    "status": "ready",
+    "datasets": {
+      "code_contract": [
+        {"recipe": "Baseline A", "raw_syntax_valid": 0, "diagnostic_syntax_salvageable": 15, "denominator": 28},
+        {"recipe": "Baseline B", "raw_syntax_valid": 0, "diagnostic_syntax_salvageable": 25, "denominator": 28},
+        {"recipe": "Best-E", "raw_syntax_valid": 0, "diagnostic_syntax_salvageable": 23, "denominator": 28}
+      ],
+      "baseline_b_by_slice": [
+        {"slice": "General", "metric": "Format valid", "response_count": 21, "denominator": 28},
+        {"slice": "General", "metric": "Correct", "response_count": 15, "denominator": 28},
+        {"slice": "Math", "metric": "Format valid", "response_count": 28, "denominator": 28},
+        {"slice": "Math", "metric": "Correct", "response_count": 0, "denominator": 28},
+        {"slice": "Code (legacy contract)", "metric": "Format valid", "response_count": 0, "denominator": 28},
+        {"slice": "Code (legacy contract)", "metric": "Correct", "response_count": 0, "denominator": 28},
+        {"slice": "Finance", "metric": "Format valid", "response_count": 24, "denominator": 28},
+        {"slice": "Finance", "metric": "Correct", "response_count": 0, "denominator": 28}
+      ]
+    }
+  },
+  "sources": [
+    {"id": "diagnostic_sql", "label": "Day 19 诊断指标投影", "path": "day19_diagnostic_metrics.sql"},
+    {"id": "day19_results", "label": "Day 19 canonical results", "path": "AutoDL/day19-qwen35-20260808T100142Z/DAY19-RESULTS.json"},
+    {"id": "day19_predictions", "label": "Day 19 retained predictions", "path": "AutoDL/day19-qwen35-20260808T100142Z/eval/predictions.jsonl"},
+    {"id": "day19_training", "label": "Day 19 selected SFT messages", "path": "AutoDL/day19-qwen35-20260808T100142Z/data/selected-sft.jsonl"},
+    {"id": "frozen_contract", "label": "Day 10 frozen evaluation manifest", "path": "bootcamp/artifacts/eval/day10-frozen-eval-manifest.json"}
+  ]
+}
