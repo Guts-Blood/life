@@ -184,53 +184,53 @@ Daily Log 至少留下：三题答案、一个工程映射、一个证据路径�
 
 <a id="day-13"></a>
 
-### Day 13 — 周末：Tülu 3 与 Qwen3 Post-training 对读
+### Day 13 — 周末：Qwen3 历史证据 × Qwen3.5 迁移阅读
 
-对读：[Tülu 3 paper](https://arxiv.org/abs/2411.15124) 的 pipeline、SFT、preference 与 RLVR，以及 [Qwen3 Technical Report](https://arxiv.org/abs/2505.09388) 的 post-training pipeline；用 [Open Instruct](https://allenai.github.io/open-instruct/) 对应 recipe 入口核对可复现细节，不抄 benchmark 大表。
+先把 [Qwen3 Technical Report](https://arxiv.org/abs/2505.09388) 当作 Day 01–12 的历史背景，再读 [Qwen3.5-4B-Base 官方模型卡](https://huggingface.co/Qwen/Qwen3.5-4B-Base)、[Transformers Qwen3.5 文档](https://huggingface.co/docs/transformers/model_doc/qwen3_5) 与 [ms-swift Qwen3.5 Best Practice](https://github.com/modelscope/ms-swift/blob/main/docs/source_en/BestPractices/Qwen3_5-Best-Practice.md)。重点是迁移边界，不抄 benchmark 大表。
 
-- **对象/数据题**：Tülu 3 与 Qwen3 的各阶段数据对象、来源和过滤有什么共同点与差异？
-- **状态/训练题**：两条 pipeline 每阶段从什么 checkpoint/模型角色开始，哪些状态跨阶段继承，哪些重新初始化？
-- **诊断/判断题**：哪些公开 recipe 结论可迁移到当前 Qwen 小模型，哪些因模型、数据或 reward 不同必须重新做 pilot？
+- **对象/数据题**：Day 08–12 的 raw sample/provenance/scorer 中哪些可重新审核，哪些 rendered text、token IDs、label spans、schedule 和 comparison key 必须作废重建？
+- **状态/训练题**：`Qwen3_5ForConditionalGeneration`、processor、vision tower、aligner、GDN/full-attention backend 与旧 Qwen3 CausalLM runner 的状态边界有什么不同？
+- **诊断/判断题**：为什么“同属 Qwen”不能证明 tokenizer/template、loader、LoRA target、packing 或 resume 兼容？每项最小证据是什么？
 
-当日落地：把公开 pipeline 映射到本计划 Day 08–29，标注只参考不实跑的部分。
+当日落地：一页 `v1 immutable history -> v2 migration gates -> S0/S1/S2` lineage/差异 memo；周末不租 GPU。
 
 <a id="day-14"></a>
 
-### Day 14 — 周末：Week 2 复盘
+### Day 14 — 周末：Week 2 历史复盘与 Qwen3.5 Readiness
 
-不读新材料；回看 Day 08–13 的样本审计、Base predictions、tiny overfit 和 SFT checkpoints。
+不读新章节；回看 Day 08–12 的样本审计、Base predictions、Day 11 pass、Day 12 recovery C–L 与 [`QWEN35-4B-MIGRATION-PLAN.md`](QWEN35-4B-MIGRATION-PLAN.md)。
 
-- **对象/数据题**：随机抽一条训练样本，能否从 manifest 一直追到 loss token 和 source？
-- **状态/训练题**：从 Base 到选中 SFT checkpoint，哪些状态和配置构成完整 lineage？
-- **诊断/判断题**：当前 SFT 提升最可能来自训练、数据选择还是评测波动？缺哪项证据？
+- **对象/数据题**：随机抽一条 v1 样本，能否追到 source/loss token；迁到 v2 时哪些 immutable raw IDs 与哪些 model-specific artifacts 要分别登记？
+- **状态/训练题**：为什么 Day 12 的结果是“合法选择 none”而不是未完成；为什么任何 0.6B checkpoint 都不能成为 4B `S1`？
+- **诊断/判断题**：M0–M6 各自需要谁产出什么证据、何时 fail closed；哪一项没过会阻塞 Day 16/23/25？
 
-当日落地：Week 2 gate；从候选问题中只选 **一个** 最高优先级单变量实验进入 Day 15–16，其余放入 backlog。
+当日落地：完成 Week 2 v1 复盘和 Qwen3.5 readiness table；不选择 teacher，不启动 GPU。
 
 ## Week 3：稳定训练、恢复与诊断
 
 <a id="day-15"></a>
 
-### Day 15 — Packing、sequence length 与有效 label token
+### Day 15 — Qwen3.5-4B Onboarding 与迁移验收
 
-阅读：[Transformer Math](https://jax-ml.github.io/scaling-book/transformers/) 的 attention cost、context length 与 gradient checkpointing；ms-swift 参数文档中的 packing/max length。
+阅读：[Qwen3.5-4B-Base 官方模型卡](https://huggingface.co/Qwen/Qwen3.5-4B-Base)、[Transformers Qwen3.5 文档](https://huggingface.co/docs/transformers/model_doc/qwen3_5)、ms-swift best practice，以及 [Transformer Math](https://jax-ml.github.io/scaling-book/transformers/) 的 activation/context 预算。今天不做完整 packing ablation。
 
-- **对象/数据题**：原始长度、截断长度、packed sequence、padding tokens 与 label tokens 如何统计？
-- **状态/训练题**：packing 改变 attention boundary、position/segment metadata 和 batch composition 中的哪些项？
-- **诊断/判断题**：tokens/s 上涨但效果下降时，如何检查 cross-sample attention、EOS、mask 和有效 label-token ratio？
+- **对象/数据题**：exact revision、完整 shards/index、processor/tokenizer/template/special tokens、重新分词后的 train/dev/confirmation manifests 如何组成 v2 identity？
+- **状态/训练题**：完整 multimodal checkpoint 中哪些模块加载、哪些冻结、哪些挂 LoRA；GDN/full-attention kernel、MTP、dtype 和 checkpoint/export 如何记录？
+- **诊断/判断题**：如何用 pure-text forward/generate、golden token/mask、Base baseline、one-step、tiny-overfit、fresh resume 与峰值显存逐级排除“能加载但不能训练”？
 
-当日落地：保持有效训练 token budget 可比的 packed/unpacked 对照。
+当日落地：完成 M1–M5。exact revision、环境 lock、processor/template、retokenization、新 Base baseline、tiny-overfit/resume/export 和 10–15% 显存余量缺一不可；否则 Day 16 blocked。
 
 <a id="day-16"></a>
 
-### Day 16 — Optimizer、LR、warmup、batch 与梯度稳定性
+### Day 16 — Controlled Coding LoRA SFT、Packing Parity 与 S1 选择
 
-阅读：[PyTorch AdamW](https://docs.pytorch.org/docs/stable/generated/torch.optim.AdamW.html)、[gradient clipping](https://docs.pytorch.org/docs/stable/generated/torch.nn.utils.clip_grad_norm_.html) 与 [AMP examples](https://docs.pytorch.org/docs/stable/notes/amp_examples.html)；Scaling Book 只回查 activation/FLOPs 对预算的影响。
+阅读：[ms-swift Qwen3.5 Best Practice](https://github.com/modelscope/ms-swift/blob/main/docs/source_en/BestPractices/Qwen3_5-Best-Practice.md) 的训练参数和 packing 约束；只回查 [PyTorch AdamW](https://docs.pytorch.org/docs/stable/generated/torch.optim.AdamW.html) 与 AMP 作为更新语义参照。
 
-- **对象/数据题**：对照实验必须固定哪些 dataset order、tokens、batch、checkpoint 与 eval inputs？
-- **状态/训练题**：LR、warmup、weight decay、clip、precision 分别在哪个时刻影响 gradient 或 parameter update？
-- **诊断/判断题**：loss spike/NaN 出现时，怎样用 grad norm、scale、LR、具体 batch 和参数统计区分数据异常与数值不稳定？
+- **对象/数据题**：unpacked baseline 与受约束 packing candidate 如何保持 raw IDs、processor、label-token budget、order、eval inputs 和 parent S0 一致？
+- **状态/训练题**：LoRA 覆盖哪些 text modules、如何证明 vision/aligner 冻结；checkpoint 如何同时保存 processor、adapter/full state、optimizer/RNG 与 BF16 export？
+- **诊断/判断题**：code 改善但 retention/termination/sandbox error 退化时，怎样拒绝候选；packing tokens/s 上升时如何验证 attention boundary、position/mask 与输出 parity？
 
-当日落地：使用同一数据顺序和 label-token budget，对 AdamW baseline、2×LR、无 warmup 与 2×effective batch 做一次一变量对照，保留 grad/update/clip 证据。
+当日落地：从 S0 跑受控 coding LoRA/QLoRA SFT，只做一个小型 packed/unpacked semantic/parity 对照，并冻结 provisional candidate set 或记录 `no-candidate`。Day 17 补 resume evidence，Day 21 才最终晋级 `S1`；学习率与 token budget 不继承 0.6B。
 
 <a id="day-17"></a>
 
@@ -238,41 +238,41 @@ Daily Log 至少留下：三题答案、一个工程映射、一个证据路径�
 
 阅读：[PyTorch Saving and Loading](https://docs.pytorch.org/tutorials/beginner/saving_loading_models.html)、[Reproducibility](https://docs.pytorch.org/docs/stable/notes/randomness.html) 与 [ms-swift FAQ](https://github.com/modelscope/ms-swift/blob/main/docs/source_en/Instruction/Frequently-asked-questions.md) 的 resume。
 
-- **对象/数据题**：checkpoint manifest 如何关联 shards、config、tokenizer、dataset/data position 与代码版本？
+- **对象/数据题**：selected Qwen3.5 config 的 checkpoint manifest 如何关联 shards、config、processor/tokenizer、freeze/module coverage、dataset/data position 与代码版本？
 - **状态/训练题**：model、optimizer、scheduler、scaler、RNG、global step、sampler/dataloader state 中漏哪项会怎样？
 - **诊断/判断题**：resume 后 loss/LR/样本顺序跳变时，如何用“连续 run vs 中断恢复 run”最小对照定位？
 
-当日落地：比较连续 40-step 与 20-step 中断后新进程恢复到 40-step，逐步核对 sample ID、LR、loss、model/optimizer/scheduler/RNG/dataloader state。
+当日落地：使用 Day 16 选定配置比较连续 40-step 与 20-step 中断后新进程恢复到 40-step，逐步核对 sample ID、LR、loss、model/adapter/optimizer/scheduler/RNG/dataloader state 与 processor/export parity。
 
 <a id="day-18"></a>
 
-### Day 18 — Megatron minimum codepath、双卡 TP/DP 与 distributed checkpoint
+### Day 18 — Megatron Minimum Codepath 与 Qwen3.5 兼容 Gate
 
 阅读：[Megatron Core first training run](https://docs.nvidia.com/megatron-core/developer-guide/latest/get-started/quickstart.html)、[parallelism guide](https://docs.nvidia.com/megatron-core/developer-guide/latest/user-guide/parallelism-guide.html) 与 [distributed optimizer](https://docs.nvidia.com/megatron-core/developer-guide/latest/user-guide/features/dist_optimizer.html)；回读 Scaling Book Training 对应概念。
 
-- **对象/数据题**：最小 run 中 dataset iterator、microbatch、model shard、gradient buffer 和 checkpoint shard 由哪些 rank 持有？
-- **状态/训练题**：TP/DP process groups、forward/backward schedule、reduce-scatter/all-gather 与 optimizer step 怎样连接？
-- **诊断/判断题**：2 卡 smoke OOM、hang 或不提速时，如何先判断 batch/状态复制、collective/group 配置还是环境问题？
+- **对象/数据题**：最小 run 中 processor output、GDN/full-attention layer、model/adapter shard、gradient buffer 和 checkpoint shard 由哪些 rank 持有？
+- **状态/训练题**：TP/DP process groups、Qwen3.5 conditional-generation/MCore mapping、forward/backward、collective 与 optimizer step 怎样连接？
+- **诊断/判断题**：2 卡 smoke OOM、hang、loss 分叉或 export 失败时，如何区分 unsupported architecture、batch/state replication、collective/group 与 backend kernel？
 
-当日落地：一条能在日志中验证的最小 codepath，双卡 `TP=1/DP=2`、`TP=2/DP=1` 两个 smoke，以及 distributed checkpoint 新进程 reload；不做全仓逐文件通读。
+当日落地：一条能在日志中验证的最小 Qwen3.5 codepath；支持时做 `TP=1/DP=2`、`TP=2/DP=1` smoke 和 distributed checkpoint reload/export parity。不支持时保存明确 blocker，不换模型伪造通过。
 
 <a id="day-19"></a>
 
-### Day 19 — 训练诊断与 failure injection
+### Day 19 — Optimizer/LR 稳定性与 Failure Injection
 
 阅读：[Scaling Book Profiling](https://jax-ml.github.io/scaling-book/profiling/) 的 trace/memory profile；[PyTorch Profiler](https://docs.pytorch.org/docs/stable/profiler.html) 与 [autograd anomaly detection](https://docs.pytorch.org/docs/stable/autograd.html#debugging-and-anomaly-detection)。
 
 - **对象/数据题**：failure report 必须绑定哪个 batch/sample、run/config、rank、step、checkpoint 与 trace window？
-- **状态/训练题**：故意注入坏 mask、过高 LR、错误 resume 或慢 data source 时，预期哪些状态和指标首先变化？
+- **状态/训练题**：在同一 Qwen3.5 SFT baseline 上改变 LR/warmup/effective batch，或注入坏 mask、错误 resume/processor 与慢 data source 时，预期哪些状态和指标首先变化？
 - **诊断/判断题**：怎样用最小复现把 loss 问题分到 data/objective/optimization，把慢分到 input/compute/communication/checkpoint I/O？
 
-当日落地：高 LR、错误 mask、数据分布偏移、吞吐退化四类单一 failure injection 及对应恢复 runbook。
+当日落地：先完成 AdamW baseline、2×LR、无 warmup、2×effective batch 的一变量短对照，再做高 LR、错误 mask/processor、错误 resume、吞吐退化的最小 failure injection 与恢复 runbook。
 
 <a id="day-20"></a>
 
 ### Day 20 — 周末：训练失败案例复盘
 
-阅读：[PyTorch numerical accuracy](https://docs.pytorch.org/docs/stable/notes/numerical_accuracy.html)、[NCCL troubleshooting](https://docs.nvidia.com/deeplearning/nccl/user-guide/docs/troubleshooting.html) 与 ms-swift FAQ 中与 OOM/resume/packing 直接相关的条目。
+阅读：[PyTorch numerical accuracy](https://docs.pytorch.org/docs/stable/notes/numerical_accuracy.html)、[NCCL troubleshooting](https://docs.nvidia.com/deeplearning/nccl/user-guide/docs/troubleshooting.html) 与 ms-swift FAQ 中和 Qwen3.5 的 OOM/resume/packing/GDN backend 直接相关的条目。
 
 - **对象/数据题**：每个 failure case 缺失或损坏的对象是什么，如何在 run 前验证？
 - **状态/训练题**：OOM、NaN、hang、resume drift 分别涉及哪些状态边界？
@@ -284,7 +284,7 @@ Daily Log 至少留下：三题答案、一个工程映射、一个证据路径�
 
 ### Day 21 — 周末：Eval 与 checkpoint selection 可靠性
 
-阅读：[LM Evaluation Harness docs](https://lm-evaluation-harness.readthedocs.io/) 的 reproducibility、sample logging 与 task guide；回读自己的 Base/SFT predictions。
+阅读：[LM Evaluation Harness docs](https://lm-evaluation-harness.readthedocs.io/) 的 reproducibility、sample logging 与 task guide；回读 v2 Qwen3.5 Base/SFT predictions。Day 10/12 的 0.6B candidates 只作历史诊断，不进入 v2 candidate set。
 
 - **对象/数据题**：capability、style、safety、regression 各需要什么样本和 metric，哪些不能混成一个总分？
 - **状态/训练题**：checkpoint、template、decoder、judge/scorer version 哪些必须冻结才能比较训练阶段？
@@ -296,63 +296,63 @@ Daily Log 至少留下：三题答案、一个工程映射、一个证据路径�
 
 <a id="day-22"></a>
 
-### Day 22 — Preference provenance、length bias 与 held-out
+### Day 22 — Coding Preference Provenance、Processor 与 Held-out
 
 阅读：[Open Instruct synthetic preference dataset](https://allenai.github.io/open-instruct/algorithms/synthetic_preference_dataset/)、[TRL dataset formats](https://huggingface.co/docs/trl/dataset_formats) 与 Tülu 3 的 preference data 部分。
 
-- **对象/数据题**：prompt/chosen/rejected、generator、judge、score/margin、source/license/creation method 与 policy version 如何组成可追踪 pair？
+- **对象/数据题**：coding prompt/chosen/rejected、tests/sandbox、generator、judge、score/margin、source/license/creation method、processor hash 与 policy version 如何组成可追踪 pair？
 - **状态/训练题**：pair 过滤、顺序交换、长度控制和 reference policy 选择如何改变 DPO 训练信号？
 - **诊断/判断题**：如何发现 chosen/rejected 反转、模板不一致、近重复、judge length/style bias，以及 prompt/source-family 跨 split 泄漏？
 
-当日落地：preference schema、50-pair 盲审、length/source slices，以及训练前冻结的 group held-out。
+当日落地：在 Qwen3.5 processor/template 下重建 preference schema，完成 50-pair 盲审、execution/length/source slices 和 group-held-out；不复用 v1 token IDs。
 
 <a id="day-23"></a>
 
-### Day 23 — DPO 理论与小模型 smoke
+### Day 23 — Qwen3.5 Coding DPO 理论与 Smoke
 
 阅读：[DPO paper](https://arxiv.org/abs/2305.18290) 的 objective 与 assumptions；[TRL DPOTrainer](https://huggingface.co/docs/trl/dpo_trainer) 或 ms-swift 官方参数作为实现对照。
 
 - **对象/数据题**：chosen/rejected 的 policy/reference token logprob 怎样按同一 prompt、template 和 mask 对齐？
-- **状态/训练题**：DPO update 修改什么，reference model 是否更新，beta 如何改变 preference margin？
+- **状态/训练题**：为什么 policy/reference 必须共同从 promoted `S1` 派生；DPO update 修改什么，reference 是否更新，beta 如何改变 preference margin？
 - **诊断/判断题**：DPO loss/accuracy 变好但生成退化时，如何检查 pair quality、长度偏置、KL 漂移和 frozen eval？
 
-当日落地：同一小型 preference set 的 loss 单元检查与短 smoke。
+当日落地：只有 `S1` 存在才运行同一小型 coding preference set 的 loss 单元检查与 5–10 step smoke；Base 或 Day 12 export 不能代替 parent。
 
 <a id="day-24"></a>
 
-### Day 24 — Online RL dataflow 与 reward/verifier contract
+### Day 24 — Coding Online RL Dataflow 与 Sandbox Reward Contract
 
 阅读：[slime Quick Start](https://thudm.github.io/slime/get_started/quick_start.html) 的 rollout/train batch 关系与 reward 配置；[verl PPO architecture](https://verl.readthedocs.io/en/latest/examples/ppo_code_architecture.html) 作为角色边界对照。
 
-- **对象/数据题**：prompt、grouped responses、tokens、response mask、reward、old/ref/current logprob、advantage 与 policy version 如何关联？
+- **对象/数据题**：coding prompt、grouped responses、tokens、tests、sandbox result/error/timeout、response mask、reward、old/ref/current logprob、advantage、processor 与 policy version 如何关联？
 - **状态/训练题**：rollout policy、train policy、reference、reward/verifier、buffer 和 weight sync 在一轮中怎样变化？
 - **诊断/判断题**：reward 上升时，哪些独立证据才能排除 length hacking、格式投机、stale rollout 和 mask/logprob 错位？
 
-当日落地：带字段、数量、producer/consumer 的在线 RL 数据流图；实现可重算、可版本化、带 timeout/error semantics 的 verifier contract。
+当日落地：带字段、数量、producer/consumer 的在线 RL 数据流图；实现 CPU 隔离、无网络、资源限额、可重算、可版本化且带 timeout/error taxonomy 的 coding verifier contract。LLM judge 不默认启用。
 
 <a id="day-25"></a>
 
-### Day 25 — ms-swift 小模型 GRPO lab
+### Day 25 — Qwen3.5-4B Coding GRPO Lab
 
 阅读：[ms-swift GRPO](https://swift.readthedocs.io/en/latest/Instruction/GRPO/GetStarted/GRPO.html) 与 [TRL GRPOTrainer](https://huggingface.co/docs/trl/grpo_trainer) 的数据/reward/config；Scaling Book 只回读 inference 的 KV cache 与 generation throughput。
 
 - **对象/数据题**：每个 prompt 产生多少 completions，reward 如何绑定 response，group 内 advantage 如何生成？
 - **状态/训练题**：每轮采样和 update 之间哪些 policy/logprob/optimizer 状态必须一致，哪些可以重算？
-- **诊断/判断题**：zero reward variance、OOM、生成过长或 KL 快速增长时，各自第一项配置/数据验证是什么？
+- **诊断/判断题**：zero reward variance、OOM、生成过长、sandbox failure 或 KL 快速增长时，首先检查 G、max completion/model length、colocate/topology、reward 与 mask 中哪一项？
 
-当日落地：可验证 reward 的小模型 GRPO run 与逐样本 rollout 表。
+当日落地：仅从 `S1` 跑 5–10 step GRPO smoke；显式将 rollout model length 先 cap 到 8K（通过新 gate 后最多 12K），记录每卡 allocated/reserved、G、KL/reward/length、policy version 与逐样本 sandbox 表。官方无 NVIDIA coding-GRPO 峰值可照抄，必须实测。
 
 <a id="day-26"></a>
 
-### Day 26 — slime v0.3.0 主链路与最小运行准备
+### Day 26 — slime 固定 Release 的 Qwen3.5 兼容 Gate
 
-阅读：[slime Releases](https://github.com/THUDM/slime/releases)、[Architecture](https://thudm.github.io/slime/blogs/introducing_slime.html)、[Quick Start](https://thudm.github.io/slime/get_started/quick_start.html) 和 [Customization](https://thudm.github.io/slime/get_started/customization.html)。先固定 `v0.3.0` 对应 SHA，再通过 symbol search 定位该 tag 的实际入口；不从滚动 main 硬编码文件路径。
+阅读：[slime Releases](https://github.com/THUDM/slime/releases)、[Architecture](https://thudm.github.io/slime/blogs/introducing_slime.html)、[Quick Start](https://thudm.github.io/slime/get_started/quick_start.html) 和 [Customization](https://thudm.github.io/slime/get_started/customization.html)。先把 `v0.3.0` 固定为源码阅读基线，再核对是否有明确 release 支持 Qwen3.5 的 load→rollout→train→weight-sync；不从滚动 main 猜测兼容。
 
 - **对象/数据题**：slime `Sample`/buffer、Megatron batch 与 SGLang request/response 之间如何转换？
 - **状态/训练题**：Ray placement、rollout engine、trainer、reward 和 weight sync 各拥有何种 GPU/模型状态？
-- **诊断/判断题**：在租多卡前，哪些 CPU/config/schema/reward/debug-replay dry checks 能排除最昂贵的失败？
+- **诊断/判断题**：在租多卡前，哪些 processor/model mapping、Megatron/SGLang loader、checkpoint conversion、CPU schema/reward/replay dry checks 能证明 Qwen3.5 支持而不是“CLI 能启动”？
 
-当日落地：固定 tag/SHA/container，完成 Sample/DataSource/rollout/train/weight-version 图、reward tests、最小支持 recipe 与 Day 29 runbook。
+当日落地：固定 tag/SHA/container，完成 Qwen3.5 support matrix、Sample/DataSource/rollout/train/weight-version 图、reward tests 与 Day 29 runbook。若完整兼容未证实，标记 slime runtime blocked，Day 25 ms-swift 仍是主线，禁止换模型。
 
 <a id="day-27"></a>
 
@@ -364,13 +364,13 @@ Daily Log 至少留下：三题答案、一个工程映射、一个证据路径�
 - **状态/训练题**：old/reference/current policy 在 objective 中承担什么角色，哪些量来自 rollout 时刻？
 - **诊断/判断题**：generation、buffer、training 和 weight sync 的哪些延迟会让 rollout stale；importance correction 的有效边界是什么？
 
-当日落地：用自己的 Day 25 样本标出 rollout/old/current/reference policy，并画同步与 stale 两条 timeline。
+当日落地：用自己的 Day 25 Qwen3.5 coding 样本标出 rollout/old/current/reference policy，并画同步与 stale 两条 timeline。
 
 <a id="day-28"></a>
 
 ### Day 28 — 周末：slime debug、replay、repro 与 observability
 
-阅读 pinned slime repo 的 Debug、Trace/Profiling、Reproducibility 与 Fault-tolerance 文档；所有参数和路径以 Day 26 checkout 解析结果为准。
+阅读 Day 26 已验证 runtime 的 Debug、Trace/Profiling、Reproducibility 与 Fault-tolerance 文档；若 slime 被判 blocked，则在 ms-swift/vLLM 主线做同构 replay/observability 设计，不假装 slime 已通过。
 
 - **对象/数据题**：一轮中每条边传什么对象、多少条、由哪个 `file:function` 生产和消费？
 - **状态/训练题**：哪些组件持久、哪些每 rollout 重建、何时 policy version 发生变化？
@@ -380,180 +380,168 @@ Daily Log 至少留下：三题答案、一个工程映射、一个证据路径�
 
 <a id="day-29"></a>
 
-### Day 29 — slime 最小闭环、reward 修改与 train-only replay
+### Day 29 — 已验证 Runtime 的最小闭环、Reward 修改与 Replay
 
-开机前重读 slime Quick Start 的 batch invariant、reward customization 与 checkpoint/debug 部分；需要 profiling 时只回查 [Inference](https://jax-ml.github.io/scaling-book/inference/) 的 generation bottleneck。
+开机前重读 Day 26 通过的 runtime 的 batch invariant、reward customization 与 checkpoint/debug 部分；需要 profiling 时只回查 [Inference](https://jax-ml.github.io/scaling-book/inference/) 的 generation bottleneck。
 
 - **对象/数据题**：每轮 prompt/response/reward/sample 数是否满足 rollout 与 train 消费守恒，坏样本能否反查原 prompt？
 - **状态/训练题**：运行日志能否证明 rollout、reward、train、checkpoint 和 weight sync 的实际顺序与 policy version？
 - **诊断/判断题**：修改 reward 后指标变化，怎样判断代码确实生效且不是 sample mix、长度或旧权重造成？
 
-当日落地：按 rollout-only → train-only replay → full loop → reward change 顺序跑最小闭环；8×H100 官方规模仅 Stretch。
+当日落地：使用同一 Qwen3.5 `S1`，按 rollout-only → train-only replay → full loop → reward change 顺序跑最小闭环。若 slime 未通过兼容 gate，就在 ms-swift 主线完成可验证部分并把 slime 标 blocked；不换模型或伪造 full-loop 结论。
 
 <a id="day-30"></a>
 
-### Day 30 — Post-training design、clean reproduction 与综合口述
+### Day 30 — Qwen3.5 Base→SFT→DPO/GRPO Clean Reproduction
 
 阅读：[Scaling Book Conclusion](https://jax-ml.github.io/scaling-book/conclusion/)；回看 [Tülu 3](https://arxiv.org/abs/2411.15124) 的阶段设计和本月所有 manifest/run records，不引入新框架。
 
-- **对象/数据题**：clean reproduction 所需的 code/model/tokenizer/data/template/config/eval/checkpoint lineage 是否能被另一环境完整解析？
+- **对象/数据题**：clean reproduction 所需的 code/model/processor/tokenizer/data/template/freeze/config/eval/checkpoint lineage 是否能被另一环境完整解析？
 - **状态/训练题**：设计如何定义每阶段初始状态、保存状态、恢复边界和从 SFT 到 DPO/RL 的交接？
 - **诊断/判断题**：哪些结论是已实测、哪些是估算、哪些扩到多卡或更大模型前必须重新 benchmark？
 
-当日落地：从干净环境跑一条最小训练链，完成可评审的 post-training design 和 15 分钟综合口述；30B capacity 只允许作为 Stretch appendix。
+当日落地：从干净环境重建 `Qwen3.5 S0 -> selected coding S1 -> 选定的 DPO 或 GRPO S2` 最小链，展示与 0.6B v1 的 lineage boundary，完成可评审 design 和 15 分钟综合口述。
 
-## Optional Week 5：Scale-up Teacher
+## Qwen3.5-4B Policy Capstone：活动主线 + Deferred Teacher 扩展
 
 <a id="day-31"></a>
 
-### Day 31 — Capstone Charter、Domain Eval 与版本冻结
+### Day 31 — 冻结 Qwen3.5 S0、Domain Eval 与 Teacher-null Charter
 
-阅读：[GKD/On-Policy Distillation](https://arxiv.org/abs/2306.13649) 的问题定义；当前 pinned 候选框架的官方 distillation/config 文档；回读 Day 10 held-out hygiene。
+阅读：[`QWEN35-4B-MIGRATION-PLAN.md`](QWEN35-4B-MIGRATION-PLAN.md)、Day 10/21 held-out hygiene 和 pinned Qwen3.5 runtime 文档。Teacher/OPD 只登记为 deferred，不选择候选。
 
-- **对象/数据题**：`sft_train/policy_train/teacher_probe/trace_cold_start/dev/frozen` 为什么必须分开，哪些允许 teacher/student 消费？
-- **状态/训练题**：T0/T1/T2/S0/S1/S2/S3 的 parent checkpoint、objective 与 immutable identity 如何组成 DAG？
-- **诊断/判断题**：teacher/student 同系列但 token IDs 不同，为什么必须停止 token-level OPD？
+- **对象/数据题**：`sft_train/policy_train/dev/confirmation` 为什么必须分开；processor/template/render/execution keys 如何冻结？
+- **状态/训练题**：活动 DAG `S0 Base -> S1 selected coding SFT -> S2 direct coding RL` 的 parent/objective/immutable identity 如何组成？
+- **诊断/判断题**：revision、processor、freeze policy、runtime 或预算缺一项时，为什么不能打开 capstone？
 
-当日落地：charter、模型/框架 compatibility manifest、新 capstone eval suite 与预算/selection policy。
+当日落地：S0 exact revision、charter、compatibility manifest、新 eval suite、预算/selection policy，以及 `teacher_model_id=null` 的显式状态。
 
 <a id="day-32"></a>
 
-### Day 32 — Single/TP2 Parity 与 8B Capacity Plan
+### Day 32 — Qwen3.5 Single/TP2 Parity 与 Full/LoRA/QLoRA Capacity
 
 阅读：[Megatron parallelism guide](https://docs.nvidia.com/megatron-core/developer-guide/latest/user-guide/parallelism-guide.html)、distributed optimizer 与 Day 18 runtime evidence。
 
-- **对象/数据题**：single 与 TP2 中 parameter/gradient/optimizer/activation shards、sample IDs 和 label tokens 如何对应？
+- **对象/数据题**：single 与 TP2 中 parameter/gradient/optimizer/activation shards、processor output、sample IDs 和 label tokens 如何对应？
 - **状态/训练题**：TP degree、sequence parallel、RNG、loss reduction 与 checkpoint metadata 如何改变可复现状态？
-- **诊断/判断题**：TP2 loss 分叉或更慢时，怎样区分数值错误、batch 口径、collective 和小模型通信开销？
+- **诊断/判断题**：TP2 loss 分叉或更慢时，怎样区分 Qwen3.5 mapping/backend、batch 口径、collective 和 4B 通信开销；full/LoRA/QLoRA 如何用实测而不是名义参数判断？
 
-当日落地：4B parity report、checkpoint conversion evidence 与 measured 8B topology plan。
+当日落地：Qwen3.5-4B parity report、checkpoint conversion/export evidence、每卡 peak 与 full/LoRA/QLoRA topology decision。
 
 <a id="day-33"></a>
 
-### Day 33 — 8B TP SFT Gate
+### Day 33 — Deferred Template：Teacher TP SFT Gate
 
-阅读：Day 08/11/17 的 token trace、tiny-overfit 和 resume contract；只回查 pinned framework 的 TP SFT/save/resume 文档。
+状态：`deferred`。只有用户另行选择 teacher、冻结 exact revision 并批准 Teacher/OPD charter v2 后才阅读或执行。
 
-- **对象/数据题**：8B batch 如何从 raw sample 追到各 TP rank 的 input/label/loss？
-- **状态/训练题**：full-parameter update、distributed optimizer、RNG/data cursor 和 inference export 分别保存在哪里？
-- **诊断/判断题**：one-step 能跑但 resume/export 失败时，为什么不能启动长 SFT？
+- **对象/数据题**：未来 teacher batch 如何从 raw sample 追到各 TP rank 的 processor output、label 和 loss？
+- **状态/训练题**：full/PEFT update、distributed optimizer、RNG/data cursor 和 export 分别保存在哪里？
+- **诊断/判断题**：one-step 能跑但 resume/export 失败时，为什么不能启动 teacher SFT？
 
-当日落地：forward→update→overfit→save/reload→eval export 五级 gate。
+当日落地：当前只保留模板；不得创建 T0 或租卡。
 
 <a id="day-34"></a>
 
-### Day 34 — 8B Controlled SFT 与 T1 Selection
+### Day 34 — Deferred Template：Teacher SFT 与 T1 Selection
 
-阅读：Day 12/21 checkpoint selection policy、Day 15/16 的 packing/optimizer measured defaults。
+状态：`deferred`；依赖已批准的 charter v2 和 Day 33 gate。
 
-- **对象/数据题**：T0、SFT manifest、early/mid/final candidates 与 dev predictions 如何绑定？
-- **状态/训练题**：哪些 Day 15/16 参数只是小模型起始假设，哪些在 8B smoke 后才能冻结？
-- **诊断/判断题**：final loss 更低但 domain/general dev 不通过时，如何选择 T1 或返回 inconclusive？
+- **对象/数据题**：未来 T0、SFT manifest、candidate 与 dev predictions 如何绑定？
+- **状态/训练题**：哪些 student 参数不能迁成 teacher 默认值，哪些必须重新 smoke？
+- **诊断/判断题**：final loss 更低但 guardrail 不通过时，如何返回 `inconclusive`？
 
-当日落地：T1 promotion manifest，包含 resumable state 和 inference export。
+当日落地：当前只保留 promotion 模板；`T1` 不存在。
 
 <a id="day-35"></a>
 
-### Day 35 — Domain RL Contract 与 Teacher Readiness
+### Day 35 — Deferred Template：Teacher Domain-RL Readiness
 
-阅读：Day 24–29 的 trajectory/reward/replay/weight-version evidence；pinned RL backend 的 resource placement 文档。
+状态：`deferred`；依赖存在的 T1 和单独预算。
 
-- **对象/数据题**：tool trajectory 中 assistant/tool/environment tokens、reward components 和 train mask 如何关联？
-- **状态/训练题**：8B learner TP2、rollout TP2、reference/reward workers 与 policy version 如何流动？
+- **对象/数据题**：未来 teacher trajectory 中 assistant/tool/environment tokens、reward components 与 train mask 如何关联？
+- **状态/训练题**：teacher learner/rollout/reference/reward workers 与 policy version 如何流动？
 - **诊断/判断题**：reward 提升时怎样排除格式、长度、伪造 observation 与 stale weight hacking？
 
-当日落地：8B RL runbook、placement map、teacher-promotion policy 与 hacking tests。
+当日落地：当前只保留 runbook/placement/hacking-test 模板。
 
 <a id="day-36"></a>
 
-### Day 36 — 8B Domain RL 与 T2 Candidate Freeze
+### Day 36 — Deferred Template：Teacher RL 与 T2 Freeze
 
-阅读：pinned GRPO/RLVR objective、weight-sync 和 checkpoint 文档；不临时更换算法论文。
+状态：`deferred`；依赖 Day 35 readiness。
 
-- **对象/数据题**：每个 candidate 的 prompts、rollouts、rewards、logprobs、checkpoint 与 dev evidence 如何追踪？
-- **状态/训练题**：T1→T2 哪些 policy/optimizer/RNG/buffer 状态改变，teacher-serving 状态如何冻结？
-- **诊断/判断题**：T2 相对 T1 提升但尚无 S1 时，哪些结论可以写，哪些 teacher-advantage 结论必须延迟？
+- **对象/数据题**：未来 candidate 的 prompts、rollouts、rewards、logprobs、checkpoint 与 dev evidence 如何追踪？
+- **状态/训练题**：T1→T2 哪些 policy/optimizer/RNG/buffer 状态改变，serving 状态如何冻结？
+- **诊断/判断题**：T2 提升为什么仍不自动证明对 S1 有可蒸馏 advantage？
 
-当日落地：T2 candidate manifest；只 hash-lock，不提前宣称可蒸馏。
+当日落地：当前只保留 T2 manifest 模板；`T2` 不存在。
 
-## Optional Week 6：Student Controls、OPD 与 Final Comparison
+## Policy Capstone Week 6：Direct Coding RL、Deferred OPD 与 Final Comparison
 
 <a id="day-37"></a>
 
-### Day 37 — Common S1、Teacher Promotion 与 Direct RL
+### Day 37 — S1→Direct Coding RL→S2
 
-阅读：Day 12 SFT promotion、Day 25 direct RL 和 Day 31 teacher-probe contract。
+阅读：Day 16 SFT promotion、Day 25 coding GRPO 和 Day 31 charter。活动任务与 teacher 无依赖。
 
-- **对象/数据题**：T1/S1 如何共享 SFT manifest/token budget，S2/S3 如何共享 policy prompt universe？
-- **状态/训练题**：S1 分叉时哪些 checkpoint states 必须完全相同，S2 direct RL 更新哪些状态？
-- **诊断/判断题**：T2 分数更高但与 S1 token/output mode 不兼容时，为什么仍不能 promote 为 OPD teacher？
+- **对象/数据题**：S1、policy prompt universe、sandbox tests、rollouts、reward 与 S2 candidates 如何绑定？
+- **状态/训练题**：从同一 S1 分叉时哪些 checkpoint/processor states 必须相同，S2 direct RL 更新哪些状态？
+- **诊断/判断题**：reward 上升而 dev/guardrail/termination 下降时，如何拒绝 S2 并保留 S1？
 
-当日落地：S1/S2 manifests、T2-vs-S1 advantage probe 与 frozen student budgets。
+当日落地：运行受控 direct coding RL，保存 S1/S2 manifests、逐样本 rollout 与 frozen budget；选择 S2 或返回 `no-promotion`。
 
 <a id="day-38"></a>
 
-### Day 38 — Teacher-trace Cold-start Ablation
+### Day 38 — Deferred Template：Teacher-trace Cold-start
 
-阅读：[Rethinking OPD](https://arxiv.org/abs/2604.13016) 的 compatibility/cold-start 结论与 Day 09 lineage 方法。
+状态：`deferred`；只有 charter v2、T2 与兼容性 gate 同时存在才启用。当前 `S1d` 不存在，活动 S1 不被覆盖。
 
-- **对象/数据题**：teacher trace 的 prompt、teacher hash、raw tokens、environment、reward 和接受理由如何版本化？
-- **状态/训练题**：S1→S1d 改变了 student 权重和预算，为什么不能仍把它叫共同起点？
-- **诊断/判断题**：如何区分 offline teacher imitation 的收益与后续 OPD 的增量？
-
-当日落地：trace manifest/audit 与独立 S1d ablation，不覆盖 Core S1。
+当日落地：只保留 trace manifest/audit 模板，不生成 teacher trace。
 
 <a id="day-39"></a>
 
-### Day 39 — OPD One-update 与 Replay
+### Day 39 — Deferred Template：OPD One-update 与 Replay
 
-阅读：pinned OPD implementation 的 loss、teacher serving、same-tokenizer、resource pool 和 checkpoint 文档。
+状态：`deferred`；无 teacher 时不得构造伪 payload 或用另一个模型顶替。
 
-- **对象/数据题**：student rollout token IDs、teacher payload、student logprob、distill mask 与 environment spans 如何逐 token 对齐？
-- **状态/训练题**：teacher 为什么必须只读，student rollout/train policy version 与 policy lag 如何限制？
-- **诊断/判断题**：distillation loss 非零但 teacher signal 错位时，哪条 replay evidence能最早发现？
-
-当日落地：student-generated one-update、teacher scoring payload、replay pack 与 version timeline。
+当日落地：只保留 processor/token alignment、student rollout、teacher scoring、distill mask、replay 和 version timeline 的 schema。
 
 <a id="day-40"></a>
 
-### Day 40 — Controlled OPD 与 S3 Selection
+### Day 40 — Deferred Template：Controlled OPD 与 S3 Selection
 
-阅读：只回查 Day 39 已 pin 的 OPD recipe；不在长 run 期间引入新的 KL estimator 或 async mode。
+状态：`deferred`；依赖 Day 39 one-update gate。当前 `S3` 不存在。
 
-- **对象/数据题**：S3 candidates 如何绑定 S1/T2/policy prompts、teacher payloads、trained/rollout tokens 与 dev predictions？
-- **状态/训练题**：student optimizer、rollout buffer、teacher server 和 checkpoint cadence 如何同步？
-- **诊断/判断题**：teacher/student divergence 下降但 task success 不升时，怎样判断无效 imitation、capacity gap 或 scorer 盲区？
-
-当日落地：S3 selection、token-divergence slices 与完整成本账本。
+当日落地：只保留 S3 selection、token-divergence slices 与完整成本账本模板。
 
 <a id="day-41"></a>
 
-### Day 41 — Matched Frozen Eval 与 Cost Accounting
+### Day 41 — S0/S1/S2 Matched Eval 与 Cost Accounting
 
 阅读：Day 10/21 held-out 与 paired comparison；不再阅读训练 recipe。
 
 - **对象/数据题**：`eval_suite_hash` 与 model-specific render/execution keys 为什么必须分开？
 - **状态/训练题**：所有 candidates 锁定、frozen 首次揭盲和 consumption record 的顺序是什么？
-- **诊断/判断题**：S3 更强但 teacher compute 更高时，怎样分开能力结论、效率结论和摊销假设？
+- **诊断/判断题**：S2 能力更强但 rollout/sandbox compute 更高时，怎样分开能力、效率和摊销结论；无显著差异时如何写 `inconclusive`？
 
-当日落地：T0/T1/T2/S0/S1/S2/S3 paired frozen evidence 与 fully-loaded/amortized cost report。
+当日落地：一次性揭盲 `S0/S1/S2` paired confirmation，产出 fully-loaded/amortized cost report。只有 charter v2 已完成时才附加 teacher/OPD candidates。
 
 <a id="day-42"></a>
 
-### Day 42 — Clean Reproduction 与 Capstone Report
+### Day 42 — S1/S2 Clean Reproduction 与 Capstone Report
 
 阅读：只使用 pinned manifests、runbooks、framework docs 和已有 evidence；不新增方法。
 
-- **对象/数据题**：另一环境重建 checkpoint DAG、OPD batch 和 E2E tool trajectory 需要哪些不可变对象？
-- **状态/训练题**：distributed restore、teacher/student versions、replay 与 scorer state 如何证明连续？
-- **诊断/判断题**：哪些 failure 是 scale/TP/teacher scoring 才暴露，哪些在 0.6B Core 已可提前阻止？
+- **对象/数据题**：另一环境重建 S0/S1/S2 DAG、coding rollout/sandbox batch 和 E2E trajectory 需要哪些不可变对象？
+- **状态/训练题**：distributed restore、processor/policy versions、replay 与 scorer state 如何证明连续？
+- **诊断/判断题**：哪些 failure 是 Qwen3.5/TP/RL 才暴露，哪些从 0.6B v1 历史已能提前阻止？
 
-当日落地：clean restore/replay/score、final report 与 evidence index。
+当日落地：clean restore/replay/score S1/S2、final report 与 evidence index；deferred teacher 文件不计失败或完成。
 
 ## 30-Day Core 明确不做
 
 - 不构建 auto-train scheduler、自动搜索器或 auto-harness 产品。
-- 不把 30B+ full training 或 8×H100 slime 当 30-Day Core 验收；Optional Capstone 仍限制为单节点 8B teacher/<=4B student，不自动扩到 30B。
+- 不把 30B+ full training、8×H100 slime 或未选择的 teacher 当 30-Day Core 验收；活动 capstone 只训练 Qwen3.5-4B policy。
 - 不通读 TPU/JAX API，不实现 NCCL collective 或手写 TP kernel。
 - 不以“章节读完”“loss 下降”或 aggregate score 单独作为完成标准。
 - 不让 Scaling Book 的纯推导挤占数据审计、训练恢复和 RL 数据流验证。

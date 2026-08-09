@@ -1,4 +1,4 @@
-# Day 23 — DPO 推导与小模型真实 Smoke
+# Day 23 — Qwen3.5 Coding DPO：Objective、Reference 与真实 Smoke
 
 日期：`2026-08-18`
 状态：`not_started`
@@ -6,60 +6,73 @@
 
 ## 主要目标
 
-从 Bradley–Terry/RLHF 假设推到 DPO objective，并用 Day 22 冻结的 preference data 在小模型上完成一次真实 forward、backward、checkpoint 和 held-out 对比。
+从 Bradley–Terry/RLHF 假设推到 DPO objective，并只从 Day 21 **promoted Qwen3.5 SFT anchor** 启动 coding DPO smoke。`Qwen/Qwen3.5-4B-Base` 和任何 Day 01–12 checkpoint 都不能冒充合格的 DPO policy/reference 起点。
 
-## 理论（90 分钟）
+## Hard Prerequisites
+
+- Day 21 promotion manifest 唯一、hash 完整，resumable checkpoint 与 inference export parity 已通过。
+- Day 22 coding preference train/dev/held-out manifests、processor/template 和 sandbox evidence 已冻结。
+- pinned ms-swift runtime 已验证如何加载 SFT adapter/merged path、构造 frozen reference，并执行 LoRA DPO；CLI 以该 checkout 的文档和 `--help` 为准。
+- 资源 preflight 已把 policy、reference、optimizer、activations 和 temporary logits 纳入显存测量。
+
+任一 prerequisite 不满足，状态写 `blocked_missing_qwen35_sft_anchor_or_contract`，不回退 0.6B，也不从 Base 冷启动。
+
+## 理论（75 分钟）
 
 精读清单：[Day 23 — DPO objective](../SCALING-BOOK-READING-GUIDE.md#day-23)。
 
 - Policy/reference、chosen/rejected、implicit reward 与 β。
 - 手推 `log πθ - log πref` 在 chosen/rejected 两边的作用。
-- Sequence log-prob 的 token mask、sum/average 口径和 length bias。
-- DPO 不需要在线 rollout，但仍会过拟合偏好数据或偏好 artifact。
+- Sequence log-prob 的 response mask、sum/average 口径与 length bias。
+- DPO 不需要在线 rollout，但仍会过拟合 preference/test artifacts。
 
-必须在看高层 Trainer 前，用四个标量 log-prob 手算一遍 loss 和梯度方向。
+在看 Trainer 前，用四个标量 log-prob 手算 loss 与梯度方向。
 
 ## Coding（75 分钟）
 
-- 写最小 DPO loss 单元测试：交换 chosen/rejected、改变 reference、改变 β 时方向符合预期。
-- 在真实 tokenizer 输出上核对 prompt token 不参与 response log-prob，chosen/rejected template 完全一致。
-- 固定 ms-swift commit/model revision/完整 config，并保存 reference policy 的来源和冻结方式。
-- 为 train/dev/held-out 输出逐 pair margin、length bucket、source slice。
+- 写最小 DPO loss tests：交换 chosen/rejected、改变 reference/β/mask 时方向符合预期。
+- 在 Qwen3.5 processor 输出上证明 prompt tokens 不参与 response log-prob，chosen/rejected 的 prompt/template 完全一致。
+- 从 Day 21 manifest 解析 policy parent 与 frozen reference 的逻辑身份；无论 runtime 用独立模型、adapter disable 或 merged weights 实现，都保存 resolved mapping 和 hashes。
+- 记录 LoRA target/trainable params、ViT/aligner freeze、policy/reference immutability 与完整 config diff。
+- 为 train/dev/held-out 输出逐 pair margin、length/source/test-family/status slices。
 
 ## 训练 / 实验（120–150 分钟）
 
-- Model：使用 Day 12 已通过 frozen eval/生成检查的最小 SFT checkpoint，优先 Qwen3-0.6B 阶梯；Base 只能用于 loss/encode 对照，不能冒充 DPO 的合格策略起点。
-- Data：只使用 Day 22 frozen train，dev 选 checkpoint，held-out 只做最后确认。
-- 先跑 5-step overfit gate，确认 chosen margin 朝正确方向变化；再跑 20–50 optimizer steps。
-- 保存 early/final checkpoint；按 Day 21 policy 比较 dev pair accuracy/margin、held-out、length-matched 和 source-held-out slices。
-- 记录 train loss、chosen/rejected rewards/margins、KL proxy、response lengths 和逐 pair 结果。Smoke 的目标是验证机制，不宣称能力提升。
+- Parent/reference：Day 21 promoted SFT anchor；reference 始终冻结。
+- Policy：从同一 anchor 初始化新的 DPO trainable state；不得在 reference 上原地更新。
+- Data：只使用 Day 22 frozen train；dev 选择 checkpoint；preference held-out 只在选定后确认一次。
+- 先跑 5-step overfit/mechanism gate，确认 chosen margin 方向；再运行 20–50 optimizer steps，保存 early/final。
+- 比较 dev pair accuracy/margin、length-matched/source/test-family slices、sandbox correctness、response length 和 general/math/format guardrails。
+- 记录 train loss、chosen/rejected log-prob/reward/margin、KL proxy、grad norm、memory 和逐 pair 结果。Smoke 只验证机制和局部行为，不宣称通用 coding 提升。
 
 ## 资源与租卡
 
-- 1×H100 80GB，预计 2–4 小时；小模型也可用 A100/L40S。
-- 5-step gate 未通过时不扩大 steps。
-- checkpoint、config、逐 pair predictions 和 manifest 同步后关机。
+- 以 preflight 为准；1×H100 80GB 只作为 LoRA DPO planning 上限，不是保证或最低声明。若 frozen reference + policy 超过余量，先停止并重算 sharding/topology。
+- 不在正式 run 中临时加入 quantization、offload、ZeRO 或更短序列来掩盖 preflight 失败。
+- checkpoint、reference/policy mapping、configs、逐 pair predictions 和 manifests 同步后关机。
 
 ## Evidence-first 产物
 
-- `../artifacts/scripts/test_dpo_loss.py`
-- `../artifacts/configs/day23-dpo/`
-- `../artifacts/reports/day23-dpo-smoke.md`
+- `../artifacts/scripts/test_day23_qwen35_dpo_loss.py`
+- `../artifacts/configs/day23-qwen35-coding-dpo/`
+- `../artifacts/reports/day23-qwen35-coding-dpo-smoke.md`
 
 ## 验收
 
-- [ ] 能不看代码推导并解释 DPO objective。
-- [ ] 手写 loss tests 覆盖 chosen/rejected、reference 和 β。
-- [ ] 真实训练完成 optimizer step、保存并重载 checkpoint。
-- [ ] held-out 与 length/source slices 在训练前冻结，结果保存到 pair 粒度。
-- [ ] 结论明确区分“训练机制正确”和“模型能力提升”。
+- [ ] 能不看代码推导并解释 DPO objective、mask 与 reference。
+- [ ] policy/reference 都由 Day 21 promoted SFT anchor 派生，Base/v1 权重未参与。
+- [ ] Reference immutability、LoRA/vision freeze 与 trainable inventory 有 runtime evidence。
+- [ ] 真实 optimizer step、checkpoint save/reload 和逐 pair dev/held-out evidence 完整。
+- [ ] 结论区分“机制正确”“preference metric 变化”和“真实 coding correctness”。
 
 ## Daily Log
 
-### 手推公式
+### Anchor / reference / policy mapping
+
+### 手推公式与 loss tests
 
 ### Training gate
 
-### Held-out / bias slices
+### Dev / held-out / sandbox slices
 
 ### Day 24 第一动作

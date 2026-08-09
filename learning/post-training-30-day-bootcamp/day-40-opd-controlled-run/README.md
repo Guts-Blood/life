@@ -1,12 +1,16 @@
-# Day 40 — Controlled OPD Run 与 S3 Selection
+# Day 40 — Deferred Controlled OPD Run 与 S3 Selection
 
-状态：`not_started`
+状态：`deferred_unselected`
 日期：`unscheduled_after_day30`
-强度：4–5 小时人工工作；GPU wall time 按 Day 39 实测预算
+强度：当前 0 GPU；仅独立 teacher-extension charter v2 激活后按 Day 39 实测预算
+
+## 当前执行状态
+
+当前没有 T2、OPD replay gate 或 S3。本页不得执行，且 S3 必须保持 `deferred_unselected`；活动 capstone policy charter v1 不把“未运行 OPD”视为失败。
 
 ## 主要目标
 
-从 exact `S1` 和 frozen T2 运行受控 OPD trajectory，在预注册 student budget 内选择 `S3`。Core 保持一个 OPD recipe，不在同一轮搜索 KL estimator、temperature、task reward 和 sampling curriculum。若 Day 39 只能通过 S1d recovery，则本日结果改名 `S3d` 并降级因果声明。
+若未来 charter v2 激活，从 exact `S1` 和 frozen T2 运行受控 OPD trajectory，在预注册 extension budget 内选择 `S3`。Extension 保持一个 OPD recipe；若 Day 39 只能通过 S1d recovery，则结果改名 `S3d` 并降级因果声明。
 
 ## 理论 / 定向阅读（45–60 分钟）
 
@@ -32,7 +36,8 @@
 
 ## 验收
 
-- [ ] Core candidates 继承同一 S1/T2/data/protocol hashes；recovery candidates 单独继承 S1d 并命名 S3d。
+- [ ] 独立 teacher-extension charter v2、用户 teacher decision 和 Day 39 gate 已通过；否则本页保持 deferred 且不生成 S3。
+- [ ] 激活后的 candidates 继承同一 S1/T2/data/protocol hashes；recovery candidates 单独继承 S1d 并命名 S3d。
 - [ ] Student update budget 不超过 Day 37 前冻结的对照边界。
 - [ ] S3 selection 同时看 E2E primary、guardrails、error rate 与 uncertainty。
 - [ ] Teacher scoring GPU-hours 和传输/等待时间没有隐藏在 student throughput 中。

@@ -9,7 +9,7 @@
 - [Tülu 3 paper](https://arxiv.org/abs/2411.15124)：公开的 SFT → DPO → RLVR pipeline 参照
 - [Open Instruct 官方文档](https://allenai.github.io/open-instruct/) / [官方仓库](https://github.com/allenai/open-instruct)：数据和训练 recipe 参照
 
-本月 Core 是数据、SFT、恢复/诊断、DPO、在线 RL。auto-train/auto-harness 构建、30B+ full training 和 8×H100 slime 不属于 30-Day Core。Day 31–42 另有可选的 8B teacher→<=4B student OPD capstone。
+本月 Core 是数据、SFT、恢复/诊断、DPO、在线 RL。auto-train/auto-harness 构建、30B+ full training 和 8×H100 slime 不属于 30-Day Core。Day 31–42 的活动 capstone 只覆盖 Qwen3.5-4B `S0→S1→S2` policy；Teacher/OPD 是 deferred extension，当前未选择 teacher。
 
 ## 数据、模板与 Lineage
 
@@ -27,7 +27,7 @@
 
 ## SFT、优化与恢复
 
-### 主实操：ms-swift
+### Day 1–12 历史实操：ms-swift/Qwen3
 
 - [modelscope/ms-swift](https://github.com/modelscope/ms-swift)
 - [Command-line Parameters](https://github.com/modelscope/ms-swift/blob/main/docs/source_en/Instruction/Command-line-parameters.md)
@@ -35,6 +35,24 @@
 - [Qwen3 官方仓库](https://github.com/QwenLM/Qwen3)
 - [Qwen3-0.6B-Base model card](https://huggingface.co/Qwen/Qwen3-0.6B-Base)
 - [Qwen3-1.7B-Base model card](https://huggingface.co/Qwen/Qwen3-1.7B-Base)
+
+这些链接和 Transformers 4.57.3 环境继续服务于 Day 1–12 checkpoint 的历史复现，不因 v2 迁移而改写。
+
+### Qwen3.5-4B v2 迁移
+
+- [Qwen3.5-4B-Base model card](https://huggingface.co/Qwen/Qwen3.5-4B-Base)：模型 identity、原生 262,144 context、统一 vision-language 架构和 Base 使用边界。
+- [Transformers Qwen3.5 文档](https://huggingface.co/docs/transformers/model_doc/qwen3_5)：完整 checkpoint 的 processor/conditional-generation 接口与纯文本 backbone 类的区别。
+- [Transformers Auto Classes](https://huggingface.co/docs/transformers/model_doc/auto)：`AutoProcessor`、`AutoModelForMultimodalLM` 与 exact runtime class 的入口。
+- [ms-swift Qwen3.5 Best Practice](https://github.com/modelscope/ms-swift/blob/main/docs/source_en/BestPractices/Qwen3_5-Best-Practice.md)：当前安装下限建议、Dense training、LoRA、RL 与 backend 示例。
+- [ms-swift Supported Models](https://github.com/modelscope/ms-swift/blob/main/docs/source_en/Instruction/Supported-models-and-datasets.md)：Qwen3.5 model type、template、multimodal dependencies 与支持矩阵。
+- [ms-swift FAQ](https://github.com/modelscope/ms-swift/blob/main/docs/source_en/Instruction/Frequently-asked-questions.md)：VLM freeze、显存、packing 与运行问题边界。
+- [Qwen3.5 官方仓库](https://github.com/QwenLM/Qwen3.5)：模型家族与官方变更入口。
+
+v2 的第一阶段只接受 text-only coding 数据，但仍把下载的 full model 视为 VLM：标准 loader 是 `AutoProcessor` + `AutoModelForMultimodalLM`/`Qwen3_5ForConditionalGeneration`，vision tower 与 aligner 必须以 trainable parameters、adapter targets、gradient 和 optimizer state 四类断言证明冻结。`Qwen3_5ForCausalLM` 只适用于明确的 text-backbone 合同；从 full checkpoint 提取 backbone 属于新的转换产物，必须另做 hash、lineage 与 parity，不能作为旧 runner 的无差别替换。
+
+Transformers 5.2.0+ 是已确认包含 Qwen3.5 支持的最低候选线；ms-swift 当前 Best Practice 建议安装 `transformers>=5.9`。课程不保留浮动依赖：Day 15 在目标 GPU 上从该建议线选择一个 exact Transformers 版本，并同时冻结 Python 3.12、ms-swift commit/version、`qwen_vl_utils`、`decord`、FlashAttention/GDN 依赖、PyTorch/CUDA/NCCL 与 rollout backend。`main/latest` 只用于发现，不能写入正式 run identity。
+
+资源文档中的 24/48/80GB 与多卡层级只是 planning envelope。官方示例、Ascend/NPU PR 或单步验证不等于本项目在 NVIDIA 上的 peak memory；每种 dtype、sequence、learner/rollout placement 都必须跑完整 optimizer-step peak smoke，保留 10%–15% headroom。虽然模型原生支持 262K context，首轮 RL 的总长度 cap 只允许 8K–12K；reward/verifier 优先放在 CPU sandbox。
 
 ### 训练语义与诊断
 
@@ -89,7 +107,7 @@ Eval 的最低证据是 frozen config 加逐样本 prediction。aggregate score�
 
 ### 主实操
 
-- [ms-swift GRPO](https://swift.readthedocs.io/en/latest/Instruction/GRPO/GetStarted/GRPO.html)：先完成单机小模型数据/reward/训练闭环
+- [ms-swift GRPO](https://swift.readthedocs.io/en/latest/Instruction/GRPO/GetStarted/GRPO.html)：Qwen3.5 coding GRPO 主线；从 promoted S1 开始，并冻结 rollout/model-length/topology
 - [THUDM/slime 官方文档](https://thudm.github.io/slime/)
 - [slime Quick Start](https://thudm.github.io/slime/get_started/quick_start.html)
 - [slime Architecture](https://thudm.github.io/slime/blogs/introducing_slime.html)
@@ -108,9 +126,11 @@ Eval 的最低证据是 frozen config 加逐样本 prediction。aggregate score�
 - [verl 官方文档](https://verl.readthedocs.io/)
 - [verl PPO architecture](https://verl.readthedocs.io/en/latest/examples/ppo_code_architecture.html)
 
-ms-swift 和 slime 要实际运行；Tülu/Open-Instruct、TRL、verl 用于比较 stage、schema、角色和设计选择，不要求本月把四套框架都跑一遍。
+ms-swift 是必须实跑的主线。slime 只有在固定 release 通过 Qwen3.5 load→rollout→train→weight-sync 兼容 gate 后才实跑；不支持时保留 blocker 并继续 ms-swift，不能换模型。Tülu/Open-Instruct、TRL、verl 用于比较 stage、schema、角色和设计选择。
 
-## On-Policy Distillation（Optional Capstone）
+## On-Policy Distillation（Deferred Teacher Extension）
+
+以下资料只服务未来单独批准的 charter v2。当前 `teacher_model_id/revision=null`，不创建 T0/T1/T2/S3，不分配 teacher GPU；资料存在不等于模型已选或 OPD 已获授权。
 
 - [GKD / On-Policy Distillation of Language Models（ICLR 2024）](https://arxiv.org/abs/2306.13649)：student-generated states、teacher feedback 与 divergence 选择的基础。
 - [Rethinking On-Policy Distillation（2026）](https://arxiv.org/abs/2604.13016)：teacher/student compatibility、teacher novelty、cold-start 与 prompt selection 风险。
@@ -122,7 +142,7 @@ ms-swift 和 slime 要实际运行；Tülu/Open-Instruct、TRL、verl 用于比�
 - [TRL DistillationTrainer](https://huggingface.co/docs/trl/main/en/distillation_trainer)：小型 API/correctness 对照；experimental API 不作为多卡 Core 的稳定承诺。
 - [NeMo-RL On-policy Distillation](https://docs.nvidia.com/nemo/rl/latest/about/algorithms/on-policy-distillation.html)：独立实现与当前 backend 边界参照。
 
-Capstone 第一次运行前冻结 compatibility manifest：framework tag/SHA、container digest、Torch/CUDA/NCCL、Megatron、vLLM/SGLang、model/tokenizer revisions、template、verifier 和 dataset hashes。文档的 `latest/main` 只用于发现入口。
+只有 Teacher/OPD charter v2 激活时才冻结对应 compatibility manifest：framework tag/SHA、container digest、Torch/CUDA/NCCL、Megatron、vLLM/SGLang、teacher/student model/processor/tokenizer revisions、template、verifier 和 dataset hashes。文档的 `latest/main` 只用于发现入口。
 
 ## AutoDL
 

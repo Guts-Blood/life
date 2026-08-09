@@ -1,4 +1,4 @@
-# Day 21 — 周末 Reading：Eval 与 Checkpoint Selection 可靠性
+# Day 21 — Qwen3.5 v2 SFT Candidate Selection Audit
 
 日期：`2026-08-16`  
 状态：`not_started`  
@@ -6,57 +6,52 @@
 
 ## 主要目标
 
-预注册一个不会被 final train loss、反复试验和数据泄漏误导的 checkpoint selection policy。
+只审计并最终晋级 Day 16/17 的 Qwen3.5 v2 SFT candidates。Day 10/12 的 Qwen3-0.6B artifacts 保持历史只读，不进入 candidate set、tie-breaker 或 promotion decision。
 
-## 理论与复盘（60 分钟）
+## Candidate Boundary
+
+- Base baseline：Day 15 exact Qwen3.5 Base，只作 delta 起点，不是 SFT candidate。
+- Candidates：Day 16 预注册的 early/mid/final LoRA checkpoints；Day 17 resumed checkpoint 只有通过 resume equivalence 后才可映射回同一 candidate。
+- Excluded：所有 Day 01–12 checkpoints、failed/invalid runs、临时 debug exports、只加载成功但无 resumable state 的路径。
+- Downstream：只有本日最终 promoted SFT anchor 可作为 Day 23 DPO policy/reference anchor 和 Day 25 GRPO policy parent。
+
+## Selection Audit（60 分钟）
 
 精读清单：[Day 21 — Reliable checkpoint selection](../SCALING-BOOK-READING-GUIDE.md#day-21)。
 
-- 15 分钟：区分 train loss、validation loss、task metric、guardrail 和人工 bad case。
-- 15 分钟：检查 Day 10/12 的 frozen eval 是否在训练前冻结，是否存在 prompt/source leakage。
-- 15 分钟：理解多 checkpoint/多 metric 带来的 multiple-comparison 与 winner's curse。
-- 15 分钟：填写 selection policy。
+- 10 分钟：验证 candidate IDs、Base/adapter/resumable/export hashes、processor/template/data/config 和累计 supervised tokens。
+- 10 分钟：确认 eligibility、primary coding metric、general/math/format guardrails、最小有意义差异、tie 与 `inconclusive` 条件在结果揭盲前已冻结。
+- 15 分钟：检查逐样本 predictions、length/truncation、source slices、bootstrap/paired uncertainty 和 bad cases。
+- 10 分钟：核对 Day 17 uninterrupted/resumed equivalence，防止同一逻辑 checkpoint 重复计为独立试验。
+- 10 分钟：盲化应用 selection rule，生成 promotion manifest 或 `no_eligible_qwen35_sft_anchor`。
+- 5 分钟：封存所有 candidate evidence；新 v2 confirmation 继续未消费，留给候选锁定后的单次确认。旧 v1 frozen test 也保持未消费、只读。
 
-Selection policy 必须提前写明：
+## Coding / 训练
 
-1. 候选 checkpoint 集合和评测配置。
-2. 一个 primary metric、若干 guardrails、最小有意义差异。
-3. slice、置信区间和 tie-breaker。
-4. 何时结论是 `inconclusive`，而不是强行选一个 winner。
-5. 选完后的独立 held-out confirmation，不再用它反复调参。
-
-## Coding
-
-无。
-
-## 训练 / 实验
-
-无；只用已有 checkpoint metadata 与 frozen-eval 样例做纸面 selection rehearsal。
-
-## 资源与租卡
-
-CPU only；严格 60 分钟，不启动 eval GPU。
+无。今天不改 scorer、不新增 candidate、不重跑 eval GPU，也不以 final train loss 推翻预注册规则。
 
 ## Evidence-first 产物
 
-- `../artifacts/eval/checkpoint-selection-policy.md`
-- 一次盲化 selection rehearsal 与泄漏检查
+- `../artifacts/eval/day21-qwen35-sft-selection-policy.md`
+- `../artifacts/eval/day21-qwen35-blinded-selection.json`
+- `../artifacts/reports/day21-qwen35-sft-promotion-manifest.json`
+
+Promotion manifest 至少记录：Base revision/hash、adapter/resumable checkpoint、merged inference export、processor/template/data/config/runtime hashes、selection evidence、resume/export parity 与 downstream key。
 
 ## 验收
 
-- [ ] selection rule 在看候选结果前冻结。
-- [ ] primary metric、guardrail、CI 和 inconclusive 条件明确。
-- [ ] held-out confirmation 不参与反复调参。
-- [ ] 能解释为什么 lowest train loss 不一定是最佳 checkpoint。
+- [ ] candidate set 只含 v2 Qwen3.5 SFT checkpoints，v1 权重和指标未参与选择。
+- [ ] selection rule 在揭盲前冻结，primary metric、guardrails、uncertainty、tie 与 inconclusive 条件明确。
+- [ ] resumed run 没有被重复计算为独立 candidate。
+- [ ] 生成唯一 promoted SFT anchor，或诚实记录 no-eligible；没有 winner 时 Day 23/25 blocked。
+- [ ] 新 v2 confirmation 未消费；旧 v1 frozen test 仍为 sealed/unconsumed history。
 
-## Optional Capstone Handoff
+## Daily Log
 
-将 selection-policy 模板推广为分别选择 T1、T2、S1、S2、S3 的独立 candidate sets；teacher promotion 另需 T2-vs-S1 advantage probe。所有 candidates 锁定后才一次性揭盲 capstone frozen suite，任何路线都允许 `inconclusive`。跨模型使用共同 `eval_suite_hash`，但保留各自 comparison keys。
+### Candidate set / excluded set
 
-### 五类选择风险
+### Blinded decision
 
-1. 
-2. 
-3. 
-4. 
-5. 
+### Promoted SFT anchor or blocker
+
+### Remaining selection risks

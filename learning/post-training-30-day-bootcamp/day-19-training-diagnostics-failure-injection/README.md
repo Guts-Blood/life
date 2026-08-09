@@ -1,4 +1,4 @@
-# Day 19 — Training Diagnostics 与 Failure Injection
+# Day 19 — Qwen3.5 Optimization Stability 与 Failure Injection
 
 日期：`2026-08-14`
 状态：`not_started`
@@ -6,62 +6,63 @@
 
 ## 主要目标
 
-建立从 symptom 到 root cause 的训练诊断方法。通过高 LR、错误 loss mask/数据分布和吞吐退化的受控故障，证明指标、样本审计和 profiler 能区分不同问题。
+在 Day 16/17 的稳定 Qwen3.5 LoRA coding SFT baseline 上，用短、单变量 probes 理解 AdamW/LR/warmup/batch 对更新稳定性的影响，并通过 mask/data/system 故障验证诊断顺序。今天不寻找“最优超参”，也不把多个故障叠加；Day 01–12 的曲线只保留为历史诊断案例，不作为 v2 baseline。
 
 ## 理论（60 分钟）
 
 精读清单：[Day 19 — Training failure diagnosis](../SCALING-BOOK-READING-GUIDE.md#day-19)。
 
+- AdamW moments、bias correction、decoupled weight decay、warmup 与 adapter update/weight ratio。
+- `global batch = microbatch × accumulation × DP world size`；sequence 数与 supervised-token 数的不同口径。
 - Optimization failure：loss spike、grad norm、clip saturation、NaN/Inf、update ratio。
-- Data/label failure：label-token ratio、样本 decode、slice loss、重复/分布漂移。
-- Systems failure：GPU utilization、data wait、step time、OOM、communication/idle gap。
-- 相关性不等于归因；每次只注入一个故障并保留正确 baseline。
+- Data/label failure：processor/template、assistant span、label-token ratio、source/length drift。
+- Systems failure：GPU utilization、data wait、GDN/kernel backend、step time、OOM、communication/idle gap。
 
-## Coding（90 分钟）
+## Coding（75 分钟）
 
-- 建立统一 diagnostic bundle：config diff、step metrics、五个 decoded samples、data histogram、GPU/memory/throughput。
-- 实现 `baseline -> injection -> symptom -> probe -> root cause -> fix -> rerun` 记录模板。
-- 为 mask 检查、数据分布 drift 和非有限梯度各加一个自动断言。
-- 对 baseline 和吞吐故障各抓 3–5 个 active steps 的短 profiler trace。
+- 建立 v2 diagnostic bundle：full config diff、runtime/model/processor hashes、trainable/frozen inventory、step metrics、decoded samples、data histogram、VRAM/throughput。
+- 每 step 记录 LR、loss、有效 label tokens、global grad norm、clip coefficient、overflow/skip、adapter update/weight、step/data wait 和 peak memory。
+- 断言 batch/accumulation/world-size、assistant mask、text-only modality、ViT/aligner freeze 与 GDN backend 未静默变化。
+- 对 baseline 和 throughput fault 各抓 3–5 active steps 的短 profiler trace。
 
-## 训练 / 实验（120–150 分钟）
+## 短实验（150 分钟）
 
-使用 Day 16/17 的稳定小模型 baseline，每个故障只跑够出现 signature 的最少 steps：
+所有 runs 使用 exact Qwen3.5 Base/adapter lineage、同一数据顺序和独立 output 目录；每条只跑到出现 signature 的最少 steps：
 
-| Run | 单一注入 | 预期主要证据 |
+| Run | 单一变量/注入 | 预期主要证据 |
 |---|---|---|
-| A | 正确 baseline | 正常 loss/grad/data/throughput |
-| B | LR 提高到预注册危险倍数 | grad/update/loss 异常 |
-| C | assistant-only mask 改成错误范围，或制造 label shift | label ratio、decode、slice loss 异常 |
-| D | 训练数据人为偏向单一来源/长度桶 | distribution 与 held-out slice 退化 |
-| E | 关闭 packing 或注入可控 dataloader delay | step/data wait 变慢但优化指标基本稳定 |
+| A | Day 16 stable baseline | 正常 LR/loss/grad/update/data/throughput |
+| B | LR 提高到预注册危险倍数 | grad、clip、update/loss 异常；触发 stop 即结束 |
+| C | warmup=0，其他同 A | early-step update 与稳定性差异 |
+| D | assistant-only mask 改错或制造 label shift | label ratio、decode、slice loss 异常 |
+| E | coding source/length 分布偏置 | distribution 与 v2 dev slices 退化 |
+| F | 关闭已采用 packing 或注入 dataloader delay | step/data wait 变化但优化指标大致稳定 |
 
-每个注入后恢复正确配置并做 3-step rerun。不要把多个故障叠加；高 LR run 遇到 NaN/Inf 或异常 update ratio 立即停止。
+A 完成前不启动 B–F。每个故障后恢复正确配置做 2–3 step rerun。NaN/Inf、异常 update ratio、持续 step skip 或显存越过 Day 15 hard cap 时立即停止；不用临时降 LR/offload 覆盖现场。
 
 ## 资源与租卡
 
-- 1×H100 80GB，预计 3–5 小时；可复用 Day 17 环境。
-- 故障 run 使用独立 output/checkpoint 目录，不污染 baseline。
+- 使用 Day 16 同一 topology、镜像、processor/template、worker 数与 GDN backend；预计 3–5 小时。
+- Failure runs 独立保存，不能污染 provisional SFT anchor 或 Day 17 正确 resume checkpoint。
 - profiler 只抓短窗口；证据完整后关机。
 
 ## Evidence-first 产物
 
-- `../artifacts/reports/day19-failure-matrix.md`
-- baseline 与四类 injection 的 config diff/metrics/sample audit
-- 两份短 profiler traces
+- `../artifacts/reports/day19-qwen35-optimization-failure-matrix.md`
+- A–F config diffs、step metrics、sample/data audits
+- 两份短 profiler traces 与恢复 rerun evidence
 
 ## 验收
 
-- [ ] 至少完成高 LR、mask/data、distribution、throughput 四类故障。
-- [ ] 每类都有预注册 signature、观察证据、最小 probe、修复与恢复验证。
-- [ ] 能区分“loss 正常但数据错”和“系统慢但优化正常”。
+- [ ] 能从 optimizer state 和 update/weight 解释 LR/warmup 现象，而非只看 train loss。
+- [ ] 高 LR、mask、distribution、throughput 至少四类故障有单变量证据。
+- [ ] 每类都有预注册 signature、最小 probe、停止条件、修复与恢复验证。
+- [ ] 能区分“loss 正常但 processor/data 错”和“系统慢但优化正常”。
 - [ ] 输出可复用的五分钟/三十分钟诊断顺序。
 
-## Optional Capstone Failure Backlog
-
-将 Day 19 diagnostic bundle 扩展模板预留给：TP rank hang/shape mismatch、teacher OOM/timeout、teacher/student tokenizer or token-ID mismatch、teacher log-prob alignment、stale student rollout/weight sync 与 checkpoint conversion drift。今天不注入这些昂贵故障，只定义未来 evidence slots 和停止顺序。
-
 ## Daily Log
+
+### Baseline optimizer/update state
 
 ### Failure matrix
 

@@ -1,4 +1,4 @@
-# Day 25 — ms-swift 小模型 GRPO Lab
+# Day 25 — Qwen3.5-4B Coding GRPO：One-update、vLLM 与显存 Gate
 
 日期：`2026-08-20`
 状态：`not_started`
@@ -6,65 +6,82 @@
 
 ## 主要目标
 
-使用 ms-swift 完成一个可审计的小模型 GRPO 实验，把 Day 24 的 object/reward contract 映射到真实日志。TRL 只作为算法接口参照，不再运行第二套重复实验。
+使用 ms-swift 从 Day 21 promoted Qwen3.5 SFT anchor 完成一个可审计的 coding GRPO one-update 与短 run，把 Day 24 trajectory/reward contract 映射到真实 rollout、sandbox、log-prob、advantage、optimizer 和 weight-version evidence。
 
-## 理论（60 分钟）
+`Qwen/Qwen3.5-4B-Base`、Day 23 DPO candidate 和任何 Day 01–12 checkpoint 都不是本日默认 parent；除非另有预注册实验，本日 policy parent 只允许 Day 21 SFT anchor。
 
-精读清单：[Day 25 — GRPO small-model lab](../SCALING-BOOK-READING-GUIDE.md#day-25)。
+## Hard Prerequisites
 
-- 一个 prompt 的 `G` 个 completions 如何组成 group。
-- Group-relative advantage、zero-variance group、policy/reference KL。
-- rollout log-prob 与训练时 current log-prob 的角色。
-- 采样温度、max completion length 和 reward variance 如何影响训练信号。
+- Day 21 SFT promotion manifest、Day 24 schema/reward/sandbox tests 与 frozen coding prompts 全部通过。
+- pinned ms-swift 和 vLLM 版本明确支持 resolved Qwen3.5 model class；以 [ms-swift GRPO docs](https://github.com/modelscope/ms-swift/blob/main/docs/source_en/Instruction/GRPO/GetStarted/GRPO.md)、[Qwen3.5 Best Practice](https://github.com/modelscope/ms-swift/blob/main/docs/source_en/BestPractices/Qwen3_5-Best-Practice.md)、[vLLM supported models](https://docs.vllm.ai/en/latest/models/supported_models/) 和实际 `--help` 为证据。
+- LoRA adapter/full-weight sync 路径、ViT/aligner freeze、policy/reference identity 与 `beta` 已冻结。
+- Coding sandbox 与训练进程隔离，reward 能从 raw trajectory 离线重算。
 
-## Coding（75 分钟）
+任一 prerequisite 失败即停止；不换 0.6B 或 post-trained fallback 来打勾。
 
-- 固定 ms-swift commit、model revision、dataset/reward version、seed 和完整 resolved config。
-- 将 Day 24 verifier 接入 ms-swift 支持的 reward 扩展点；先跑 unit tests。
-- 添加逐样本/逐 group 日志：prompt ID、completion、reward components、group mean/std、length、truncation、policy step。
-- 写一个离线审计脚本，重算 reward 并和训练日志比较。
+## 理论（45 分钟）
 
-## 训练 / 实验（150 分钟）
+- 一个 prompt 的 `G` 个 completions 如何组成 group；zero-variance group 如何影响 signal。
+- Rollout/old/current/reference log-prob、policy ratio、KL 与 LoRA weight sync 的角色。
+- Sampling temperature、group size、prompt/completion cap 与 sandbox latency 如何影响 variance、显存和 throughput。
+- Colocate 与 server/disaggregated rollout 分别把 learner、rollout weights、KV cache 和 optimizer 放在哪里。
 
-- Model：优先使用 Day 12/23 已验证的 Qwen3-0.6B 阶梯 post-SFT checkpoint；如 pinned ms-swift 不支持，则使用该 commit 官方确认的最小 post-trained Qwen 起点并记录原因。
-- Data：32–128 条可验证的短数学/格式任务；独立冻结 30–50 条 eval prompts。
-- Run A：训练前生成 baseline，保存每条 completion 和 verifier evidence。
-- Run B：每 prompt 产生多条 completions，先过 1 rollout/1 update gate，再运行 10–30 updates。
-- 比较 reward components、zero-variance group ratio、KL、entropy、response length、truncation、grad norm、rollout/train time 和 frozen eval pass rate。
-- 可选 Run C：只改变一个 reward component，最多 5–10 updates；不以训练 reward 单独宣称成功。
+## 显存、Topology 与长度 Preflight（45–60 分钟）
 
-参数必须以 pinned ms-swift 的官方 GRPO 文档和 `--help` 为准，不复制未经版本核对的命令。TRL 仅用来核对 GRPO 术语/公式，不混用 Trainer 或 config。
+官方资料没有给出 NVIDIA 上 Qwen3.5-4B coding GRPO 的通用峰值；因此今天只接受实测：
+
+- 记录 learner Base/adapter、optimizer、rollout model、KV cache、activations、temporary buffers、reference（若有）的 peak VRAM/CPU RAM。
+- 先评估 1×H100 80GB colocate；只有满足预注册余量才运行。否则使用最多 2×H100 的 server topology（learner 与 rollout 分离）并重新 preflight。
+- 明确冻结 `beta=0` 无 reference，或非零 beta + frozen reference 的选择；不能在 OOM 后静默改变目标。
+- Pilot 限制为 `max_prompt_length <= 2048`、`max_completion_length <= 2048`；`vllm_max_model_len` 设为实际 prompt+completion+template headroom，不按模型原生 262K 建 cache。
+- 冻结 group size、generation batch、LoRA sync、sleep/offload、tensor parallel 和 sandbox concurrency；任何变化都产生新 config key。
+
+## Coding（60 分钟）
+
+- 将 Day 24 verifier 接入 pinned ms-swift reward extension，先跑完全相同的 unit cases。
+- 添加逐 trajectory/group 日志：IDs、completion/code、status、raw sandbox evidence、reward components、group mean/std、advantage、length/truncation、policy/weight version。
+- 写 offline audit：重放 sandbox、重算 reward/group advantage，并核对训练日志与 response mask。
+- 保存 resolved model/processor/template、vLLM engine、learner/rollout placement 与 weight-sync mapping。
+
+## 训练 / 实验（120–150 分钟）
+
+- Data：32–128 条可验证的短 coding tasks；独立冻结 30–50 条 v2 eval prompts/test families。
+- G0：从 promoted SFT anchor 生成 baseline，保存每条 completion 和 sandbox evidence。
+- G1：最小 rollout-only batch，确认 group/status/reward/replay。
+- G2：同一配置完成 **1 rollout + 1 optimizer update**，保存 learner/rollout weight versions。
+- G3：同步新 LoRA/weights 后生成下一批，证明 next rollout 使用新 policy version。
+- G4：G0–G3 全通过后才运行 5–20 updates；比较 reward variance、zero-variance ratio、KL/entropy、length/truncation、grad norm、rollout/train/sandbox time 和 frozen coding pass rate。
+- Optional：只改变一个 reward component，最多 5 updates；不以训练 reward 单独宣称成功。
 
 ## 资源与租卡
 
-- 1×H100 80GB，预计 3–6 小时；小模型可根据 pinned recipe 使用等价显存卡。
-- 1-update gate 不通过不扩大；reward 无方差、持续 NaN/OOM 或样本未落盘立即停止。
-- 所有 completions、configs、metrics 和 checkpoint 同步后关机。
+- GPU 上限：经 preflight 通过的 1×H100 colocate，或最多同机 2×H100 server topology；不把规划值写成最低显存结论。
+- One-update gate 不通过不扩大。持续 OOM/NaN、reward 无方差、trajectory 未落盘、sandbox evidence 不可重放或 weight version 不可验证时立即停止。
+- 所有 trajectories、configs、memory snapshots、metrics、adapter/checkpoint 和 sandbox evidence 同步后关机。
 
 ## Evidence-first 产物
 
-- `../artifacts/configs/day25-ms-swift-grpo/`
-- `../artifacts/logs/day25-trajectories.jsonl`
-- `../artifacts/reports/day25-grpo-lab.md`
+- `../artifacts/configs/day25-qwen35-coding-grpo/`
+- `../artifacts/logs/day25-qwen35-coding-trajectories.jsonl`
+- `../artifacts/reports/day25-qwen35-grpo-memory-topology.md`
+- `../artifacts/reports/day25-qwen35-coding-grpo.md`
 
 ## 验收
 
-- [ ] 真正完成 rollout→reward→optimizer update，不只是生成。
-- [ ] 任一 reward 可由离线脚本从 raw trajectory 重算。
-- [ ] 报告包含逐 group 方差、KL/entropy/length/truncation 与 frozen eval。
-- [ ] 能解释 observed metrics 与 GRPO 公式中每个量的映射。
-- [ ] 没有把 TRL 和 ms-swift 的参数名或实现细节混为一谈。
-
-## Optional Capstone Handoff
-
-复用 direct-RL reward adapter、逐 trajectory/group 日志、offline reward audit、one-update gate 和 dev selection 方法。Day 25 的 0.6B math/format checkpoint 不是正式 S2；Day 37 必须从 capstone 的 exact 4B S1、shared policy prompts 和冻结 student budget重跑 direct-RL control。
+- [ ] Policy parent 仅为 Day 21 promoted SFT anchor，Base/v1/DPO candidate 未混入。
+- [ ] 显存/topology/length/group/reference 均由 preflight 与 resolved config 冻结。
+- [ ] 真正完成 rollout→sandbox reward→optimizer update→weight sync→next-version rollout。
+- [ ] 任一 reward 可从 raw trajectory 与 sandbox evidence 离线重算。
+- [ ] 报告包含逐 group variance、KL/entropy/length/truncation、memory/time 与 frozen coding eval。
 
 ## Daily Log
 
-### Pinned versions / resolved config
+### Parent / pinned runtime / placement
 
-### 1-update gate
+### Memory and max-length gate
 
-### Training reward vs frozen eval
+### One-update / next-version evidence
+
+### Training reward vs frozen coding eval
 
 ### Day 26 第一动作

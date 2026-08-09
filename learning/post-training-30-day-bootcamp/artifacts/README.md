@@ -21,6 +21,13 @@ config-dayXX-<topic>.yaml
 capstone-<T0|T1|T2|S0|S1|S2|S3>-<purpose>.<ext>
 ```
 
+## Day 13+ 活动 Lineage
+
+- `qwen3-0.6b-day01-12-v1`：不可改写的历史 lineage；保留原 tokenizer、template、data/eval、checkpoint 与失败证据。
+- `qwen35-4b-day13-plus-v2`：新的活动 lineage；模型已选为 `Qwen/Qwen3.5-4B-Base`，exact revision 要在 Day 15 完整下载与 hash 验收后冻结。
+- 机器可读的迁移状态与 checkpoint graph：[`configs/qwen35-4b-migration-contract.json`](configs/qwen35-4b-migration-contract.json)。
+- v1/v2 的 rendered text、token IDs、label spans、token budget、eval comparison key 和 aggregate score 不可混用。
+
 ## 大文件规则
 
 - 不把模型权重和完整 checkpoint 提交到 Git。
@@ -30,11 +37,14 @@ capstone-<T0|T1|T2|S0|S1|S2|S3>-<purpose>.<ext>
 
 ## Capstone 外部 Checkpoint Registry
 
-8B/4B 权重不提交到 Git。每个外部 checkpoint manifest 至少记录：
+Qwen3.5-4B 权重不提交到 Git。活动图是 `S0 Base -> S1 selected coding SFT -> S2 direct coding RL`；teacher/OPD 角色 `T0/T1/T2/S3` 当前为 deferred/unselected，只有单独批准的 charter v2 才可创建。每个外部 checkpoint manifest 至少记录：
 
 - role/ID（`T0/T1/T2/S0/S1/S2/S3`）与 parent checkpoint hash；
-- model/config/tokenizer/template revisions；
+- model/config/processor/tokenizer/template revisions 与 hashes；
+- architecture、loader、task modality、training scope、freeze policy、trainable-module coverage；
 - training framework/config/code/container/hardware；
+
+仓库根目录的 `.gitignore` 同时排除 `*.safetensors`、checkpoint 目录、`remote-runs/` 与重复的 `snapshots/`。需要共享权重时使用外部 artifact store，并只提交 manifest、hash、选择结论和可重放的小型证据。
 - TP/DP/PP、distributed optimizer 与 checkpoint shard metadata；
 - resumable state 路径和 inference export 路径；
 - conversion command、source/destination hashes 与 parity evidence；

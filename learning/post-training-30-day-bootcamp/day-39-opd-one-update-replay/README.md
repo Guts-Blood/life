@@ -1,12 +1,16 @@
-# Day 39 — OPD One-update、Teacher Scoring 与 Replay Gate
+# Day 39 — Deferred OPD One-update、Teacher Scoring 与 Replay Gate
 
-状态：`not_started`
+状态：`deferred_unselected`
 日期：`unscheduled_after_day30`
-强度：4–5 小时；多卡短 smoke
+强度：当前 0 GPU；仅独立 teacher-extension charter v2 激活后执行
+
+## 当前执行状态
+
+当前 `teacher_model_id/revision: null`，没有 T2，也没有获准的 OPD objective。本页不得启动 teacher scoring、OPD update 或生成 replay batch；活动 capstone policy charter v1 不依赖本页。
 
 ## 主要目标
 
-在 Core 起点 `S1` 上完成一条可手工追踪的 OPD update：student 自己 rollout，冻结 T2 在 student-visited prefixes 上评分，distillation loss 更新 student，并能从保存 batch 重放。只有明确记录的分布不兼容 failure 才允许另开 `S1d` recovery run。
+若未来 charter v2 激活，在 exact `S1` 上完成一条可手工追踪的 OPD update：policy 自己 rollout，frozen T2 在 policy-visited prefixes 上评分，distillation loss 更新 S1 lineage，并能从保存 batch 重放。只有明确记录的分布不兼容 failure 才允许另开 `S1d` recovery run。
 
 ## 理论 / 定向阅读（45–60 分钟）
 
@@ -60,7 +64,8 @@ prompt + student policy version
 
 ## 验收
 
-- [ ] Student rollout 而非 teacher trace 驱动了本次 on-policy batch。
+- [ ] 独立 teacher-extension charter v2、用户 teacher decision、promoted T2 和 OPD recipe 均已冻结；否则本页保持 deferred。
+- [ ] 激活后 policy rollout 而非 teacher trace 驱动了本次 on-policy batch。
 - [ ] Teacher/student token alignment 与 loss mask 可逐 token 审计。
 - [ ] Teacher 全程冻结，student 确实完成 optimizer update。
 - [ ] 保存 batch 可 replay；线上/离线差异有容差和原因。

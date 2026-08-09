@@ -1,12 +1,16 @@
-# Day 38 — Teacher-trace Cold Start 与 Distillation Data Audit
+# Day 38 — Deferred Teacher-trace Cold Start 与 Data Audit
 
-状态：`not_started`
+状态：`deferred_unselected`
 日期：`unscheduled_after_day30`
-强度：4–5 小时；teacher generation + 小型 SFT
+强度：当前 0 GPU；仅独立 teacher-extension charter v2 激活后执行
+
+## 当前执行状态
+
+当前没有 teacher model/revision 或 T2，本页不得执行、不得生成 traces、不得创建 S1d。活动 capstone policy charter v1 在 Day 37 后直接进入 Day 41；目录与本文保留为未来 extension 模板。
 
 ## 主要目标
 
-从冻结 `T2` 生成可追溯 teacher traces，审计并完成一个受限 off-policy cold-start ablation `S1d`。Core OPD 仍从 S1 开始；只有 Day 39 证明分布不兼容时，才允许另开 `S1d -> S3d` 恢复路线。
+若未来 charter v2 激活，从已 promotion 的 frozen `T2` 生成可追溯 teacher traces，并完成受限 off-policy cold-start ablation `S1d`。Extension Core OPD 仍从 exact S1 开始；只有后续 gate 证明分布不兼容时，才允许另开 `S1d -> S3d`。
 
 ## 理论 / 定向阅读（45–60 分钟）
 
@@ -42,7 +46,8 @@
 
 ## 验收
 
-- [ ] Teacher traces 与 T2/prompt/environment 全链路可追踪。
+- [ ] 独立 teacher-extension charter v2、用户 teacher decision 与 promoted T2 均存在；否则本页保持 deferred 且不产生 artifacts。
+- [ ] 激活后 teacher traces 与 T2/prompt/environment 全链路可追踪。
 - [ ] Eval references、frozen prompts 或 hidden verifier states 未进入 cold-start data。
 - [ ] S1d budget、selection 和 guardrails 已预注册并执行；Core S3 仍声明从 S1 开始。
 - [ ] 保留 S1；S1d 没有覆盖共同分叉点。

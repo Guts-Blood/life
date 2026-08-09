@@ -1,17 +1,31 @@
-schema_version: 1
+schema_version: 2
 checkpoint_id: null
 role: null
 status: candidate
 
 lineage:
+  lineage_id: null
   parent_checkpoint_id: null
   parent_checkpoint_hash: null
   objective: null
   model_id: null
   model_revision: null
+  architecture: null
+  pipeline_tag: null
+  loader_class: null
+  processor_class: null
   model_config_hash: null
+  weight_index_hash: null
+  processor_hash: null
   tokenizer_hash: null
+  tokenizer_config_hash: null
   template_hash: null
+  special_tokens_hash: null
+  golden_render_hash: null
+  modality: null
+  training_scope: null
+  freeze_policy_hash: null
+  trainable_module_coverage_hash: null
   dataset_manifest_hash: null
   policy_prompt_manifest_hash: null
   teacher_checkpoint_hash: null
@@ -22,6 +36,11 @@ training:
   resolved_config_hash: null
   code_commit: null
   container_digest: null
+  python_version: null
+  transformers_version: null
+  torch_cuda_nccl_lock_hash: null
+  inference_or_rollout_backend: null
+  inference_or_rollout_backend_version: null
   hardware_topology_hash: null
   dp: null
   tp: null
@@ -30,6 +49,17 @@ training:
   optimizer_updates: null
   rollout_tokens: null
   policy_version: null
+  parameter_dtype: null
+  compute_dtype: null
+  gdn_backend: null
+  full_attention_backend: null
+  packing: null
+  padding_free: null
+  gradient_checkpointing: null
+  max_sequence_or_model_length: null
+  peak_memory_allocated_bytes_per_rank: null
+  peak_memory_reserved_bytes_per_rank: null
+  minimum_headroom_fraction: null
 
 state:
   resumable_checkpoint_path: null
@@ -39,6 +69,8 @@ state:
   rng_state_present: false
   data_or_rollout_cursor_present: false
   distributed_shard_metadata_hash: null
+  processor_assets_present: false
+  freeze_and_trainable_inventory_hash: null
 
 inference_export:
   path: null
@@ -46,6 +78,9 @@ inference_export:
   conversion_command_hash: null
   conversion_source_hash: null
   parity_report: null
+  processor_assets_hash: null
+  resolved_loader_class: null
+  text_only_modality_parity_passed: false
 
 selection:
   eval_suite_hash: null
@@ -56,6 +91,8 @@ selection:
   decision: null
   guardrails_passed: false
   frozen_consumed: false
+  confirmation_manifest_hash: null
+  confirmation_consumption_record_hash: null
 
 cost:
   learner_gpu_hours: null
