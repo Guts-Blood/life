@@ -11,6 +11,25 @@
 __pycache__/
 *.py[cod]
 
+# Local ML weights, checkpoints, and duplicated run snapshots
+*.safetensors
+*.ckpt
+*.pt
+*.pth
+adapter_model.bin
+pytorch_model*.bin
+training_args.bin
+/learning/post-training-30-day-bootcamp/**/remote-runs/
+/learning/post-training-30-day-bootcamp/**/snapshots/
+/learning/post-training-30-day-bootcamp/**/checkpoint-*/
+/learning/post-training-30-day-bootcamp/**/adapters/
+
+# In-progress/generated analysis workspaces; publish only a curated final report
+/learning/post-training-30-day-bootcamp/day-20-qwen35-balanced-lora-sft/reports/full-sft-vs-lora-analysis-20260809/
+
+# Third-party report binaries are referenced upstream with verified hashes
+/learning/training-learning/reports/frontier-training-2026-08/sources/*.pdf
+
 # Local external repositories
 /finLLM-Eval/
 /vendor/ms-swift/
