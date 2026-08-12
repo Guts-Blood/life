@@ -3,6 +3,10 @@
 状态：`standalone_probe_closed / no_passing_probe / main_not_started / Base_active`
 范围：standalone pull-forward experiment；不是顺序课程的 Day 20 weekend failure-signature review 完成记录。
 
+> 以上状态与本文其余命令描述的是已封存的 v1 实验。新的候选工厂、
+> 训练前 E2B gate、24k/320k 数据合同和 v3 评估链路见
+> [V2-GPU-RUNBOOK.md](./V2-GPU-RUNBOOK.md)。v2 不复用或改写 v1 产物。
+
 Day 20 的目标不是继续扩大 Full SFT，而是用一次可回退、可审计的 LoRA 实验回答一个更具体的问题：在 Qwen3.5 原生模板和解析链路正确的前提下，均衡复用四类能力数据，是否能在不牺牲 Base 广泛能力的情况下得到一个可靠的新锚点。
 
 最终结果只有两种：某个 `early`、`mid` 或 `final` LoRA 同时通过全部门槛，成为唯一允许合并的 winner；否则不生成 `DAY20-PASS.json`，继续使用 Base。Day 20 不会为了“必须有一个 SFT 结果”而降低门槛。
