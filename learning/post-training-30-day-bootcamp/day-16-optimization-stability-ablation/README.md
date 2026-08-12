@@ -1,10 +1,28 @@
 # Day 16 — Qwen3.5-4B Controlled LoRA Coding SFT 与 Anchor Selection
 
 日期：`2026-08-11`
-状态：`not_started`
+状态：`closed_no_eligible_candidate_by_day20_evidence`
+关闭日期：`2026-08-09`
 强度：4–5 小时
 
-## 主要目标
+## 查漏补缺结论
+
+Day 16 已用 canonical Day 20 LoRA evidence 收束为 `no_eligible_qwen35_sft_anchor`，不启动 main，不挑选失败中“最好”的 probe，不追加 GPU。
+
+三档 LR 均在 exact Qwen3.5 Base、固定 16,000 supervised tokens、同一 language-only LoRA 白名单下完成 103 optimizer steps 和 adapter save；但 `1e-5` Math 回退 3 题，`3e-5` Math 回退 2 题且 Code 静态 eligible 只有 6/8，`1e-4` Code eligible 为 0/8。每个 probe 都有至少一项与缺失 E2B 无关的硬失败，因此不得进入 256k main。
+
+Packing 没有跑 parity，故明确固定 `packing=false`，不能写成 packed path 通过。当前仍无 `S1`，Base 保持 active；Day 17/21 的 anchor 路径没有 candidate 可消费。
+
+完整证据与边界：
+
+- [`day16-gap-audit.md`](../artifacts/reports/day16-gap-audit.md)
+- [`day16-packing-parity.md`](../artifacts/reports/day16-packing-parity.md)
+- [`day16-qwen35-sft-trajectory.md`](../artifacts/reports/day16-qwen35-sft-trajectory.md)
+- [`day16-qwen35-provisional-anchor.json`](../artifacts/reports/day16-qwen35-provisional-anchor.json)
+
+以下保留为原计划与审计依据，不再是待执行清单。
+
+## 原计划：主要目标
 
 从 Day 15 冻结的 `Qwen/Qwen3.5-4B-Base` v2 lineage 运行一次受控、可审计的 **text-only coding LoRA SFT**，只做有限的 packing correctness/throughput parity，保存 early/mid/final candidates，并按预注册 dev policy 选择一个可供 Day 17、23、25 使用的 SFT anchor。
 
@@ -54,25 +72,31 @@
 - 任何 topology、offload、quantization 或 checkpointing 变化都先成为新 preflight，不能在正式 run 中临时加入。
 - configs、adapter/resume state、merged export、dev predictions 和 promotion manifest 同步后关机。
 
-## Evidence-first 产物
+## Evidence-first 产物处置
 
-- `../artifacts/configs/day16-qwen35-lora-sft/`
-- `../artifacts/data/day16-qwen35-coding-sft-manifest.json`
-- `../artifacts/logs/day16-qwen35-sft-step-metrics.jsonl`
-- `../artifacts/reports/day16-packing-parity.md`
-- `../artifacts/reports/day16-qwen35-sft-trajectory.md`
-- `../artifacts/reports/day16-qwen35-provisional-anchor.json`
+| 原计划产物 | 实际处置 |
+|---|---|
+| `../artifacts/configs/day16-qwen35-lora-sft/` | 不复制；实际 configs 位于 canonical Day 20 run。 |
+| `../artifacts/data/day16-qwen35-coding-sft-manifest.json` | 不补造；实际数据合同是 Day 20 manifest。 |
+| `../artifacts/logs/day16-qwen35-sft-step-metrics.jsonl` | 不复制；三条实际 step metrics 保留在 Day 20 evidence tree。 |
+| `../artifacts/reports/day16-packing-parity.md` | 已生成；结论为未跑 parity、`packing=false`。 |
+| `../artifacts/reports/day16-qwen35-sft-trajectory.md` | 已生成 Day 20 → Day 16 crosswalk。 |
+| `../artifacts/reports/day16-qwen35-provisional-anchor.json` | 已生成；状态 `no_eligible_qwen35_sft_anchor`，checkpoint=`null`。 |
 
-## 验收
+## 关闭时验收
 
-- [ ] 所有 run 从 exact Qwen3.5 Base v2 lineage 启动，v1 权重未参与。
-- [ ] Packing 只在 correctness parity 后采用；不支持时有明确 `packing=false` 结论。
-- [ ] LoRA/ViT/aligner trainable/frozen inventory 与配置一致。
-- [ ] early/mid/final 按累计 supervised tokens 保存并做同协议 v2 dev eval。
-- [ ] 产生一个有完整 promotion evidence 的 provisional SFT anchor，或诚实记录 no-eligible。
-- [ ] 新 v2 confirmation 未消费；旧 v1 frozen test 仍 sealed/unconsumed。
+- [x] 所有实际 probe 从 exact Qwen3.5 Base v2 lineage 启动，v1 权重未参与。
+- [x] Packing 未经 parity 不采用，明确冻结 `packing=false`。
+- [x] LoRA language-module inventory 与 ViT/aligner freeze boundary 有实际证据。
+- [x] LR probe gate 失败后 main fail closed；early/mid/final 不存在且不补造。
+- [x] machine-readable 结论为 `no_eligible_qwen35_sft_anchor`，无 provisional anchor。
+- [x] 没有新的 confirmation 被消费；旧 v1 frozen test 仍 sealed/unconsumed。
 
 ## Daily Log
+
+### Close
+
+`2026-08-09`：完成 Day 20 → Day 16 evidence crosswalk。三档 probe 均有不可被 E2B 弥补的必要门禁失败，Day 16 以 no-candidate 合法退出；packing=false，无 S1，无追加 GPU。
 
 ### Pinned v2 parent / runtime
 

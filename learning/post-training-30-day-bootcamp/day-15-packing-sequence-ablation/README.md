@@ -1,10 +1,19 @@
 # Day 15 — Qwen3.5-4B Onboarding、Lineage v2 与最小训练 Gate
 
 日期：`2026-08-10`  
-状态：`not_started`  
+状态：`closed_superseded_by_day18_20`
+关闭日期：`2026-08-09`
 强度：4–5 小时
 
-## 主要目标
+## 关闭决定
+
+Day 15 不再按下方原计划重复执行。Day 18–20 已分别提供模型/runtime/训练/恢复、Qwen3.5 评测适配和单卡 H800 LoRA 的真实运行证据，足以关闭 onboarding 的核心可行性问题。关闭状态不是按原路径 `pass`：原定 7,860 条 manifest v2、新 selection/confirmation split、LoRA exact resume 和六个 Day 15 evidence artifacts 均未生成，也不会事后补造。
+
+完整理由、Gate crosswalk、未生成产物和后续缺口归属见 [`day15-close.md`](../artifacts/reports/day15-close.md)。当前仍无 promoted `S1`；Base 保持 active，DPO/GRPO 继续 blocked。
+
+以下内容保留为原始计划与历史审计依据，不再是待执行清单。
+
+## 原计划：主要目标
 
 为后续 active track 冻结 `Qwen/Qwen3.5-4B-Base` 的可复现入口，并重新验证 processor/template、数据 tokenization、Base dev baseline、tiny overfit、fresh-process resume 与显存边界。今天不做完整 packing ablation；任何 onboarding gate 未通过就停在该层。
 
@@ -72,16 +81,22 @@ Gate 0 产物必须写真实解析值；模板中的 `pending` 只有在失败�
 - `../artifacts/logs/day15-qwen35-tiny-overfit/`
 - `../artifacts/reports/day15-qwen35-onboarding.md`
 
-## 验收
+## 关闭时的验收处置
 
-- [ ] exact model revision、weights/config、runtime 与 loader/processor 已解析并冻结。
-- [ ] text-only/ViT/aligner policy 和 trainable-parameter inventory 一致。
-- [ ] v2 render/tokens/labels/manifests 全部新建，未覆盖任何 Day 01–12 artifact。
-- [ ] 新 Base dev baseline 已落盘；v2 confirmation 未消费，旧 v1 frozen test 仍 sealed/unconsumed。
-- [ ] LoRA tiny-overfit、fresh-process resume 与 save/reload 全部通过。
-- [ ] Day 16 的长度、microbatch、显存余量和停止条件来自实测。
+| 原验收项 | 关闭处置 |
+|---|---|
+| revision、weights/config、runtime 与 loader/processor | 由 S0 registry、Day 18 和 Day 20 的 superseding evidence 覆盖。 |
+| text-only/ViT/aligner policy 与 trainable inventory | Day 18 full-training ownership audit 和 Day 20 LoRA trainable inventory 实际覆盖。 |
+| Day 09 全量 v2 render/tokens/labels/manifest | 未执行；被 Day 20 独立六源 balanced contract 取代，不声称等价。 |
+| 新 selection dev/confirmation 与 Base baseline | 已有 Day 19/20 Base diagnostic，但原定 split/comparison key 未生成；后续 promotion 必须按实际协议重新冻结。 |
+| LoRA tiny-overfit、fresh-process resume、save/reload | Day 20 LoRA learnability/save 与 Day 18 full-state continuation/export 分别覆盖；LoRA exact-resume 缺口移交 Day 17。 |
+| Day 16 长度、microbatch、显存边界 | Day 20 单卡 H800、BF16 LoRA、`max_length=2304` 已真实运行；packing parity 仍属于 Day 16。 |
 
 ## Daily Log
+
+### Close
+
+`2026-08-09`：按用户决定，以 Day 18–20 的更强后续证据关闭 Day 15，不重跑、不补造原计划 artifact、不晋级 S1。关闭报告：[`day15-close.md`](../artifacts/reports/day15-close.md)。
 
 ### v1 → v2 lineage boundary
 
