@@ -1,6 +1,6 @@
 # 30-Day LLM Post-Training Bootcamp
 
-状态：`in_progress`（Day 01–12 已完成；Day 12 以 `10/10 recovery、0 eligible checkpoint、frozen test 未消费` 收束；下一执行项为 Day 13）
+状态：`in_progress`（Day 15 已关闭；Day 16 已由 Day 20 evidence 以 no-candidate 收束；Day 13–14 保留为阅读 backlog；Qwen3.5 Base active，尚无 S1）
 
 执行日期：`2026-07-27`（周一）至 `2026-08-25`（周二）  
 建议投入：工作日 4–5 小时；周末严格控制为 1 小时 reading/review，不租 GPU  
@@ -27,7 +27,7 @@
 - [ ] 能从 raw sample 追到 rendered text、tokens、labels、loss mask、source/mixture metadata，并识别数据泄漏与模板错误。
 - [ ] 能为 Qwen3.5 冻结 revision、processor/template、loader、modality/freeze policy 与 golden token/mask，并解释为何它不是旧 CausalLM runner 的 model-ID drop-in。
 - [ ] 能解释 `forward -> loss -> backward -> gradient accumulation -> optimizer/scheduler -> checkpoint/eval`，并用 tiny overfit 验证训练链路。
-- [ ] 能设计并运行受控 SFT，对比 checkpoint，完成中断恢复，并判断 resume 是否真的连续。
+- [ ] 能设计并运行受控 SFT，区分 checkpoint integrity、普通 continuation 与 exact resume；严格连续性对照按需要作为 Optional Lab 执行。
 - [ ] 能根据 loss、grad norm、learning rate、tokens/s、显存、样本输出和 eval 区分数据、优化、系统与评测问题。
 - [ ] 能解释 DP/FSDP/ZeRO/TP/PP/CP/EP 切什么、通信什么，以及 global batch 为什么不乘 TP。
 - [ ] 能构造与审计 coding preference pair，解释 DPO objective，并从 promoted Qwen3.5 SFT anchor 跑通一次 DPO smoke。
@@ -53,7 +53,7 @@
 | [verl](https://verl.readthedocs.io/) | 对照 actor/rollout/ref/reward resource-pool；teacher/OPD 用法只保留为 deferred extension | 30-Day 阅读；可选 Systems Stretch |
 | [NVIDIA Megatron-LM](https://github.com/NVIDIA/Megatron-LM) | 建立最小多卡 codepath、rank/state/checkpoint 心智模型 | 最小 smoke，不做全仓通读 |
 
-模型策略分为两条不可混写的 lineage：Day 01–12 的 `Qwen/Qwen3-0.6B-Base@ddc928429ed09d9ad603fd762053d0434c15e865` 是 immutable `v1` 历史；Day 13+ 的唯一活动模型是 `Qwen/Qwen3.5-4B-Base`，属于 `v2`。Standalone Day 18–20 已把 exact revision `1001bb4d826a52d1f399e183466143f4da7b741b` 与文件 hash 固定为其共同运行根；顺序课程的 Day 15 onboarding acceptance、数据/eval 迁移与 S1 promotion 仍未完成。两种状态必须分开记录，且都不依赖滚动 `main/latest`。
+模型策略分为两条不可混写的 lineage：Day 01–12 的 `Qwen/Qwen3-0.6B-Base@ddc928429ed09d9ad603fd762053d0434c15e865` 是 immutable `v1` 历史；Day 13+ 的唯一活动模型是 `Qwen/Qwen3.5-4B-Base`，属于 `v2`。Standalone Day 18–20 已把 exact revision `1001bb4d826a52d1f399e183466143f4da7b741b` 与文件 hash 固定为共同运行根，并以更强实际运行证据关闭 Day 15 onboarding；Day 20 的三条 LoRA probe 又以合法的 no-candidate 结果收束 Day 16。两次关闭都不补造缺失 artifacts，不完成 LoRA exact resume，也不产生 S1。
 
 Qwen3.5-4B-Base 是含 vision encoder 的原生多模态 checkpoint。coding 主线保留完整官方 processor/conditional-generation loader，但输入固定为 text-only，并冻结 vision tower 与 aligner、断言 LoRA module coverage；不把它当旧 `AutoModelForCausalLM` 脚本的直接替换。DPO 和 GRPO 必须从新晋级的 coding SFT `S1` 起步，不能从 Base 或 Day 12 的 0.6B export 起步。详见 [Qwen3.5-4B 迁移计划](QWEN35-4B-MIGRATION-PLAN.md)。
 
@@ -61,13 +61,13 @@ slime 阅读基线仍固定为 `v0.3.0`，但运行时必须验证该 release �
 
 ## 提前执行的 Standalone Experiments
 
-下列目录使用实验发生时的 Day 18–20 run identity，但不替代顺序课程中同编号的学习任务，也不自动推进 Day 15–17 或 S1 gate：
+下列目录使用实验发生时的 Day 18–20 run identity，不替代顺序课程中同编号的学习任务。三者合并后用于 [`Day 15 Close`](artifacts/reports/day15-close.md)；其中 Day 20 的实际 LoRA probe evidence 另用于 [`Day 16 no-candidate close`](artifacts/reports/day16-gap-audit.md)。它们都不自动推进 Day 17 或 S1 gate：
 
 | 实验 | 状态 | 结论边界 |
 |---|---|---|
-| [Day 18 Megatron compatibility](day-18-megatron-minimum-codepath/README.md) | done | C0–C5 在冻结的 2×H800 text-only envelope 内通过；不等于 Day 15 acceptance。 |
+| [Day 18 Megatron compatibility](day-18-megatron-minimum-codepath/README.md) | closed_pass | C0–C5 与 [`closeout audit`](artifacts/reports/day18-close.md) 通过；0 追加 GPU。是 Day 15 close 的 runtime/learnability 证据，但不等于 LoRA exact resume 或 S1。 |
 | [Standalone Day 19 Full-SFT comparison](day-19-qwen35-sft-comparison/README.md) | done / diagnostic only | A/B/E comparison 与 Qwen3.5 v2 rescoring 用于定位评测合同和 Full-SFT 退化；没有产生 promoted S1。 |
-| [Standalone Day 20 balanced LoRA probes](day-20-qwen35-balanced-lora-sft/README.md) | blocked / no passing probe | 三档 LR probe 已完成但没有合格选择；main training、winner merge 与 S1 promotion 均未发生，Base 保持 active。 |
+| [Standalone Day 20 balanced LoRA probes](day-20-qwen35-balanced-lora-sft/README.md) | closed / no passing probe | 三档 LR probe 已完成但每条都有必要门禁失败；作为 Day 16 no-candidate close evidence，main、winner merge 与 S1 均未发生。 |
 
 原 [`day-19-training-diagnostics-failure-injection`](day-19-training-diagnostics-failure-injection/README.md) 和 [`day-20-weekend-training-failures`](day-20-weekend-training-failures/README.md) 仍是顺序课程 Day 19/20，状态保持 `not_started`。
 
@@ -111,18 +111,18 @@ slime 阅读基线仍固定为 `v0.3.0`，但运行时必须验证该 release �
 - [x] [Day 10 · 08-05 — Frozen eval 与 Base baseline](day-10-frozen-eval-baseline/README.md)（自动评测完成；30 条 human review 待补）
 - [x] [Day 11 · 08-06 — 一个 SFT step 与 tiny overfit](day-11-sft-step-tiny-overfit/README.md)（Step 50；teacher-forced accuracy 98.89%；exact resume pass）
 - [x] [Day 12 · 08-07 — 受控 SFT 与 checkpoint 选择](day-12-controlled-sft-checkpoints/README.md)（10/10 recovery 完成；无 eligible checkpoint；frozen test 未消费）
-- [ ] [Day 13 · 08-08（周末 1h）— Qwen3 历史证据 × Qwen3.5 迁移阅读](day-13-weekend-sft-reading/README.md) ← next
+- [ ] [Day 13 · 08-08（周末 1h）— Qwen3 历史证据 × Qwen3.5 迁移阅读](day-13-weekend-sft-reading/README.md)（reading backlog）
 - [ ] [Day 14 · 08-09（周末 1h）— Week 2 历史复盘与 Qwen3.5 readiness](day-14-weekend-week2-review/README.md)
 
 ### Week 3：稳定训练、恢复与诊断（08-10 至 08-16）
 
-- [ ] [Day 15 · 08-10 — Qwen3.5-4B onboarding 与迁移验收](day-15-packing-sequence-ablation/README.md)
-- [ ] [Day 16 · 08-11 — 受控 coding LoRA SFT、packing parity 与 S1 candidates](day-16-optimization-stability-ablation/README.md)
-- [ ] [Day 17 · 08-12 — Exact checkpoint resume 与可复现](day-17-checkpoint-resume-repro/README.md)
-- [x] [Day 18 · 08-13 — Megatron 最小源码链、双卡 TP/DP 与 distributed checkpoint](day-18-megatron-minimum-codepath/README.md)（08-08 standalone pull-forward；不推进 Day 15–17）
-- [ ] [Day 19 · 08-14 — Optimizer/LR 稳定性与 failure injection](day-19-training-diagnostics-failure-injection/README.md)
-- [ ] [Day 20 · 08-15（周末 1h）— Training failure signatures](day-20-weekend-training-failures/README.md)
-- [ ] [Day 21 · 08-16（周末 1h）— Qwen3.5 SFT candidate audit 与 S1 promotion](day-21-weekend-eval-reading/README.md)
+- [x] [Day 15 · 08-10 — Qwen3.5-4B onboarding 与迁移验收](day-15-packing-sequence-ablation/README.md)（08-09 `closed_superseded_by_day18_20`；不重跑、不补造原 artifacts、无 S1）
+- [x] [Day 16 · 08-11 — 受控 coding LoRA SFT、packing parity 与 S1 candidates](day-16-optimization-stability-ablation/README.md)（08-09 `closed_no_eligible_candidate_by_day20_evidence`；packing=false，无 S1）
+- [ ] [Day 17 · 08-12 — Exact checkpoint resume 与可复现](day-17-checkpoint-resume-repro/README.md)（[`gap audit`](artifacts/reports/day17-gap-audit.md) 已完成；runtime blocked：无 selected/resumable candidate，0 GPU）
+- [x] [Day 18 · 08-13 — Megatron 最小源码链、双卡 TP/DP 与 distributed checkpoint](day-18-megatron-minimum-codepath/README.md)（08-10 `closed_pass_c0_c5`；[Close 报告](artifacts/reports/day18-close.md)，0 追加 GPU，不推进 S1）
+- [ ] [Day 19 · 08-14 — Optimizer/LR 稳定性与 failure injection](day-19-training-diagnostics-failure-injection/README.md)（blocked：无 Day 16/17 stable baseline）
+- [ ] [Day 20 · 08-15（周末 1h）— Training failure signatures](day-20-weekend-training-failures/README.md)（Core CPU；原 Day 17 exact-resume 实验移为 Optional R，默认可跳过）
+- [ ] [Day 21 · 08-16（周末 1h）— Qwen3.5 SFT candidate audit 与 S1 promotion](day-21-weekend-eval-reading/README.md)（blocked：Day 16 no-candidate）
 
 ### Week 4：Preference、DPO 与 Online RL（08-17 至 08-23）
 
@@ -167,7 +167,7 @@ slime 阅读基线仍固定为 `v0.3.0`，但运行时必须验证该 release �
 2. 每个 run 记录 lineage、parent checkpoint、code commit、容器/环境、model revision、architecture/loader、processor/tokenizer/template hashes、modality/freeze policy、seed、完整配置与硬件。
 3. SFT 记录 raw/rendered/token/label/mask 审计；DPO 记录 prompt/chosen/rejected；RL 记录 prompt/response/reward/logprob/mask/policy version 对齐。
 4. 必须保存逐样本 eval 和 bad cases；aggregate score 不能单独驱动下一轮。
-5. Checkpoint 至少区分“仅可推理权重”和“可连续训练状态”；resume 后验证 step、LR、optimizer、数据位置与 RNG。
+5. Checkpoint 至少区分“仅可推理权重”和“可连续训练状态”并通过完整性审计；只有研究 continuation/exactness 时，才运行 Day 20 Optional R 验证 step、LR、optimizer、数据位置与 RNG 的逐步连续性。
 6. 当天失败要保存最小证据和下一项验证，不为打勾隐藏失败。
 7. Day 07、14、21、28 使用 [`templates/weekly-review.md`](templates/weekly-review.md)。
 8. v2 的 DPO/GRPO 必须从 promoted `S1` 分叉；Base 和 0.6B checkpoint 都不能充当 parent。Teacher/OPD 若以后启用，额外记录 student rollout/policy version、teacher checkpoint/log-prob、token alignment、distillation mask/objective 和各角色 GPU-hours。

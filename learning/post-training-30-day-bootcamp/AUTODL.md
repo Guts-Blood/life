@@ -1,6 +1,8 @@
 # AutoDL 与 GPU 资源计划
 
-更新日期：2026-08-07。卡价、库存和实例拓扑以开机时 AutoDL 页面为准；本计划给出资源上限和 readiness gate，不写死单价。
+更新日期：2026-08-10。卡价、库存和实例拓扑以开机时 AutoDL 页面为准；本计划给出资源上限和 readiness gate，不写死单价。
+
+Day 15 已按 [`Day 15 Close`](artifacts/reports/day15-close.md) 关闭；Day 16 也已按 [`Day 16 Gap Audit`](artifacts/reports/day16-gap-audit.md) 以 no-candidate 收束；Day 18 已按 [`Day 18 Close`](artifacts/reports/day18-close.md) 以 C0–C5 pass 正式关闭。三者追加 GPU 预算均为 `0`。Day 17 的 [`Gap Audit`](artifacts/reports/day17-gap-audit.md) 已完成，状态仍 blocked；其 runtime 设计已降级为顺序课程 [`Day 20 Optional R`](day-20-weekend-training-failures/README.md#optional-r--exact-resume-failure-lab)，默认不租卡且不阻塞 S1。若以后选择运行，复用 candidate 的同一单卡 topology；candidate 是单卡 H800 时不额外引入 TP/多卡。
 
 ## 原则
 
@@ -66,8 +68,8 @@ v2 依据：[Qwen3.5-4B-Base model card](https://huggingface.co/Qwen/Qwen3.5-4B-
 |---|---|---|---:|---|---|
 | A | 08–10 | CPU；eval 时 1×H100 | 2–4h GPU | 数据契约、manifest、Base 逐样本 baseline | sample audit 与 frozen eval 已落盘 |
 | B | 11–12 | 1×RTX 4090 24GB | 8–14h | tiny overfit、受控 SFT、checkpoint 对比 | loss/mask/生成闭环与 early/mid/final 证据完整 |
-| C | 15–17 | 默认 1×H100 80GB | smoke 后冻结，参考 8–12h | Qwen3.5 onboarding、新 baseline、coding SFT/S1 与 exact resume | M1–M6、promotion 与 continuity 全部有 evidence |
-| D | 18 | 2×H100 同机 | 2–4h | Qwen3.5 Megatron/GDN 最小 codepath | rank/group/model mapping/checkpoint/export 有 runtime evidence |
+| C | 15–17 | Day 15/16：0 追加 GPU；Day 17 blocked | 不预拨 | Day 15 已关闭；Day 16 no-candidate；等待新 SFT charter | Day 17 不单独预拨；continuity 仅在 Day 20 Optional R 被选择时另批，当前无 S1 |
+| D | 18 | 实际 2×H800 同机；已关闭 | 0 追加 | Qwen3.5 Megatron/GDN 最小 codepath | C0–C5 与 closeout audit 已通过；不重跑，见 `day18-close.md` |
 | E | 19 | 1×H100；必要时复用 2 卡 | 3–5h | optimizer/LR 对照、failure injection 与 profiler | LR、mask/processor、resume、throughput failure 可识别、可恢复 |
 | F | 22–23 | CPU 准备；1×H100 80GB | 3–6h GPU | coding preference audit 与 Qwen3.5 DPO smoke | parent=S1；pair/logprob/mask 与 v2 eval 完整 |
 | G | 24–25 | 1×80GB smoke；优先 2×48/80GB 分离 | smoke 后冻结，参考 4–8h | Qwen3.5 coding GRPO | parent=S1；reward/group/8K cap/peak/update 守恒 |

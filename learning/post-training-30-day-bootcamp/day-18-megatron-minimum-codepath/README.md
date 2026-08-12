@@ -1,8 +1,10 @@
 # Day 18 — Megatron × Qwen3.5 Compatibility and Learnability
 
 计划日期：`2026-08-13`；独立提前执行：`2026-08-08`
-状态：`done`（standalone pull-forward；不回填 Day 15）
+状态：`closed_pass`（standalone pull-forward；`2026-08-10` 完成状态收尾）
 强度：4–5 小时人工工作；双卡窗口由 compatibility preflight 决定
+
+Close 结论：C0–C5 原协议全部通过，本地 evidence/PASS inventory 与 16 项测试重新验证通过，不补跑 GPU；详见 [`Day 18 Close`](../artifacts/reports/day18-close.md) 和机器可读 [`day18-closeout.json`](../artifacts/reports/day18-closeout.json)。
 
 ## 主要目标
 
@@ -53,7 +55,7 @@ HF Base revision + processor/template
 - Run `day18-qwen35-20260808T073811Z`：C0–C5 与 fail-closed final gate 全部通过；完整数值、版本、问题记录和 evidence SHA 见 [兼容性报告](../artifacts/reports/day18-qwen35-megatron-compatibility.md)。
 - 同一 Megatron SFT 入口覆盖 HF↔MCore parity、`TP=1/DP=2`、`TP=2/DP=1`、fresh-process full-state resume/export，以及从 Base 独立启动的 150-step two-row tiny overfit；vision/aligner ownership 保持冻结。
 - 结论只限于此次冻结的 Qwen3.5-4B Base、两行 text-only fixture、BF16、2×H800、TP/DP/MTP/checkpoint/export 路径：未检出训练代码 bug 且能完成同 fixture overfit；不证明泛化、长训、视觉路径、任意拓扑、exact-resume 等价或“全仓无 bug”。
-- Day 15 仍为 `not_started`；本结果不补齐 Day 15 M1–M5、不解锁 Day 16/S1，也不改变 Day 13 为下一顺序执行项。
+- 在本次 standalone run 收束时，Day 15 仍为 `not_started`，本结果当时不单独补齐 M1–M5 或解锁 Day 16/S1。`2026-08-09` 的后续决定将 Day 18–20 合并证据用于 [`Day 15 Close`](../artifacts/reports/day15-close.md)；该关闭仍不补造原 M2–M5 artifacts，也不解锁 Day 16/17 或 S1。
 
 ## Evidence-first 产物
 

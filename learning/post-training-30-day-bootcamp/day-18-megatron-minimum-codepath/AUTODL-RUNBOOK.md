@@ -1,6 +1,8 @@
 # Day 18 AutoDL Handoff
 
-This handoff is prepared locally, but CUDA, GDN, TP/DP, checkpoint, and export compatibility remain unverified until the H800/H100 Hopper run. A prepared script is not a passed gate.
+Current status (`2026-08-10`): **historical handoff; Day 18 is `closed_pass_c0_c5` and must not be automatically rerun.** The actual 2×H800 run passed C0–C5; local closeout revalidated the evidence bundle and tests. See [`day18-close.md`](../artifacts/reports/day18-close.md).
+
+The original pre-run boundary was: CUDA, GDN, TP/DP, checkpoint, and export compatibility remained unverified until the H800/H100 Hopper run; a prepared script was not a passed gate. The remainder of this file preserves that handoff and replay procedure as historical documentation.
 
 ## Calendar and machine choice
 
@@ -10,7 +12,7 @@ If Day 18 is intentionally pulled forward, use one same-host machine with exactl
 
 The disk number is deliberately larger than a normal 4B smoke: C2, C3, and C4 each retain a full-parameter Adam distributed checkpoint with model, FP32 main parameters, two FP32 moment tensors, and RNG state. C5 adds one final model-only MCore checkpoint and one HF export; it deliberately does not retain another Adam/RNG state. Together with the uploaded/extracted base, C0 MCore copy, C1 HF round-trip copy, C4/C5 HF exports, package cache, and build temporary files, a 300 GB disk is not a safe retention target. After upload and extraction, the script requires at least 280 GiB free and always retains 15% filesystem headroom.
 
-Day 15 is still a formal prerequisite in the curriculum and remains `not_started`. Pulling this run forward produces standalone C0–C5 evidence. C5 overlaps the v2 tiny-overfit learnability question, but it does not formally backfill Day 15 M1–M5, including the missing ordered baseline/data/memory gates, and must not be recorded as Day 15 completion. If following the calendar, do the CPU-only Day 14 work on `2026-08-09` and do not rent a GPU tomorrow.
+At the time of this run, Day 15 was still a formal prerequisite in the curriculum and remained `not_started`. Pulling this run forward produced standalone C0–C5 evidence; C5 overlapped the v2 tiny-overfit learnability question but did not by itself backfill Day 15 M1–M5. On `2026-08-09`, the later Day 15 close decision accepted the combined Day 18–20 evidence as superseding close evidence without fabricating the missing ordered artifacts or promoting S1; see [`day15-close.md`](../artifacts/reports/day15-close.md). No additional Day 15 GPU rental is required.
 
 The selected AutoDL boot image does not expose a verifiable OCI digest inside the instance. Record the exact observed boot-runtime fingerprint instead of copying an unrelated registry digest:
 

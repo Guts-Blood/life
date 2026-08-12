@@ -1,7 +1,7 @@
 # Qwen3.5-4B 迁移计划（Day 13+）
 
 决策日期：`2026-08-07`
-状态：`model_selected / standalone_revision_frozen / sequential_day15_acceptance_pending / no_promoted_s1`
+状态：`model_selected / day15_closed_superseded / day16_closed_no_candidate / Base_active / no_promoted_s1`
 活动模型：[`Qwen/Qwen3.5-4B-Base`](https://huggingface.co/Qwen/Qwen3.5-4B-Base)
 
 ## 决策与边界
@@ -21,7 +21,7 @@ Day 12 的十轮 0.6B recovery 是一次完成的、信息量充分的负结果�
 
 本次没有选择 teacher。`teacher_model_id` 和 `teacher_revision` 保持 `null`；Teacher/OPD 仅作为另行批准的 deferred extension，不能静默选择 Qwen3.5-9B、Qwen3-8B 或其他模型。
 
-Day 18–20 后续提前执行了三组 standalone experiments。它们共同冻结并使用 revision `1001bb4d826a52d1f399e183466143f4da7b741b`，提供 Megatron compatibility、Full-SFT regression diagnosis 与 LoRA probe evidence；但它们没有完成顺序课程 Day 15 的全部 M2–M5 acceptance，也没有产生通过 Day 21 promotion 的 S1。Standalone evidence 与顺序课程 gate 必须分栏记录。
+Day 18–20 后续提前执行了三组 standalone experiments。它们共同冻结并使用 revision `1001bb4d826a52d1f399e183466143f4da7b741b`，提供 Megatron compatibility、Full-SFT regression diagnosis 与单卡 H800 LoRA probe evidence。`2026-08-09` 决定接受这些更强实际运行结果作为 Day 15 的 superseding evidence；随后又把 Day 20 三档均失败必要门禁的 LoRA probe 作为 Day 16 的 no-candidate 退出证据。两次关闭都没有产生 S1。完整边界见 [`Day 15 Close`](artifacts/reports/day15-close.md) 与 [`Day 16 Gap Audit`](artifacts/reports/day16-gap-audit.md)。
 
 ## 为什么不能只替换 model ID
 
@@ -52,21 +52,32 @@ Qwen3.5-4B-Base 是原生多模态 checkpoint。官方仓库把它标为 `image-
 
 ## 迁移 Gate
 
-Gate 按顺序 fail closed；前一项未通过，后续训练日自动变为 blocked，而不是临时降低标准。
+Gate 默认按顺序 fail closed。Day 15 是一次显式例外：它以 `closed_superseded_by_day18_20` 关闭，而不是逐项回填 `pass`。该例外只解除 onboarding 重跑，不解除 Day 16/17、S1、DPO 或 GRPO 自己的证据门槛。
+
+### Day 15 Close disposition
+
+- M0/M1 已按原意通过。
+- M2 由 Day 18 冻结 runtime/loader 与 Day 20 单卡 HF LoRA runtime 覆盖。
+- M3 有真实 processor/template、监督 token 复核、response adapter 与 trainable inventory 证据，但原 `10+10` golden audit 未生成。
+- M4 原 7,860 条 manifest v2 和新 selection/confirmation split 未执行；Day 20 使用独立六源 balanced contract，二者不声称等价。
+- M5 的 learnability/save/capacity 由 Day 18/20 覆盖；LoRA exact resume 的 Day 17 状态保持 blocked，runtime 设计降级为顺序课程 Day 20 Optional R，不再作为 S1 硬 gate。
+- M6/M7 不受本关闭影响：当前无 S1，DPO/GRPO 继续 blocked。
 
 ### M0 — Lineage boundary
 
 - 冻结 `qwen3-0.6b-day01-12-v1` 为 immutable history。
 - 新建 `qwen35-4b-day13-plus-v2`，任何 run manifest 必须带 `lineage_id` 和 parent checkpoint。
-- 模型选择已完成；精确 revision 已为 standalone Day 18–20 冻结，但顺序课程 Day 15 acceptance 仍待完成。
+- 模型选择与 exact revision 已冻结；Day 15 已由 superseding evidence 关闭，不再等待一套平行 acceptance run。
 
 ### M1 — Revision 与文件合同
 
 - Standalone Day 18 已从官方仓库冻结完整 40-hex commit `1001bb4d826a52d1f399e183466143f4da7b741b`，并记录 config、safetensors shards/index、tokenizer、processor/preprocessor 和 template 文件的 SHA-256；Day 19/20 继承同一模型身份。
-- Day 15 顺序课程必须复核上述 revision/file manifest，并完成其余 processor/data/eval/training gates；复核通过前不能把 standalone M1 evidence描述成完整 Day 15 acceptance。
+- Day 15 Close 已接受该 registry 为 M1 证据；不再重复下载或 hash。该接受不补齐未生成的 processor/data/eval/training artifacts。
 - 固定 Apache-2.0 许可记录、参数口径和本地 snapshot 路径；禁止滚动 `main/latest`。模型卡顶部明确称本仓为 `pre-trained only`，但 Overview 的 `Training Stage` 字段同时写有 `Pre-training & Post-training`；把这项官方文档矛盾连同 card snapshot 一并记录，不把 `-Base` 仓与 instruct checkpoint 混用。
 
 ### M2 — 独立环境与 loader smoke
+
+关闭处置：`covered_by_day18_and_day20_runtime_evidence`。以下保留为原验收设计；没有另建 Day 15 runtime artifact。
 
 - 保留 Day 01–12 的 Transformers 4.57.3 环境，不原地升级。
 - 新建 Python 3.12 的 Qwen3.5 环境。最低功能地板是已含 Qwen3.5 的 Transformers 5.2；Day 15 按当日官方 best-practice 与 ms-swift commit 冻结精确版本（当前官方实践要求更高版本时，以实测 lock 为准）。
@@ -75,6 +86,8 @@ Gate 按顺序 fail closed；前一项未通过，后续训练日自动变为 bl
 
 ### M3 — Processor、模板与 loss mask
 
+关闭处置：`operationally_covered_not_protocol_equivalent`。真实训练模板、token 复核与 response adapter 已运行；原 `10+10` golden audit 未生成。
+
 - 记录 processor/tokenizer class、special-token IDs、chat-template hash、`enable_thinking`、padding、truncation 和 EOS/stop contract。
 - 对 system/user/assistant、多轮、代码块、tool 标记、超长截断各保留 golden render、input IDs、labels 和逐 token mask。
 - 纯文本 coding 主线固定 `enable_thinking=false`，除非另开单变量实验。
@@ -82,11 +95,15 @@ Gate 按顺序 fail closed；前一项未通过，后续训练日自动变为 bl
 
 ### M4 — 数据与 eval 重建
 
+关闭处置：`not_executed_superseded`。Day 20 使用独立六源数据合同；原 7,860 条 manifest v2 和新 selection/confirmation split 不存在，未来 promotion 必须声明实际合同。
+
 - 用新 processor 重算长度、label tokens、truncation、mixture 和 supervised-token schedule；旧 Day 09/12 token budget 作废。
 - 建立新的 v2 coding-heavy dev/confirmation manifest；冻结 task IDs、prompt/template、decoder、stop、sandbox/scorer、timeout、seed 和 comparison key。
 - 在任何 SFT 候选前，先跑完整 Qwen3.5 Base dev baseline、至少 10 条 deterministic repeatability 和 code sandbox sidecar。
 
 ### M5 — 训练链路与显存验收
+
+关闭处置：`learnability_and_capacity_covered_exact_lora_resume_optional`。Day 18/20 已覆盖真实更新、保存/continuation/export 与 H800 容量；没有 LoRA exact-resume parity。Day 17 在新 selected/resumable candidate 出现前保持 blocked；若未来确有诊断需要，按顺序课程 [`Day 20 Optional R`](day-20-weekend-training-failures/README.md#optional-r--exact-resume-failure-lab) 执行，不再作为 S1 promotion 硬 gate。历史证据分级见 [`Day 17 Gap Audit`](artifacts/reports/day17-gap-audit.md)。
 
 - 顺序固定为：one forward/backward/optimizer step → 2–4 样本 tiny overfit → save/fresh-process resume → BF16 export/reload parity。
 - 记录 finite loss/grad、LoRA coverage、trainable/frozen parameter counts、每卡 `max_memory_allocated`/`max_memory_reserved`、吞吐和完整 step 后余量。
@@ -95,8 +112,10 @@ Gate 按顺序 fail closed；前一项未通过，后续训练日自动变为 bl
 
 ### M6 — Coding SFT candidate 与 anchor 晋级
 
+关闭处置：`day16_closed_no_eligible_candidate`。Day 20 三档 16k-token/103-step LoRA probe 均有不依赖 E2B 的必要门禁失败，main 未启动；packing 固定为 `false`，没有 provisional anchor。下一次 candidate attempt 必须使用新批准的 SFT charter，不能从失败 probe 手工挑选。
+
 - Day 16 从 Qwen3.5 Base 运行受控 LoRA/QLoRA coding SFT；学习率、adapter coverage、token budget 和 checkpoint 节奏重新预注册，不继承 0.6B 数值，并产生预注册 candidate set。
-- Day 17 完成 resume/export 等价性；Day 21 盲化审计候选。只有同时通过 code primary metric、retention guardrails、termination/length、sandbox error rate、resume 与 export gate 的候选，才能登记为正式 `S1`。
+- Day 21 盲化审计候选。只有同时通过 code primary metric、retention guardrails、termination/length、sandbox error rate、checkpoint integrity 与 export gate 的候选，才能登记为正式 `S1`。逐 step exact-resume parity 是 Day 20 Optional R 的补充诊断，不是 promotion 必填项。
 - 若 Day 21 无合格 `S1`，Day 23 DPO 和 Day 25 GRPO 均 blocked；禁止用 Base 或“看起来最好”的不合格 checkpoint 绕过。
 - Standalone Day 19 的 Full-SFT checkpoints 与 Day 20 的三档 LoRA probes 都是诊断产物：前者未成为合格 anchor，后者没有 passing probe且未启动 main。两者均不能写入 S1 slot。
 
@@ -129,12 +148,12 @@ BF16 完整权重约 8.68 GiB，但 optimizer、gradient、activation、logits�
 |---:|---|---|
 | 13 | Qwen3 历史证据 × Qwen3.5 迁移阅读 | 完成 lineage/差异 memo |
 | 14 | Week 2 历史复盘 + v2 readiness contract | M0 清楚；M1–M6 owner/证据/stop 已列明 |
-| 15 | Qwen3.5 onboarding acceptance | M1–M5 全通过，否则 Day 16 blocked |
-| 16 | 受控 coding LoRA SFT + packing parity | 冻结 provisional candidate set，或明确 no-candidate |
-| 17 | selected config exact resume/repro | 连续与恢复 run 的状态/样本/LR 对齐 |
-| 18 | Megatron/TP 最小链 + Qwen3.5 兼容 gate | GDN、loader、checkpoint/export parity 有证据 |
+| 15 | Qwen3.5 onboarding acceptance | `closed_superseded_by_day18_20`；不重跑、不补造原 artifacts、无 S1 |
+| 16 | 受控 coding LoRA SFT + packing parity | `closed_no_eligible_candidate`；packing=false，main 未启动，无 S1 |
+| 17 | selected config exact resume/repro | [`audited / blocked`](artifacts/reports/day17-gap-audit.md)；状态不变，runtime 执行归入 Day 20 Optional R |
+| 18 | Megatron/TP 最小链 + Qwen3.5 兼容 gate | [`closed_pass_c0_c5`](artifacts/reports/day18-close.md)；GDN、loader、checkpoint/export parity 与 closeout audit 有证据，0 追加 GPU |
 | 19 | optimizer/LR 稳定性 + failure injection | 完成单变量诊断矩阵 |
-| 20–22 | 失败阅读、Day 21 最终 S1 promotion、preference 数据 | 正式 S1（或 no-anchor）和 coding pair contract 冻结 |
+| 20–22 | 失败阅读 + Optional R、Day 21 最终 S1 promotion、preference 数据 | 正式 S1（或 no-anchor）和 coding pair contract 冻结；exact resume 可跳过 |
 | 23 | Qwen3.5 DPO smoke | parent=S1；loss/mask/reference/eval gate 通过 |
 | 24 | coding online-RL/reward contract | sandbox 与 trajectory schema 可重算 |
 | 25 | Qwen3.5 coding GRPO smoke | parent=S1；5–10 step + memory/KL/reward gate 通过 |
@@ -146,7 +165,7 @@ BF16 完整权重约 8.68 GiB，但 optimizer、gradient、activation、logits�
 - revision、processor/template 或文件 hash 漂移；
 - loader/import 只能依赖未记录的 remote code 或 silent kernel fallback；
 - LoRA 覆盖到 vision/aligner，或 trainable count 与合同不符；
-- v2 baseline、golden token/mask、tiny-overfit/resume 任一缺失；
+- v2 baseline、golden token/mask、tiny-overfit、checkpoint integrity/save-reload 任一缺失；
 - 完整 optimizer step 后显存余量低于 10%；
 - GRPO rollout 超过显式 8K/12K cap、reward 无方差、policy version stale 或 logprob/mask 错位；
 - 未晋级 S1 却尝试 DPO/GRPO；

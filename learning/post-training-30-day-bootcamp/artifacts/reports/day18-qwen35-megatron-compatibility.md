@@ -1,6 +1,10 @@
 # Day 18 — Qwen3.5 × Megatron Compatibility and Learnability Report
 
-Status: `done_standalone_day18_day15_not_completed`
+Run-time status: `done_standalone_day18_day15_not_completed`
+
+Current status (`2026-08-10`): `closed_pass_c0_c5`
+
+Closeout: [`day18-close.md`](day18-close.md) / [`day18-closeout.json`](day18-closeout.json)
 
 Run ID: `day18-qwen35-20260808T073811Z`
 Gated run window: `2026-08-08 15:38–17:02 CST`
@@ -14,7 +18,7 @@ Day 18 的 C0–C5 全部通过。Fail-closed finalizer 验证了 10 个 require
 
 这次结果支持以下有边界的结论：在固定 revision、固定两条 text-only fixture、BF16、同机 2×H800、Megatron TP/DP、MCore GDN、MTP、distributed checkpoint 和 HF export/reload 的冻结 envelope 内，真实训练入口完成了全部 optimizer updates，能够把同一 fixture overfit 到 100% teacher-forced token accuracy；未发现该路径中的训练代码缺陷。
 
-它不证明所有数据、视觉输入、长序列、多节点、其它并行组合、吞吐 scaling、泛化或全局“无 Bug”。C4 证明 fresh-process full-state continuation，但没有 uninterrupted 5-step 数值对照，因此不声称 exact-resume equivalence。Day 15 仍是 `not_started`；本次 standalone run 不回填 Day 15 M1–M5，也不产生可晋级的 S1 checkpoint。
+它不证明所有数据、视觉输入、长序列、多节点、其它并行组合、吞吐 scaling、泛化或全局“无 Bug”。C4 证明 fresh-process full-state continuation，但没有 uninterrupted 5-step 数值对照，因此不声称 exact-resume equivalence。运行收束当时 Day 15 仍为 `not_started`；本次 standalone run 本身不回填 Day 15 M1–M5，也不产生可晋级的 S1 checkpoint。`2026-08-09` 后续决定已用 Day 18–20 合并证据关闭 Day 15，但没有改变上述原始证据边界。
 
 ## Frozen runtime envelope
 
@@ -82,4 +86,4 @@ The immutable `problems.jsonl` contains 24 lifecycle records for 17 unique issue
 
 ## Decision
 
-`Qwen/Qwen3.5-4B-Base@1001bb4d…` is compatible and learnable inside the exact Day 18 envelope above. The safe downstream use is as runtime/implementation evidence for later Megatron diagnostics; it is not a promoted SFT candidate, a vision-path result, a performance benchmark, an exact-resume proof, or a substitute for the pending Day 15 migration acceptance.
+`Qwen/Qwen3.5-4B-Base@1001bb4d…` is compatible and learnable inside the exact Day 18 envelope above. The safe downstream use is as runtime/implementation evidence for later Megatron diagnostics; it is not a promoted SFT candidate, a vision-path result, a performance benchmark, or an exact-resume proof. Day 15 后来已由合并 superseding evidence 关闭；Day 18 自身现按 [`Day 18 Close`](day18-close.md) 正式 `closed_pass_c0_c5`，追加 GPU 为 0。

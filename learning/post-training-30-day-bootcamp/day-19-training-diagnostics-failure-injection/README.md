@@ -1,8 +1,14 @@
 # Day 19 — Qwen3.5 Optimization Stability 与 Failure Injection
 
 日期：`2026-08-14`
-状态：`not_started`
+状态：`blocked_no_stable_day16_17_baseline`
 强度：4–5 小时
+
+## 当前阻塞
+
+Day 16 已以 [`no eligible candidate`](../artifacts/reports/day16-gap-audit.md) 收束，Day 17 也没有 selected/resumable config 可建立 continuity baseline。Day 20 的 probe 可作为既有 LR 与数据边界诊断证据，但不能冒充本日 Run A 的 stable baseline。
+
+原 failure-injection 计划保留；新 SFT charter 先产生可复用 baseline 后再解锁，不为诊断故障而从一个已失败门禁的 adapter 开始扩大 GPU 实验。
 
 ## 主要目标
 
@@ -43,7 +49,7 @@ A 完成前不启动 B–F。每个故障后恢复正确配置做 2–3 step rer
 ## 资源与租卡
 
 - 使用 Day 16 同一 topology、镜像、processor/template、worker 数与 GDN backend；预计 3–5 小时。
-- Failure runs 独立保存，不能污染 provisional SFT anchor 或 Day 17 正确 resume checkpoint。
+- Failure runs 独立保存，不能污染 provisional SFT anchor 或未来 Day 20 Optional R 使用的正确 resume checkpoint。
 - profiler 只抓短窗口；证据完整后关机。
 
 ## Evidence-first 产物

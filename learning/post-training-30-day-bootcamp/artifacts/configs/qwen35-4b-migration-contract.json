@@ -1,7 +1,10 @@
 {
   "schema_version": "qwen35_4b_migration_contract_v1",
   "decision_date": "2026-08-07",
-  "status": "standalone_revision_frozen_sequential_acceptance_pending",
+  "day15_close_date": "2026-08-09",
+  "day16_close_date": "2026-08-09",
+  "day18_close_date": "2026-08-10",
+  "status": "day15_closed_superseded_day16_closed_no_candidate_day18_closed_pass_base_active_no_promoted_s1",
   "historical_lineage": {
     "lineage_id": "qwen3-0.6b-day01-12-v1",
     "immutable": true,
@@ -20,8 +23,9 @@
     "lineage_id": "qwen35-4b-day13-plus-v2",
     "model_id": "Qwen/Qwen3.5-4B-Base",
     "revision": "1001bb4d826a52d1f399e183466143f4da7b741b",
-    "revision_scope": "frozen_for_day18_day19_day20_standalone_runs",
-    "sequential_day15_acceptance": "pending_m2_through_m5",
+    "revision_scope": "frozen_active_v2_base_for_day18_day19_day20",
+    "sequential_day15_acceptance": "closed_superseded_by_day18_day19_day20",
+    "day16_candidate_status": "closed_no_eligible_candidate_by_day20_evidence",
     "observed_default_revision": {
       "sha": "1001bb4d826a52d1f399e183466143f4da7b741b",
       "observed_at": "2026-08-07",
@@ -127,13 +131,13 @@
       "model_id": "Qwen/Qwen3.5-4B-Base",
       "revision": "1001bb4d826a52d1f399e183466143f4da7b741b",
       "checkpoint_registry": "artifacts/checkpoints/qwen35-4b-base-s0.json",
-      "status": "local_snapshot_hash_verified_gpu_loader_pending"
+      "status": "revision_hash_and_gpu_runtime_verified_base_active"
     },
     "S1": {
       "role": "selected_coding_sft_anchor",
       "parent": "S0",
       "checkpoint": null,
-      "status": "nonexistent_until_day16_candidates_and_day21_promotion_gate_pass"
+      "status": "nonexistent_day16_closed_no_candidate_future_charter_and_promotion_required"
     },
     "S2_dpo": {
       "role": "dpo_branch",
@@ -148,12 +152,196 @@
       "status": "blocked_until_S1"
     }
   },
+  "day15_closeout": {
+    "status": "closed_superseded_by_day18_20",
+    "close_date": "2026-08-09",
+    "report": "artifacts/reports/day15-close.md",
+    "report_sha256": "a0f2180caefaf69b8e296355ad06e8eb9ac0438db6925bee698f8d80545b1f9d",
+    "rerun_required": false,
+    "additional_gpu_runs": 0,
+    "decision_basis": "Later Day 18-20 runs supplied stronger operational model, runtime, training, continuation, export, evaluation-adapter, and single-H800 LoRA evidence than a repeated onboarding smoke would add.",
+    "original_protocol_passed": false,
+    "original_artifacts_produced": false,
+    "unproduced_original_artifacts": [
+      "artifacts/configs/day15-qwen35-transition.json",
+      "artifacts/data/day15-qwen35-processor-template-contract.json",
+      "artifacts/data/day15-qwen35-sft-manifest.json",
+      "artifacts/eval/day15-qwen35-base-dev-predictions.jsonl",
+      "artifacts/logs/day15-qwen35-tiny-overfit/",
+      "artifacts/reports/day15-qwen35-onboarding.md"
+    ],
+    "carried_gaps": {
+      "lora_exact_resume_parity": "day17_status_blocked_runtime_optional_sequential_day20_not_promotion_gate",
+      "packing_correctness_and_throughput_parity": "not_adopted_day16_closed_packing_false_future_charter_if_needed",
+      "actual_selection_and_confirmation_contract": "new_approved_sft_charter_then_promotion",
+      "promoted_S1": "nonexistent",
+      "dpo_and_grpo": "blocked_until_S1"
+    },
+    "claims": {
+      "base_remains_active": true,
+      "promoted_S1_exists": false,
+      "day15_original_m2_through_m5_artifacts_may_be_claimed_complete": false
+    }
+  },
+  "day16_closeout": {
+    "status": "closed_no_eligible_candidate_by_day20_evidence",
+    "close_date": "2026-08-09",
+    "report": "artifacts/reports/day16-gap-audit.md",
+    "report_sha256": "a62ff91c2d4292b3f5f508a7764bbd23291daf080a92307cf9fa00ebe194ccb8",
+    "trajectory_report": "artifacts/reports/day16-qwen35-sft-trajectory.md",
+    "trajectory_report_sha256": "a8ff17fc33e9c6dd882ba9c0b16b14b2d53397cc546d40f2fe62f7799c659628",
+    "packing_report": "artifacts/reports/day16-packing-parity.md",
+    "packing_report_sha256": "4eb9070357e1cd0d64822f4f1bf9bb978b8e00608a259c3f796c5e659c17200b",
+    "anchor_decision": "artifacts/reports/day16-qwen35-provisional-anchor.json",
+    "anchor_decision_sha256": "6a689f490aa07c7894931568a6b9b3736f5bfa63e3fa9068195ab4439ab404b0",
+    "source_run": "day20-qwen35-lora-20260809T042005Z",
+    "additional_gpu_runs": 0,
+    "packing": false,
+    "packing_parity": "not_run",
+    "main_training_started": false,
+    "provisional_anchor": null,
+    "promoted_S1": null,
+    "probe_decision": {
+      "probe_1e_5": "ineligible_math_regression_gt_1",
+      "probe_3e_5": "ineligible_math_regression_gt_1_and_code_static_eligible_below_7_of_8",
+      "probe_1e_4": "ineligible_code_static_eligible_below_7_of_8"
+    },
+    "e2b_results": null,
+    "formal_probe_selection_marker": null,
+    "decision_basis": "Every LoRA probe failed at least one preregistered necessary gate independent of missing E2B correctness, so main training remained fail closed.",
+    "downstream": {
+      "day17": "blocked_no_selected_resumable_candidate",
+      "day21": "blocked_no_candidate",
+      "dpo_and_grpo": "blocked_until_S1"
+    }
+  },
+  "day17_readiness": {
+    "status": "blocked_no_selected_resumable_candidate",
+    "audit_date": "2026-08-10",
+    "exact_resume_proven": false,
+    "close_as_pass": false,
+    "status_change_requested": false,
+    "execution_disposition": "runtime_design_available_as_optional_sequential_day20_lab",
+    "blocks_s1_promotion": false,
+    "additional_gpu_runs": 0,
+    "gap_audit": "artifacts/reports/day17-gap-audit.md",
+    "gap_audit_sha256": "de79d979b16fdc7d80482ce05998e078deca04b73caaa56897b828f195628897",
+    "equivalence_status": "artifacts/reports/day17-qwen35-resume-equivalence.md",
+    "equivalence_status_sha256": "5835b03cf3ce8aa00e206593fc65b308e9232099efd52cf942354a5f6c4db699",
+    "readiness_contract": "artifacts/configs/day17-qwen35-resume-readiness.json",
+    "readiness_contract_sha256": "694390efe01af73d3247a9ce11c2b58919ef7c1fe4206404126044d9231cc63f",
+    "original_comparator": {
+      "run_a": "steps_0_to_40_uninterrupted",
+      "run_b": "steps_0_to_20_save_exit_fresh_process_resume_to_40",
+      "comparison_window": "steps_21_to_40"
+    },
+    "evidence_boundary": {
+      "day11": "exact_resume_method_evidence_old_qwen3_0_6b_full_sft_lineage_only",
+      "day18": "qwen35_megatron_fresh_continuation_without_uninterrupted_comparator",
+      "day20": "qwen35_hf_lora_probes_all_non_resumable_main_not_started",
+      "target_qwen35_hf_lora_exact_resume": "not_run"
+    },
+    "entry_gates": {
+      "approved_new_sft_charter": false,
+      "selected_candidate": false,
+      "complete_resumable_checkpoint": false,
+      "frozen_run_a_b_contract": false
+    },
+    "unproduced_runtime_artifacts": [
+      "artifacts/scripts/checkpoint_audit_qwen35.py",
+      "run_a_and_run_b_configs_and_timelines",
+      "adapter_optimizer_scheduler_tensor_diffs",
+      "failure_injection_runtime_evidence",
+      "selected_candidate_export_parity"
+    ],
+    "resource_policy": "zero_gpu_now_then_same_single_gpu_topology_as_future_candidate_no_extra_tp_for_continuity"
+  },
+  "day18_closeout": {
+    "status": "closed_pass_c0_c5",
+    "close_date": "2026-08-10",
+    "run_id": "day18-qwen35-20260808T073811Z",
+    "rerun_required": false,
+    "additional_gpu_runs": 0,
+    "compatibility_report": "artifacts/reports/day18-qwen35-megatron-compatibility.md",
+    "compatibility_report_sha256": "2eac2f22ece547c42428c89f63c1a86d62fedb0e3445ad695d74cbd0c84f73b5",
+    "close_report": "artifacts/reports/day18-close.md",
+    "close_report_sha256": "f076552b34c659cf63ca9cb8325a60a3377d24f9072a60eaeb865cfdda359957",
+    "machine_closeout": "artifacts/reports/day18-closeout.json",
+    "machine_closeout_sha256": "561067011b20650d6575e9509616edd3799d0a94d9b32c2149c2b651cbdc93ba",
+    "preregistered_contract": "artifacts/configs/day18-qwen35-megatron/run-contract.json",
+    "preregistered_contract_sha256": "59d5bfe7a5e18924350d95b04b706810775247fa54e3329d95b8c8b84af2d9a9",
+    "preregistered_contract_mutated_for_close": false,
+    "evidence_bundle": {
+      "workspace_relative_path": "tmp/day18-qwen35-results/day18-qwen35-20260808T073811Z-evidence.tar",
+      "sha256": "2afc7ad1b39bdde3aad40832ceb78ab1e01116ee4f7bbc19ccf85beb4570c9c0",
+      "pass_manifest_sha256": "0a15a4db004319741ab1d3da5a11c02e515cd75d54e98e92c6dded8fcc53ccdd",
+      "required_gates_passed": 10,
+      "required_gate_count": 10,
+      "hashed_inventory_entries_verified": 65,
+      "open_problem_count": 0,
+      "portable_sidecar_verified": true
+    },
+    "closeout_tests": {
+      "command": "python3 -m unittest -v test_day18_preparation.py",
+      "passed": 16,
+      "failed": 0
+    },
+    "large_payload_retention": {
+      "local_archive": false,
+      "remote_canonical_run": "/root/autodl-tmp/runs/day18-qwen35-20260808T073811Z/",
+      "remote_access_reverified_at_close": false,
+      "status": "unknown_remote_retention_evidence_bundle_retained",
+      "blocks_close": false
+    },
+    "claim_boundary": {
+      "frozen_megatron_compatibility_and_same_fixture_learnability": true,
+      "vision_long_sequence_multi_node_scaling_generalization": false,
+      "exact_resume_equivalence": false,
+      "promoted_s1": false
+    },
+    "downstream": {
+      "day15": "already_closed_superseded_by_combined_day18_20_evidence",
+      "day17": "status_unchanged_exact_resume_optional_sequential_day20",
+      "day21": "blocked_until_new_sft_candidate",
+      "dpo_and_grpo": "blocked_until_promoted_s1"
+    }
+  },
+  "sequential_day20_optional_resume": {
+    "status": "optional_default_skip",
+    "directory": "day-20-weekend-training-failures",
+    "core_requires_gpu": false,
+    "exact_resume_required_for_s1_promotion": false,
+    "legal_outcomes": [
+      "skipped_not_needed",
+      "blocked_entry_gate",
+      "run_complete"
+    ],
+    "entry_gate": {
+      "approved_new_sft_charter": false,
+      "selected_candidate": false,
+      "complete_resumable_checkpoint": false,
+      "frozen_run_a_b_contract": false,
+      "diagnostic_need_recorded": false,
+      "separate_gpu_and_storage_budget_approved": false
+    },
+    "if_run": {
+      "design_source": "artifacts/configs/day17-qwen35-resume-readiness.json",
+      "topology": "same_single_gpu_topology_as_selected_candidate",
+      "extra_tp_or_multi_gpu_required": false,
+      "planned_wall_time_hours": "3-5",
+      "resumed_path_is_new_candidate": false
+    }
+  },
   "standalone_evidence": {
-    "advances_sequential_day15_to_day21_gates": false,
+    "day15_close_effect": "accepted_as_superseding_evidence_for_day15_close_only",
+    "day16_close_effect": "day20_accepted_as_no_candidate_close_evidence",
+    "advances_day17_day21_or_s1": false,
     "day18": {
-      "status": "passed",
+      "status": "closed_pass_c0_c5",
       "scope": "megatron_compatibility_and_two_row_learnability",
-      "report": "artifacts/reports/day18-qwen35-megatron-compatibility.md"
+      "report": "artifacts/reports/day18-qwen35-megatron-compatibility.md",
+      "closeout": "artifacts/reports/day18-closeout.json",
+      "additional_gpu_runs": 0
     },
     "day19": {
       "status": "diagnostic_complete_no_promoted_s1",
@@ -169,11 +357,11 @@
   "migration_gates": {
     "M0_lineage_boundary": "passed",
     "M1_revision_and_file_hashes": "passed",
-    "M2_environment_loader_and_backend_smoke": "pending",
-    "M3_processor_template_tokens_and_mask": "pending",
-    "M4_retokenization_new_eval_and_base_baseline": "pending",
-    "M5_one_step_tiny_overfit_resume_export_and_memory": "pending",
-    "M6_coding_sft_candidates_and_selected_anchor": "pending_day16_candidates_day21_promotion",
+    "M2_environment_loader_and_backend_smoke": "closed_covered_by_day18_and_day20_runtime_evidence",
+    "M3_processor_template_tokens_and_mask": "closed_operationally_covered_original_10_plus_10_audit_not_produced",
+    "M4_retokenization_new_eval_and_base_baseline": "closed_superseded_original_manifest_and_split_not_produced",
+    "M5_one_step_tiny_overfit_resume_export_and_memory": "closed_learnability_save_reload_and_capacity_covered_exact_lora_resume_optional_day20",
+    "M6_coding_sft_candidates_and_selected_anchor": "day16_closed_no_eligible_candidate_future_charter_required_before_promotion",
     "M7_dpo_grpo_ancestry_and_runtime": "blocked_until_M6"
   },
   "resource_planning": {
@@ -198,6 +386,9 @@
     "base_may_be_used_as_dpo_or_grpo_parent": false,
     "dpo_and_grpo_must_descend_from_promoted_S1": true,
     "dev_selection_requires_preregistered_candidate_set": true,
+    "checkpoint_integrity_and_export_required": true,
+    "exact_resume_parity_required": false,
+    "exact_resume_optional_owner": "sequential_day20_optional_resume",
     "confirmation_split_single_use": true,
     "no_eligible_S1_action": "block_day23_and_day25_training"
   }

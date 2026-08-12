@@ -1,0 +1,107 @@
+{
+  "schema_version": "day17_qwen35_resume_readiness_v1",
+  "audit_date": "2026-08-10",
+  "status": "blocked_no_selected_resumable_candidate",
+  "exact_resume_proven": false,
+  "additional_gpu_runs": 0,
+  "decision": {
+    "close_as_pass": false,
+    "start_runtime_experiment_now": false,
+    "next_action": "approve_new_sft_charter_and_produce_selected_resumable_lora_candidate"
+  },
+  "original_objective": "Compare an uninterrupted step-0-to-40 Qwen3.5 LoRA trajectory with step-0-to-20 save, process exit, fresh-process resume, and step-20-to-40 continuation under one frozen contract.",
+  "entry_gates": {
+    "approved_sft_charter": false,
+    "selected_qwen35_lora_candidate": false,
+    "complete_resumable_checkpoint": false,
+    "frozen_initialization_and_data_order": false,
+    "frozen_runtime_and_topology": false,
+    "checkpoint_and_evidence_storage_budget": false
+  },
+  "required_checkpoint_state": [
+    "base_model_id_revision_and_file_hashes",
+    "adapter_config_and_tensors",
+    "trainable_parameter_inventory",
+    "optimizer_state",
+    "scheduler_state",
+    "scaler_state_if_used",
+    "python_rng_state",
+    "numpy_rng_state",
+    "torch_cpu_rng_state",
+    "torch_cuda_rng_state",
+    "sampler_epoch_and_dataset_cursor",
+    "worker_seed_state",
+    "global_step_and_gradient_accumulation_boundary",
+    "cumulative_supervised_tokens",
+    "processor_tokenizer_and_template_hashes",
+    "freeze_policy",
+    "runtime_kernel_and_hardware_identity"
+  ],
+  "planned_runs": {
+    "run_a": "fresh initialization, uninterrupted steps 0 through 40",
+    "run_b1": "same initialization, steps 0 through 20, save full resumable checkpoint, then exit process",
+    "run_b2": "new process, resume from run_b1, steps 20 through 40",
+    "failure_probe": "copy checkpoint, omit scheduler or sampler cursor, and run 3 to 5 steps without modifying the correct checkpoint"
+  },
+  "step_comparison_fields": [
+    "sample_ids",
+    "render_hash",
+    "effective_label_tokens",
+    "learning_rate",
+    "loss",
+    "gradient_norm",
+    "adapter_checksum",
+    "optimizer_checksum",
+    "scheduler_checksum",
+    "sampler_cursor",
+    "cumulative_supervised_tokens"
+  ],
+  "current_evidence": {
+    "day11": {
+      "scope": "qwen3_0_6b_full_sft",
+      "fresh_process_resume": true,
+      "uninterrupted_comparator": true,
+      "exact_probe_status": "pass",
+      "transfer_to_target_lineage": "method_evidence_only"
+    },
+    "day18": {
+      "scope": "qwen35_full_parameter_megatron_tp2",
+      "fresh_process_resume": true,
+      "uninterrupted_comparator": false,
+      "exact_probe_status": "not_claimed",
+      "transfer_to_target_lineage": "continuation_and_state_ownership_evidence_only"
+    },
+    "day20": {
+      "scope": "qwen35_hf_lora_probes",
+      "probe_checkpoint_count": 3,
+      "probe_global_step_each": 103,
+      "probe_supervised_tokens_each": 16000,
+      "all_probe_checkpoints_resumable": false,
+      "main_started": false,
+      "selected_candidate": null,
+      "runtime_resume_executed": false,
+      "static_resume_tests": {
+        "status": "pass",
+        "count": 13,
+        "verified_on": "2026-08-10"
+      }
+    }
+  },
+  "artifacts": {
+    "gap_audit": "artifacts/reports/day17-gap-audit.md",
+    "equivalence_status": "artifacts/reports/day17-qwen35-resume-equivalence.md",
+    "runtime_auditor": null,
+    "run_a_timeline": null,
+    "run_b_timeline": null,
+    "tensor_diff": null,
+    "failure_injection": null,
+    "export_parity": null
+  },
+  "resource_policy": {
+    "gpu_now": "none",
+    "future_topology": "same_single_gpu_topology_as_the_new_selected_candidate",
+    "preferred_if_candidate_uses_it": "1x_H800_80GB_no_TP",
+    "reason": "Do not introduce multi-GPU scheduling or communication nondeterminism into an exactness comparison unless the candidate itself requires that topology.",
+    "planned_wall_time_hours": "3-5"
+  }
+}
