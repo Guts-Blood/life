@@ -1,0 +1,41 @@
+{
+  "schema_name": "rsi.probe_eval_verification",
+  "schema_version": 1,
+  "version_id": "rsi-v0002",
+  "run_id": "run-001-probe-primary",
+  "attempt_id": "attempt-001",
+  "retry_ordinal": 1,
+  "candidate": "base-probe",
+  "scope": "probe32",
+  "status": "pass",
+  "verifiers": {
+    "raw_existing_pair": "pass",
+    "normalized_existing_pair": "pass"
+  },
+  "metrics": {
+    "general": 1,
+    "math": 7,
+    "finance": 4,
+    "code_sandbox_execution_eligible": 7,
+    "format_compliant": 23,
+    "infrastructure_failures": 0
+  },
+  "comparison": {
+    "normalized_comparison_key": "e07b6fe42581ef50b487375271e0ec61aab92337f880570b72f9b29316b82215",
+    "evaluation_run_sha256": "d742d207f0559c29f33944ca4a65ba8e9f2af0ad004bad591fe97299c1a9974f"
+  },
+  "artifacts": [
+    {"role": "raw_predictions", "path": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/eval/base-probe-probe32-raw-predictions-v2.jsonl", "file_sha256": "451d44f52e72d9702598cd9afafa5bf0ff88816c14338d0163133df768ed2414", "content_sha256": "59ad52a0dbfdaa265fa3f7479c4a6a7b4ab6d9e52a2405ed1f75cddd205c522e"},
+    {"role": "raw_summary", "path": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/eval/base-probe-probe32-raw-summary-v2.json", "file_sha256": "4bb19e3d7cc618c4ad0a3e6b1213e45285c4ed20b927624547ebed2594e8bc6a", "content_sha256": "35992378e04970101c1ab907d5442c04af8717b5d9994a2df2bf7fd85608bb7d"},
+    {"role": "normalized_predictions", "path": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/eval/base-probe.qwen35-v3.predictions.jsonl", "file_sha256": "f868d930d789d149f3c2a5ef55ee25f088fb244bbadb5e6ac2b795b4d358398b", "content_sha256": "c70ce0acf77cf2b6606638343559628447b81e837b05818e00db66ab20204f75"},
+    {"role": "normalized_summary", "path": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/eval/base-probe.qwen35-v3.json", "file_sha256": "10bbcf501f8a3f6288ada50122ee1927c2c498763f819a46b4272df43970d4d7", "content_sha256": "a00d2988264c7517341314e4772854810c17a17b5223aaba3206c6f037d2e8f4"}
+  ],
+  "cost": {
+    "gpu_count": 1,
+    "gpu_hours": 0.029672311,
+    "eval_accesses": 1,
+    "generation_elapsed_seconds": 77.83464815933257,
+    "conservative_wall_seconds": 106.820320597,
+    "measurement_method": "retry_launch_to_raw_summary_publish_wall_seconds_x_gpu_count_div_3600; conservatively includes preflight/model-load overhead"
+  }
+}

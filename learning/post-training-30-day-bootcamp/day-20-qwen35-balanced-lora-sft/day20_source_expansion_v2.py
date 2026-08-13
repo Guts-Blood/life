@@ -51,6 +51,10 @@ class Day20SourceExpansionV2Error(ValueError):
     """A pinned input, normalized row, or output identity failed closed."""
 
 
+class BaseCodeContractRejected(Day20SourceExpansionV2Error):
+    """A legacy Code row is well formed but cannot satisfy the v2 target contract."""
+
+
 def file_sha256(path: Path) -> str:
     if not path.is_file():
         raise Day20SourceExpansionV2Error(f"required file is missing: {path}")
@@ -353,7 +357,7 @@ def _upgrade_base_row(row: Mapping[str, Any]) -> dict[str, Any]:
                 messages[-1]["content"], row.get("code_prefix")
             )
         except Day20V2ContractError as error:
-            raise Day20SourceExpansionV2Error(
+            raise BaseCodeContractRejected(
                 f"base Code row {row.get('sample_id')} violates v2: {error}"
             ) from error
         messages[-1]["content"] = continuation.canonical
@@ -521,7 +525,14 @@ def build_expanded_sources(
         for row in _load_jsonl(source_path):
             if row.get("skill") != skill:
                 raise Day20SourceExpansionV2Error(f"base source skill drifted: {source_path}")
-            admit(_upgrade_base_row(row), source_label=f"base_{skill}")
+            try:
+                upgraded = _upgrade_base_row(row)
+            except BaseCodeContractRejected:
+                if skill != "code":
+                    raise
+                rejections["base_code:v2_contract_rejected"] += 1
+                continue
+            admit(upgraded, source_label=f"base_{skill}")
 
     for row in day09_rows:
         skill = row.get("skill")

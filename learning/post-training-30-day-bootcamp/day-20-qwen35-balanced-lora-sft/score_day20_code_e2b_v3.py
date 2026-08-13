@@ -9,6 +9,7 @@ import importlib
 import importlib.util
 import json
 import os
+import re
 import tempfile
 from collections import Counter
 from pathlib import Path
@@ -28,6 +29,7 @@ SCHEMA_VERSION = 2
 ROW_DOMAIN = "day20.v2.code_e2b_result"
 SUMMARY_DOMAIN = "day20.v2.code_e2b_summary"
 WRAPPER_PATH = Path(__file__).resolve()
+SHA256_RE = re.compile(r"[0-9a-f]{64}")
 
 
 class Day20CodeE2BV3Error(ValueError):
@@ -82,6 +84,17 @@ def _self_hash(value: Mapping[str, Any], field: str) -> str:
     if not isinstance(expected, str) or expected != actual:
         raise Day20CodeE2BV3Error(f"{field} mismatch")
     return expected
+
+
+def _frozen_semantic_sha256(value: Any, label: str) -> tuple[str, str]:
+    """Return the frozen prefixed hash and its raw comparison-key form."""
+
+    if not isinstance(value, str) or not value.startswith("sha256:"):
+        raise Day20CodeE2BV3Error(f"frozen {label} hash is malformed")
+    raw = value.removeprefix("sha256:")
+    if SHA256_RE.fullmatch(raw) is None:
+        raise Day20CodeE2BV3Error(f"frozen {label} hash is malformed")
+    return value, raw
 
 
 def _load_module(path: Path, name: str) -> ModuleType:
@@ -319,10 +332,10 @@ def prepare_scoring(
     config = load_json(sandbox_config_path)
     try:
         frozen.verify_config(config)
-        sandbox_contract_hash = frozen.semantic_hash(config)
-        source_rows, source_file_hash = frozen.load_humaneval_source(
-            humaneval_source_path, config
+        frozen_contract_hash, sandbox_contract_hash = _frozen_semantic_sha256(
+            frozen.semantic_hash(config), "sandbox contract"
         )
+        source_rows, source_file_hash = frozen.load_humaneval_source(config)
     except Exception as error:
         raise Day20CodeE2BV3Error(
             f"frozen E2B contract verification failed: {type(error).__name__}"
@@ -380,7 +393,7 @@ def prepare_scoring(
     )
     execution_context = {
         "config": config,
-        "sandbox_contract_hash": sandbox_contract_hash,
+        "sandbox_contract_hash": frozen_contract_hash,
         "sandbox_contract_file_sha256": file_sha256(sandbox_config_path),
         "evaluator_source_sha256": file_sha256(frozen_scorer_path),
         "manifest_hash": summary["comparison_context"][

@@ -1,0 +1,27 @@
+{
+  "schema_name": "rsi.infrastructure_failure_evidence",
+  "schema_version": 1,
+  "version_id": "rsi-v0002",
+  "run_id": "run-004-probe-primary-remediated",
+  "attempt_id": "attempt-001",
+  "classification": "infrastructure_integration",
+  "failure_code": "stale_incomplete_training_binding_blocks_new_attempt",
+  "stage": "attempt_recovery_binding_validation",
+  "model_failure": false,
+  "swift_started": false,
+  "model_loaded_on_gpu": false,
+  "optimizer_steps": 0,
+  "new_eval_accesses": 0,
+  "new_gpu_hours": 0.0,
+  "base_existing_pairs_verified": true,
+  "base_artifacts_modified": false,
+  "training_internal_attempt_created": false,
+  "old_binding_file_sha256": "16223176aee46f097c2288bbf532df357e2307dba3f2d54dbd37b39e1d0e9b04",
+  "old_binding_plugin_sha256": "08b517281f9752e4bd7a507d0b3366a4c542edf8e56a2f8bcd04a0302ed0f32b",
+  "current_plugin_sha256": "1c26257aad3095f77e4b3fa9ce1b881272ea3bdfe6acfaafd8126ea13a35549b",
+  "log": {
+    "path": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/logs/rsi-v0002-run-004-probe-funnel-attempt-001.log",
+    "bytes": 32708,
+    "file_sha256": "48a5d63147540dab1c7817c6ae68d1ae486558b740483b443dc03b725f70731e"
+  }
+}

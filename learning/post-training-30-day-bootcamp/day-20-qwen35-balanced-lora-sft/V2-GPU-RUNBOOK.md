@@ -61,9 +61,9 @@ The defaults expect:
 - clean ms-swift checkout at commit
   `565a1ad586a21d24b23931c52d2c62b49c39bee8`
 - `ms-swift==4.5.0.dev0`, `transformers==5.12.1`, `peft==0.19.1`, and
-  `torch==2.10.0+cu126`
-- GPU 0 matching `H800`, BF16 support, and at least 80 GiB free under
-  `/root/autodl-tmp`
+  `torch==2.10.0+cu128`
+- GPU 0 matching `RTX PRO 6000 Blackwell Server Edition`, BF16 support, and
+  at least 80 GiB free under `/root/autodl-tmp`
 - E2B Python `/root/autodl-tmp/envs/day12-e2b/bin/python` with
   `e2b==2.37.0`
 - four pre-existing normalized source pools under

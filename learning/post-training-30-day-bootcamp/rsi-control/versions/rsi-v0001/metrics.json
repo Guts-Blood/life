@@ -1,0 +1,48 @@
+{
+  "complete_evidence": true,
+  "confirmed_qualified": false,
+  "decision": "stop_no_passing_probe_create_rsi_v0002",
+  "observed": {
+    "assumption_outcomes": {
+      "A1": "falsified: maximum Code eligibility was 3/8 at t6000 and 0/8 thereafter",
+      "A2": "falsified: all four checkpoints were gross failures with one shared indentation signature",
+      "A3": "supported: E2B live preflight preceded training and all sandbox infrastructure failures were zero"
+    },
+    "confirmation": null,
+    "eval_accesses": 6,
+    "gpu_hours": 0.251139846,
+    "primary": null,
+    "probe": {
+      "base": {"total": 15, "general": 1, "math": 7, "finance": 4, "code": 3, "code_sandbox_execution_eligible": 7},
+      "t6000": {"total": 15, "general": 5, "math": 5, "finance": 4, "code": 1, "code_sandbox_execution_eligible": 3, "classification": "gross_fail"},
+      "t12000": {"total": 18, "general": 5, "math": 7, "finance": 6, "code": 0, "code_sandbox_execution_eligible": 0, "classification": "gross_fail"},
+      "t18000": {"total": 18, "general": 5, "math": 7, "finance": 6, "code": 0, "code_sandbox_execution_eligible": 0, "classification": "gross_fail"},
+      "t24000": {"total": 18, "general": 5, "math": 7, "finance": 6, "code": 0, "code_sandbox_execution_eligible": 0, "classification": "gross_fail"},
+      "selection_status": "stop_no_passing_probe",
+      "selection_sha256": "5fdd36eb38271b458d78612b637ee26ca3e7168b84777df0178c46b4f24da519"
+    },
+    "root_cause": {
+      "layer": "training_template_label_construction",
+      "confidence": "causally_confirmed",
+      "data_targets_with_exact_four_space_prefix": 105,
+      "live_labels_with_exact_four_space_prefix": 0,
+      "diagnosis_sha256": "c816ff51eca41f119493288c96e7b20c1b8513988ed9e1df4db7e4ec555da468"
+    },
+    "total_gate_deficit": null,
+    "worst_gate_margin": null
+  },
+  "predicted_outcome": {
+    "expected_assumptions_tested": [
+      "A1",
+      "A2",
+      "A3"
+    ],
+    "expected_bottleneck": "code_contract_or_shared_transfer",
+    "qualification_probability": null,
+    "qualification_probability_note": "Not precommitted because this baseline reset predates the RSI controller."
+  },
+  "schema_name": "rsi.version_metrics",
+  "schema_version": 1,
+  "status": "complete_not_qualified",
+  "version_id": "rsi-v0001"
+}

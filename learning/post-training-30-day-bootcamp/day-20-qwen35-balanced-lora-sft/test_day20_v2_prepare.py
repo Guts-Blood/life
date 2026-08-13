@@ -332,6 +332,33 @@ class Day20PrepareV2Tests(unittest.TestCase):
         ):
             prepare.select_nested_datasets(rows)
 
+    def test_jsonl_reader_preserves_unicode_line_separator_inside_text(self) -> None:
+        path = self.sources["general"]
+        physical_rows = [
+            json.loads(line) for line in path.read_text(encoding="utf-8").split("\n")
+            if line
+        ]
+        physical_rows[0]["messages"][0]["content"] += "\u2028not a JSONL boundary"
+        physical_rows[0]["qwen35_tokenization"]["messages_sha256"] = object_sha256(
+            physical_rows[0]["messages"]
+        )
+        path.write_text(
+            "".join(
+                json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n"
+                for row in physical_rows
+            ),
+            encoding="utf-8",
+        )
+
+        loaded = prepare.load_normalized_sources(self.sources)
+
+        self.assertTrue(
+            any(
+                "\u2028not a JSONL boundary" in row["messages"][0]["content"]
+                for row in loaded
+            )
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

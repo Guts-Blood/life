@@ -116,6 +116,22 @@ def load_jsonl(path: Path) -> list[dict[str, Any]]:
     return rows
 
 
+def _json_native(value: Any, label: str) -> Any:
+    """Freeze evidence in the exact representation that JSONL will retain."""
+
+    try:
+        return json.loads(
+            json.dumps(
+                value,
+                ensure_ascii=False,
+                sort_keys=True,
+                allow_nan=False,
+            )
+        )
+    except (TypeError, ValueError, json.JSONDecodeError) as error:
+        raise Day20EvaluationV2Error(f"{label} is not strict JSON data") from error
+
+
 def _self_hash(value: Mapping[str, Any], field: str) -> str:
     expected = value.get(field)
     actual = object_sha256({key: item for key, item in value.items() if key != field})
@@ -1044,11 +1060,17 @@ def build_prediction_row(
         raise Day20EvaluationV2Error("raw prompt/reference must be text")
     raw_output = generated_only_text
     try:
-        scorer_result = scorer.score_prediction(skill, raw_output, reference)
+        raw_scorer_result = scorer.score_prediction(skill, raw_output, reference)
     except Exception as error:
         raise Day20EvaluationV2Error(
             f"frozen scorer failed: {record.get('sample_id')}"
         ) from error
+    if not isinstance(raw_scorer_result, dict):
+        raise Day20EvaluationV2Error("frozen scorer result is not an object")
+    # The frozen TAT-QA scorer intentionally returns tuples for canonical answer
+    # sets.  JSON encodes those tuples as arrays; normalizing before the row hash
+    # keeps in-memory verification identical to the durable JSONL evidence.
+    scorer_result = _json_native(raw_scorer_result, "frozen scorer result")
     if not isinstance(scorer_result, dict):
         raise Day20EvaluationV2Error("frozen scorer result is not an object")
     code_contract = (

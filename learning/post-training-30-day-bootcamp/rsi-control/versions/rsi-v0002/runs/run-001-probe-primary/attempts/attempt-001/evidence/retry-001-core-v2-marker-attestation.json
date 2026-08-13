@@ -1,0 +1,31 @@
+{
+  "schema_name": "rsi.operational_remediation_evidence",
+  "schema_version": 1,
+  "version_id": "rsi-v0002",
+  "run_id": "run-001-probe-primary",
+  "attempt_id": "attempt-001",
+  "retry_ordinal": 1,
+  "status": "pass",
+  "training_semantics_changed": false,
+  "run_contract_sha256": "c1298e655bb4e9157c8fafcd6798ffb0c2b80502dc98800fbd648eba08b826f5",
+  "marker": {
+    "path": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/.day20-v2-run-root",
+    "content": "day20-qwen35-candidate-factory-v2",
+    "bytes": 34,
+    "file_sha256": "601458f8f5a9f08ca6436b1714405808f340109b49480d6b4763256adcfe5853",
+    "is_symlink": false
+  },
+  "independent_v3_marker": {
+    "path": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/.day20-v3-run-root",
+    "content": "day20-qwen35-target-encoding-v3",
+    "file_sha256": "89847b0e7053ebfc448e61f14dac046fc3e4279a0d4e0854ff77ab6f6b6f7a58"
+  },
+  "frozen_evaluator_verification": {
+    "status": "pass",
+    "evaluator_file_sha256": "4da1e7bed95a628e6914711842001b491b25e821ba6711c7bafac8c08e837963",
+    "core_manifest_content_sha256": "dc90dee5ae68463e9ceed0c41c662eb56b0dfda81b9ef78d3547f4830a428b0d",
+    "manifest_status": "prepared_stage_a_not_started"
+  },
+  "gpu_hours": 0.0,
+  "eval_accesses": 0
+}

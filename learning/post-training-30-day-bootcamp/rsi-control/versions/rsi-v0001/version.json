@@ -1,0 +1,70 @@
+{
+  "schema_name": "rsi.version",
+  "schema_version": 1,
+  "version_id": "rsi-v0001",
+  "goal_id": "goal-0001",
+  "title": "Day20-v2 SFT baseline reset",
+  "status": "complete_not_qualified",
+  "kind": "baseline_reset",
+  "parent": "legacy",
+  "context": [
+    "Legacy Day20 has no selection-ready evidence because Code E2B and full112 are missing.",
+    "Code target indentation drift is the strongest current model/data failure signal.",
+    "The old run discovered its missing E2B runtime only after GPU training.",
+    "The selected GPU host is frozen before execution as RTX PRO 6000 Blackwell with torch 2.10.0+cu128.",
+    "Retry 1 changes only the raw-evidence JSON representation boundary (frozen TAT-QA tuple to durable JSON array); data, seed, LR, checkpoint targets, eval cases, frozen scorer, promotion gates, and model semantics are unchanged.",
+    "Retry 2 corrects only the Day20 wrapper call to the frozen single-argument HumanEval loader and normalizes its prefixed semantic hash for v3 identity; the frozen scorer/config/source bytes and all experiment semantics remain unchanged."
+    ,"The complete Stage-A trajectory falsified A1/A2: all four checkpoints were gross failures, while A3 was supported by a pre-training live E2B attestation and zero sandbox infrastructure failures."
+    ,"Root cause is causally confirmed at training-template label construction: 105/105 stored Code targets begin with four spaces, but 0/105 live nonmasked labels retain them."
+  ],
+  "intervention": {
+    "primary_lever": null,
+    "changed_levers": [
+      "model.target.representation",
+      "model.data.coverage",
+      "model.data.mixture",
+      "model.data.curriculum",
+      "model.optimization.token_budget",
+      "runtime.environment"
+    ],
+    "causal_attribution": false
+  },
+  "assumptions": [
+    {
+      "id": "A1",
+      "statement": "Strict function-body targets remove Code boundary drift.",
+      "prediction": "At least one Probe checkpoint has Code eligibility >=7/8.",
+      "falsifier": "All verified Probe checkpoints remain below 7/8."
+    },
+    {
+      "id": "A2",
+      "statement": "Balanced expanded data creates a feasible four-domain checkpoint window.",
+      "prediction": "A Probe strict pass exists or total gate deficit improves materially.",
+      "falsifier": "All complete probes are gross failures with the same signature."
+    },
+    {
+      "id": "A3",
+      "statement": "Pre-training E2B smoke prevents infrastructure failure from being labeled model failure.",
+      "prediction": "No training starts without a matching live attestation.",
+      "falsifier": "Swift starts before E2B preflight passes."
+    }
+  ],
+  "plan": {
+    "runbook": "day-20-qwen35-balanced-lora-sft/V2-GPU-RUNBOOK.md",
+    "commands": ["init", "source-expand", "prepare", "preflight", "probe-funnel", "main", "confirm", "finalize"],
+    "stop_on": ["preflight_failure", "data_contract_failure", "gross_probe_failure", "no_main_pass", "confirmation_failure"]
+  },
+  "terminal_evidence": {
+    "decision": "stop_no_passing_probe",
+    "diagnosis_path": "runs/run-001-probe-primary/attempts/attempt-001/evidence/stage-a-root-cause-diagnosis.json",
+    "diagnosis_file_sha256": "604b38a32e49305d94aea06a86e714e58213d8309c9c9f3767c1b1ee46921742",
+    "diagnosis_sha256": "c816ff51eca41f119493288c96e7b20c1b8513988ed9e1df4db7e4ec555da468",
+    "selection_file_sha256": "077e69d7fbfa4ed867812fd7e12c4a9119feba5c032a4cd178f54c8332660fa2",
+    "selection_sha256": "5fdd36eb38271b458d78612b637ee26ca3e7168b84777df0178c46b4f24da519"
+  },
+  "runs": [
+    "run-001-probe-primary",
+    "run-002-main-primary",
+    "run-003-main-confirmation"
+  ]
+}

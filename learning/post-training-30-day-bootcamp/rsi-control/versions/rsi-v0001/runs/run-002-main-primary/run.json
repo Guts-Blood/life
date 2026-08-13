@@ -1,0 +1,27 @@
+{
+  "schema_name": "rsi.run",
+  "schema_version": 1,
+  "version_id": "rsi-v0001",
+  "run_id": "run-002-main-primary",
+  "phase": "main_primary",
+  "seed": 20260809,
+  "status": "skipped_condition_false",
+  "skip_evidence": {
+    "condition_observed": "run-001-probe-primary published stop_no_passing_probe",
+    "probe_selection_file_sha256": "077e69d7fbfa4ed867812fd7e12c4a9119feba5c032a4cd178f54c8332660fa2",
+    "probe_selection_sha256": "5fdd36eb38271b458d78612b637ee26ca3e7168b84777df0178c46b4f24da519"
+  },
+  "condition": "run-001-probe-primary produces a strict passing PROBE-SELECTION.json",
+  "scope": "full112",
+  "learning_rate_policy": "selected_by_verified_probe_evidence",
+  "checkpoint_labels": [
+    "early",
+    "mid",
+    "final"
+  ],
+  "run_contract_sha256": null,
+  "remote_run_root": null,
+  "attempts": [
+    "attempt-001"
+  ]
+}

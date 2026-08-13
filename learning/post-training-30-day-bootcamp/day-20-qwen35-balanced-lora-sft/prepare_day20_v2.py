@@ -196,46 +196,60 @@ def load_normalized_sources(sources: Mapping[str, Path]) -> list[dict[str, Any]]
     for skill in SKILLS:
         path = Path(sources[skill]).resolve()
         try:
-            lines = path.read_text(encoding="utf-8").splitlines()
+            handle = path.open("r", encoding="utf-8")
         except OSError as error:
             raise Day20PreparationV2Error(f"cannot read normalized source: {path}") from error
-        if not lines:
+        saw_row = False
+        try:
+            with handle:
+                for line_number, line in enumerate(handle, 1):
+                    saw_row = True
+                    if not line.strip():
+                        raise Day20PreparationV2Error(
+                            f"blank JSONL row: {path}:{line_number}"
+                        )
+                    try:
+                        raw = json.loads(line)
+                    except json.JSONDecodeError as error:
+                        raise Day20PreparationV2Error(
+                            f"invalid JSONL: {path}:{line_number}"
+                        ) from error
+                    if not isinstance(raw, dict):
+                        raise Day20PreparationV2Error(
+                            f"JSONL row is not an object: {path}:{line_number}"
+                        )
+                    try:
+                        validated = validate_v2_normalized_record(
+                            raw, expected_skill=skill
+                        )
+                    except ValueError as error:
+                        raise Day20PreparationV2Error(
+                            f"invalid normalized row {path}:{line_number}: {error}"
+                        ) from error
+                    tokenization = validated.pop("qwen35_tokenization")
+                    messages = validated["messages"]
+                    validated.update(
+                        {
+                            "qwen35_input_tokens": tokenization["input_tokens"],
+                            "qwen35_supervised_tokens": tokenization[
+                                "supervised_tokens"
+                            ],
+                            "qwen35_render_sha256": tokenization["render_sha256"],
+                            "qwen35_labels_sha256": tokenization["labels_sha256"],
+                            "prompt_sha256": object_sha256(messages[:-1]),
+                            "content_sha256": object_sha256(messages),
+                            "source_content_sha256": validated["source_lineage"][
+                                "source_content_sha256"
+                            ],
+                        }
+                    )
+                    rows.append(validated)
+        except OSError as error:
+            raise Day20PreparationV2Error(
+                f"cannot read normalized source: {path}"
+            ) from error
+        if not saw_row:
             raise Day20PreparationV2Error(f"normalized source is empty: {path}")
-        for line_number, line in enumerate(lines, 1):
-            if not line.strip():
-                raise Day20PreparationV2Error(f"blank JSONL row: {path}:{line_number}")
-            try:
-                raw = json.loads(line)
-            except json.JSONDecodeError as error:
-                raise Day20PreparationV2Error(
-                    f"invalid JSONL: {path}:{line_number}"
-                ) from error
-            if not isinstance(raw, dict):
-                raise Day20PreparationV2Error(
-                    f"JSONL row is not an object: {path}:{line_number}"
-                )
-            try:
-                validated = validate_v2_normalized_record(raw, expected_skill=skill)
-            except ValueError as error:
-                raise Day20PreparationV2Error(
-                    f"invalid normalized row {path}:{line_number}: {error}"
-                ) from error
-            tokenization = validated.pop("qwen35_tokenization")
-            messages = validated["messages"]
-            validated.update(
-                {
-                    "qwen35_input_tokens": tokenization["input_tokens"],
-                    "qwen35_supervised_tokens": tokenization["supervised_tokens"],
-                    "qwen35_render_sha256": tokenization["render_sha256"],
-                    "qwen35_labels_sha256": tokenization["labels_sha256"],
-                    "prompt_sha256": object_sha256(messages[:-1]),
-                    "content_sha256": object_sha256(messages),
-                    "source_content_sha256": validated["source_lineage"][
-                        "source_content_sha256"
-                    ],
-                }
-            )
-            rows.append(validated)
     validate_unique_training_records(rows)
     return rows
 

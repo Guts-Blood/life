@@ -75,6 +75,22 @@ class _FrozenScorerStub:
         }
 
 
+class _TupleFinanceScorerStub:
+    @staticmethod
+    def score_prediction(skill: str, raw_output: str, reference: str) -> dict:
+        if skill != "finance":
+            raise AssertionError("fixture expects a finance row")
+        return {
+            "parsed_answer": raw_output,
+            "canonical_answer": ("number:4|scale:million",),
+            "canonical_reference": ("number:4|scale:million",),
+            "parse_status": "ok",
+            "score_status": "ok",
+            "score": 1.0,
+            "error_type": None,
+        }
+
+
 def _record(skill: str = "code", index: int = 1) -> dict:
     return {
         "sample_id": f"eval:{skill}:fixture:{index}",
@@ -553,6 +569,41 @@ class RawEvaluatorV2Tests(unittest.TestCase):
         self.assertEqual(row["row_sha256"], evaluator.object_sha256({
             key: value for key, value in row.items() if key != "row_sha256"
         }))
+
+    def test_scorer_tuple_evidence_is_frozen_as_json_native_arrays(self) -> None:
+        record = _record(skill="finance")
+        record["raw_prompt"] = "What was the amount?"
+        record["reference"] = "4 million"
+        row = evaluator.build_prediction_row(
+            ordinal=1,
+            candidate_identity=factory.parse_candidate_id("base-probe"),
+            eval_scope="probe32",
+            record=record,
+            message_content="4 million",
+            prompt_token_ids=[10],
+            generated_token_ids=[11],
+            generated_only_text="4 million",
+            finish_reason="stop",
+            prompt_tokens=1,
+            completion_tokens=1,
+            scorer=_TupleFinanceScorerStub,
+            compact_model_identity={
+                "model_identity_sha256": "a" * 64,
+                "base_snapshot_sha256": "b" * 64,
+                "adapter_snapshot_sha256": None,
+            },
+            compact_checkpoint_package={
+                "checkpoint_package_sha256": "c" * 64,
+                "kind": "base_snapshot",
+                "snapshot_sha256": "b" * 64,
+                "integrity_sha256": None,
+            },
+        )
+        self.assertEqual(
+            row["scorer_result"]["canonical_answer"],
+            ["number:4|scale:million"],
+        )
+        self.assertEqual(json.loads(json.dumps(row)), row)
 
     def test_code_fence_is_not_repaired_and_is_not_eligible(self) -> None:
         fenced = "```python\n    return x + 1\n```"

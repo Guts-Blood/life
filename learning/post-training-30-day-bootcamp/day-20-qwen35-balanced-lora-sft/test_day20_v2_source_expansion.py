@@ -184,6 +184,34 @@ class Day20SourceExpansionV2Tests(unittest.TestCase):
         ):
             expansion.verify_day09_manifest(self.day09)
 
+    def test_legacy_code_row_with_invalid_prefix_is_rejected_and_counted(self) -> None:
+        invalid = base_row("code")
+        invalid["code_prefix"] = "def solve(x):\n        import math"
+        invalid["messages"][-1]["content"] = "        return x + 1"
+        self.base_sources["code"].write_text(
+            json.dumps(invalid) + "\n", encoding="utf-8"
+        )
+
+        output = self.root / "expanded-invalid-code"
+        manifest = expansion.build_expanded_sources(
+            base_sources=self.base_sources,
+            day09_manifest_path=self.day09,
+            output_dir=output,
+            template=FakeTemplate(),
+            model_path=self.model,
+        )
+
+        self.assertEqual(manifest["outputs"]["code"]["records"], 1)
+        self.assertEqual(
+            manifest["rejections"]["base_code:v2_contract_rejected"], 1
+        )
+        code_rows = expansion._load_jsonl(
+            output / "code.normalized.qwen35-v2.jsonl"
+        )
+        self.assertEqual(
+            code_rows[0]["source_lineage"]["adapter"], expansion.TULU_CODE_ADAPTER
+        )
+
     def test_raw_code_and_token_identity_are_strict(self) -> None:
         candidate = expansion._upgrade_base_row(base_row("code"))
         normalized = expansion._retokenize(candidate, FakeTemplate())

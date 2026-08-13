@@ -1,0 +1,30 @@
+{
+  "schema_name": "rsi.operational_failure_evidence",
+  "schema_version": 1,
+  "version_id": "rsi-v0002",
+  "run_id": "run-001-probe-primary",
+  "attempt_id": "attempt-001",
+  "retry_ordinal": 1,
+  "classification": "infrastructure_callback_integration",
+  "layer": "infrastructure",
+  "code": "v3_callback_reads_sft_fields_from_transformers_training_arguments",
+  "message": "The v3 callback rejected null SFT-only fields on Transformers TrainingArguments during on_train_begin.",
+  "retryable": false,
+  "model_failure": false,
+  "optimizer_steps": 0,
+  "checkpoints": 0,
+  "training_summary_published": false,
+  "target_attestation_published": false,
+  "partial_evidence_not_promotable": true,
+  "run_contract_sha256": "c1298e655bb4e9157c8fafcd6798ffb0c2b80502dc98800fbd648eba08b826f5",
+  "cost": {
+    "gpu_count": 1,
+    "gpu_hours": 0.003263342,
+    "wall_seconds": 11.748031901,
+    "measurement_method": "failed_training_log_birth_to_mtime_wall_seconds_x_gpu_count_div_3600"
+  },
+  "artifacts": [
+    {"role": "training_log", "path": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/logs/probe-s20260809-lr1e-4-attempt-001.log", "bytes": 121103, "file_sha256": "3333346aa6f2b38ed829bd2c972f3864eaf37a2cae484663aa27d84e42bf2480"},
+    {"role": "funnel_log", "path": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/logs/rsi-v0002-probe-funnel-retry-001.log", "bytes": 160142, "file_sha256": "d9248231fe58e4496abff5e34036bbbcec2ec230cd035c69306e9b5d8c06010c"}
+  ]
+}

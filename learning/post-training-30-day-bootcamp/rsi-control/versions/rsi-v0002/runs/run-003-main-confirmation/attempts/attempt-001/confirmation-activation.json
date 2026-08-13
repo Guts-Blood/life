@@ -1,0 +1,43 @@
+{
+  "schema_name": "rsi.confirmation_activation",
+  "schema_version": 1,
+  "version_id": "rsi-v0002",
+  "run_id": "run-003-main-confirmation",
+  "attempt_id": "attempt-001",
+  "source_run": "run-002-main-primary",
+  "source_run_status": "succeeded_primary_winner",
+  "run_contract_sha256": "9ee5818d3db896d147e54295174316647d0337d6c518c79c86346a23e547112b",
+  "primary_selection": {
+    "verifier": "pass",
+    "file_sha256": "4bffbf9d19f5318fafd07af72df0f218010ce41bf6f37f41883a15b44d419585",
+    "content_sha256": "28ea80fe582c2ed8738ed471335794a9919bfa3ccbdb0e06a0fd52b3c9679b80",
+    "winner": "main-s20260809-lr1e-4-final",
+    "checkpoint_label": "final",
+    "learning_rate": "1e-4"
+  },
+  "confirmation": {
+    "candidate": "main-s20260810-lr1e-4-final",
+    "seed": 20260810,
+    "checkpoint_label": "final",
+    "learning_rate": "1e-4",
+    "model_start": "base_fresh",
+    "warm_start": false
+  },
+  "resolved_config": {
+    "path": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/configs/main-s20260810-lr1e-4.json",
+    "file_sha256": "0f1d70916ecf8e86decd96036b776e2d5125041cb4422dee369db17061ced557",
+    "immutable_sha256": "6672204c268fa2e72bc4c6ddad389d5ef2dcfeae532de96dca850fab1d3c7cf8"
+  },
+  "budget": {
+    "gpu_hours_at_activation": 1.107259596,
+    "remaining_gpu_hours": 1.392740404,
+    "confirmation_cap": 0.9,
+    "version_cap": 2.5
+  },
+  "cost": {
+    "gpu_hours": 0.0,
+    "eval_accesses": 0,
+    "measurement_method": "cpu_contract_config_and_primary_selection_validation_only"
+  },
+  "status": "pass"
+}

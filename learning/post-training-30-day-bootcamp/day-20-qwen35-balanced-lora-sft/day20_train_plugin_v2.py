@@ -40,7 +40,7 @@ EXPECTED_RUNTIME_VERSIONS = {
     "ms-swift": "4.5.0.dev0",
     "transformers": "5.12.1",
     "peft": "0.19.1",
-    "torch": "2.10.0+cu126",
+    "torch": "2.10.0+cu128",
 }
 EXPECTED_LORA_MODULE_COUNTS = {
     "q_proj": 8,

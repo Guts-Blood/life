@@ -215,10 +215,10 @@ class Fixture:
 
         return types.SimpleNamespace(
             verify_config=lambda config: None,
-            semantic_hash=identity.object_sha256,
-            load_humaneval_source=lambda path, config: (
+            semantic_hash=lambda value: "sha256:" + identity.object_sha256(value),
+            load_humaneval_source=lambda config: (
                 self.sources,
-                scorer.file_sha256(path),
+                scorer.file_sha256(self.source_path),
             ),
             object_sha256=identity.object_sha256,
             exact_text_hash=lambda value: hashlib.sha256(value.encode()).hexdigest(),
@@ -291,6 +291,8 @@ class Day20CodeE2BV3Tests(unittest.TestCase):
             self.assertEqual(summary["records"], 6)
             self.assertEqual(summary["sandbox_execution_eligible"], 6)
             self.assertEqual(summary["code_records"], 8)
+            context = summary["e2b_comparison_context"]
+            self.assertRegex(context["sandbox_contract_hash"], r"^[0-9a-f]{64}$")
             results, verified, _, _ = scorer.verify_published_pair(
                 fixture.e2b_summary, pair_verifier=fixture.pair_verifier
             )

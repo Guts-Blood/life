@@ -1,0 +1,67 @@
+{
+  "schema_name": "rsi.full112_candidate_verification",
+  "schema_version": 1,
+  "version_id": "rsi-v0002",
+  "run_id": "run-003-main-confirmation",
+  "attempt_id": "attempt-001",
+  "candidate": "main-s20260810-lr1e-4-final",
+  "scope": "full112",
+  "status": "pass",
+  "promotion_eligible": true,
+  "verifiers": {"raw": "pass", "normalized": "pass", "e2b": "pass"},
+  "files": {
+    "raw_predictions": "cbf927f125c1a7b7d5095b5e6cd40f6f180fedb62ce1582efa0971df1bfe467f",
+    "raw_summary": "918bbd9cd4cfd61bd05adbbd2a0371d9530221c1610c99f3632fa6a112f07e66",
+    "normalized_predictions": "c7095a1285d0391af0f1b3c2e35e0cad6a23283e9f47599903d015a6210495da",
+    "normalized_summary": "0555787d9c5eaf83f489e21370d99510742fb3aaaaef60b9994aaaa7c18d4064",
+    "e2b_results": "ec6d1a45fb99e01746582be25835d63978d227f83d85ee91ce8ddae4264b4bff",
+    "e2b_summary": "b8d8c6599438e1f23c4e90de619ce831df9dea4ccfcead26ec0602dec4e1a323"
+  },
+  "content_sha256": {
+    "raw_predictions": "1dbe157c627851d4d491cb12eaad0cb821a71c934d7e278885e7a3d2e2db4652",
+    "raw_summary": "eb8476c6029fc4729176f366edf64d93db1c01b5f888016d14f57892da9e8399",
+    "normalized_predictions": "401fadfe558ca4df4c61567d555bb0a1dc9f44875c3024da7f400a4791ad2c19",
+    "normalized_summary": "3db3621993af23e5bc5d59466f97dd57ae1c2c94f8614fe6bf3b2f4c87745c40",
+    "e2b_results": "ee89c0c1fa17e4efd3c9bfc7d7fa9c2adc8b9f6ec1903c1ff9a6102fcb8330e6",
+    "e2b_summary": "41dcc2ce3c2327d05263ef891e45a72b59c78c1b59f1632849dd30165e015a4e"
+  },
+  "ordered_sample_ids_sha256": "aa993b7bdd59b861384f3319d22e8a1a28f2f4f92860e3f956ac4c47074dc9dc",
+  "e2b_order_sha256": "aa8058b9d1fd66557cf4172c718de73a5c30d120a67f1dace313276a0026eafb",
+  "evaluation_run_sha256": "1a1be2bcdefa13188005d8164ff7b57adc7e91746abed581638d1c69959c9626",
+  "e2b_run_sha256": "f541a2d958490dba63b8bc446ac027f3b4db94c0cdef5b4916b63e40674ef0a6",
+  "comparison": {
+    "normalized": "a4ddda427c709fe29384606839085c272907dfad39f320b7a886cb14ba954fa0",
+    "e2b": "700cfea448fbea08dcadbd0f8240214f57d7ba9cf8442d1b123fa54e23fc701d",
+    "complete": "abcd0cc2384c3791eb7d52b6ca755345e3defb9f8321b0355b22bdc755fd8a03"
+  },
+  "metrics": {
+    "general": 21,
+    "math": 21,
+    "finance": 14,
+    "code": 17,
+    "total": 73,
+    "code_sandbox_execution_eligible": 28,
+    "format_compliant": 112,
+    "infrastructure_failures": 0
+  },
+  "strict_failures": [],
+  "outcomes": {"passed": 17, "failed": 11},
+  "eval_log": {
+    "file_sha256": "0b6f9653a46177f9bb08134b9819aaa61bf1f0259baacec122bc4dbd8fe47329",
+    "bytes": 42639,
+    "birth": "2026-08-12T21:50:07.897173607+08:00",
+    "mtime": "2026-08-12T21:53:58.760561075+08:00"
+  },
+  "e2b_log": {
+    "file_sha256": "5448cd884de39c41af8eb1c54d080a724798ea50bcf54c261f4b423364c7479e",
+    "bytes": 6761,
+    "birth": "2026-08-12T21:54:02.732682918+08:00",
+    "mtime": "2026-08-12T21:55:50.983948928+08:00"
+  },
+  "cost": {
+    "gpu_hours": 0.064128719,
+    "eval_accesses": 1,
+    "wall_seconds": 230.863387468,
+    "measurement_method": "eval_log_birth_to_final_mtime_wall_seconds_x_gpu_count_div_3600"
+  }
+}

@@ -6,6 +6,8 @@
 > 以上状态与本文其余命令描述的是已封存的 v1 实验。新的候选工厂、
 > 训练前 E2B gate、24k/320k 数据合同和 v3 评估链路见
 > [V2-GPU-RUNBOOK.md](./V2-GPU-RUNBOOK.md)。v2 不复用或改写 v1 产物。
+> 通用 RSI 的目标、metrics、lever taxonomy、version、artifact 和 retry
+> 记录见 [rsi-control](../rsi-control/README.md)；SFT 只是当前 goal 的 lever。
 
 Day 20 的目标不是继续扩大 Full SFT，而是用一次可回退、可审计的 LoRA 实验回答一个更具体的问题：在 Qwen3.5 原生模板和解析链路正确的前提下，均衡复用四类能力数据，是否能在不牺牲 Base 广泛能力的情况下得到一个可靠的新锚点。
 

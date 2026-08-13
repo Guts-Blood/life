@@ -1,0 +1,19 @@
+{
+  "attempts": [
+    "attempt-001"
+  ],
+  "checkpoint_labels": "must_match_primary_winner",
+  "condition": "run-002-main-primary succeeded and frozen PRIMARY-MAIN-SELECTION.json selected main-s20260809-lr1e-4-final for independent same-LR/same-label confirmation",
+  "learning_rate_policy": "must_match_primary_winner",
+  "phase": "main_confirmation",
+  "remote_run_root": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z",
+  "run_contract_path": "run-contract.json",
+  "run_contract_sha256": "9ee5818d3db896d147e54295174316647d0337d6c518c79c86346a23e547112b",
+  "run_id": "run-003-main-confirmation",
+  "schema_name": "rsi.run",
+  "schema_version": 1,
+  "scope": "full112",
+  "seed": 20260810,
+  "status": "succeeded_confirmed_qualified",
+  "version_id": "rsi-v0002"
+}

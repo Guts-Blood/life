@@ -1,0 +1,37 @@
+{
+  "schema_name": "rsi.taxonomy",
+  "schema_version": 1,
+  "version_policy": "One primary lever and at most one necessary dependent lever; rsi-v0001 is the baseline-reset exception.",
+  "levers": [
+    {"id": "model.data", "children": ["selection", "quality", "coverage", "mixture", "replay", "curriculum"]},
+    {"id": "model.target", "children": ["representation", "masking", "canonicalization"]},
+    {"id": "model.objective", "children": ["loss_weighting", "kl", "sft", "preference", "rl"]},
+    {"id": "model.optimization", "children": ["learning_rate", "token_budget", "batch", "scheduler"]},
+    {"id": "model.trainable_scope", "children": ["method", "lora_rank", "lora_targets", "layers", "specialists"]},
+    {"id": "harness.context", "children": ["prompt", "memory", "retrieval", "compression"]},
+    {"id": "harness.tools", "children": ["schema", "validation", "error_semantics"]},
+    {"id": "harness.workflow", "children": ["planner", "router", "retry", "stop", "skill"]},
+    {"id": "verifier", "children": ["coverage", "calibration", "robustness"]},
+    {"id": "runtime", "children": ["environment", "resume", "observability"], "execution_only": true},
+    {"id": "governance", "children": ["permission", "approval", "audit"]}
+  ],
+  "current_sft_priority": [
+    "model.target.representation",
+    "model.data.quality",
+    "model.data.coverage",
+    "model.data.mixture",
+    "model.data.replay",
+    "model.data.curriculum",
+    "model.objective.loss_weighting",
+    "model.optimization.learning_rate",
+    "model.optimization.token_budget",
+    "model.trainable_scope.lora_rank"
+  ],
+  "outside_action_space": [
+    "evaluation_cases",
+    "scorer_semantics",
+    "promotion_thresholds",
+    "evidence_integrity",
+    "failure_reporting"
+  ]
+}

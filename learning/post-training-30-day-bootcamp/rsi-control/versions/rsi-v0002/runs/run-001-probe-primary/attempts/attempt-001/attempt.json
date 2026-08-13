@@ -1,0 +1,53 @@
+{
+  "active_retry": null,
+  "attempt_id": "attempt-001",
+  "consumed_gpu_hours": 0.032935653,
+  "ended_at_utc": "2026-08-12T11:14:46.505619Z",
+  "error": {
+    "code": "v3_callback_training_arguments_interface_mismatch",
+    "layer": "infrastructure",
+    "message": "The target-binding callback read ms-swift SFT-only fields from Transformers TrainingArguments and failed before optimizer step 1.",
+    "retryable": false
+  },
+  "event_log": {
+    "head_sha256": "00cf5cad9fb3d373421c7e5b2209c1ee8b737053f1e8a46bef30789e9256c6f1",
+    "path": "logs/operations.jsonl",
+    "records": 6
+  },
+  "execution_identity": {
+    "core_runtime_identity_sha256": "6e1018b2528288e459a0e5707468ac8ede284ca497e03e30f91139ff2b3cc2d8",
+    "e2b_preflight_sha256": "3a3e6060ffb441f0390a05e3aaf2d06c6656c5ec35c917e810910f100d8a0da7",
+    "gpu_count_used": 1,
+    "gpu_names": [
+      "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+      "NVIDIA RTX PRO 6000 Blackwell Server Edition"
+    ],
+    "host": "autodl-container-6acf40b03d-62d686fe",
+    "orchestration": "nohup_remote_pid_monitored",
+    "outer_manifest_sha256": "f3acfd8fe38c69e8864182ef9247b27c4f2483bde9228faab9b8b521f0053ce6",
+    "run_root": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z",
+    "runner_command": [
+      "bash",
+      "run_day20_v3_autodl.sh",
+      "probe-funnel"
+    ],
+    "ssh_endpoint": "connect.westd.seetacloud.com:36153",
+    "target_encoding_audit_sha256": "bc6da3fe02f18ea801e0fccdf5801d62dcb46c59e7d936f4e961bba326429e81",
+    "target_encoding_contract_sha256": "7f835342861cc9aabfd6299228033df80437b183227e04db311450437cd07ded",
+    "target_runtime_identity_sha256": "c15561dd276468e4be98d34dd6b1e290c26577b512362895dd0eb22829e64357"
+  },
+  "exit_code": 1,
+  "kind": "fresh",
+  "last_valid_checkpoint": null,
+  "ordinal": 1,
+  "parent_attempt": null,
+  "resume_checkpoint": null,
+  "retry_count": 1,
+  "run_contract_sha256": "c1298e655bb4e9157c8fafcd6798ffb0c2b80502dc98800fbd648eba08b826f5",
+  "run_id": "run-001-probe-primary",
+  "schema_name": "rsi.attempt",
+  "schema_version": 1,
+  "started_at_utc": "2026-08-12T11:02:24.768547Z",
+  "status": "infrastructure_failed",
+  "version_id": "rsi-v0002"
+}

@@ -1,0 +1,33 @@
+{
+  "schema_name": "rsi.operational_failure_evidence",
+  "schema_version": 1,
+  "version_id": "rsi-v0002",
+  "run_id": "run-001-probe-primary",
+  "attempt_id": "attempt-001",
+  "classification": "infrastructure_evidence_integration",
+  "layer": "infrastructure",
+  "code": "missing_core_v2_compatibility_marker",
+  "message": "Frozen v2 evaluator rejected the independently marked v3 run root before model loading because .day20-v2-run-root was absent.",
+  "retryable": true,
+  "model_failure": false,
+  "training_started": false,
+  "model_loaded": false,
+  "inference_started": false,
+  "published_eval_artifacts": 0,
+  "gpu_hours": 0.0,
+  "eval_accesses": 0,
+  "remote_pid": 28545,
+  "run_contract_sha256": "c1298e655bb4e9157c8fafcd6798ffb0c2b80502dc98800fbd648eba08b826f5",
+  "root_cause": {
+    "required_path": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/.day20-v2-run-root",
+    "required_content": "day20-qwen35-candidate-factory-v2",
+    "existing_v3_marker_path": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/.day20-v3-run-root",
+    "existing_v3_marker_content": "day20-qwen35-target-encoding-v3",
+    "evaluator_file_sha256": "4da1e7bed95a628e6914711842001b491b25e821ba6711c7bafac8c08e837963"
+  },
+  "logs": [
+    {"path": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/logs/rsi-v0002-probe-funnel-attempt-001.log", "bytes": 3381},
+    {"path": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/logs/base-probe-eval-v2.log", "bytes": 676}
+  ],
+  "remediation": "Publish the exact legacy core-v2 marker alongside the independent v3 marker, verify both markers and all prepared identities, then retry the unchanged run contract."
+}
