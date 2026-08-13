@@ -12,6 +12,9 @@ Read these files in order:
 4. [`metrics.json`](metrics.json) — outcome, diagnosis, cost, and RSI-policy metrics;
 5. the current directory under `versions/`.
 
+The append-only archive limitations for the completed v0001/v0002 evidence are
+recorded in [`ARCHIVE-AUDIT-20260813.md`](ARCHIVE-AUDIT-20260813.md).
+
 Validate before and after every update:
 
 ```bash
