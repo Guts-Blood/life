@@ -1,16 +1,16 @@
 # Day 17 — Qwen3.5 LoRA Exact Checkpoint Resume 与可复现性
 
 日期：`2026-08-12`
-状态：`blocked_no_selected_resumable_day16_candidate`
+状态：`deferred_optional_not_run`
 强度：4–5 小时
 
-审计结论（`2026-08-10`）：**不能关闭为 pass，也不应现在租卡。** Day 11 是旧 0.6B/full-SFT 的 exact-resume 方法证据；Day 18 是 Qwen3.5/Megatron 的 fresh continuation，但没有 uninterrupted comparator；Day 20 是目标 HF LoRA 路径，却只有三份 `resumable=false` 的 probe checkpoint。详见 [`Day 17 Gap Audit`](../artifacts/reports/day17-gap-audit.md)、[`Resume Equivalence Status`](../artifacts/reports/day17-qwen35-resume-equivalence.md) 与机器可读 [`Readiness Gate`](../artifacts/configs/day17-qwen35-resume-readiness.json)。
+审计结论（`2026-08-10`）：**不能关闭为 pass，也不应仅为打勾租卡。** Day 11 是旧 0.6B/full-SFT 的 exact-resume 方法证据；Day 18 是 Qwen3.5/Megatron 的 fresh continuation，但没有 uninterrupted comparator；旧 Day 20 HF LoRA 路径只有三份 `resumable=false` probes。`2026-08-12` 的后续 RSI v0002 charter 已产生 selected、完整 resumable 的 `main-s20260809-lr1e-4-final`，因此“无候选”入口阻塞已经解除；但原 Run A/B exact-resume comparator 仍未运行。该实验继续作为按诊断需要执行的 Optional R，不是 downstream S1 handoff 的硬门。历史审计见 [`Day 17 Gap Audit`](../artifacts/reports/day17-gap-audit.md)、[`Resume Equivalence Status`](../artifacts/reports/day17-qwen35-resume-equivalence.md) 与机器可读 [`Readiness Gate`](../artifacts/configs/day17-qwen35-resume-readiness.json)。
 
-## 当前阻塞
+## 当前状态
 
-Day 16 已以 [`no eligible candidate`](../artifacts/reports/day16-gap-audit.md) 收束。Day 20 保存的三份 probe checkpoint 都明确是 `resumable=false`，实际目录没有 optimizer、scheduler 或 RNG state；也没有 selected config、main checkpoint 或 provisional anchor，因此当前不能按本日的 anchor continuity 协议启动 Run A/B。
+Day 16 仍以 [`no eligible candidate`](../artifacts/reports/day16-gap-audit.md) 作为不可改写的历史 closeout；旧 Day 20 三份 probes 仍是 `resumable=false`。后续 RSI v0002 已提供 selected/resumable main checkpoint，但 AutoDL 当前不可访问、winner bytes 尚未归档到本地，且本日 Run A/B 合同尚未为该 checkpoint 重新冻结，因此现在仍不启动 continuity 实验。
 
-原计划保留。只有新 SFT charter 产生 selected、完整 resumable 的 LoRA checkpoint，或用户另行批准一个明确标注为 method-only、不得晋级的 resume run，本日才可解锁。
+原计划保留为 Optional R。只有恢复并核验 winner bytes、记录明确的诊断需求、冻结新的 Run A/B 合同并单独批准预算后才执行；跳过它不影响 fixed-suite selection 或 S1 handoff。
 
 ## 主要目标
 

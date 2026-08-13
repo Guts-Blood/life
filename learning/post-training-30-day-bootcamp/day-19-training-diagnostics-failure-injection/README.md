@@ -1,14 +1,14 @@
 # Day 19 — Qwen3.5 Optimization Stability 与 Failure Injection
 
 日期：`2026-08-14`
-状态：`blocked_no_stable_day16_17_baseline`
+状态：`not_started`
 强度：4–5 小时
 
-## 当前阻塞
+## 当前状态
 
-Day 16 已以 [`no eligible candidate`](../artifacts/reports/day16-gap-audit.md) 收束，Day 17 也没有 selected/resumable config 可建立 continuity baseline。Day 20 的 probe 可作为既有 LR 与数据边界诊断证据，但不能冒充本日 Run A 的 stable baseline。
+Day 16 的 [`no eligible candidate`](../artifacts/reports/day16-gap-audit.md) 仍是不可改写的历史 closeout。`2026-08-12` 的后续 RSI v0002 charter 已提供冻结的 `LR=1e-4` recipe、early/mid/final resumable checkpoints、完整 full112 evidence 与 selected final，可作为本日重新冻结 Run A 的来源；它不追溯冒充原 Day 16 baseline。
 
-原 failure-injection 计划保留；新 SFT charter 先产生可复用 baseline 后再解锁，不为诊断故障而从一个已失败门禁的 adapter 开始扩大 GPU 实验。
+原 failure-injection 计划保留且已解除“无 baseline”阻塞，但本日课程与实验尚未执行。启动前仍需恢复并核验 winner bytes、把 RSI recipe 映射为本日 Run A、记录单变量故障与停止条件，并单独批准 GPU 预算。
 
 ## 主要目标
 

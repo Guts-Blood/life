@@ -2,26 +2,26 @@
 
 开始日期：`2026-07-27`  
 目标完成日期：`2026-08-25`  
-当前 Phase：`Day 15 已由 superseding evidence 关闭；Day 16 已用 Day 20 evidence 以 no-candidate 收束；Day 13–14 保留为阅读 backlog；Qwen3.5 Base 继续 active，S1 尚不存在`
+当前 Phase：`Day 15/16 的历史 closeout 保持不变；后续 RSI v0002 charter 已选出并确认 fixed-full112 合格 checkpoint；Day 21 课程与 selection audit 已完成，downstream-ready S1 交接待完成`
 
-当前最大阻塞：`Day 16 的合法结果是 no eligible candidate：三档 LoRA probe 均有不依赖 E2B 的必要门禁失败，main 未启动。Day 21 没有 candidate 可消费；下一步必须先批准新的 SFT charter，统一 Code continuation target 边界、版本化 eval/comparison key、恢复 sandbox evidence 并重新预注册 LR。Day 17 保持 blocked，但 exact-resume runtime 已降级为顺序课程 Day 20 Optional R，不再阻塞 S1 主线。`
+当前最大阻塞：`fixed-full112 qualification 与 selection gates 已通过；当前缺口是从离线 AutoDL 恢复并不可变归档 winner checkpoint bytes、完成 winner-only merged export/fresh-reload parity，并生成 downstream-ready S1 manifest/downstream key。exact resume 仍是 optional_not_run，不是 S1 硬门；在 S1 交接完成前 Day 23/25 仍不得启动。`
 
-状态使用：`not_started`、`in_progress`、`blocked`、`deferred`、`done`、`closed_pass`、`closed_superseded`、`closed_no_candidate`。`closed_pass` 表示原协议及 closeout audit 均通过，不再重跑；`closed_superseded` 表示原任务不再重跑、由后续更强证据关闭，但不等于原协议逐项 `pass`；`closed_no_candidate` 表示预注册 fail-closed 路径已产生合法的零候选结果。`deferred` 表示需要新决策/章程，不是当前主线阻塞。Day 01–03 的 `done` 来自用户确认；未据此补写不存在的 artifact 或用时。
+状态使用：`not_started`、`in_progress`、`blocked`、`deferred`、`done`、`done_with_handoff_pending`、`closed_pass`、`closed_superseded`、`closed_no_candidate`。`done_with_handoff_pending` 表示当日学习与决策目标已完成，但其下游可消费包仍有明确交付 gate；它不解锁依赖项。`closed_pass` 表示原协议及 closeout audit 均通过，不再重跑；`closed_superseded` 表示原任务不再重跑、由后续更强证据关闭，但不等于原协议逐项 `pass`；`closed_no_candidate` 表示预注册 fail-closed 路径已产生合法的零候选结果。`deferred` 表示需要新决策/章程，不是当前主线阻塞。Day 01–03 的 `done` 来自用户确认；未据此补写不存在的 artifact 或用时。
 
 ## 活动模型迁移
 
 | 项目 | 状态 | 说明 |
 |---|---|---|
 | `qwen3-0.6b-day01-12-v1` | closed / immutable | Day 11 tiny-overfit pass；Day 12 recovery C–L 10/10 完成、0 eligible checkpoint、frozen test 未消费。 |
-| `qwen35-4b-day13-plus-v2` | Day 15 closed / Day 16 no candidate / Base active | 唯一活动模型为 `Qwen/Qwen3.5-4B-Base@1001bb4d…`；Day 20 三档 LoRA probe 均失败关闭，main 未启动，不产生 S1。 |
+| `qwen35-4b-day13-plus-v2` | RSI v0002 confirmed-qualified / delivery pending | 历史 Day 16 no-candidate 不改写；后续独立 charter 从同一 Base 训练 main，Primary `81/112`、独立训练 seed Confirmation `73/112`，两次均过全部 fixed-full112 gates。 |
 | v2 training scope | selected | text-only coding；完整 processor/conditional-generation loader；vision tower 与 aligner 冻结并做 trainable coverage 断言。 |
-| v2 `S1` | nonexistent | 必须先通过新 baseline、one-step、tiny-overfit、checkpoint integrity/save-reload 与受控 coding SFT promotion gate；exact resume 可选。 |
-| DPO / GRPO | blocked until `S1` | 不能从 Base、Day 12 0.6B export 或不合格候选起步。 |
+| v2 `S1` | operational winner selected / formal handoff pending | `main-s20260809-lr1e-4-final` 已由冻结 selector 选中；同 recipe 的 independent-training-seed checkpoint 也通过同一 full112。checkpoint integrity/resumable 已记录，仍缺 durable recovery、merged export parity 与正式 manifest。 |
+| DPO / GRPO | blocked until downstream-ready `S1` manifest | 不能从 Base、Day 12 0.6B export、仅有 selection decision 的 adapter URI 或不合格候选起步。 |
 | Teacher / OPD | deferred / unselected | `teacher_model_id=null`；不自动选择 8B/9B teacher。 |
 
 迁移的完整 gate 与机器可读状态见 [`QWEN35-4B-MIGRATION-PLAN.md`](QWEN35-4B-MIGRATION-PLAN.md) 和 [`artifacts/configs/qwen35-4b-migration-contract.json`](artifacts/configs/qwen35-4b-migration-contract.json)。
 
-关闭边界：Day 18–20 合并证据关闭 Day 15 onboarding；Day 20 的实际 LoRA probe evidence 另被接受为 Day 16 的 no-candidate 退出证据。两者都不补造未生成的 artifacts，也不推进 Day 17、S1 promotion、DPO 或 GRPO。Day 17 已完成本地 gap audit，但 exact-resume runtime 仍 blocked。详见 [`Day 15 Close`](artifacts/reports/day15-close.md)、[`Day 16 Gap Audit`](artifacts/reports/day16-gap-audit.md) 与 [`Day 17 Gap Audit`](artifacts/reports/day17-gap-audit.md)。
+关闭边界：Day 18–20 v1 合并证据关闭 Day 15 onboarding；旧 Day 20 LoRA probe evidence 另被接受为 Day 16 的 no-candidate 退出证据，这两个历史结果不追溯改写。`2026-08-12` 的 RSI v0002 是后续批准的新 charter：它解除 no-candidate readiness block并完成 fixed-full112 selection/confirmation，但不等于 merged、可下游消费的 S1 已交付。Day 17 exact-resume 仍未运行，现为按诊断需要执行的 Optional R，不阻塞 S1。详见 [`Day 15 Close`](artifacts/reports/day15-close.md)、[`Day 16 Gap Audit`](artifacts/reports/day16-gap-audit.md)、[`Day 17 Gap Audit`](artifacts/reports/day17-gap-audit.md) 与 [`RSI v0002 result`](rsi-control/versions/rsi-v0002/RSI-V0002-RESULT.md)。
 
 ## 提前执行的 Standalone Experiments
 
@@ -30,6 +30,7 @@
 | Day 18 Megatron compatibility | closed_pass | 2026-08-08 run；2026-08-10 close | compatibility report、`artifacts/reports/day18-close.md`、closeout JSON | C0–C5 与本地 closeout audit 通过；只覆盖冻结的 2×H800 text-only compatibility/learnability envelope，0 追加 GPU。 |
 | [Day 19 Qwen3.5 Full-SFT comparison](day-19-qwen35-sft-comparison/README.md) | done / diagnostic only | 2026-08-08–09 | A/B/E comparison、Qwen3.5 response/HumanEval adapters、root-cause report | 确认评测合同错位与真实 Full-SFT 退化同时存在；没有 eligible/promoted S1。 |
 | [Day 20 balanced LoRA probes](day-20-qwen35-balanced-lora-sft/README.md) | closed / no passing probe | 2026-08-09 | Base + `1e-5/3e-5/1e-4` probes、静态/v2 diagnostic report | 三档 probe 均有与 E2B 无关的必要门禁失败；作为 Day 16 no-candidate close evidence，main/PASS/S1 均未发生。 |
+| [RSI v0002 / Day 20 v3 target-boundary SFT](rsi-control/versions/rsi-v0002/RSI-V0002-RESULT.md) | done selection / delivery pending | 2026-08-12–13 | RSI state/metrics、Primary selection、Confirmation、Final promotion、archive audit | Primary `main-s20260809-lr1e-4-final` 通过 frozen full112；同 recipe 的第二个训练 seed checkpoint 也过门。`merge_performed=false`，不声明 downstream-ready S1。 |
 
 这里的 Day 19/20 是 standalone run identity；下方顺序课程表中的 Day 19 optimizer/failure injection 与 Day 20 weekend review 仍为 `not_started`。
 
@@ -51,15 +52,15 @@
 | 14 | 周末：Week 2 历史复盘 + Qwen3.5 readiness | not_started | 2026-08-09 | | | M0–M6 的 owner/evidence/stop 条件必须完整。 |
 | 15 | Qwen3.5 onboarding/migration acceptance | closed_superseded | 2026-08-09（提前关闭） | | `artifacts/reports/day15-close.md` | Day 18–20 已用更强实际运行证据消解 onboarding 风险；原 7,860 条 manifest、新 split 与 LoRA exact resume 未执行且不补造；无 S1。 |
 | 16 | Controlled coding LoRA SFT/packing parity/candidate set | closed_no_candidate | 2026-08-09（提前收束） | | `artifacts/reports/day16-gap-audit.md`、trajectory、packing、no-anchor JSON | Day 20 三档 16k-token/103-step probe 均失败必要门禁；main 未启动，packing=false，无 provisional anchor。 |
-| 17 | Exact checkpoint resume/repro | blocked | 2026-08-12 | | `artifacts/reports/day17-gap-audit.md`、resume status、readiness JSON | 原计划是 0→40 对 0→20→fresh resume→40 的逐 step continuity proof；现有证据均不足以关闭，等待新 selected/resumable candidate，当前 0 GPU。 |
+| 17 | Exact checkpoint resume/repro | deferred | 2026-08-12 audit | | `artifacts/reports/day17-gap-audit.md`、resume status、readiness JSON | selected/resumable checkpoint 已由 RSI v0002 产生；exact-resume comparator 仍未运行，仅在有诊断价值时作为 Optional R 执行，不阻塞 S1。 |
 | 18 | Megatron min codepath + Qwen3.5 GDN/loader gate | closed_pass | 2026-08-08 run；2026-08-10 close | | compatibility report、`artifacts/reports/day18-close.md`、closeout JSON | C0–C5 与本地 closeout audit 通过；0 追加 GPU。仅关闭冻结 envelope，不等于 LoRA exact resume，也不晋级 S1。 |
-| 19 | Optimizer/LR stability + failure injection | blocked | 2026-08-14 | | | 无 Day 16/17 stable baseline；Day 20 失败 probe 只作诊断证据，不冒充 Run A。 |
+| 19 | Optimizer/LR stability + failure injection | not_started | 2026-08-14 | | | RSI v0002 的冻结 recipe/checkpoints 可作为新 baseline；本日 failure-injection 课程尚未执行。 |
 | 20 | 周末：Training failure signatures + optional exact-resume lab | not_started | 2026-08-15 | | `day-20-weekend-training-failures/README.md` | Core 为 60 分钟 CPU signature map；Optional R 默认跳过，仅在 selected/resumable candidate 存在且诊断有价值时使用同一单卡跑 3–5h，不是 S1 硬 gate。 |
-| 21 | Qwen3.5 candidate audit / final S1 promotion | blocked | 2026-08-16 | | | Day 16 已输出 no-anchor；新 charter 产生合格 candidate 前没有对象可审计。 |
+| 21 | Qwen3.5 candidate selection / fixed-suite qualification | done_with_handoff_pending | 2026-08-13（提前；原计划 08-16） | | `day-21-weekend-eval-reading/README.md`、RSI state/metrics、Primary selection、Final promotion、archive audit | fixed-full112 selection 与 independent-training-seed same-suite confirmation 完成；final 是 policy-selected winner，不声明统计唯一最优；downstream-ready S1 交接待完成。 |
 | 22 | Coding preference provenance/processor/held-out | not_started | 2026-08-17 | | | |
-| 23 | Qwen3.5 coding DPO smoke（parent=S1） | not_started | 2026-08-18 | | | 执行 gate=`S1` 已晋级；Base 不能代替。 |
+| 23 | Qwen3.5 coding DPO smoke（parent=S1） | not_started | 2026-08-18 | | | 执行 gate=`downstream-ready S1 manifest`；当前仍 blocked，Base 不能代替。 |
 | 24 | Coding online-RL dataflow/sandbox reward contract | not_started | 2026-08-19 | | | |
-| 25 | Qwen3.5 coding GRPO lab（parent=S1） | not_started | 2026-08-20 | | | 执行 gate=`S1` 已晋级；首轮显式 cap 8K。 |
+| 25 | Qwen3.5 coding GRPO lab（parent=S1） | not_started | 2026-08-20 | | | 执行 gate=`downstream-ready S1 manifest`；当前仍 blocked，首轮显式 cap 8K。 |
 | 26 | slime fixed-release Qwen3.5 compatibility gate | not_started | 2026-08-21 | | | 不支持则 runtime blocked，模型不回退。 |
 | 27 | 周末：GRPO/on-policy | not_started | 2026-08-22 | | | |
 | 28 | 周末：slime debug/replay/repro | not_started | 2026-08-23 | | | |

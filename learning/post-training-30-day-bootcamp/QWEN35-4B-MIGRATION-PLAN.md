@@ -1,7 +1,7 @@
 # Qwen3.5-4B 迁移计划（Day 13+）
 
 决策日期：`2026-08-07`
-状态：`model_selected / day15_closed_superseded / day16_closed_no_candidate / Base_active / no_promoted_s1`
+状态：`model_selected / historical_day16_closed_no_candidate / rsi_v0002_confirmed_qualified / day21_selection_done / downstream_ready_s1_pending`
 活动模型：[`Qwen/Qwen3.5-4B-Base`](https://huggingface.co/Qwen/Qwen3.5-4B-Base)
 
 ## 决策与边界
@@ -22,6 +22,8 @@ Day 12 的十轮 0.6B recovery 是一次完成的、信息量充分的负结果�
 本次没有选择 teacher。`teacher_model_id` 和 `teacher_revision` 保持 `null`；Teacher/OPD 仅作为另行批准的 deferred extension，不能静默选择 Qwen3.5-9B、Qwen3-8B 或其他模型。
 
 Day 18–20 后续提前执行了三组 standalone experiments。它们共同冻结并使用 revision `1001bb4d826a52d1f399e183466143f4da7b741b`，提供 Megatron compatibility、Full-SFT regression diagnosis 与单卡 H800 LoRA probe evidence。`2026-08-09` 决定接受这些更强实际运行结果作为 Day 15 的 superseding evidence；随后又把 Day 20 三档均失败必要门禁的 LoRA probe 作为 Day 16 的 no-candidate 退出证据。两次关闭都没有产生 S1。完整边界见 [`Day 15 Close`](artifacts/reports/day15-close.md) 与 [`Day 16 Gap Audit`](artifacts/reports/day16-gap-audit.md)。
+
+`2026-08-12`，后续批准的 RSI v0002 charter 在不改写上述历史 closeout 的前提下修复 Code target boundary，使用同一 Base revision 训练 `early/mid/final` 三个 resumable main checkpoints。冻结 selector 选择 `main-s20260809-lr1e-4-final`：Primary 为 `81/112`（G21/M21/F19/Code20），fresh-Base independent seed Confirmation 为 `73/112`（G21/M21/F14/Code17），两次均通过全部 fixed-full112 gates。该结果只证明 fixed-suite qualification；`merge_performed=false`，checkpoint recovery、merged export/reload parity 与 downstream S1 manifest 仍待完成。证据见 [`RSI v0002 result`](rsi-control/versions/rsi-v0002/RSI-V0002-RESULT.md)。
 
 ## 为什么不能只替换 model ID
 
@@ -59,9 +61,9 @@ Gate 默认按顺序 fail closed。Day 15 是一次显式例外：它以 `closed
 - M0/M1 已按原意通过。
 - M2 由 Day 18 冻结 runtime/loader 与 Day 20 单卡 HF LoRA runtime 覆盖。
 - M3 有真实 processor/template、监督 token 复核、response adapter 与 trainable inventory 证据，但原 `10+10` golden audit 未生成。
-- M4 原 7,860 条 manifest v2 和新 selection/confirmation split 未执行；Day 20 使用独立六源 balanced contract，二者不声称等价。
-- M5 的 learnability/save/capacity 由 Day 18/20 覆盖；LoRA exact resume 的 Day 17 状态保持 blocked，runtime 设计降级为顺序课程 Day 20 Optional R，不再作为 S1 硬 gate。
-- M6/M7 不受本关闭影响：当前无 S1，DPO/GRPO 继续 blocked。
+- M4 原 7,860 条 manifest v2 和独立 dev/confirmation split 未执行；RSI v0002 使用独立六源 balanced contract，并在同一 full112 上做 independent-training-seed Confirmation，二者不声称等价。它只提供一次 additional-seed same-suite reproducibility check，不估计 seed 分布，也不证明 held-out 泛化。
+- M5 的 learnability/save/capacity 由 Day 18/20 与 RSI v0002 覆盖；selected/resumable checkpoint 已存在。LoRA exact resume 仍未运行，runtime 设计保留为顺序课程 Day 20 Optional R，不再作为 S1 硬 gate；当前硬缺口是 winner export/reload parity。
+- M6 的 selection/confirmation 已由 RSI v0002 通过；M7 仍等待 downstream-ready S1 manifest，DPO/GRPO 继续 blocked。
 
 ### M0 — Lineage boundary
 
@@ -95,7 +97,7 @@ Gate 默认按顺序 fail closed。Day 15 是一次显式例外：它以 `closed
 
 ### M4 — 数据与 eval 重建
 
-关闭处置：`not_executed_superseded`。Day 20 使用独立六源数据合同；原 7,860 条 manifest v2 和新 selection/confirmation split 不存在，未来 promotion 必须声明实际合同。
+关闭处置：`not_executed_superseded`。Day 20/RSI 使用独立六源数据合同；原 7,860 条 manifest v2 和独立 selection/confirmation split 不存在。RSI 实际合同已声明同一 full112 comparison identity 与独立训练 seed；它不是新 held-out split。
 
 - 用新 processor 重算长度、label tokens、truncation、mixture 和 supervised-token schedule；旧 Day 09/12 token budget 作废。
 - 建立新的 v2 coding-heavy dev/confirmation manifest；冻结 task IDs、prompt/template、decoder、stop、sandbox/scorer、timeout、seed 和 comparison key。
@@ -103,7 +105,7 @@ Gate 默认按顺序 fail closed。Day 15 是一次显式例外：它以 `closed
 
 ### M5 — 训练链路与显存验收
 
-关闭处置：`learnability_and_capacity_covered_exact_lora_resume_optional`。Day 18/20 已覆盖真实更新、保存/continuation/export 与 H800 容量；没有 LoRA exact-resume parity。Day 17 在新 selected/resumable candidate 出现前保持 blocked；若未来确有诊断需要，按顺序课程 [`Day 20 Optional R`](day-20-weekend-training-failures/README.md#optional-r--exact-resume-failure-lab) 执行，不再作为 S1 promotion 硬 gate。历史证据分级见 [`Day 17 Gap Audit`](artifacts/reports/day17-gap-audit.md)。
+关闭处置：`learnability_and_capacity_covered_exact_lora_resume_optional`。Day 18/20 与 RSI v0002 已覆盖真实更新、resumable save/continuation 与 H800/RTX PRO 6000 容量；没有 LoRA exact-resume parity。selected/resumable candidate 已存在，Day 17 因而不再受“无候选”阻塞；若未来确有诊断需要，按顺序课程 [`Day 20 Optional R`](day-20-weekend-training-failures/README.md#optional-r--exact-resume-failure-lab) 执行。它不是 S1 promotion 硬 gate。winner-only merged export/fresh-reload parity 仍是 downstream handoff gate。历史证据分级见 [`Day 17 Gap Audit`](artifacts/reports/day17-gap-audit.md)。
 
 - 顺序固定为：one forward/backward/optimizer step → 2–4 样本 tiny overfit → save/fresh-process resume → BF16 export/reload parity。
 - 记录 finite loss/grad、LoRA coverage、trainable/frozen parameter counts、每卡 `max_memory_allocated`/`max_memory_reserved`、吞吐和完整 step 后余量。
@@ -112,16 +114,18 @@ Gate 默认按顺序 fail closed。Day 15 是一次显式例外：它以 `closed
 
 ### M6 — Coding SFT candidate 与 anchor 晋级
 
-关闭处置：`day16_closed_no_eligible_candidate`。Day 20 三档 16k-token/103-step LoRA probe 均有不依赖 E2B 的必要门禁失败，main 未启动；packing 固定为 `false`，没有 provisional anchor。下一次 candidate attempt 必须使用新批准的 SFT charter，不能从失败 probe 手工挑选。
+历史关闭处置：`day16_closed_no_eligible_candidate`。旧 Day 20 三档 16k-token/103-step LoRA probe 均有不依赖 E2B 的必要门禁失败，main 未启动；packing 固定为 `false`，没有 provisional anchor。这个结论不追溯改写。
+
+当前处置：`rsi_v0002_selection_confirmed_qualified / downstream_s1_delivery_pending`。后续新 charter 的 early/mid/final 均通过 hard floors；final 按冻结的 `Total -> General -> Code -> earlier tokens` 规则胜出。同 recipe、同 checkpoint label、fresh Base 的第二个训练 seed checkpoint 也通过同一 full112。checkpoint integrity、snapshot、adapter hashes 与 `resumable=true` 已记录。final 是 policy-selected operational winner；缺少 paired raw bytes/CI 与独立 held-out，统计唯一最优和跨套件泛化仍为 `inconclusive`。
 
 - Day 16 从 Qwen3.5 Base 运行受控 LoRA/QLoRA coding SFT；学习率、adapter coverage、token budget 和 checkpoint 节奏重新预注册，不继承 0.6B 数值，并产生预注册 candidate set。
-- Day 21 盲化审计候选。只有同时通过 code primary metric、retention guardrails、termination/length、sandbox error rate、checkpoint integrity 与 export gate 的候选，才能登记为正式 `S1`。逐 step exact-resume parity 是 Day 20 Optional R 的补充诊断，不是 promotion 必填项。
-- 若 Day 21 无合格 `S1`，Day 23 DPO 和 Day 25 GRPO 均 blocked；禁止用 Base 或“看起来最好”的不合格 checkpoint 绕过。
+- Day 21 已完成 fixed-suite candidate selection 与 independent-training-seed confirmation。只有 checkpoint recovery、winner-only merged export/reload parity 与 immutable downstream manifest 也完成后，才能登记为 downstream-ready `S1`。逐 step exact-resume parity 是 Day 20 Optional R 的补充诊断，不是 promotion 必填项。
+- 在 downstream-ready `S1` manifest 出现前，Day 23 DPO 和 Day 25 GRPO 均 blocked；禁止用 Base、远端 URI 或只有 selection decision 的 adapter 绕过。
 - Standalone Day 19 的 Full-SFT checkpoints 与 Day 20 的三档 LoRA probes 都是诊断产物：前者未成为合格 anchor，后者没有 passing probe且未启动 main。两者均不能写入 S1 slot。
 
 ### M7 — DPO / Coding GRPO ancestry
 
-- DPO 与 GRPO 都从同一个已晋级 `S1` 分叉，记录 parent hash、processor/template、policy/reference/rollout version。
+- DPO 与 GRPO 都只能从同一个 `downstream_ready=true` 的 S1 manifest 分叉，记录 parent hash、processor/template、policy/reference/rollout version。
 - Coding reward 优先使用 CPU 隔离 sandbox、确定性测试、timeout 和 error taxonomy；LLM judge 是额外 GPU 预算，不默认启用。
 - GRPO 显式限制 rollout context/model length；首轮建议 8K，只有显存/吞吐证据通过后才上探 12K，绝不继承 262K native context。
 - 先跑 5–10 step smoke，检查 reward variance、KL、长度、stale rollout、mask/logprob 对齐、save/resume，再启动控制实验。
@@ -150,10 +154,10 @@ BF16 完整权重约 8.68 GiB，但 optimizer、gradient、activation、logits�
 | 14 | Week 2 历史复盘 + v2 readiness contract | M0 清楚；M1–M6 owner/证据/stop 已列明 |
 | 15 | Qwen3.5 onboarding acceptance | `closed_superseded_by_day18_20`；不重跑、不补造原 artifacts、无 S1 |
 | 16 | 受控 coding LoRA SFT + packing parity | `closed_no_eligible_candidate`；packing=false，main 未启动，无 S1 |
-| 17 | selected config exact resume/repro | [`audited / blocked`](artifacts/reports/day17-gap-audit.md)；状态不变，runtime 执行归入 Day 20 Optional R |
+| 17 | selected config exact resume/repro | [`audited / optional_not_run`](artifacts/reports/day17-gap-audit.md)；selected/resumable candidate 已有，runtime 仅按诊断需要归入 Day 20 Optional R |
 | 18 | Megatron/TP 最小链 + Qwen3.5 兼容 gate | [`closed_pass_c0_c5`](artifacts/reports/day18-close.md)；GDN、loader、checkpoint/export parity 与 closeout audit 有证据，0 追加 GPU |
 | 19 | optimizer/LR 稳定性 + failure injection | 完成单变量诊断矩阵 |
-| 20–22 | 失败阅读 + Optional R、Day 21 最终 S1 promotion、preference 数据 | 正式 S1（或 no-anchor）和 coding pair contract 冻结；exact resume 可跳过 |
+| 20–22 | 失败阅读 + Optional R、Day 21 selection、preference 数据 | Day 21 学习与 fixed-suite qualification 已完成；preference 尚未完成，S1 delivery 等待 recovery/export parity/manifest；exact resume 可跳过 |
 | 23 | Qwen3.5 DPO smoke | parent=S1；loss/mask/reference/eval gate 通过 |
 | 24 | coding online-RL/reward contract | sandbox 与 trajectory schema 可重算 |
 | 25 | Qwen3.5 coding GRPO smoke | parent=S1；5–10 step + memory/KL/reward gate 通过 |
@@ -168,7 +172,7 @@ BF16 完整权重约 8.68 GiB，但 optimizer、gradient、activation、logits�
 - v2 baseline、golden token/mask、tiny-overfit、checkpoint integrity/save-reload 任一缺失；
 - 完整 optimizer step 后显存余量低于 10%；
 - GRPO rollout 超过显式 8K/12K cap、reward 无方差、policy version stale 或 logprob/mask 错位；
-- 未晋级 S1 却尝试 DPO/GRPO；
+- 只有 RSI selection decision、但尚无 recovered/export-parity-verified S1 manifest 时尝试 DPO/GRPO；
 - 为让 slime 跑起来而静默切换模型、revision 或训练目标。
 
 机器可读合同见 [`artifacts/configs/qwen35-4b-migration-contract.json`](artifacts/configs/qwen35-4b-migration-contract.json)。资源与租卡细节见 [`AUTODL.md`](AUTODL.md)，每日执行入口见 [`README.md`](README.md) 与 [`PROGRESS.md`](PROGRESS.md)。

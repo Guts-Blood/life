@@ -1,6 +1,6 @@
 # 30-Day LLM Post-Training Bootcamp
 
-状态：`in_progress`（Day 15 已关闭；Day 16 已由 Day 20 evidence 以 no-candidate 收束；Day 13–14 保留为阅读 backlog；Qwen3.5 Base active，尚无 S1）
+状态：`in_progress`（Day 15/16 历史 closeout 保持不变；Day 21 学习与 fixed-full112 selection 已完成；RSI v0002 已选出 same-suite confirmed-qualified operational winner；downstream-ready S1 尚待 checkpoint recovery、merged export/reload parity 与 manifest，DPO/GRPO 未解锁）
 
 执行日期：`2026-07-27`（周一）至 `2026-08-25`（周二）  
 建议投入：工作日 4–5 小时；周末严格控制为 1 小时 reading/review，不租 GPU  
@@ -53,21 +53,22 @@
 | [verl](https://verl.readthedocs.io/) | 对照 actor/rollout/ref/reward resource-pool；teacher/OPD 用法只保留为 deferred extension | 30-Day 阅读；可选 Systems Stretch |
 | [NVIDIA Megatron-LM](https://github.com/NVIDIA/Megatron-LM) | 建立最小多卡 codepath、rank/state/checkpoint 心智模型 | 最小 smoke，不做全仓通读 |
 
-模型策略分为两条不可混写的 lineage：Day 01–12 的 `Qwen/Qwen3-0.6B-Base@ddc928429ed09d9ad603fd762053d0434c15e865` 是 immutable `v1` 历史；Day 13+ 的唯一活动模型是 `Qwen/Qwen3.5-4B-Base`，属于 `v2`。Standalone Day 18–20 已把 exact revision `1001bb4d826a52d1f399e183466143f4da7b741b` 与文件 hash 固定为共同运行根，并以更强实际运行证据关闭 Day 15 onboarding；Day 20 的三条 LoRA probe 又以合法的 no-candidate 结果收束 Day 16。两次关闭都不补造缺失 artifacts，不完成 LoRA exact resume，也不产生 S1。
+模型策略分为两条不可混写的 lineage：Day 01–12 的 `Qwen/Qwen3-0.6B-Base@ddc928429ed09d9ad603fd762053d0434c15e865` 是 immutable `v1` 历史；Day 13+ 的唯一活动模型是 `Qwen/Qwen3.5-4B-Base`，属于 `v2`。Standalone Day 18–20 已把 exact revision `1001bb4d826a52d1f399e183466143f4da7b741b` 与文件 hash 固定为共同运行根，并以更强实际运行证据关闭 Day 15 onboarding；旧 Day 20 的三条 LoRA probe 又以合法的 no-candidate 结果收束 Day 16。`2026-08-12` 的独立 RSI v0002 charter 随后修复 Code target boundary，训练 early/mid/final 并选中 `main-s20260809-lr1e-4-final`；同 recipe 的 fresh-Base independent-training-seed checkpoint 也通过同一 full112。它不追溯改写 Day 16 历史，也尚未完成 downstream S1 export/manifest 交接。
 
-Qwen3.5-4B-Base 是含 vision encoder 的原生多模态 checkpoint。coding 主线保留完整官方 processor/conditional-generation loader，但输入固定为 text-only，并冻结 vision tower 与 aligner、断言 LoRA module coverage；不把它当旧 `AutoModelForCausalLM` 脚本的直接替换。DPO 和 GRPO 必须从新晋级的 coding SFT `S1` 起步，不能从 Base 或 Day 12 的 0.6B export 起步。详见 [Qwen3.5-4B 迁移计划](QWEN35-4B-MIGRATION-PLAN.md)。
+Qwen3.5-4B-Base 是含 vision encoder 的原生多模态 checkpoint。coding 主线保留完整官方 processor/conditional-generation loader，但输入固定为 text-only，并冻结 vision tower 与 aligner、断言 LoRA module coverage；不把它当旧 `AutoModelForCausalLM` 脚本的直接替换。DPO 和 GRPO 必须从未来完成 handoff 的 downstream-ready coding SFT `S1` 起步，不能从 Base、Day 12 的 0.6B export 或仅有 selection decision 的 adapter 起步。详见 [Qwen3.5-4B 迁移计划](QWEN35-4B-MIGRATION-PLAN.md)。
 
 slime 阅读基线仍固定为 `v0.3.0`，但运行时必须验证该 release 或另一个明确 pin 的 release 是否支持 Qwen3.5 完整 load→rollout→train→weight-sync；不为跑通框架而静默换模型。Teacher/OPD 没有活动模型，只有用户另行决定后才建立 charter v2。
 
 ## 提前执行的 Standalone Experiments
 
-下列目录使用实验发生时的 Day 18–20 run identity，不替代顺序课程中同编号的学习任务。三者合并后用于 [`Day 15 Close`](artifacts/reports/day15-close.md)；其中 Day 20 的实际 LoRA probe evidence 另用于 [`Day 16 no-candidate close`](artifacts/reports/day16-gap-audit.md)。它们都不自动推进 Day 17 或 S1 gate：
+下列目录使用实验发生时的 Day 18–20 run identity，不替代顺序课程中同编号的学习任务。前三项用于历史 Day 15/16 closeout；RSI v0002 是后续独立 charter，完成 selection qualification 但不自动完成 downstream S1 交付：
 
 | 实验 | 状态 | 结论边界 |
 |---|---|---|
 | [Day 18 Megatron compatibility](day-18-megatron-minimum-codepath/README.md) | closed_pass | C0–C5 与 [`closeout audit`](artifacts/reports/day18-close.md) 通过；0 追加 GPU。是 Day 15 close 的 runtime/learnability 证据，但不等于 LoRA exact resume 或 S1。 |
 | [Standalone Day 19 Full-SFT comparison](day-19-qwen35-sft-comparison/README.md) | done / diagnostic only | A/B/E comparison 与 Qwen3.5 v2 rescoring 用于定位评测合同和 Full-SFT 退化；没有产生 promoted S1。 |
 | [Standalone Day 20 balanced LoRA probes](day-20-qwen35-balanced-lora-sft/README.md) | closed / no passing probe | 三档 LR probe 已完成但每条都有必要门禁失败；作为 Day 16 no-candidate close evidence，main、winner merge 与 S1 均未发生。 |
+| [RSI v0002 / Day 20 v3 target-boundary SFT](rsi-control/versions/rsi-v0002/RSI-V0002-RESULT.md) | confirmed-qualified / delivery pending | Primary final `81/112`、独立训练 seed Confirmation `73/112`，全部 frozen gates 通过；`merge_performed=false`，尚非 downstream-ready S1。 |
 
 原 [`day-19-training-diagnostics-failure-injection`](day-19-training-diagnostics-failure-injection/README.md) 和 [`day-20-weekend-training-failures`](day-20-weekend-training-failures/README.md) 仍是顺序课程 Day 19/20，状态保持 `not_started`。
 
@@ -118,18 +119,18 @@ slime 阅读基线仍固定为 `v0.3.0`，但运行时必须验证该 release �
 
 - [x] [Day 15 · 08-10 — Qwen3.5-4B onboarding 与迁移验收](day-15-packing-sequence-ablation/README.md)（08-09 `closed_superseded_by_day18_20`；不重跑、不补造原 artifacts、无 S1）
 - [x] [Day 16 · 08-11 — 受控 coding LoRA SFT、packing parity 与 S1 candidates](day-16-optimization-stability-ablation/README.md)（08-09 `closed_no_eligible_candidate_by_day20_evidence`；packing=false，无 S1）
-- [ ] [Day 17 · 08-12 — Exact checkpoint resume 与可复现](day-17-checkpoint-resume-repro/README.md)（[`gap audit`](artifacts/reports/day17-gap-audit.md) 已完成；runtime blocked：无 selected/resumable candidate，0 GPU）
+- [ ] [Day 17 · 08-12 — Exact checkpoint resume 与可复现](day-17-checkpoint-resume-repro/README.md)（[`gap audit`](artifacts/reports/day17-gap-audit.md) 已完成；RSI v0002 已有 selected/resumable candidate，exact-resume 为 optional_not_run，不阻塞 S1）
 - [x] [Day 18 · 08-13 — Megatron 最小源码链、双卡 TP/DP 与 distributed checkpoint](day-18-megatron-minimum-codepath/README.md)（08-10 `closed_pass_c0_c5`；[Close 报告](artifacts/reports/day18-close.md)，0 追加 GPU，不推进 S1）
-- [ ] [Day 19 · 08-14 — Optimizer/LR 稳定性与 failure injection](day-19-training-diagnostics-failure-injection/README.md)（blocked：无 Day 16/17 stable baseline）
+- [ ] [Day 19 · 08-14 — Optimizer/LR 稳定性与 failure injection](day-19-training-diagnostics-failure-injection/README.md)（not_started；RSI v0002 recipe 可作为 baseline）
 - [ ] [Day 20 · 08-15（周末 1h）— Training failure signatures](day-20-weekend-training-failures/README.md)（Core CPU；原 Day 17 exact-resume 实验移为 Optional R，默认可跳过）
-- [ ] [Day 21 · 08-16（周末 1h）— Qwen3.5 SFT candidate audit 与 S1 promotion](day-21-weekend-eval-reading/README.md)（blocked：Day 16 no-candidate）
+- [x] [Day 21 · 08-16（周末 1h）— Qwen3.5 checkpoint selection 与 fixed-suite qualification](day-21-weekend-eval-reading/README.md)（08-13 提前完成；selection/confirmation done，downstream S1 delivery pending）
 
 ### Week 4：Preference、DPO 与 Online RL（08-17 至 08-23）
 
 - [ ] [Day 22 · 08-17 — Preference provenance、length bias 与 held-out](day-22-preference-data/README.md)
-- [ ] [Day 23 · 08-18 — Qwen3.5 coding DPO smoke（parent=S1）](day-23-dpo-theory-smoke/README.md)
+- [ ] [Day 23 · 08-18 — Qwen3.5 coding DPO smoke（parent=S1）](day-23-dpo-theory-smoke/README.md)（blocked until downstream-ready S1 manifest）
 - [ ] [Day 24 · 08-19 — Coding online-RL dataflow 与 sandbox reward contract](day-24-online-rl-dataflow-reward/README.md)
-- [ ] [Day 25 · 08-20 — Qwen3.5 coding GRPO lab（parent=S1）](day-25-grpo-small-model-lab/README.md)
+- [ ] [Day 25 · 08-20 — Qwen3.5 coding GRPO lab（parent=S1）](day-25-grpo-small-model-lab/README.md)（blocked until downstream-ready S1 manifest）
 - [ ] [Day 26 · 08-21 — slime 固定 release 的 Qwen3.5 兼容 gate](day-26-slime-codepath-prep/README.md)
 - [ ] [Day 27 · 08-22（周末 1h）— GRPO 与 on-policy 边界](day-27-weekend-slime-rl-reading/README.md)
 - [ ] [Day 28 · 08-23（周末 1h）— slime debug/replay/repro/observability](day-28-weekend-slime-architecture/README.md)
@@ -170,7 +171,7 @@ slime 阅读基线仍固定为 `v0.3.0`，但运行时必须验证该 release �
 5. Checkpoint 至少区分“仅可推理权重”和“可连续训练状态”并通过完整性审计；只有研究 continuation/exactness 时，才运行 Day 20 Optional R 验证 step、LR、optimizer、数据位置与 RNG 的逐步连续性。
 6. 当天失败要保存最小证据和下一项验证，不为打勾隐藏失败。
 7. Day 07、14、21、28 使用 [`templates/weekly-review.md`](templates/weekly-review.md)。
-8. v2 的 DPO/GRPO 必须从 promoted `S1` 分叉；Base 和 0.6B checkpoint 都不能充当 parent。Teacher/OPD 若以后启用，额外记录 student rollout/policy version、teacher checkpoint/log-prob、token alignment、distillation mask/objective 和各角色 GPU-hours。
+8. v2 的 DPO/GRPO 必须从 downstream-ready `S1` manifest 分叉；仅有 selected/confirmed-qualified checkpoint 在 merged export parity 与 immutable manifest 完成前仍不能充当 parent。Base 和 0.6B checkpoint 也不能充当 parent。Teacher/OPD 若以后启用，额外记录 student rollout/policy version、teacher checkpoint/log-prob、token alignment、distillation mask/objective 和各角色 GPU-hours。
 
 ## 配套文件
 
