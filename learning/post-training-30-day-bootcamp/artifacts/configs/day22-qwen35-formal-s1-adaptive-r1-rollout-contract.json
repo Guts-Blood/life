@@ -1,0 +1,1866 @@
+{
+  "contract_sha256": "4c0f64361a223924b98128a6a6956e7c432547c556cb5fc7b3e727c4865310d6",
+  "generation_profiles": {
+    "supplemental_t08": {
+      "adaptive_objective": "opposite_class_discovery_for_all_execution_quarantines",
+      "add_non_thinking_prefix": true,
+      "do_sample": true,
+      "enable_thinking": false,
+      "max_new_tokens": 512,
+      "num_beams": 1,
+      "repetition_penalty": 1.0,
+      "response_boundary": "exact_generated_token_ids_decode",
+      "response_repair": false,
+      "samples_per_family": 12,
+      "temperature": 0.8,
+      "top_p": 0.95
+    }
+  },
+  "implementation": {
+    "path": "/root/autodl-tmp/day22-preference-20260813/adaptive-r1/inputs/rollout_day22_s1_adaptive.py",
+    "sha256": "595c7fdba4dae30e268198f18bc264a1535b0e7bb9b79906cce2dd8349effd90"
+  },
+  "non_overwrite": {
+    "parent_round_is_read_only": true,
+    "separate_output_namespace_required": true
+  },
+  "output_root": "/root/autodl-tmp/day22-preference-20260813/adaptive-r1/rollout",
+  "parent_round": {
+    "eligible_pairs": 141,
+    "ordered_selection_sha256": "5d6457d21bb7d1242f66341dd79d5b4c86f38d3f2cf917f73003e43f4dbb10eb",
+    "quarantined_families": 189,
+    "rollout_contract_file_sha256": "727e14053c2416ef7ac6214f411b32058e0f7e6e4645ca84323b64a9bc2b43dc",
+    "rollout_contract_path": "/root/autodl-tmp/day22-preference-20260813/rollout/rollout-contract.json",
+    "rollout_contract_sha256": "0b0c412a52bbfc419804307562fef29716195efe62e54b45e9be3737b939794f",
+    "selection_file_sha256": "aac188ef2abfbe9e15d1f8f456cf07a590b5b705828b63aea53c0fe3558f9e5b",
+    "selection_path": "/root/autodl-tmp/day22-preference-20260813/adaptive-r1/inputs/base-selections.jsonl",
+    "selection_summary_file_sha256": "88ed7b62415083ae030df4e1ea919152bc4b37b95fa3a495ae32879b9f59fc5e",
+    "selection_summary_path": "/root/autodl-tmp/day22-preference-20260813/adaptive-r1/inputs/base-selection-summary.json",
+    "selection_summary_sha256": "bb02326a8c54505957137fe96b6577230bde19ceed2a44967fd12b8e0ef9f0ef"
+  },
+  "partition": {
+    "candidates_per_shard": {
+      "0": 1140,
+      "1": 1128
+    },
+    "domain": "day22.s1_adaptive_rollout.family_partition.v1",
+    "families_per_shard": {
+      "0": 95,
+      "1": 94
+    },
+    "family_unit": "native_mbpp_task_id",
+    "shards": 2,
+    "total_candidates": 2268,
+    "total_families": 189
+  },
+  "round_id": "adaptive-r1",
+  "runtime": {
+    "ms_swift_commit": "565a1ad586a21d24b23931c52d2c62b49c39bee8",
+    "platform": "Linux-5.15.0-78-generic-x86_64-with-glibc2.35",
+    "python": "3.12.13",
+    "runtime_sha256": "717663a6b84c94a38d47c36d7f51c824b443ba6c71397e99b500662a0cc13f52",
+    "versions": {
+      "ms-swift": "4.5.0.dev0",
+      "peft": "0.19.1",
+      "torch": "2.10.0+cu128",
+      "transformers": "5.12.1"
+    }
+  },
+  "s1": {
+    "candidate": "main-s20260809-lr1e-4-final",
+    "lineage_manifest": {
+      "downstream_key": "s1:qwen35-4b:c169e0bb55b20951d27a889e4ef0deae3a01fe10acabee804b212d3d8170db0a",
+      "file_sha256": "40c76f690dcb73805250e0036f8e124ef07b8d2d32b1723637656ae4304d94f8",
+      "merged_export_manifest_sha256": "660eed4af7f76796631561275f0190c402952520a8ccce358289e6269fb8f8d3",
+      "merged_export_path": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/exports/main-s20260809-lr1e-4-final-merged",
+      "path": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/handoff/S1-PROMOTION-MANIFEST.json",
+      "promotion_manifest_sha256": "64e6a6bd61951d1f10eb4def520273cb056625c1b041b68ba861c6d1e15d7a6c"
+    },
+    "merged_export": {
+      "files": {
+        "S1-EXPORT-MANIFEST.json": {
+          "bytes": 4082,
+          "sha256": "9c196e43f633116d7fc804870dcfe961db5ae0d216a15f5e21d679d8c1f14b5a"
+        },
+        "args.json": {
+          "bytes": 18601,
+          "sha256": "f4d27ae56c5ee62d34a2a609fc187a062add25868b90ad4257a67bcd9ee78d60"
+        },
+        "chat_template.jinja": {
+          "bytes": 7756,
+          "sha256": "a4aee8afcf2e0711942cf848899be66016f8d14a889ff9ede07bca099c28f715"
+        },
+        "config.json": {
+          "bytes": 2854,
+          "sha256": "d6b4ebb8f9dedae345917774f2fe9560a845d3f692930ca4b7019b895577dcf7"
+        },
+        "generation_config.json": {
+          "bytes": 138,
+          "sha256": "f7c35afc4eda09ee1a9cbe029b030dc9875ab3c201401c48044448e8153acea2"
+        },
+        "model-00001-of-00002.safetensors": {
+          "bytes": 4972947968,
+          "sha256": "14cceb382dd7e166ef36bf387f7dad77c2e22b3bd0a7d274e18b24ac8b8d935e"
+        },
+        "model-00002-of-00002.safetensors": {
+          "bytes": 4105672464,
+          "sha256": "0a36e6b47550320e295badda930a4cc92ed7a7af1f2b9d02d2f5a400f086ccb5"
+        },
+        "model.safetensors.index.json": {
+          "bytes": 66236,
+          "sha256": "df59e0e8f68ce1841a11ec0ba05e468a1413a7c5df5d1fa1e8b29a911a1b29d1"
+        },
+        "preprocessor_config.json": {
+          "bytes": 390,
+          "sha256": "27225450ac9c6529872ee1924fcb0962ff5634834f817040f444118116f4e516"
+        },
+        "processor_config.json": {
+          "bytes": 1192,
+          "sha256": "d601e2fe0de1bc11852de3aa843f01a1677ca84f4dc743916c9ce4b8d30fb384"
+        },
+        "tokenizer.json": {
+          "bytes": 19989325,
+          "sha256": "06b9509352d2af50381ab2247e083b80d32d5c0aba91c272ca9ff729b6a0e523"
+        },
+        "tokenizer_config.json": {
+          "bytes": 1167,
+          "sha256": "1c1b379d36cfe15f429377390bbd59f8668051231a5e1ffe0ea0ee32ca3f8937"
+        }
+      },
+      "path": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/exports/main-s20260809-lr1e-4-final-merged",
+      "snapshot_sha256": "768f2bc3c839edf5b6e0757403e3faa5a085ac9094f2987a34c6913bbca00806"
+    },
+    "model_revision": "1001bb4d826a52d1f399e183466143f4da7b741b",
+    "model_role": "merged_s1",
+    "source_adapter_sha256": "29dc1a7d676b7f2f88675521bc44cf81dd43b700423df3cf4adf8d6a1c4487c3",
+    "source_checkpoint": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/adapters/main/s20260809/lr1e-4/attempt-001/checkpoint-1904",
+    "source_checkpoint_integrity_sha256": "d0f72be9751628c9073cc8e4104f16d8620bd598dbb8a1e97f1df9bae51170a3",
+    "source_checkpoint_snapshot_sha256": "c169e0bb55b20951d27a889e4ef0deae3a01fe10acabee804b212d3d8170db0a"
+  },
+  "schema_name": "day22.s1_adaptive_rollout_contract",
+  "schema_version": 1,
+  "seed_pool": {
+    "families": 330,
+    "file_sha256": "90943afc694d3aef121c3d58b751c52e0bbfaa0d48f7388dbc90a9088821ed8e",
+    "manifest_sha256": "700a7e16aa14ae62ad630c9d64f384c3c4274f9bf63a26e19babd4e4849c2ad1",
+    "path": "/root/autodl-tmp/day22-preference-20260813/inputs/day22-qwen35-mbpp-seed-manifest.json"
+  },
+  "status": "frozen",
+  "targeting": {
+    "families": [
+      {
+        "family_id": "mbpp:task:817",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "82556042f058b98f541f2bb06400fbe961dea64ae1ec2f7e9128fea69469ed3f",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "817"
+      },
+      {
+        "family_id": "mbpp:task:872",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "5e41e1ab4c284eb45ab5062efbe6e84da72d8396931d5ac4fb0e4c63bcddf93b",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "872"
+      },
+      {
+        "family_id": "mbpp:task:907",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "9d17eb26f8d8f43dee0288033283ab046645c75bfc9938950f63c900a0467776",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "907"
+      },
+      {
+        "family_id": "mbpp:task:690",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "37922d3864786d36a1b7478dc5a331ba678d237024a66ef5e613a0266ad2c0e9",
+        "split": "dev",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "690"
+      },
+      {
+        "family_id": "mbpp:task:838",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "4400b876a42262406305fc431336303748c5febc5ba285e46b52f4bd961c8b5d",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "838"
+      },
+      {
+        "family_id": "mbpp:task:959",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "4f4f4ae6b6dadfff2af1edadf693f8eb3d505b2d3e34dc4c3a9459d18badba1c",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "959"
+      },
+      {
+        "family_id": "mbpp:task:802",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "d313bc84652409b2199181be15754e2a4cc708007629f58a388b620d2a1dc709",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "802"
+      },
+      {
+        "family_id": "mbpp:task:850",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "66e28e14707aae50267be45e280a329f7369de3503795c44bc4d444f52936d1f",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "850"
+      },
+      {
+        "family_id": "mbpp:task:723",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "87d8b7b2c79de0f68a957d13c3f2b0f74ae4a2b26823d8c05ec10806a962ecdf",
+        "split": "dev",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "723"
+      },
+      {
+        "family_id": "mbpp:task:703",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "92344df9737655070ec2d43e3de4f747f96b1a2af9843c0d482ec487a5b0f926",
+        "split": "dev",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "703"
+      },
+      {
+        "family_id": "mbpp:task:936",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "53756b072f9a3aecd02f965f3bb72555b66848d56610e3d7b7f5bfb6908cfa8f",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "936"
+      },
+      {
+        "family_id": "mbpp:task:680",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "51dc5f8091f057e53c23a2eb4825c005eb5bd7463150b5880c8250de1c213874",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "680"
+      },
+      {
+        "family_id": "mbpp:task:925",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "e082e595cddf2fbd5e9e6339823be2e551954a189e6ff0baf7dc0374fd723aab",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "925"
+      },
+      {
+        "family_id": "mbpp:task:708",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "d190ce24fe422b79c8c22b195d0d66ec04f38f32a4e2369408dd9d7ba3d783c9",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "708"
+      },
+      {
+        "family_id": "mbpp:task:732",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "858fd6afd94747a2e78687603b6f71dc213ee8d29751167a97861733f76dbd16",
+        "split": "dev",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "732"
+      },
+      {
+        "family_id": "mbpp:task:818",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "4ab486b6f0df94f05086a79f4cd50bd2da0aaa20b33a8cbe81ce63561bd9255b",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "818"
+      },
+      {
+        "family_id": "mbpp:task:969",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "f622ffe0bdab952c5707ad518cf6f7613433d9f90711b74d8e926beed865094a",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "969"
+      },
+      {
+        "family_id": "mbpp:task:916",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "d387628d064a0643817ff978d61318177446ef0c610ce001ded7179fb9e15cfd",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "916"
+      },
+      {
+        "family_id": "mbpp:task:795",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "c9a39e78a34fe4a60aa0c61e40a998e09707d1922e464893056d84fe4028f699",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "795"
+      },
+      {
+        "family_id": "mbpp:task:810",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "936660713bb6ec8be287105e2b42699651e6f37f9d5635720d6b8b009b947d91",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "810"
+      },
+      {
+        "family_id": "mbpp:task:798",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "c0258dc9848f958336bb414281945533a575b0fd7b60a4bcc7d21e3c7043fcb9",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "798"
+      },
+      {
+        "family_id": "mbpp:task:876",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "33012777ba0393279b4b2c137a2cf915790d25e7ba52753abc3c38c67efd9d63",
+        "split": "heldout",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "876"
+      },
+      {
+        "family_id": "mbpp:task:914",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "adcac9aa12a0d6e5675b35bb9cbbe7f8678278d09b313f898cf719f8d325b922",
+        "split": "dev",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "914"
+      },
+      {
+        "family_id": "mbpp:task:714",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "5016522e7594d4539e2bbfa3b0e38b0ff4e0fd0da1467edaee4ab8cc4e28f6fe",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "714"
+      },
+      {
+        "family_id": "mbpp:task:611",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "be80c308d8b59c398b8e6c2ba54a01978c11a82a5e45c4a8d02a7a2737ca9057",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "611"
+      },
+      {
+        "family_id": "mbpp:task:799",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "270a54d826426b82eac6f3af63e762fafbc87fef5fc0232c7d1e65e3a06c2444",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "799"
+      },
+      {
+        "family_id": "mbpp:task:884",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "63fcd921b89f0b0c861bd3154e6e44ae1910e9cddf77ac8c0a0e3dec01099c81",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "884"
+      },
+      {
+        "family_id": "mbpp:task:870",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "7f61b8197d314cde5a7a9b95e163e70171c25044fd2a10fff8b4049819fc8e37",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "870"
+      },
+      {
+        "family_id": "mbpp:task:790",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "e6694e10549761d0d661a8b1631a66a25a6b5e5e2ff9733a822f9c7f15d4f2c8",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "790"
+      },
+      {
+        "family_id": "mbpp:task:661",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "e317628d796f6ef60ed9a268d1f2ff6b692273f18b604d23dfee9de9ebb85bea",
+        "split": "heldout",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "661"
+      },
+      {
+        "family_id": "mbpp:task:929",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "03249bc32f604daddab54574897d84c746477a5e0e3abe000aa770b74afe6e5a",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "929"
+      },
+      {
+        "family_id": "mbpp:task:825",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "0d37882432c402b0d20d87fcaac7f04a58725a8c50225d76df7780e574952ffe",
+        "split": "heldout",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "825"
+      },
+      {
+        "family_id": "mbpp:task:631",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "7e94a43441b85e854d384cc1e12d85faee79b28229e51c49f55d74d88496cc76",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "631"
+      },
+      {
+        "family_id": "mbpp:task:760",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "a68622f37ad4fdee851c14494bbab9f49ff4d8fbf782cfbb61507f90a9a86df4",
+        "split": "dev",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "760"
+      },
+      {
+        "family_id": "mbpp:task:769",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "83abea9271fb3eb881c482edb7c70c9fd8afed7c01df9eaf96db8cf0c8d03164",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "769"
+      },
+      {
+        "family_id": "mbpp:task:616",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "dbf9c0686fc94c0ae73de9671909d05fb5d151fda1c40b309e524b43affce3ce",
+        "split": "heldout",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "616"
+      },
+      {
+        "family_id": "mbpp:task:709",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "233376727f85639ef5088af13ec7a29e00c51b4b66fd920033f080b15d562e7b",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "709"
+      },
+      {
+        "family_id": "mbpp:task:880",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "318ea48f0baf3c7b27c05a566c5a1573b737f0e664da424d23553b8bd9e22841",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "880"
+      },
+      {
+        "family_id": "mbpp:task:716",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "d15beeb92a61f8e3a8c617e5536abf7e1df831bf3eafe51c13aef429174c1744",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "716"
+      },
+      {
+        "family_id": "mbpp:task:851",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "f2841f1bfc5a68351e89b4211f4e9c1b7d87dbe6405c664c1b55db2a4cfe4909",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "851"
+      },
+      {
+        "family_id": "mbpp:task:950",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "b6da2b4e4f38d86dd4465100b11c1c7a95dc92a12e304239c0af1c4092491c03",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "950"
+      },
+      {
+        "family_id": "mbpp:task:933",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "8795c215397673841b23971215a63dd1ad5fbed191c8624aabc46d3029634f1a",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "933"
+      },
+      {
+        "family_id": "mbpp:task:648",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "565ea06da8ff5385c38d7317fafb256ab758b25491a97cad46165b86743e8fa0",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "648"
+      },
+      {
+        "family_id": "mbpp:task:715",
+        "first_round_reason": "runtime_error_not_preference_eligible",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "a2a1493bdd69117d85f08108e2a904d108ea4b286448e85910acda595399be57",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "715"
+      },
+      {
+        "family_id": "mbpp:task:877",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "f8631200144953122245774c4ca91dd42789b2738c3efc49011928e905bdc514",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "877"
+      },
+      {
+        "family_id": "mbpp:task:782",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "5db028164527fa7657374ed56f6a20170bb0eeadf5515de732e03e266fc682ec",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "782"
+      },
+      {
+        "family_id": "mbpp:task:887",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "80500c8b3be4ee04dc60b3f65c186a92619ea3f7f0726945ddc33f4766a0b9cc",
+        "split": "dev",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "887"
+      },
+      {
+        "family_id": "mbpp:task:670",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "9a68de954a8d2ebd35acbdfa9fc3b6e6c0b756098e7770d68f7a1559f43d3ab1",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "670"
+      },
+      {
+        "family_id": "mbpp:task:764",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "a2608f0bb560e3a11f5567ba1446b71269887004fb7723cb32b1b319cb72532a",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "764"
+      },
+      {
+        "family_id": "mbpp:task:853",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "b711c147db8a803c290162c28f7e2dc297a91816a0ca7055671340af319d3616",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "853"
+      },
+      {
+        "family_id": "mbpp:task:807",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "4dc87d9977067ea6e6f46c2cc62ca015e745316861b7d17da0a1427603397757",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "807"
+      },
+      {
+        "family_id": "mbpp:task:910",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "7575cbca88c650105e191a8109cca1c5a6709570dfa3a2ff9bc1472f5f36bae2",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "910"
+      },
+      {
+        "family_id": "mbpp:task:726",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "1e4309bf137fb589aee130eb71eff77cf1368df0bae18046f5ed86ec858c455b",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "726"
+      },
+      {
+        "family_id": "mbpp:task:900",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "ca678855fd842dc352d0f123b5d9cc5861d15b56095df0e6c76975ee388341ac",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "900"
+      },
+      {
+        "family_id": "mbpp:task:920",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "0a698b7677034bde23088198bef12df24166f8c5e553f019a5f0ac40c57bab01",
+        "split": "dev",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "920"
+      },
+      {
+        "family_id": "mbpp:task:696",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "2e922df6b418355f3adb34e991153202e603204dc3464a08e312048a52254538",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "696"
+      },
+      {
+        "family_id": "mbpp:task:792",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "653a4e08127ca0a66bfc7af6de6db2ce0b967dbb0936ffed85418e53e25acf43",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "792"
+      },
+      {
+        "family_id": "mbpp:task:804",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "b72892a7f70703d55bb5bb3515b4493fa297b20e008cc41de5eb386e656f296b",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "804"
+      },
+      {
+        "family_id": "mbpp:task:970",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "ce7cf7e0425db931988080b29a6bd3e4c686fb8afa2d0442333ab4e82e93cc40",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "970"
+      },
+      {
+        "family_id": "mbpp:task:788",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "994af58b25b2708a4a2c68ad99b40bf2d58a39641c1482355da5b15e8869106c",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "788"
+      },
+      {
+        "family_id": "mbpp:task:888",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "2eb94079d28da9304f419d4efbe86f63a2f25eccb4546779468d3c363957e873",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "888"
+      },
+      {
+        "family_id": "mbpp:task:606",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "ab54002d6a95140cf522f3a2f030f568c988a9c2c373bf820da0de0cb93f296c",
+        "split": "heldout",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "606"
+      },
+      {
+        "family_id": "mbpp:task:773",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "881c9a7ac72af54b001ac1ecdca151cc153d22b05640abecff4485c7d63617a2",
+        "split": "dev",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "773"
+      },
+      {
+        "family_id": "mbpp:task:742",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "6c8deccd37e57151cc05bc194b5bf97d487ee6644a0a666391da26b43bd4ad94",
+        "split": "dev",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "742"
+      },
+      {
+        "family_id": "mbpp:task:917",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "382cf0ac2597fffb71c04bdb1b9479aabf254d2175d22de6aa93c9ffb68af9a4",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "917"
+      },
+      {
+        "family_id": "mbpp:task:891",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "4e099136a51134d25ec2b02187fe1b29c3734b2b32b073f180dbede066984a8c",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "891"
+      },
+      {
+        "family_id": "mbpp:task:663",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "65a3ebafbecce22d2e7bc7e82bfa4d6e796d16f2c404c4d45db49aaac78d0a3a",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "663"
+      },
+      {
+        "family_id": "mbpp:task:698",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "afbadb94906681f7c407e522ea2eeb0bb015931b63393ac221168a1b28aa1157",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "698"
+      },
+      {
+        "family_id": "mbpp:task:640",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "5ef5d7be0b208d98afabb12f8ea3ff7b582d1727fc4426b68808428aee34c85f",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "640"
+      },
+      {
+        "family_id": "mbpp:task:873",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "ad3372eb2f029c45479d0ec8f580539a756cf2faef37f827401c240dc9af1fd6",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "873"
+      },
+      {
+        "family_id": "mbpp:task:857",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "84896f654be95fe4c011670c4acf8ecb578d61b82b463952f19cdfe8ea208dda",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "857"
+      },
+      {
+        "family_id": "mbpp:task:924",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "ac2f6400f4a80b91bbadbd4d5976c425dcf3eebb8e39aa0a68de90cdcc3c16af",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "924"
+      },
+      {
+        "family_id": "mbpp:task:736",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "c20f62000968f4385f3a22f17206e64aa0b37e0c5fae225a0db786c4ed2c58b9",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "736"
+      },
+      {
+        "family_id": "mbpp:task:852",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "8c2d59ff595d6932dacca9e77be54a86a4e09d6c478ca79b50b783ac8bba7d2a",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "852"
+      },
+      {
+        "family_id": "mbpp:task:618",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "eed46287d9acba031b2de2b9a0edffb235cd182124124054f43ae1533d3e0799",
+        "split": "heldout",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "618"
+      },
+      {
+        "family_id": "mbpp:task:819",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "b74e8832edf2e84d88c4c82455f1f70de3da8ee370e10871e61d7f9c5d1a017c",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "819"
+      },
+      {
+        "family_id": "mbpp:task:660",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "1157819566404cbd146c4c26c9572caeee19c9ab70019412c7b52a2949d809e9",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "660"
+      },
+      {
+        "family_id": "mbpp:task:619",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "53c797439a79eb49c498275c59e6a50dc2c91bffe20e6d694129d2904a8d3cbd",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "619"
+      },
+      {
+        "family_id": "mbpp:task:869",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "f7e7b83fd77ebc043c094e74957e9b1cb97c772fc6500fe82e5add67b330afcf",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "869"
+      },
+      {
+        "family_id": "mbpp:task:626",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "74d37658718ca9b6a3db20caa0b29a2b80c8934614c9a0663cec7522fe45ff8a",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "626"
+      },
+      {
+        "family_id": "mbpp:task:652",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "d22862f638c2a79c2f67ca3fc77316220d3f22f2e14267dc3aaf3c44101b1dce",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "652"
+      },
+      {
+        "family_id": "mbpp:task:821",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "502b2fb6b76ad96bd07b2998bc455adc01819dbb3da83cf5afa17f41ee8470dc",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "821"
+      },
+      {
+        "family_id": "mbpp:task:667",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "c2d25546dd0e7503ac3347faa5ab2ccdba567149b805209c80cf5710bfc75c46",
+        "split": "dev",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "667"
+      },
+      {
+        "family_id": "mbpp:task:954",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "d025d82026fb83e3ea94016629bb2b0e9fe5192908290d009d30a4d309c0b64c",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "954"
+      },
+      {
+        "family_id": "mbpp:task:835",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "fb63cbf23189c9f51ce5984fd08696499df48c1b4800fbe5ca3d047cd3da92cf",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "835"
+      },
+      {
+        "family_id": "mbpp:task:961",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "3b7462be4746d61972100ba467d55d010d98902560fc16c2b09f31fc54ebf3a9",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "961"
+      },
+      {
+        "family_id": "mbpp:task:963",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "77582bd1a5a0e35f3e9dd2dc7af77a6945edfefe262d9bea8b7b4126d27409a4",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "963"
+      },
+      {
+        "family_id": "mbpp:task:687",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "45f380baf144019e2029a46900ff2251ac33386e12129472741c7441d7a827aa",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "687"
+      },
+      {
+        "family_id": "mbpp:task:679",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "1d86b6320ba6148c6f1062f561b90b5d22744543fdc34c95c72a53eb3bc0ba58",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "679"
+      },
+      {
+        "family_id": "mbpp:task:603",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "b6b4981c82bc6e05f3c5a6f2753d8b10a5e4f3a1fa0f3685b71528bed3b9fe9c",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "603"
+      },
+      {
+        "family_id": "mbpp:task:638",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "a4fafa5dd7e7e13e41cb83aed2e8244726177b873612996dfde3413a9fc6749c",
+        "split": "heldout",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "638"
+      },
+      {
+        "family_id": "mbpp:task:785",
+        "first_round_reason": "runtime_error_not_preference_eligible",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "2d8a0987f88d4b03ad973df33db2f4ba87a075b23c713443ba322a53a25b5501",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "785"
+      },
+      {
+        "family_id": "mbpp:task:733",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "01ecc608a340f027ec4d8c7d3d8c157c2b9e83094a1fe5bf5341240909e06ced",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "733"
+      },
+      {
+        "family_id": "mbpp:task:675",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "868595ee218eef93ba5408470c26011fa7d47ab5e9103c49abb0d44cf0e20847",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "675"
+      },
+      {
+        "family_id": "mbpp:task:858",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "7b234478a887f9db60b421b7d7d52876907d6adb9016ebb1a24420e90181f91a",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "858"
+      },
+      {
+        "family_id": "mbpp:task:831",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "5bd6093ee3fe372ae2696af5ee6072df21dc3e345e29403023dada5fc99018fb",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "831"
+      },
+      {
+        "family_id": "mbpp:task:953",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "a90085da4c76ae733d4509cf649b6a44c882c16fad6bb5d4d412035522261cfa",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "953"
+      },
+      {
+        "family_id": "mbpp:task:694",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "2c7b4e357d4537a00b3a53dd891294abaca65ec2e8290ce25b065680c3e58090",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "694"
+      },
+      {
+        "family_id": "mbpp:task:904",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "11f881a323163095c0c5df00e70bdc2f5a33694bda00cc39b6c57350a3509ceb",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "904"
+      },
+      {
+        "family_id": "mbpp:task:974",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "acd72d10c54fe20880c0ad16d58ce5432a43e2dfaf7909eaf8ae44d9a5aa4d30",
+        "split": "heldout",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "974"
+      },
+      {
+        "family_id": "mbpp:task:678",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "3a03446e54aedc0842df5efad819b52b329239238ee0f10107ae0e4ad77707a8",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "678"
+      },
+      {
+        "family_id": "mbpp:task:614",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "61d245bfca64cd4364087254b8be5067023e2cedce35263cf13a4ed32e127601",
+        "split": "heldout",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "614"
+      },
+      {
+        "family_id": "mbpp:task:649",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "1a2f8ba4e889aefb6a8d5671b16673f788e450a4aeeda05748f6bf5b0da895e2",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "649"
+      },
+      {
+        "family_id": "mbpp:task:666",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "eaf11a87883b4e4c46383933cb2bdee6ba90e5c883c625f5542060a4fafe9b93",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "666"
+      },
+      {
+        "family_id": "mbpp:task:705",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "9ef36d6f5d53926d6200b5ae8da61747ba649f49c79a2b2020d8a364c5d70644",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "705"
+      },
+      {
+        "family_id": "mbpp:task:706",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "a8b4a25294d4802ca13f851aa566baa643d4b18d70cedc773a62eedf2f0447e0",
+        "split": "heldout",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "706"
+      },
+      {
+        "family_id": "mbpp:task:847",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "f654eb2a6af7313bff57ce79700ca019986ba5ccc2cf878283d9d0e6a8f5f33a",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "847"
+      },
+      {
+        "family_id": "mbpp:task:712",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "c7953a03a4520af92cbfc0f57cfd03d9c58673d91538d1e4ac885965f0aa98c0",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "712"
+      },
+      {
+        "family_id": "mbpp:task:693",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "161e6a51c75ed378e215cb3e535a9536b1d7dd36cd711d8b491b63fed02fc969",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "693"
+      },
+      {
+        "family_id": "mbpp:task:745",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "56b5ee4c39feefb9845cf0f4f567a283b283e792d1f61f897d99d396142db71f",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "745"
+      },
+      {
+        "family_id": "mbpp:task:886",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "0dcee2c2cb8d28ac5f304ad28357ba59aee09236243df6b465ae92219d5d38b0",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "886"
+      },
+      {
+        "family_id": "mbpp:task:780",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "44d022c037d75b0a5a86687e17239b76606af90cd1ce4e0b4522ae7c02993ec8",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "780"
+      },
+      {
+        "family_id": "mbpp:task:813",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "d517ab503c6af9236cf8695b985fc174ffccd52128aa0fb1bebf79922fd50fa0",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "813"
+      },
+      {
+        "family_id": "mbpp:task:656",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "f42cbe6c16e6e10fbb88cc9924986c5dcb37f8f72e25460514c8e29b307c4ce9",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "656"
+      },
+      {
+        "family_id": "mbpp:task:935",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "b3f6843702cb4e76bc9f7f5db0c96366f7f6562b1c806e33474826016c417542",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "935"
+      },
+      {
+        "family_id": "mbpp:task:699",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "b96ded45ffc106bca9f74ae71b67c69c9aa645bdaad6621c9c14b4a927f6307c",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "699"
+      },
+      {
+        "family_id": "mbpp:task:617",
+        "first_round_reason": "runtime_error_not_preference_eligible",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "dbd8f72f082ea98609843450250be08082aaa76e92d9f787e74ef83ef5d31e92",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "617"
+      },
+      {
+        "family_id": "mbpp:task:625",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "7f52789bf1fbbaab265f9ad89565a21abefafc848b1afaa4e8d0d942e3aaff8d",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "625"
+      },
+      {
+        "family_id": "mbpp:task:947",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "305876f384806ddfb1123e78bf0b328645786ccff5c563aceece6634ca41e60b",
+        "split": "dev",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "947"
+      },
+      {
+        "family_id": "mbpp:task:815",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "0584ed824b3d92d788d2c5c7f7a1e0fde7ff73c415e1a9297502388068dc06cd",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "815"
+      },
+      {
+        "family_id": "mbpp:task:827",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "f5aaa2fbe6487119fcedd0858d1a6c1334150d8051be8e32e3895fdce215a4a8",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "827"
+      },
+      {
+        "family_id": "mbpp:task:968",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "2385ff2e2518a170b9b6c83f2caf710a4da4da8125875f0f56f787657ad11c71",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "968"
+      },
+      {
+        "family_id": "mbpp:task:845",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "6bbca7fa6899bb22ec19f09a88bce8397e0dcb4ed713d9a85f5c9699b7bbe5d3",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "845"
+      },
+      {
+        "family_id": "mbpp:task:951",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "61f4f6085ba5830fdca41207ce9b993127223acfd63b9ea0f8b9e3c190120d22",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "951"
+      },
+      {
+        "family_id": "mbpp:task:623",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "1fbadd683c06174d947a24116b2859d751edc046cae25ac82ab2080dfd58089c",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "623"
+      },
+      {
+        "family_id": "mbpp:task:823",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "a21eadcdb0d008400cec8964c38438f584918184f42c8aef391da119eb295430",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "823"
+      },
+      {
+        "family_id": "mbpp:task:786",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "4412f81fba678cdebb0cda18e93e4e6aec53d4d96bf19eff394a28c87e454a64",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "786"
+      },
+      {
+        "family_id": "mbpp:task:922",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "cde6c0516f79ed4dc1e4c03c9b02e1a0274784dbdf9b4cf62e738981a11c8885",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "922"
+      },
+      {
+        "family_id": "mbpp:task:639",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "f200089f4815375088e10fcd8f7d788a9d27148acfd5853389267f38fd15ee57",
+        "split": "dev",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "639"
+      },
+      {
+        "family_id": "mbpp:task:841",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "773a932f8272db411c3e9cf60c17a9917e481829e4de7c88a6512c3f0c2bdc02",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "841"
+      },
+      {
+        "family_id": "mbpp:task:958",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "cbd5eb972dd92b487af945595d58be71da8ed6e8a838e6b15d627504c4e1f380",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "958"
+      },
+      {
+        "family_id": "mbpp:task:973",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "b09906837a15ef05e849ee099eb18b4a9fedca6e683d73815b7944463c2f79da",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "973"
+      },
+      {
+        "family_id": "mbpp:task:642",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "dc9e0d6e262218061fb2cb25766c66224ae9038c81a5ef5bf94b7c22f1bedb6f",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "642"
+      },
+      {
+        "family_id": "mbpp:task:828",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "f283422d1a26ba9d54fa683647ac74f58c4f4cc81cfcdb18d3efbdbae3290097",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "828"
+      },
+      {
+        "family_id": "mbpp:task:783",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "7300d82de838b002e9028905cbbf778d5327e380846670917cf31f548dfc3b0f",
+        "split": "dev",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "783"
+      },
+      {
+        "family_id": "mbpp:task:684",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "ab95d210c1256cf61d21fcca3519de2290f0367920a030d451425064f156091d",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "684"
+      },
+      {
+        "family_id": "mbpp:task:755",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "f4321f97a8015269ad0894e999dd2f1ca300e71c5a9fcfb7b9adbf8364734cdd",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "755"
+      },
+      {
+        "family_id": "mbpp:task:762",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "2299e8b5a0d75464fb29e5bb6225822af1e38d91770dce95c2dedd8e11805056",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "762"
+      },
+      {
+        "family_id": "mbpp:task:609",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "976bde1570af46bf317638ee0df7cf4d2f46c1ebffac81111d00d4baace72bd3",
+        "split": "dev",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "609"
+      },
+      {
+        "family_id": "mbpp:task:650",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "0611a0bac9d08a120ba074511f9edc2b490f60fc6710dcb03825f60820355a25",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "650"
+      },
+      {
+        "family_id": "mbpp:task:747",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "8fe264df87ff64db1e9eefa11e9877427c9f20fd943b3f6b1939cd1b614116d6",
+        "split": "heldout",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "747"
+      },
+      {
+        "family_id": "mbpp:task:763",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "7df790e6c753739eb3a8391b84cbfe850814dc298374eeab8c5900c194b0c490",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "763"
+      },
+      {
+        "family_id": "mbpp:task:956",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "d2bd2748126c32728cbf8957b5e6f59b284e5a14b33d46b93c1234c5075cc065",
+        "split": "dev",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "956"
+      },
+      {
+        "family_id": "mbpp:task:899",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "6463077d64911fcba9d5c02945d5d9bc086aa393fa25149b7b909f08bf668e00",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "899"
+      },
+      {
+        "family_id": "mbpp:task:627",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "bc8d05c6caef878e2136c14d4b21386010bbac9d54731ef44e41f25d4cee86ed",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "627"
+      },
+      {
+        "family_id": "mbpp:task:878",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "4505f02606734a5664b9a6da507cc6b1209c268f394b77683786948e48620f90",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "878"
+      },
+      {
+        "family_id": "mbpp:task:775",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "a9ae2d3349b05d4f9efcb0a520b80f2d31c96d146fd7b95b6f2a3e3725f548e4",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "775"
+      },
+      {
+        "family_id": "mbpp:task:651",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "c999cff19e9abe55b32e96a54f13f5f874b0d488996952de94b3e2631300f056",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "651"
+      },
+      {
+        "family_id": "mbpp:task:793",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "210d85ebd5ecc0cae877e7d08842f81713aa965bd59f162aa1a1494e1f2edf20",
+        "split": "heldout",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "793"
+      },
+      {
+        "family_id": "mbpp:task:808",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "e297df4367315c404e3ffb0147e6ce6b81cb55de9827fa332c57617c06dd534e",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "808"
+      },
+      {
+        "family_id": "mbpp:task:731",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "2e52945e80093e8171f766ad39eb9e8b1a1a7ff854673ed00329ac1d0ddeaf06",
+        "split": "heldout",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "731"
+      },
+      {
+        "family_id": "mbpp:task:960",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "f1b36b9899bd9835e726bc900b45f6494fe3a96064453b581a9d0a04b5256839",
+        "split": "dev",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "960"
+      },
+      {
+        "family_id": "mbpp:task:613",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "3dde7febb6e3c6a6aeaf931947b06bb4af18829ea6b86f7325efd26aa5aeafd2",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "613"
+      },
+      {
+        "family_id": "mbpp:task:654",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "b132ce91ceed72d9b2f97b07186d53bc8d98254c7bd5bceb3dd01bbfb6a5813b",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "654"
+      },
+      {
+        "family_id": "mbpp:task:881",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "79e7161b28cd97e129ffcd433d43f1d700be7d3eefff96e2ca4ee7eac93ce7f0",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "881"
+      },
+      {
+        "family_id": "mbpp:task:672",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "35c7f24732fee48f680c1146f213129655949687fc972dad97309ca05bab9fd9",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "672"
+      },
+      {
+        "family_id": "mbpp:task:882",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "b460035c3d9f19febd30dea4a431093fb8f8629740630e61b0dab73b02a9fcba",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "882"
+      },
+      {
+        "family_id": "mbpp:task:746",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "0f8e79d41294ad95dbfd1cdc260a612f7f717ded378b213b77002ef40b39ae7e",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "746"
+      },
+      {
+        "family_id": "mbpp:task:833",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "e526627763dd0e30d80992557a959e3491d82af94055e5007fa4e4cabd8ae761",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "833"
+      },
+      {
+        "family_id": "mbpp:task:931",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "1271feb5758bf50f124bb2bad5e8636233c20fa30f5aa1b6cf85b09773d65301",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "931"
+      },
+      {
+        "family_id": "mbpp:task:901",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "230e16d7668e914db70a1e1d57bd091f39d5c671bfef2cbf9900f59b09bef956",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "901"
+      },
+      {
+        "family_id": "mbpp:task:944",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "5dc60e6f6054db60b22032c098aee58b1af1696d79da562cc0f64ab563e7271f",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "944"
+      },
+      {
+        "family_id": "mbpp:task:761",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "2217c8639208108e8fe720145820c55d88ebc5972e57b89759baadabeb464521",
+        "split": "dev",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "761"
+      },
+      {
+        "family_id": "mbpp:task:915",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "f5db32712bbcdd80a8fb558c1703e31ab035341a312d8864033926082b366bbe",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "915"
+      },
+      {
+        "family_id": "mbpp:task:688",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "0347726cd494338443ab9d2c0a4a5732999e3069f88d53fff1df4c9cf7bd0da0",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "688"
+      },
+      {
+        "family_id": "mbpp:task:893",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "72a0f99e22f3a4a187f88939033b864c494914dd4b497d83f5dc91689bb5bc4d",
+        "split": "dev",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "893"
+      },
+      {
+        "family_id": "mbpp:task:796",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "e12aa2ac7f562b0661b7c8a6b13a7241ed73401c7d8dcf02b3e1e87a0ff2986b",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "796"
+      },
+      {
+        "family_id": "mbpp:task:902",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "7b57de6a820d5253c83afdbe0155acef66efae2d4c34f139fba4aa15f88c2c74",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "902"
+      },
+      {
+        "family_id": "mbpp:task:765",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "1d8d15a73f07cc7737cadeb38cdf0a0e49d3096ab612b89c4199125ad1ee93df",
+        "split": "dev",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "765"
+      },
+      {
+        "family_id": "mbpp:task:741",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "9dc52a7f98024b6c8df47a49e2c7963914adf70003c34e4bbd28c595c8c0ef2a",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "741"
+      },
+      {
+        "family_id": "mbpp:task:864",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "a613180b3c4d4002250efd96fa30901ac7ac6c81622cc3e33d787fa10ba24ec9",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "864"
+      },
+      {
+        "family_id": "mbpp:task:608",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "487649ea512216b32a82eac08b957689a38a3d491ee9f4d5705f897ed9e159c6",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "608"
+      },
+      {
+        "family_id": "mbpp:task:897",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "76c439184058513bc8fb5360e459bde6d0ce38af11221662412c7ad5e598e6f7",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "897"
+      },
+      {
+        "family_id": "mbpp:task:814",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "c3185a8815e59b7d564c3d5985e16d372367f1e7c46c125a6cf7c6a211ce6f69",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "814"
+      },
+      {
+        "family_id": "mbpp:task:776",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "c604f4a8ee5ffed600c3e3aeaca7b264eb5ee7cf89ebaffdd9a88e4d0f724af1",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "776"
+      },
+      {
+        "family_id": "mbpp:task:892",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "37f1d31e1c06ac4aea0c23e67df8d90434be458ec5fb9ca4f55d81f07077c83e",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "892"
+      },
+      {
+        "family_id": "mbpp:task:621",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "f5dae67b6377fe71f67f977a0c29dea5928a4ba34c1a478652a58b52aa8101f8",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "621"
+      },
+      {
+        "family_id": "mbpp:task:659",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "c73dc9c619b7f21ea14d3f66d89beb260fa8a4b764ccb835b4bee2e895760bab",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "659"
+      },
+      {
+        "family_id": "mbpp:task:622",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "483b8acff8e3c580c1fd0933162f2081975f88642c23e92addbb1d2a90908be5",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "622"
+      },
+      {
+        "family_id": "mbpp:task:848",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "b6aa271919c85eb6a8d03ce846241f6691f463ef1995ae5d3950eee243657762",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "848"
+      },
+      {
+        "family_id": "mbpp:task:955",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "cf83db5b53b7a17a397c46068fd338e169cf42f2fb53fd226155f7121d2967a2",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "955"
+      },
+      {
+        "family_id": "mbpp:task:636",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "a5acaa1c0787da4ea5cd4e68b6daa13ac6d51fa9a8496929378df251de61897e",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "636"
+      },
+      {
+        "family_id": "mbpp:task:826",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "dabc471a89e9b7837b1074c0f0a4c3182cbae2b5db686dbdda30f45ba24235cf",
+        "split": "dev",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "826"
+      },
+      {
+        "family_id": "mbpp:task:840",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "097986ce2323efd7619c64a4c6b6e94f706053954cbde0c3a73d2c126335bb1c",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "840"
+      },
+      {
+        "family_id": "mbpp:task:945",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "a4128c7494e949f549ceed4718e4cc137ca337322aafe50d4017f457af2c6871",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "945"
+      },
+      {
+        "family_id": "mbpp:task:919",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "c9986e9bd939957f057d2d7b3e6b243f5273aed48551c9be89d0f8a4482e14a1",
+        "split": "dev",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "919"
+      },
+      {
+        "family_id": "mbpp:task:637",
+        "first_round_reason": "both_pass",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "ee92980da7823f95589246af12681dabafb49a9a642ea689740e47ef9195166f",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "637"
+      },
+      {
+        "family_id": "mbpp:task:691",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "a2507a5a4509d9aa4ef751595c9cb0e3417339bf9102165ce15fba94a09e1964",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "691"
+      },
+      {
+        "family_id": "mbpp:task:938",
+        "first_round_reason": "both_fail",
+        "profile": "supplemental_t08",
+        "source_selection_sha256": "9cd93a5fb2f5affb37887b49115a4bf4c94c75f584738e034439f2da93fdfc92",
+        "split": "train",
+        "targeting_policy": "all_first_round_execution_quarantines",
+        "task_id": "938"
+      }
+    ],
+    "families_sha256": "c122d204d8a6312144455e725642416ffd918725a7ad6fe5b8f90dbe7242f6b5",
+    "policy": "first_round_execution_quarantine_only",
+    "reason_counts": {
+      "both_fail": 85,
+      "both_pass": 101,
+      "runtime_error_not_preference_eligible": 3
+    },
+    "reason_to_profile": {
+      "both_fail": "supplemental_t08",
+      "both_pass": "supplemental_t08",
+      "runtime_error_not_preference_eligible": "supplemental_t08"
+    }
+  }
+}

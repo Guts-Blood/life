@@ -11,7 +11,7 @@
 ## Hard Prerequisites
 
 - Day 21 promotion manifest 唯一、hash 完整，resumable checkpoint 与 inference export parity 已通过。
-- Day 22 coding preference train/dev/held-out manifests、processor/template 和 sandbox evidence 已冻结。
+- Day 22 `day22-qwen35-experimental-ai-assisted-manifest.json` 必须由独立 validator 验证为 `completed_experimental_ai_assisted`；它绑定的 train/dev/held-out、processor/template 和 sandbox evidence 已冻结。该实验路径不宣称 formal human-reviewed readiness。
 - pinned ms-swift runtime 已验证如何加载 SFT adapter/merged path、构造 frozen reference，并执行 LoRA DPO；CLI 以该 checkout 的文档和 `--help` 为准。
 - 资源 preflight 已把 policy、reference、optimizer、activations 和 temporary logits 纳入显存测量。
 
@@ -40,7 +40,7 @@
 
 - Parent/reference：Day 21 promoted SFT anchor；reference 始终冻结。
 - Policy：从同一 anchor 初始化新的 DPO trainable state；不得在 reference 上原地更新。
-- Data：只使用 Day 22 frozen train；dev 选择 checkpoint；preference held-out 只在选定后确认一次。
+- Data：只使用 Day 22 experimental close manifest 绑定的 frozen train；dev 选择 checkpoint；preference held-out 只在选定后确认一次。
 - 先跑 5-step overfit/mechanism gate，确认 chosen margin 方向；再运行 20–50 optimizer steps，保存 early/final。
 - 比较 dev pair accuracy/margin、length-matched/source/test-family slices、sandbox correctness、response length 和 general/math/format guardrails。
 - 记录 train loss、chosen/rejected log-prob/reward/margin、KL proxy、grad norm、memory 和逐 pair 结果。Smoke 只验证机制和局部行为，不宣称通用 coding 提升。

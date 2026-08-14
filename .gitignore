@@ -27,6 +27,25 @@ training_args.bin
 # In-progress/generated analysis workspaces; publish only a curated final report
 /learning/post-training-30-day-bootcamp/day-20-qwen35-balanced-lora-sft/reports/full-sft-vs-lora-analysis-20260809/
 
+# Day 22 raw rollout/replay intermediates; canonical pairs, evidence, and manifests stay tracked
+/learning/post-training-30-day-bootcamp/artifacts/data/day22-qwen35-formal-s1-rollout-candidates.jsonl
+/learning/post-training-30-day-bootcamp/artifacts/data/day22-qwen35-formal-s1-e2b-requests.jsonl
+/learning/post-training-30-day-bootcamp/artifacts/data/day22-qwen35-formal-s1-adaptive-r1-rollout-candidates.jsonl
+/learning/post-training-30-day-bootcamp/artifacts/data/day22-qwen35-formal-s1-adaptive-r1-e2b-requests.jsonl
+/learning/post-training-30-day-bootcamp/artifacts/data/day22-qwen35-formal-s1-replay-input.jsonl
+/learning/post-training-30-day-bootcamp/artifacts/data/day22-qwen35-formal-s1-selections.jsonl
+/learning/post-training-30-day-bootcamp/artifacts/data/day22-qwen35-formal-s1-multiround-rollouts.jsonl
+/learning/post-training-30-day-bootcamp/artifacts/data/day22-qwen35-mbpp-smoke-candidates.jsonl
+/learning/post-training-30-day-bootcamp/artifacts/data/day22-qwen35-mbpp-smoke-replay-input.jsonl
+/learning/post-training-30-day-bootcamp/artifacts/eval/day22-qwen35-formal-s1-candidate-e2b-evidence.jsonl
+/learning/post-training-30-day-bootcamp/artifacts/eval/day22-qwen35-formal-s1-adaptive-r1-candidate-e2b-evidence.jsonl
+/learning/post-training-30-day-bootcamp/artifacts/reports/day22-qwen35-formal-s1-rollout-shard-receipts/shard-0.log
+/learning/post-training-30-day-bootcamp/artifacts/reports/day22-qwen35-formal-s1-rollout-shard-receipts/shard-1.log
+/learning/post-training-30-day-bootcamp/artifacts/reports/day22-qwen35-formal-s1-adaptive-r1-rollout-shard-receipts/shard-0.log
+/learning/post-training-30-day-bootcamp/artifacts/reports/day22-qwen35-formal-s1-adaptive-r1-rollout-shard-receipts/shard-1.log
+/learning/post-training-30-day-bootcamp/artifacts/reports/day22-qwen35-formal-s1-adaptive-r1-rollout-shard-receipts/shard-0-initial-failed.log
+/learning/post-training-30-day-bootcamp/artifacts/reports/day22-qwen35-formal-s1-adaptive-r1-rollout-shard-receipts/shard-1-initial-failed.log
+
 # Third-party report binaries are referenced upstream with verified hashes
 /learning/training-learning/reports/frontier-training-2026-08/sources/*.pdf
 

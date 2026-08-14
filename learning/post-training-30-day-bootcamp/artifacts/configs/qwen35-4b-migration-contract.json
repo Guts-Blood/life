@@ -4,13 +4,18 @@
   "day15_close_date": "2026-08-09",
   "day16_close_date": "2026-08-09",
   "day18_close_date": "2026-08-10",
-  "status_updated_at": "2026-08-13",
-  "status": "historical_closes_preserved_rsi_v0002_confirmed_qualified_downstream_s1_handoff_pending",
+  "status_updated_at": "2026-08-14",
+  "status": "historical_closes_preserved_rsi_v0002_confirmed_qualified_day21_downstream_ready_s1_handoff_complete",
   "current_status_source": {
     "state": "rsi-control/state.json",
     "version_metrics": "rsi-control/versions/rsi-v0002/metrics.json",
     "result": "rsi-control/versions/rsi-v0002/RSI-V0002-RESULT.md",
-    "archive_audit": "rsi-control/ARCHIVE-AUDIT-20260813.md"
+    "archive_audit": "rsi-control/ARCHIVE-AUDIT-20260813.md",
+    "day21_handoff_report": "artifacts/reports/day21-qwen35-s1-handoff.md",
+    "day21_promotion_manifest": "artifacts/checkpoints/day21-qwen35-s1-promotion-manifest.json",
+    "day21_downstream_key": "artifacts/checkpoints/day21-qwen35-s1-downstream-key.json",
+    "day21_handoff_verification": "artifacts/checkpoints/day21-qwen35-s1-handoff-verify.json",
+    "day22_experimental_manifest": "artifacts/data/day22-qwen35-experimental-ai-assisted-manifest.json"
   },
   "historical_lineage": {
     "lineage_id": "qwen3-0.6b-day01-12-v1",
@@ -30,10 +35,10 @@
     "lineage_id": "qwen35-4b-day13-plus-v2",
     "model_id": "Qwen/Qwen3.5-4B-Base",
     "revision": "1001bb4d826a52d1f399e183466143f4da7b741b",
-    "revision_scope": "frozen_active_v2_base_for_day18_day19_day20",
+    "revision_scope": "frozen_active_v2_base_lineage_root_for_day18_plus",
     "sequential_day15_acceptance": "closed_superseded_by_day18_day19_day20",
     "day16_candidate_status": "closed_no_eligible_candidate_by_day20_evidence",
-    "post_day16_candidate_status": "rsi_v0002_confirmed_qualified_on_fixed_full112_downstream_delivery_pending",
+    "post_day16_candidate_status": "rsi_v0002_confirmed_qualified_on_fixed_full112_day21_downstream_ready_s1_handoff_complete",
     "observed_default_revision": {
       "sha": "1001bb4d826a52d1f399e183466143f4da7b741b",
       "observed_at": "2026-08-07",
@@ -147,37 +152,36 @@
       "checkpoint": {
         "candidate_id": "main-s20260809-lr1e-4-final",
         "remote_uri": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/adapters/main/s20260809/lr1e-4/attempt-001/checkpoint-1904",
+        "archive_uri": "/root/autodl-tmp/s1-checkpoints/qwen35-4b-s1-main-s20260809-lr1e-4-final/checkpoint-1904",
         "integrity_sha256": "d0f72be9751628c9073cc8e4104f16d8620bd598dbb8a1e97f1df9bae51170a3",
         "snapshot_sha256": "c169e0bb55b20951d27a889e4ef0deae3a01fe10acabee804b212d3d8170db0a",
         "adapter_sha256": "29dc1a7d676b7f2f88675521bc44cf81dd43b700423df3cf4adf8d6a1c4487c3",
         "resumable": true
       },
       "selection_status": "confirmed_qualified_on_fixed_full112",
-      "downstream_ready": false,
-      "status": "selected_not_downstream_ready",
-      "remaining_gates": [
-        "recover_and_durably_archive_checkpoint_bytes",
-        "winner_only_merged_export_and_fresh_reload",
-        "adapter_to_merged_export_parity",
-        "immutable_downstream_s1_manifest_and_key"
-      ]
+      "promotion_manifest": "artifacts/checkpoints/day21-qwen35-s1-promotion-manifest.json",
+      "downstream_key_manifest": "artifacts/checkpoints/day21-qwen35-s1-downstream-key.json",
+      "downstream_key": "s1:qwen35-4b:c169e0bb55b20951d27a889e4ef0deae3a01fe10acabee804b212d3d8170db0a",
+      "downstream_ready": true,
+      "status": "promoted_downstream_ready",
+      "remaining_gates": []
     },
     "S2_dpo": {
       "role": "dpo_branch",
       "parent": "S1",
       "checkpoint": null,
-      "status": "blocked_until_downstream_ready_S1_manifest"
+      "status": "not_started_parent_s1_ready_experimental_path_ready_formal_human_review_path_blocked_preflight_pending"
     },
     "S2_grpo": {
       "role": "coding_grpo_branch",
       "parent": "S1",
       "checkpoint": null,
-      "status": "blocked_until_downstream_ready_S1_manifest"
+      "status": "not_started_parent_s1_ready_online_rl_data_reward_runtime_gates_pending"
     }
   },
   "day21_selection_closeout": {
     "curriculum_status": "done",
-    "status": "done_with_handoff_pending",
+    "status": "done",
     "completed_at": "2026-08-13",
     "scheduled_at": "2026-08-16",
     "selection_status": "confirmed_qualified_on_fixed_full112",
@@ -213,7 +217,14 @@
       "remote_selection_file_sha256": "4bffbf9d19f5318fafd07af72df0f218010ce41bf6f37f41883a15b44d419585",
       "promotion_verification": "rsi-control/versions/rsi-v0002/runs/run-003-main-confirmation/attempts/attempt-001/final-promotion.json",
       "promotion_verification_file_sha256": "5b4d0c0f6efe97f3fcf24ec687179988b97997f2a9c34c99a80619ff6e5f98e9",
-      "remote_promotion_file_sha256": "c5ce7f522706040ac1628659ccc1ee53c2ac61eb820861a092a5dcd7bf8049e4"
+      "remote_promotion_file_sha256": "c5ce7f522706040ac1628659ccc1ee53c2ac61eb820861a092a5dcd7bf8049e4",
+      "handoff_report": "artifacts/reports/day21-qwen35-s1-handoff.md",
+      "checkpoint_archive_evidence": "artifacts/checkpoints/day21-qwen35-s1-checkpoint-archive-evidence.json",
+      "merged_export_manifest": "artifacts/checkpoints/day21-qwen35-s1-merged-export-manifest.json",
+      "adapter_merged_parity": "artifacts/checkpoints/day21-qwen35-s1-adapter-merged-parity.json",
+      "promotion_manifest": "artifacts/checkpoints/day21-qwen35-s1-promotion-manifest.json",
+      "downstream_key_manifest": "artifacts/checkpoints/day21-qwen35-s1-downstream-key.json",
+      "handoff_verification": "artifacts/checkpoints/day21-qwen35-s1-handoff-verify.json"
     },
     "claim_boundary": {
       "fixed_suite_qualification": true,
@@ -223,13 +234,17 @@
       "general_financial_agent_improvement": false
     },
     "downstream_s1": {
-      "status": "pending_checkpoint_recovery_merged_export_parity_and_manifest",
-      "downstream_ready": false,
+      "status": "downstream_ready",
+      "downstream_ready": true,
       "checkpoint_bytes_locally_available": false,
-      "remote_reachability_at_status_update": "connection_refused",
-      "merge_performed": false,
-      "export_parity_verified": false,
-      "manifest_materialized": false
+      "remote_reachability_at_status_update": "verified_on_autodl_at_handoff_not_rechecked_from_local_workspace",
+      "checkpoint_archive_verified": true,
+      "checkpoint_archive_uri": "/root/autodl-tmp/s1-checkpoints/qwen35-4b-s1-main-s20260809-lr1e-4-final/checkpoint-1904",
+      "inference_export_uri": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/exports/main-s20260809-lr1e-4-final-merged",
+      "merge_performed": true,
+      "export_parity_verified": true,
+      "manifest_materialized": true,
+      "handoff_completed_at_utc": "2026-08-13T08:59:11.216453+00:00"
     }
   },
   "day15_closeout": {
@@ -442,9 +457,9 @@
     "M2_environment_loader_and_backend_smoke": "closed_covered_by_day18_and_day20_runtime_evidence",
     "M3_processor_template_tokens_and_mask": "closed_operationally_covered_original_10_plus_10_audit_not_produced",
     "M4_retokenization_new_eval_and_base_baseline": "closed_superseded_original_manifest_and_split_not_produced",
-    "M5_one_step_tiny_overfit_resume_export_and_memory": "selected_checkpoint_resumable_and_capacity_covered_exact_resume_optional_winner_export_reload_parity_pending",
-    "M6_coding_sft_candidates_and_selected_anchor": "rsi_v0002_selection_confirmed_qualified_delivery_pending",
-    "M7_dpo_grpo_ancestry_and_runtime": "blocked_until_downstream_ready_s1_manifest"
+    "M5_one_step_tiny_overfit_resume_export_and_memory": "selected_checkpoint_resumable_capacity_and_winner_export_reload_parity_passed_exact_resume_optional",
+    "M6_coding_sft_candidates_and_selected_anchor": "rsi_v0002_selection_confirmed_qualified_day21_downstream_ready_s1_handoff_complete",
+    "M7_dpo_grpo_ancestry_and_runtime": "s1_ancestry_parent_gate_passed_dpo_grpo_runtime_gates_pending"
   },
   "resource_planning": {
     "bf16_checkpoint_weight_gib_approx": 8.68,

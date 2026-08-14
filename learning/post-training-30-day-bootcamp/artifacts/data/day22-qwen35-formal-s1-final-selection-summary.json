@@ -1,0 +1,88 @@
+{
+  "common_policy_identity": {
+    "candidate": "main-s20260809-lr1e-4-final",
+    "checkpoint": "main-s20260809-lr1e-4-final",
+    "downstream_key": "s1:qwen35-4b:c169e0bb55b20951d27a889e4ef0deae3a01fe10acabee804b212d3d8170db0a",
+    "lineage_manifest_file_sha256": "40c76f690dcb73805250e0036f8e124ef07b8d2d32b1723637656ae4304d94f8",
+    "merged_export_manifest_sha256": "660eed4af7f76796631561275f0190c402952520a8ccce358289e6269fb8f8d3",
+    "merged_snapshot_sha256": "768f2bc3c839edf5b6e0757403e3faa5a085ac9094f2987a34c6913bbca00806",
+    "model_role": "merged_s1",
+    "on_policy": true,
+    "promoted_s1": true,
+    "promotion_manifest_sha256": "64e6a6bd61951d1f10eb4def520273cb056625c1b041b68ba861c6d1e15d7a6c",
+    "source_adapter_sha256": "29dc1a7d676b7f2f88675521bc44cf81dd43b700423df3cf4adf8d6a1c4487c3",
+    "source_checkpoint_integrity_sha256": "d0f72be9751628c9073cc8e4104f16d8620bd598dbb8a1e97f1df9bae51170a3"
+  },
+  "common_policy_identity_sha256": "07baac0afc994d9c3d23006fa9a5785f9fd59f3fc6e7a9fd1f546ab9469f49cb",
+  "common_sandbox_digest": "4811d4b4bc4414efd5f6ccaef9834194bf3269d1d9c3970dc7fc648e06e160d4",
+  "content_identities": {
+    "ordered_replay_sha256": "919bfaebd87305333e19a75d6d08abdcde1409ce35063c7295900ac4580376ed",
+    "ordered_selection_sha256": "7221b3f5c364253528a6abf707e00829e9fe1ccfbf45896010b708f05bb8aa9f"
+  },
+  "counts": {
+    "candidate_evidence": 3043,
+    "candidate_execution_classes": {
+      "quarantine": 383,
+      "stable_pass": 1230,
+      "stable_wrong_answer": 1430
+    },
+    "decision_reasons": {
+      "both_fail": 60,
+      "both_pass": 70,
+      "stable_pass_vs_stable_wrong_answer": 200
+    },
+    "eligible_pairs": 200,
+    "quarantined_families": 130,
+    "rollout_candidates": 3043,
+    "rollout_families": 330
+  },
+  "dataset_role": "formal_s1_pair_selection_pending_processor_and_human_review",
+  "formal_dpo_blockers": [
+    "processor_audit_pending",
+    "human_blind_review_pending",
+    "final_assembly_pending"
+  ],
+  "formal_dpo_ready": false,
+  "generator_provenance_sha256s": [
+    "75cac27d3a6f271d7519977aee2ea2ad4909f87fca6e55faacedafb1926e62b3",
+    "800c4597c61306633ef5daca84f4114e79dd7b306bf89dfbc97bd0a7d285cee9"
+  ],
+  "inputs": {
+    "candidate_evidence": {
+      "file_sha256": "4da5a3e915c0498d1da27f90450520e7c532e3c6c027e2f58d4e6cca7d007379",
+      "path": "learning/post-training-30-day-bootcamp/artifacts/eval/day22-qwen35-formal-s1-multiround-candidate-e2b-evidence.jsonl"
+    },
+    "rollouts": {
+      "file_sha256": "c9299e004da5c9d1a59def345741ea4423256d8d83ad390525aa79293cccc2ea",
+      "path": "learning/post-training-30-day-bootcamp/artifacts/data/day22-qwen35-formal-s1-multiround-rollouts.jsonl"
+    }
+  },
+  "rubric": {
+    "actor_type": "codex_subagent",
+    "agent_role": "formal_s1_preference_labeler",
+    "chosen_gate": "two fresh E2B runs both pass",
+    "decision_basis": "execution_evidence_only",
+    "final_tiebreak": "lexicographic candidate IDs",
+    "name": "day22.promoted_s1_verifier_pair_selection",
+    "one_pair_per_family": true,
+    "primary_rank": "minimum symmetric relative response-token length delta",
+    "quarantine": [
+      "identical_or_ast_equivalent_responses",
+      "both_pass",
+      "both_fail",
+      "unstable_execution",
+      "syntax_error",
+      "runtime_error",
+      "timeout",
+      "infra_error"
+    ],
+    "rejected_gate": "two fresh E2B runs both verifier-classified wrong_answer",
+    "rubric_sha256": "542c1fbc15e55217ef40dc3a225465c4a5d8adb3be04565b4977e9c401b38869",
+    "secondary_rank": "maximum attested test pass ratio when available",
+    "version": "day22.promoted_s1_verifier_pair_selection.v1"
+  },
+  "schema_name": "day22.s1_pair_selection_summary",
+  "schema_version": 1,
+  "status": "pass",
+  "summary_sha256": "d2fb6a1ea8d616b23f7fdbfac5b54f49d66fc4008bdd752e23b7aaa9525b4a7a"
+}
