@@ -21,6 +21,7 @@ VERSION_RE = re.compile(r"^rsi-v(\d{4})$")
 RUN_RE = re.compile(r"^run-(\d{3})-[a-z0-9-]+$")
 ATTEMPT_RE = re.compile(r"^attempt-(\d{3})$")
 SHA_RE = re.compile(r"^[0-9a-f]{64}$")
+TAXONOMY_ID_RE = re.compile(r"^[a-z][a-z0-9_]*(?:\.[a-z][a-z0-9_]*)*$")
 MAIN_RE = re.compile(
     r"^main-s(?P<seed>\d+)-lr(?P<lr>1e-4|3e-5|6e-5|8e-5)-"
     r"(?P<label>early|mid|final)$"
@@ -35,6 +36,7 @@ ATTEMPT_STATUSES = {
 }
 TERMINAL_ATTEMPT_STATUSES = ATTEMPT_STATUSES - {"planned", "running"}
 OPERATION_TYPES = {"train", "eval", "sandbox", "checkpoint", "artifact", "cost"}
+CAUSAL_STATUSES = {"suspected", "supported", "causally_confirmed", "inconclusive"}
 
 
 class RSIControlError(ValueError):
@@ -118,6 +120,41 @@ def mapping(value: Any, label: str) -> Mapping[str, Any]:
 def schema(value: Mapping[str, Any], name: str, label: str) -> None:
     if value.get("schema_name") != name or value.get("schema_version") != 1:
         raise RSIControlError(f"{label} schema drifted")
+
+
+def segment_prefix(value: str, prefix: str) -> bool:
+    """Return whether prefix names value or one of its dotted ancestors."""
+
+    return value == prefix or value.startswith(prefix + ".")
+
+
+def taxonomy_id(value: Any, label: str) -> str:
+    if not isinstance(value, str) or TAXONOMY_ID_RE.fullmatch(value) is None:
+        raise RSIControlError(f"{label} is not a valid taxonomy ID")
+    return value
+
+
+def version_ordinal(value: Any, label: str) -> int:
+    match = VERSION_RE.fullmatch(str(value))
+    if match is None:
+        raise RSIControlError(f"{label} is not a valid version ID")
+    return int(match.group(1))
+
+
+def nonempty_string(value: Any, label: str) -> str:
+    if not isinstance(value, str) or not value.strip():
+        raise RSIControlError(f"{label} must be a non-empty string")
+    return value
+
+
+def string_list(value: Any, label: str, *, nonempty: bool = False) -> list[str]:
+    if not isinstance(value, list) or (nonempty and not value):
+        qualifier = "non-empty " if nonempty else ""
+        raise RSIControlError(f"{label} must be a {qualifier}list")
+    result: list[str] = []
+    for item in value:
+        result.append(nonempty_string(item, f"{label} item"))
+    return result
 
 
 def nonnegative_int(value: Any, label: str) -> int:
@@ -469,17 +506,346 @@ def validate_result(
         raise RSIControlError("primary/confirmation identity mismatch")
 
 
+def validate_intervention_taxonomy(
+    taxonomy: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Validate the compatibility families and prospective canonical leaves."""
+
+    if taxonomy.get("taxonomy_revision") != 2:
+        raise RSIControlError("intervention taxonomy revision drifted")
+    nonempty_string(
+        taxonomy.get("compatibility_policy"), "intervention taxonomy compatibility policy"
+    )
+    effective_from = str(taxonomy.get("effective_from_version"))
+    version_ordinal(effective_from, "intervention taxonomy effective version")
+
+    raw_families = taxonomy.get("levers")
+    if not isinstance(raw_families, list) or not raw_families:
+        raise RSIControlError("intervention taxonomy has no lever families")
+    families: dict[str, set[str]] = {}
+    for raw_family in raw_families:
+        family = mapping(raw_family, "lever family")
+        family_id = taxonomy_id(family.get("id"), "lever family ID")
+        if family_id in families:
+            raise RSIControlError(f"duplicate lever family: {family_id}")
+        raw_children = family.get("children")
+        if not isinstance(raw_children, list) or not raw_children:
+            raise RSIControlError(f"lever family has no children: {family_id}")
+        children: set[str] = set()
+        for raw_child in raw_children:
+            child = taxonomy_id(raw_child, f"lever child under {family_id}")
+            if "." in child or child in children:
+                raise RSIControlError(f"invalid or duplicate lever child: {family_id}.{child}")
+            children.add(child)
+        families[family_id] = children
+
+    raw_details = taxonomy.get("detailed_levers")
+    if not isinstance(raw_details, list) or not raw_details:
+        raise RSIControlError("intervention taxonomy has no detailed levers")
+    detailed: set[str] = set()
+    for raw_detail in raw_details:
+        detail = mapping(raw_detail, "detailed lever")
+        lever_id = taxonomy_id(detail.get("id"), "detailed lever ID")
+        family_id = taxonomy_id(detail.get("family"), f"family for {lever_id}")
+        description = detail.get("description")
+        if lever_id in detailed:
+            raise RSIControlError(f"duplicate detailed lever: {lever_id}")
+        if family_id not in families or not segment_prefix(lever_id, family_id):
+            raise RSIControlError(f"detailed lever has unknown family: {lever_id}")
+        relative = lever_id[len(family_id) + 1 :]
+        if not relative or relative.split(".", 1)[0] not in families[family_id]:
+            raise RSIControlError(f"detailed lever has unknown child: {lever_id}")
+        if not isinstance(description, str) or not description.strip():
+            raise RSIControlError(f"detailed lever lacks a description: {lever_id}")
+        detailed.add(lever_id)
+
+    for raw_priority in taxonomy.get("current_sft_priority", []):
+        priority = taxonomy_id(raw_priority, "current SFT priority")
+        if not any(
+            priority == lever_id or lever_id.startswith(priority + ".")
+            for lever_id in detailed
+        ):
+            raise RSIControlError(f"current SFT priority is unknown: {priority}")
+
+    return {
+        "effective_from_version": effective_from,
+        "families": set(families),
+        "detailed_levers": detailed,
+    }
+
+
+def validate_failure_taxonomy(
+    failure_taxonomy: Mapping[str, Any], detailed_levers: set[str]
+) -> dict[str, Any]:
+    """Validate the prospective failure, symptom, alias, and example graph."""
+
+    if failure_taxonomy.get("taxonomy_revision") != 1:
+        raise RSIControlError("failure taxonomy revision drifted")
+    nonempty_string(
+        failure_taxonomy.get("compatibility_policy"),
+        "failure taxonomy compatibility policy",
+    )
+    effective_from = str(failure_taxonomy.get("effective_from_version"))
+    version_ordinal(effective_from, "failure taxonomy effective version")
+
+    def indexed_records(
+        field: str, *, prefix: str, parent_ids: set[str] | None = None
+    ) -> dict[str, Mapping[str, Any]]:
+        raw_records = failure_taxonomy.get(field)
+        if not isinstance(raw_records, list) or not raw_records:
+            raise RSIControlError(f"failure taxonomy has no {field}")
+        records: dict[str, Mapping[str, Any]] = {}
+        for raw_record in raw_records:
+            record = mapping(raw_record, field)
+            record_id = taxonomy_id(record.get("id"), f"{field} ID")
+            if not record_id.startswith(prefix) or record_id in records:
+                raise RSIControlError(f"invalid or duplicate {field} ID: {record_id}")
+            nonempty_string(record.get("definition"), f"definition for {record_id}")
+            if parent_ids is not None:
+                parent = taxonomy_id(record.get("parent"), f"parent for {record_id}")
+                if parent not in parent_ids or not segment_prefix(record_id, parent):
+                    raise RSIControlError(f"unknown parent for {record_id}: {parent}")
+            records[record_id] = record
+        return records
+
+    families = indexed_records("failure_families", prefix="failure.")
+    topics = indexed_records(
+        "failure_topics", prefix="failure.", parent_ids=set(families)
+    )
+    modes = indexed_records(
+        "failure_modes", prefix="failure.", parent_ids=set(topics)
+    )
+    symptoms = indexed_records("symptoms", prefix="symptom.")
+    all_failure_ids = set(families) | set(topics) | set(modes)
+    if len(all_failure_ids) != len(families) + len(topics) + len(modes):
+        raise RSIControlError("failure family, topic, and mode IDs must be globally unique")
+
+    raw_aliases = failure_taxonomy.get("legacy_aliases")
+    if not isinstance(raw_aliases, list):
+        raise RSIControlError("failure taxonomy aliases must be a list")
+    aliases: set[tuple[str, str]] = set()
+    for raw_alias in raw_aliases:
+        alias = mapping(raw_alias, "legacy failure alias")
+        alias_name = nonempty_string(alias.get("alias"), "legacy failure alias")
+        alias_type = nonempty_string(alias.get("alias_type"), "legacy alias type")
+        key = (alias_type, alias_name)
+        if key in aliases:
+            raise RSIControlError(f"duplicate legacy failure alias: {alias_type}/{alias_name}")
+        target = taxonomy_id(alias.get("maps_to"), f"target for legacy alias {alias_name}")
+        if target not in all_failure_ids:
+            raise RSIControlError(f"legacy failure alias has unknown target: {alias_name}")
+        aliases.add(key)
+
+    raw_crosswalk = failure_taxonomy.get("intervention_crosswalk_examples")
+    if not isinstance(raw_crosswalk, list) or not raw_crosswalk:
+        raise RSIControlError("failure taxonomy has no intervention crosswalk examples")
+    crosswalk_failures: set[str] = set()
+    for raw_example in raw_crosswalk:
+        example = mapping(raw_example, "failure/intervention crosswalk example")
+        failure_id = taxonomy_id(example.get("failure_mode"), "crosswalk failure mode")
+        if failure_id not in modes or failure_id in crosswalk_failures:
+            raise RSIControlError(f"invalid or duplicate crosswalk failure: {failure_id}")
+        for lever_id in string_list(
+            example.get("candidate_levers"),
+            f"candidate levers for {failure_id}",
+            nonempty=True,
+        ):
+            if lever_id not in detailed_levers:
+                raise RSIControlError(f"crosswalk has unknown intervention lever: {lever_id}")
+        nonempty_string(example.get("selection_note"), f"selection note for {failure_id}")
+        crosswalk_failures.add(failure_id)
+
+    raw_cases = failure_taxonomy.get("case_examples")
+    if not isinstance(raw_cases, list):
+        raise RSIControlError("failure taxonomy case examples must be a list")
+    case_ids: set[str] = set()
+    for raw_case in raw_cases:
+        case = mapping(raw_case, "failure taxonomy case")
+        case_id = nonempty_string(case.get("id"), "failure taxonomy case ID")
+        if case_id in case_ids:
+            raise RSIControlError(f"duplicate failure taxonomy case: {case_id}")
+        version_ordinal(case.get("diagnosed_in_version"), f"diagnosed version for {case_id}")
+        version_ordinal(case.get("remediated_in_version"), f"remediated version for {case_id}")
+        for symptom_id in string_list(
+            case.get("symptom_ids"), f"symptoms for {case_id}", nonempty=True
+        ):
+            if symptom_id not in symptoms:
+                raise RSIControlError(f"case has unknown symptom: {case_id}/{symptom_id}")
+        primary = taxonomy_id(
+            case.get("primary_failure_mode"), f"primary failure for {case_id}"
+        )
+        if primary not in modes:
+            raise RSIControlError(f"case primary failure is not a mode: {case_id}/{primary}")
+        case_roles: dict[str, set[str]] = {}
+        for field in ("contributing_failure_modes", "excluded_failure_modes"):
+            role_ids = string_list(case.get(field), f"{field} for {case_id}")
+            if len(set(role_ids)) != len(role_ids):
+                raise RSIControlError(f"case repeats a failure mode: {case_id}/{field}")
+            for failure_id in role_ids:
+                if failure_id not in modes:
+                    raise RSIControlError(f"case has unknown failure mode: {case_id}/{failure_id}")
+            case_roles[field] = set(role_ids)
+        if (
+            primary in case_roles["contributing_failure_modes"]
+            or primary in case_roles["excluded_failure_modes"]
+            or case_roles["contributing_failure_modes"]
+            & case_roles["excluded_failure_modes"]
+        ):
+            raise RSIControlError(f"case failure roles overlap: {case_id}")
+        if case.get("confidence") not in CAUSAL_STATUSES:
+            raise RSIControlError(f"case has invalid causal status: {case_id}")
+        for field in ("last_good_stage", "first_bad_stage", "broken_invariant"):
+            nonempty_string(case.get(field), f"{field} for {case_id}")
+        string_list(case.get("causal_chain"), f"causal chain for {case_id}", nonempty=True)
+        for field in ("historical_intervention", "prospective_canonical_equivalent"):
+            case_intervention = mapping(case.get(field), f"{field} for {case_id}")
+            primary_lever = taxonomy_id(
+                case_intervention.get("primary_lever"), f"{field} primary lever"
+            )
+            dependent_raw = case_intervention.get("dependent_lever")
+            dependent_lever = (
+                taxonomy_id(dependent_raw, f"{field} dependent lever")
+                if dependent_raw is not None
+                else None
+            )
+            if field == "prospective_canonical_equivalent" and (
+                primary_lever not in detailed_levers
+                or (
+                    dependent_lever is not None
+                    and dependent_lever not in detailed_levers
+                )
+            ):
+                raise RSIControlError(f"case has unknown canonical intervention: {case_id}")
+        string_list(case.get("evidence_refs"), f"evidence refs for {case_id}", nonempty=True)
+        case_ids.add(case_id)
+
+    return {
+        "effective_from_version": effective_from,
+        "families": set(families),
+        "topics": set(topics),
+        "failure_modes": set(modes),
+        "symptoms": set(symptoms),
+    }
+
+
+def validate_version_diagnosis(
+    version: Mapping[str, Any],
+    intervention: Mapping[str, Any],
+    failure_contract: Mapping[str, Any],
+    detailed_levers: set[str],
+) -> None:
+    """Require a precommitted, evidence-localized diagnosis for new versions."""
+
+    diagnosis = mapping(version.get("diagnosis"), "version diagnosis")
+    nonempty_string(diagnosis.get("diagnosis_id"), "diagnosis ID")
+    raw_symptoms = diagnosis.get("observed_symptoms")
+    if not isinstance(raw_symptoms, list) or not raw_symptoms:
+        raise RSIControlError("version diagnosis has no observed symptoms")
+    for raw_symptom in raw_symptoms:
+        symptom = mapping(raw_symptom, "observed symptom")
+        symptom_id = taxonomy_id(symptom.get("id"), "observed symptom ID")
+        if symptom_id not in failure_contract["symptoms"]:
+            raise RSIControlError(f"unknown observed symptom: {symptom_id}")
+        nonempty_string(symptom.get("scope"), f"scope for {symptom_id}")
+        string_list(symptom.get("evidence_refs"), f"evidence refs for {symptom_id}", nonempty=True)
+
+    primary_failure = mapping(diagnosis.get("primary_failure"), "primary failure")
+    primary_failure_id = taxonomy_id(primary_failure.get("id"), "primary failure ID")
+    if primary_failure_id not in failure_contract["failure_modes"]:
+        raise RSIControlError(f"primary failure is not a canonical mode: {primary_failure_id}")
+    for field in ("first_broken_invariant", "pipeline_boundary"):
+        nonempty_string(primary_failure.get(field), f"primary failure {field}")
+    if primary_failure.get("causal_status") not in CAUSAL_STATUSES:
+        raise RSIControlError("primary failure causal status is invalid")
+    string_list(
+        primary_failure.get("evidence_refs"),
+        "primary failure evidence refs",
+        nonempty=True,
+    )
+
+    contributing = string_list(
+        diagnosis.get("contributing_failures"), "contributing failures"
+    )
+    if len(set(contributing)) != len(contributing) or primary_failure_id in contributing:
+        raise RSIControlError("contributing failures repeat the primary or each other")
+    for failure_id in contributing:
+        if failure_id not in failure_contract["failure_modes"]:
+            raise RSIControlError(f"unknown contributing failure: {failure_id}")
+    raw_excluded = diagnosis.get("excluded_alternatives")
+    if not isinstance(raw_excluded, list):
+        raise RSIControlError("excluded alternatives must be a list")
+    excluded_ids: set[str] = set()
+    for raw_alternative in raw_excluded:
+        alternative = mapping(raw_alternative, "excluded alternative")
+        failure_id = taxonomy_id(alternative.get("id"), "excluded failure ID")
+        if failure_id not in failure_contract["failure_modes"]:
+            raise RSIControlError(f"unknown excluded failure: {failure_id}")
+        if failure_id in excluded_ids or failure_id == primary_failure_id or failure_id in contributing:
+            raise RSIControlError(f"excluded failure overlaps another diagnosis role: {failure_id}")
+        nonempty_string(alternative.get("reason"), f"exclusion reason for {failure_id}")
+        string_list(
+            alternative.get("evidence_refs"),
+            f"exclusion evidence for {failure_id}",
+            nonempty=True,
+        )
+        excluded_ids.add(failure_id)
+
+    diagnosed_intervention = mapping(
+        diagnosis.get("intervention"), "diagnosed intervention"
+    )
+    diagnosed_primary = taxonomy_id(
+        diagnosed_intervention.get("primary_lever"), "diagnosed primary lever"
+    )
+    if diagnosed_primary not in detailed_levers or diagnosed_primary != intervention.get("primary_lever"):
+        raise RSIControlError("diagnosed primary lever differs from the version intervention")
+    diagnosed_dependent = diagnosed_intervention.get("dependent_lever")
+    changed = list(intervention.get("changed_levers", []))
+    expected_dependent = next(
+        (lever for lever in changed if lever != intervention.get("primary_lever")), None
+    )
+    if diagnosed_dependent != expected_dependent:
+        raise RSIControlError("diagnosed dependent lever differs from the version intervention")
+    if diagnosed_dependent is not None:
+        if diagnosed_dependent not in detailed_levers:
+            raise RSIControlError("diagnosed dependent lever is not canonical")
+        nonempty_string(
+            diagnosed_intervention.get("dependent_lever_reason"),
+            "diagnosed dependent lever reason",
+        )
+    nonempty_string(
+        diagnosed_intervention.get("expected_mechanism"),
+        "diagnosed intervention mechanism",
+    )
+    for field in ("prediction", "falsifier"):
+        nonempty_string(diagnosis.get(field), f"diagnosis {field}")
+    for field in ("frozen_invariants", "guardrails"):
+        string_list(diagnosis.get(field), f"diagnosis {field}", nonempty=True)
+
+
 def validate_control() -> dict[str, Any]:
     state = mapping(load_json(ROOT / "state.json"), "state")
     goal = mapping(load_json(ROOT / "goal.json"), "goal")
     taxonomy = mapping(load_json(ROOT / "taxonomy.json"), "taxonomy")
+    failure_taxonomy = mapping(
+        load_json(ROOT / "failure-taxonomy.json"), "failure taxonomy"
+    )
     metric_contract = mapping(load_json(ROOT / "metrics.json"), "metrics")
     history = mapping(load_json(ROOT / "history/legacy.json"), "history")
     schema(state, "rsi.state", "state")
     schema(goal, "rsi.goal", "goal")
     schema(taxonomy, "rsi.taxonomy", "taxonomy")
+    schema(failure_taxonomy, "rsi.failure_taxonomy", "failure taxonomy")
     schema(metric_contract, "rsi.metrics", "metrics")
     schema(history, "rsi.history", "history")
+    taxonomy_contract = validate_intervention_taxonomy(taxonomy)
+    failure_contract = validate_failure_taxonomy(
+        failure_taxonomy, taxonomy_contract["detailed_levers"]
+    )
+    if (
+        taxonomy_contract["effective_from_version"]
+        != failure_contract["effective_from_version"]
+    ):
+        raise RSIControlError("failure and intervention taxonomies activate in different versions")
     del metric_contract
     if state.get("current_goal") != goal.get("goal_id"):
         raise RSIControlError("state and goal differ")
@@ -488,8 +854,16 @@ def validate_control() -> dict[str, Any]:
     for record in history.get("artifact_refs", []):
         validate_file_ref(mapping(record, "history artifact"))
 
-    prefixes = tuple(goal.get("allowed_lever_prefixes", []))
-    known_levers = {str(item.get("id")) for item in taxonomy.get("levers", [])}
+    raw_prefixes = goal.get("allowed_lever_prefixes", [])
+    if not isinstance(raw_prefixes, list) or not raw_prefixes:
+        raise RSIControlError("goal has no allowed lever prefixes")
+    prefixes = [taxonomy_id(value, "allowed lever prefix") for value in raw_prefixes]
+    known_levers = taxonomy_contract["families"]
+    detailed_levers = taxonomy_contract["detailed_levers"]
+    strict_from = version_ordinal(
+        taxonomy_contract["effective_from_version"],
+        "intervention taxonomy effective version",
+    )
     version_entries = state.get("versions")
     if not isinstance(version_entries, list):
         raise RSIControlError("state versions must be a list")
@@ -513,16 +887,42 @@ def validate_control() -> dict[str, Any]:
         changed = intervention.get("changed_levers")
         if not isinstance(changed, list) or not changed:
             raise RSIControlError(f"version has no declared lever: {version_id}")
-        for lever in changed:
-            top = ".".join(str(lever).split(".")[:2])
-            if top not in known_levers and str(lever) != "runtime.environment":
+        changed_ids = [taxonomy_id(lever, "changed lever") for lever in changed]
+        if len(set(changed_ids)) != len(changed_ids):
+            raise RSIControlError(f"version repeats a changed lever: {version_id}")
+        for lever in changed_ids:
+            if not any(segment_prefix(lever, family) for family in known_levers):
                 raise RSIControlError(f"unknown lever: {lever}")
+            if version.get("kind") != "baseline_reset" and not any(
+                segment_prefix(lever, prefix) for prefix in prefixes
+            ):
+                raise RSIControlError(
+                    f"changed lever is outside current goal: {version_id}/{lever}"
+                )
+            if version_ordinal(version_id, "version ID") >= strict_from and lever not in detailed_levers:
+                raise RSIControlError(f"future version must use a canonical lever leaf: {lever}")
         if version.get("kind") != "baseline_reset":
             primary = intervention.get("primary_lever")
-            if not isinstance(primary, str) or not primary.startswith(prefixes):
+            if not isinstance(primary, str) or not any(
+                segment_prefix(primary, prefix) for prefix in prefixes
+            ):
                 raise RSIControlError(f"primary lever is outside current goal: {version_id}")
-            if len(changed) > 2 or primary not in changed:
+            if len(changed_ids) > 2 or primary not in changed_ids:
                 raise RSIControlError(f"version changes too many levers: {version_id}")
+            if version_ordinal(version_id, "version ID") >= strict_from and primary not in detailed_levers:
+                raise RSIControlError(f"future primary lever must be a canonical leaf: {version_id}")
+            if len(changed_ids) == 2:
+                nonempty_string(
+                    intervention.get("dependent_lever_reason"),
+                    f"dependent lever reason for {version_id}",
+                )
+            if version_ordinal(version_id, "version ID") >= strict_from:
+                validate_version_diagnosis(
+                    version,
+                    intervention,
+                    failure_contract,
+                    detailed_levers,
+                )
         elif version_id != "rsi-v0001" or intervention.get("causal_attribution") is not False:
             raise RSIControlError("only rsi-v0001 may be a baseline reset")
 

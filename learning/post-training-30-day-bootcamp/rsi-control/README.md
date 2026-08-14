@@ -8,9 +8,13 @@ Read these files in order:
 
 1. [`goal.json`](goal.json) — what “done” means now;
 2. [`state.json`](state.json) — current version and next action;
-3. [`taxonomy.json`](taxonomy.json) — bounded improvement levers;
-4. [`metrics.json`](metrics.json) — outcome, diagnosis, cost, and RSI-policy metrics;
-5. the current directory under `versions/`.
+3. [`TAXONOMY.md`](TAXONOMY.md) — symptom, first-broken-invariant failure
+   diagnosis, and intervention boundaries;
+4. [`failure-taxonomy.json`](failure-taxonomy.json) — machine-readable failure
+   modes, symptoms, legacy aliases, intervention crosswalks, and worked cases;
+5. [`taxonomy.json`](taxonomy.json) — bounded canonical intervention lever IDs;
+6. [`metrics.json`](metrics.json) — outcome, diagnosis, cost, and RSI-policy metrics;
+7. the current directory under `versions/`.
 
 The append-only archive limitations for the completed v0001/v0002 evidence are
 recorded in [`ARCHIVE-AUDIT-20260813.md`](ARCHIVE-AUDIT-20260813.md).
@@ -25,9 +29,15 @@ python3 rsi_control.py status
 ## Minimal lifecycle
 
 ```text
-goal → diagnosis → lever → version → run → attempt/retry
+goal → symptom → first broken invariant / failure diagnosis
+     → intervention lever → version → run → attempt/retry
      → artifacts + metrics → decision → next version or goal achieved
 ```
+
+Keep those three analysis axes separate: a symptom is not a root cause, and a
+failure location does not have to share a name or layer with its intervention.
+The prospective v0003+ policy and completed-history boundary are defined in
+[`TAXONOMY.md`](TAXONOMY.md).
 
 - **Version** (`rsi-vNNNN`): one hypothesis and improvement policy. Any
   semantic change creates a new version.
@@ -54,6 +64,10 @@ From `rsi-v0002` onward, change one primary lever and at most one necessary
 dependent lever. Record the prediction and falsifier before execution. Never
 hide failed attempts, replace a hard gate with an average, modify evaluation to
 promote a candidate, or train on eval cases.
+
+From `rsi-v0003` onward, use exact canonical failure and intervention leaves and
+embed the structured diagnosis defined in [`TAXONOMY.md`](TAXONOMY.md) before
+execution. Completed v0001/v0002 records remain grandfathered and append-only.
 
 `rsi-v0001` is the already implemented Day20-v2 baseline reset. It changes
 several SFT mechanisms together, so it establishes a trustworthy baseline but

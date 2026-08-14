@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import copy
 import json
 import shutil
 import tempfile
@@ -43,6 +44,206 @@ class RSIControlTests(unittest.TestCase):
         values["average"] = 999
         with self.assertRaises(rsi_control.RSIControlError):
             rsi_control.compute_gate_summary(values, self.gates)
+
+
+class RSITaxonomyTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.taxonomy = rsi_control.load_json(rsi_control.ROOT / "taxonomy.json")
+        self.failure_taxonomy = rsi_control.load_json(
+            rsi_control.ROOT / "failure-taxonomy.json"
+        )
+        self.intervention_contract = rsi_control.validate_intervention_taxonomy(
+            self.taxonomy
+        )
+        self.failure_contract = rsi_control.validate_failure_taxonomy(
+            self.failure_taxonomy, self.intervention_contract["detailed_levers"]
+        )
+
+    def test_taxonomies_validate_and_activate_together(self) -> None:
+        self.assertEqual(
+            self.intervention_contract["effective_from_version"], "rsi-v0003"
+        )
+        self.assertEqual(
+            self.failure_contract["effective_from_version"], "rsi-v0003"
+        )
+        self.assertIn(
+            "failure.training.transfer.catastrophic_forgetting",
+            self.failure_contract["failure_modes"],
+        )
+        self.assertIn(
+            "model.data.replay.replay_ratio",
+            self.intervention_contract["detailed_levers"],
+        )
+
+    def test_lever_family_matching_respects_segment_boundaries(self) -> None:
+        for lever, family in (
+            ("verifier.coverage.domain_task", "verifier"),
+            ("runtime.topology.world_size", "runtime"),
+            ("governance.audit.hash_chain", "governance"),
+        ):
+            self.assertTrue(rsi_control.segment_prefix(lever, family))
+        self.assertFalse(rsi_control.segment_prefix("model.database.foo", "model.data"))
+
+    def test_duplicate_detailed_lever_is_rejected(self) -> None:
+        taxonomy = copy.deepcopy(self.taxonomy)
+        taxonomy["detailed_levers"].append(
+            copy.deepcopy(taxonomy["detailed_levers"][0])
+        )
+        with self.assertRaisesRegex(rsi_control.RSIControlError, "duplicate"):
+            rsi_control.validate_intervention_taxonomy(taxonomy)
+
+    def test_unknown_failure_parent_and_alias_target_are_rejected(self) -> None:
+        bad_parent = copy.deepcopy(self.failure_taxonomy)
+        bad_parent["failure_modes"][0]["parent"] = "failure.data.unknown"
+        with self.assertRaisesRegex(rsi_control.RSIControlError, "unknown parent"):
+            rsi_control.validate_failure_taxonomy(
+                bad_parent, self.intervention_contract["detailed_levers"]
+            )
+
+        bad_alias = copy.deepcopy(self.failure_taxonomy)
+        bad_alias["legacy_aliases"][0]["maps_to"] = "failure.data.unknown.mode"
+        with self.assertRaisesRegex(rsi_control.RSIControlError, "unknown target"):
+            rsi_control.validate_failure_taxonomy(
+                bad_alias, self.intervention_contract["detailed_levers"]
+            )
+
+        bad_crosswalk = copy.deepcopy(self.failure_taxonomy)
+        bad_crosswalk["intervention_crosswalk_examples"][0]["candidate_levers"] = [
+            "model.target.unknown"
+        ]
+        with self.assertRaisesRegex(rsi_control.RSIControlError, "unknown intervention"):
+            rsi_control.validate_failure_taxonomy(
+                bad_crosswalk, self.intervention_contract["detailed_levers"]
+            )
+
+    def test_worked_case_may_have_no_dependent_lever(self) -> None:
+        taxonomy = copy.deepcopy(self.failure_taxonomy)
+        taxonomy["case_examples"][0]["historical_intervention"][
+            "dependent_lever"
+        ] = None
+        taxonomy["case_examples"][0]["prospective_canonical_equivalent"][
+            "dependent_lever"
+        ] = None
+        rsi_control.validate_failure_taxonomy(
+            taxonomy, self.intervention_contract["detailed_levers"]
+        )
+
+    def diagnosis_version(self) -> tuple[dict, dict]:
+        lever = "model.data.replay.replay_ratio"
+        intervention = {"primary_lever": lever, "changed_levers": [lever]}
+        version = {
+            "diagnosis": {
+                "diagnosis_id": "diagnosis-0003",
+                "observed_symptoms": [
+                    {
+                        "id": "symptom.training.retention_loss",
+                        "scope": "primary checkpoints / retained domain",
+                        "evidence_refs": ["evidence/retention-trajectory.json"],
+                    }
+                ],
+                "primary_failure": {
+                    "id": "failure.training.transfer.catastrophic_forgetting",
+                    "first_broken_invariant": "retained-domain capability must not regress",
+                    "pipeline_boundary": "valid checkpoint before transfer -> checkpoint after transfer",
+                    "causal_status": "supported",
+                    "evidence_refs": ["evidence/retention-trajectory.json"],
+                },
+                "contributing_failures": [],
+                "excluded_alternatives": [
+                    {
+                        "id": "failure.eval.scorer.metric_semantics",
+                        "reason": "the frozen scorer reproduced the baseline",
+                        "evidence_refs": ["evidence/scorer-replay.json"],
+                    }
+                ],
+                "intervention": {
+                    "primary_lever": lever,
+                    "dependent_lever": None,
+                    "dependent_lever_reason": None,
+                    "expected_mechanism": "replay restores old-domain gradient exposure",
+                },
+                "prediction": "retained-domain score recovers without losing the new domain",
+                "falsifier": "retained-domain regression persists at the preregistered replay ratio",
+                "frozen_invariants": ["dataset identities outside replay selection"],
+                "guardrails": ["new-domain hard gate"],
+            }
+        }
+        return version, intervention
+
+    def test_structured_future_diagnosis_validates(self) -> None:
+        version, intervention = self.diagnosis_version()
+        rsi_control.validate_version_diagnosis(
+            version,
+            intervention,
+            self.failure_contract,
+            self.intervention_contract["detailed_levers"],
+        )
+
+    def test_unknown_future_failure_is_rejected(self) -> None:
+        version, intervention = self.diagnosis_version()
+        version["diagnosis"]["primary_failure"]["id"] = "failure.training.unknown"
+        with self.assertRaisesRegex(rsi_control.RSIControlError, "canonical mode"):
+            rsi_control.validate_version_diagnosis(
+                version,
+                intervention,
+                self.failure_contract,
+                self.intervention_contract["detailed_levers"],
+            )
+
+
+class RSIFutureTaxonomyEnforcementTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.old_root = rsi_control.ROOT
+        self.temporary = tempfile.TemporaryDirectory()
+        self.root = Path(self.temporary.name) / "rsi-control"
+        shutil.copytree(self.old_root, self.root)
+        rsi_control.ROOT = self.root
+        for name in ("taxonomy.json", "failure-taxonomy.json"):
+            path = self.root / name
+            value = json.loads(path.read_text(encoding="utf-8"))
+            value["effective_from_version"] = "rsi-v0002"
+            path.write_text(json.dumps(value), encoding="utf-8")
+
+    def tearDown(self) -> None:
+        rsi_control.ROOT = self.old_root
+        self.temporary.cleanup()
+
+    def test_new_policy_rejects_coarse_historical_levers(self) -> None:
+        with self.assertRaisesRegex(rsi_control.RSIControlError, "canonical lever leaf"):
+            rsi_control.validate_control()
+
+    def test_new_policy_requires_structured_diagnosis_after_exact_levers(self) -> None:
+        path = self.root / "versions/rsi-v0002/version.json"
+        version = json.loads(path.read_text(encoding="utf-8"))
+        version["intervention"].update(
+            {
+                "primary_lever": "model.target.representation.boundary_tokens",
+                "changed_levers": [
+                    "model.target.representation.boundary_tokens",
+                    "model.target.masking.token_eligibility",
+                ],
+            }
+        )
+        path.write_text(json.dumps(version), encoding="utf-8")
+        with self.assertRaisesRegex(rsi_control.RSIControlError, "version diagnosis"):
+            rsi_control.validate_control()
+
+    def test_dependent_lever_must_be_inside_goal_action_space(self) -> None:
+        path = self.root / "versions/rsi-v0002/version.json"
+        version = json.loads(path.read_text(encoding="utf-8"))
+        version["intervention"].update(
+            {
+                "primary_lever": "model.data.replay.replay_ratio",
+                "changed_levers": [
+                    "model.data.replay.replay_ratio",
+                    "verifier.scoring.normalization",
+                ],
+                "dependent_lever_reason": "invalid test-only dependency",
+            }
+        )
+        path.write_text(json.dumps(version), encoding="utf-8")
+        with self.assertRaisesRegex(rsi_control.RSIControlError, "outside current goal"):
+            rsi_control.validate_control()
 
 
 class RSIRecordingBridgeTests(unittest.TestCase):
