@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="2840" viewBox="0 0 1800 2840" role="img" aria-labelledby="title desc">
+  <title id="title">Day 16 · Controlled LoRA：三档 LR Probe，0 个合格 Anchor</title>
+  <desc id="desc">A Chinese roadmap of the controlled Qwen3.5 LoRA learning-rate probes, their shared training identity, the fixed diagnostic guardrails, the no-eligible-candidate decision, and the distinction between safe training evidence and model-quality promotion evidence.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+    <style>
+      text { font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", "PingFang SC", sans-serif; fill: #172033; }
+      .title { font-size: 34px; font-weight: 750; }
+      .subtitle { font-size: 18px; fill: #526078; }
+      .section { font-size: 23px; font-weight: 750; }
+      .stage { font-size: 13px; font-weight: 750; letter-spacing: .45px; fill: #475569; }
+      .label { font-size: 18px; font-weight: 700; }
+      .body { font-size: 15px; }
+      .body-strong { font-size: 15px; font-weight: 700; }
+      .small { font-size: 14px; fill: #475569; }
+      .tiny { font-size: 12px; fill: #526078; }
+      .source { font-size: 11px; fill: #64748b; }
+      .metric-value { font-family: "SFMono-Regular", Consolas, monospace; font-size: 27px; font-weight: 750; fill: #1e3a8a; }
+      .number { font-size: 13px; font-weight: 800; fill: #ffffff; }
+      .panel { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1.5; }
+      .hero { fill: #eef2ff; stroke: #6366f1; stroke-width: 1.8; }
+      .blue { fill: #dbeafe; stroke: #2563eb; stroke-width: 1.5; }
+      .cyan { fill: #cffafe; stroke: #0891b2; stroke-width: 1.5; }
+      .purple { fill: #f3e8ff; stroke: #9333ea; stroke-width: 1.5; }
+      .green { fill: #dcfce7; stroke: #16a34a; stroke-width: 1.5; }
+      .amber { fill: #fef3c7; stroke: #d97706; stroke-width: 1.5; }
+      .teal { fill: #ccfbf1; stroke: #0f766e; stroke-width: 1.5; }
+      .indigo { fill: #e0e7ff; stroke: #4f46e5; stroke-width: 1.5; }
+      .red { fill: #fee2e2; stroke: #dc2626; stroke-width: 1.5; }
+      .blue-soft { fill: #eff6ff; stroke: #93c5fd; stroke-width: 1.3; }
+      .purple-soft { fill: #faf5ff; stroke: #d8b4fe; stroke-width: 1.3; }
+      .green-soft { fill: #f0fdf4; stroke: #86efac; stroke-width: 1.3; }
+      .amber-soft { fill: #fffbeb; stroke: #fcd34d; stroke-width: 1.3; }
+      .cyan-soft { fill: #ecfeff; stroke: #67e8f9; stroke-width: 1.3; }
+      .slate-soft { fill: #f8fafc; stroke: #cbd5e1; stroke-width: 1.3; }
+      .number-dot { fill: #475569; }
+      .metric { fill: #f8fafc; stroke: #94a3b8; stroke-width: 1.4; }
+      .table-bg { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1.3; }
+      .table-head { fill: #e2e8f0; stroke: #94a3b8; stroke-width: 1.2; }
+      .table-alt { fill: #f8fafc; }
+      .status-good { fill: #dcfce7; stroke: #16a34a; stroke-width: 1.4; }
+      .status-warn { fill: #fef3c7; stroke: #d97706; stroke-width: 1.4; }
+      .status-stop { fill: #fee2e2; stroke: #dc2626; stroke-width: 1.4; }
+      .status-info { fill: #dbeafe; stroke: #2563eb; stroke-width: 1.4; }
+      .status-slate { fill: #f1f5f9; stroke: #64748b; stroke-width: 1.4; }
+      .decision { fill: #eef2ff; stroke: #6366f1; stroke-width: 1.7; }
+      .boundary { fill: #fff7ed; stroke: #ea580c; stroke-width: 1.7; }
+      .divider { stroke: #cbd5e1; stroke-width: 1.2; }
+      .grid { stroke: #cbd5e1; stroke-width: 1; }
+      .line { fill: none; stroke: #475569; stroke-width: 2; marker-end: url(#arrow); }
+      .line-dash { fill: none; stroke: #64748b; stroke-width: 1.8; stroke-dasharray: 7 5; marker-end: url(#arrow); }
+    </style>
+  </defs>
+
+  <rect width="1800" height="2840" fill="#f5f7fb"/>
+  <text x="50" y="62" class="title">Day 16 · Controlled LoRA：三档 LR Probe，0 个合格 Anchor</text>
+  <text x="50" y="95" class="subtitle">训练能稳定更新与保存，只是必要条件；fail-closed 比从失败项里挑“最好”更重要。</text>
+  <rect x="1190" y="108" width="570" height="38" rx="19" class="status-stop"/>
+  <text x="1475" y="133" class="stage" text-anchor="middle">CLOSED NO CANDIDATE · MAIN NOT STARTED · PACKING FALSE</text>
+
+  <rect x="40" y="165" width="1720" height="112" rx="18" class="hero"/>
+  <text x="70" y="203" class="section">一句话 Gate</text>
+  <text x="270" y="203" class="label" text-anchor="start"><tspan x="270" dy="0">三档 LoRA 都完成 16,000 supervised tokens 与 103 steps，但 0/3 通过与 E2B 无关的必要质量 gate。</tspan><tspan x="270" dy="31">因此在 256k main 前合法停止：packing=false、no early/mid/final、no merge、no confirmation、no S1。</tspan></text>
+
+  <rect x="40" y="310" width="1720" height="650" rx="18" class="panel"/>
+  <text x="70" y="352" class="section">1 · Roadmap：从输入边界到可交付结论</text>
+  <text x="70" y="382" class="small">每一步都回答“对象是什么、证据在哪里、失败时停在哪一层”；编号代表依赖顺序。</text>
+  <text x="70" y="391" class="stage">01 · FREEZE RUN</text>
+<rect x="70" y="405" width="360" height="210" rx="16" class="blue"/>
+<text x="94" y="445" class="label" text-anchor="start"><tspan x="94" dy="0">固定唯一变量</tspan></text>
+<line x1="94" y1="463" x2="406" y2="463" class="divider"/>
+<text x="94" y="497" class="small" text-anchor="start"><tspan x="94" dy="0">同一 exact S0 / data order / seed</tspan><tspan x="94" dy="28">同一 LoRA scope / hardware / eval</tspan><tspan x="94" dy="28">只改变 learning rate</tspan></text>
+<text x="480" y="391" class="stage">02 · BUILD DATA</text>
+<rect x="480" y="405" width="360" height="210" rx="16" class="cyan"/>
+<text x="504" y="445" class="label" text-anchor="start"><tspan x="504" dy="0">建立等监督预算</tspan></text>
+<line x1="504" y1="463" x2="816" y2="463" class="divider"/>
+<text x="504" y="497" class="small" text-anchor="start"><tspan x="504" dy="0">六源 balanced contract</tspan><tspan x="504" dy="28">821 records · 16,000 targets</tspan><tspan x="504" dy="28">四技能各 4,000 supervised tokens</tspan></text>
+<text x="890" y="391" class="stage">03 · AUDIT SCOPE</text>
+<rect x="890" y="405" width="360" height="210" rx="16" class="purple"/>
+<text x="914" y="445" class="label" text-anchor="start"><tspan x="914" dy="0">白名单语言模块</tspan></text>
+<line x1="914" y1="463" x2="1226" y2="463" class="divider"/>
+<text x="914" y="497" class="small" text-anchor="start"><tspan x="914" dy="0">248 target modules</tspan><tspan x="914" dy="28">496 trainable tensors</tspan><tspan x="914" dy="28">排除 ViT / aligner / embed / lm_head</tspan></text>
+<text x="1300" y="391" class="stage">04 · FIX BATCH</text>
+<rect x="1300" y="405" width="360" height="210" rx="16" class="green"/>
+<text x="1324" y="445" class="label" text-anchor="start"><tspan x="1324" dy="0">冻结训练形状</tspan></text>
+<line x1="1324" y1="463" x2="1636" y2="463" class="divider"/>
+<text x="1324" y="497" class="small" text-anchor="start"><tspan x="1324" dy="0">BF16 · max_length 2304</tspan><tspan x="1324" dy="28">batch 2 × grad accumulation 4</tspan><tspan x="1324" dy="28">packing=false · padding_free=false</tspan></text>
+<text x="280" y="676" class="stage">05 · SAFETY</text>
+<rect x="280" y="690" width="360" height="210" rx="16" class="amber"/>
+<text x="304" y="730" class="label" text-anchor="start"><tspan x="304" dy="0">先跑 5-step gate</tspan></text>
+<line x1="304" y1="748" x2="616" y2="748" class="divider"/>
+<text x="304" y="782" class="small" text-anchor="start"><tspan x="304" dy="0">finite loss / grad / update</tspan><tspan x="304" dy="28">warmup 首步 LR=0 单独解释</tspan><tspan x="304" dy="28">三档都通过训练安全检查</tspan></text>
+<text x="720" y="676" class="stage">06 · PROBE</text>
+<rect x="720" y="690" width="360" height="210" rx="16" class="teal"/>
+<text x="744" y="730" class="label" text-anchor="start"><tspan x="744" dy="0">各跑 103 steps</tspan></text>
+<line x1="744" y1="748" x2="1056" y2="748" class="divider"/>
+<text x="744" y="782" class="small" text-anchor="start"><tspan x="744" dy="0">LR = 1e-5 / 3e-5 / 1e-4</tspan><tspan x="744" dy="28">每档保存 model-only adapter</tspan><tspan x="744" dy="28">同一 32-row diagnostic</tspan></text>
+<text x="1160" y="676" class="stage">07 · STOP</text>
+<rect x="1160" y="690" width="360" height="210" rx="16" class="indigo"/>
+<text x="1184" y="730" class="label" text-anchor="start"><tspan x="1184" dy="0">应用硬 gate</tspan></text>
+<line x1="1184" y1="748" x2="1496" y2="748" class="divider"/>
+<text x="1184" y="782" class="small" text-anchor="start"><tspan x="1184" dy="0">retention + Code eligibility</tspan><tspan x="1184" dy="28">0/3 eligible，main fail closed</tspan><tspan x="1184" dy="28">不制造 selection / anchor / S1</tspan></text>
+  <path d="M 430 510 L 470 510" class="line"/>
+<path d="M 840 510 L 880 510" class="line"/>
+<path d="M 1250 510 L 1290 510" class="line"/>
+<path d="M 1660 615 C 1660 650 1520 650 1520 680" class="line-dash"/>
+<path d="M 640 795 L 710 795" class="line"/>
+<path d="M 1080 795 L 1150 795" class="line"/>
+
+  <rect x="40" y="990" width="1720" height="590" rx="18" class="panel"/>
+  <text x="70" y="1033" class="section">2 · 真正学到的知识：可迁移的判断框架</text>
+  <rect x="70" y="1075" width="530" height="205" rx="16" class="blue-soft"/>
+<circle cx="106" cy="1114" r="18" class="number-dot"/>
+<text x="106" y="1120" class="number" text-anchor="middle">1</text>
+<text x="136" y="1120" class="label" text-anchor="start"><tspan x="136" dy="0">稳定训练 ≠ 合格模型</tspan></text>
+<text x="96" y="1161" class="small" text-anchor="start"><tspan x="96" dy="0">finite loss、非零更新和 adapter save</tspan><tspan x="96" dy="27">不能替代能力与 guardrail gate。</tspan></text>
+<rect x="635" y="1075" width="530" height="205" rx="16" class="purple-soft"/>
+<circle cx="671" cy="1114" r="18" class="number-dot"/>
+<text x="671" y="1120" class="number" text-anchor="middle">2</text>
+<text x="701" y="1120" class="label" text-anchor="start"><tspan x="701" dy="0">比较必须只动一个变量</tspan></text>
+<text x="661" y="1161" class="small" text-anchor="start"><tspan x="661" dy="0">Base、数据顺序、预算、LoRA scope、</tspan><tspan x="661" dy="27">hardware 与 eval identity 保持一致。</tspan></text>
+<rect x="1200" y="1075" width="530" height="205" rx="16" class="green-soft"/>
+<circle cx="1236" cy="1114" r="18" class="number-dot"/>
+<text x="1236" y="1120" class="number" text-anchor="middle">3</text>
+<text x="1266" y="1120" class="label" text-anchor="start"><tspan x="1266" dy="0">Guardrail 能否决总分</tspan></text>
+<text x="1226" y="1161" class="small" text-anchor="start"><tspan x="1226" dy="0">Math retention 或 Code execution eligibility</tspan><tspan x="1226" dy="27">失败时，即使其它 slice 上升也不能晋级。</tspan></text>
+<rect x="70" y="1310" width="530" height="205" rx="16" class="amber-soft"/>
+<circle cx="106" cy="1349" r="18" class="number-dot"/>
+<text x="106" y="1355" class="number" text-anchor="middle">4</text>
+<text x="136" y="1355" class="label" text-anchor="start"><tspan x="136" dy="0">缺 E2B 也能合法停止</tspan></text>
+<text x="96" y="1396" class="small" text-anchor="start"><tspan x="96" dy="0">当每个候选已触发其它独立硬失败，</tspan><tspan x="96" dy="27">E2B 最好结果也无法恢复完整资格。</tspan></text>
+<rect x="635" y="1310" width="530" height="205" rx="16" class="cyan-soft"/>
+<circle cx="671" cy="1349" r="18" class="number-dot"/>
+<text x="671" y="1355" class="number" text-anchor="middle">5</text>
+<text x="701" y="1355" class="label" text-anchor="start"><tspan x="701" dy="0">Packing 默认不批准</tspan></text>
+<text x="661" y="1396" class="small" text-anchor="start"><tspan x="661" dy="0">未验证 boundary / mask / position / isolation，</tspan><tspan x="661" dy="27">正确状态是 false，不是 parity pass。</tspan></text>
+<rect x="1200" y="1310" width="530" height="205" rx="16" class="slate-soft"/>
+<circle cx="1236" cy="1349" r="18" class="number-dot"/>
+<text x="1236" y="1355" class="number" text-anchor="middle">6</text>
+<text x="1266" y="1355" class="label" text-anchor="start"><tspan x="1266" dy="0">No candidate 是完整结果</tspan></text>
+<text x="1226" y="1396" class="small" text-anchor="start"><tspan x="1226" dy="0">candidate set 可以为空；不能为了推进日程</tspan><tspan x="1226" dy="27">手工挑选“失败中最好”的 LR。</tspan></text>
+
+  <rect x="40" y="1610" width="1720" height="720" rx="18" class="panel"/>
+  <text x="70" y="1653" class="section">3 · Evidence：关键数字、对照与决策依据</text>
+  <rect x="70" y="1690" width="385" height="140" rx="16" class="metric"/>
+<text x="94" y="1724" class="stage" text-anchor="start"><tspan x="94" dy="0">PROBE DATA</tspan></text>
+<text x="94" y="1769" class="metric-value" text-anchor="start"><tspan x="94" dy="0">821 records</tspan></text>
+<text x="94" y="1802" class="tiny" text-anchor="start"><tspan x="94" dy="0">16,000 supervised tokens per LR</tspan></text>
+<rect x="480" y="1690" width="385" height="140" rx="16" class="metric"/>
+<text x="504" y="1724" class="stage" text-anchor="start"><tspan x="504" dy="0">TRAINING</tspan></text>
+<text x="504" y="1769" class="metric-value" text-anchor="start"><tspan x="504" dy="0">103 steps × 3</tspan></text>
+<text x="504" y="1802" class="tiny" text-anchor="start"><tspan x="504" dy="0">three 5-step safety gates passed</tspan></text>
+<rect x="890" y="1690" width="385" height="140" rx="16" class="metric"/>
+<text x="914" y="1724" class="stage" text-anchor="start"><tspan x="914" dy="0">SCOPE</tspan></text>
+<text x="914" y="1769" class="metric-value" text-anchor="start"><tspan x="914" dy="0">248 modules</tspan></text>
+<text x="914" y="1802" class="tiny" text-anchor="start"><tspan x="914" dy="0">496 trainable tensors · language only</tspan></text>
+<rect x="1300" y="1690" width="385" height="140" rx="16" class="metric"/>
+<text x="1324" y="1724" class="stage" text-anchor="start"><tspan x="1324" dy="0">SELECTION</tspan></text>
+<text x="1324" y="1769" class="metric-value" text-anchor="start"><tspan x="1324" dy="0">0 / 3 eligible</tspan></text>
+<text x="1324" y="1802" class="tiny" text-anchor="start"><tspan x="1324" dy="0">256k main remained unstarted</tspan></text>
+  <rect x="70" y="1860" width="1660" height="248" rx="12" class="table-bg"/>
+<rect x="70" y="1860" width="1660" height="52" rx="12" class="table-head"/>
+<text x="86" y="1893" class="stage" text-anchor="start"><tspan x="86" dy="0">Candidate</tspan></text>
+<line x1="350" y1="1860" x2="350" y2="2108" class="grid"/>
+<text x="366" y="1893" class="stage" text-anchor="start"><tspan x="366" dy="0">General</tspan></text>
+<line x1="520" y1="1860" x2="520" y2="2108" class="grid"/>
+<text x="536" y="1893" class="stage" text-anchor="start"><tspan x="536" dy="0">Math</tspan></text>
+<line x1="690" y1="1860" x2="690" y2="2108" class="grid"/>
+<text x="706" y="1893" class="stage" text-anchor="start"><tspan x="706" dy="0">Finance</tspan></text>
+<line x1="880" y1="1860" x2="880" y2="2108" class="grid"/>
+<text x="896" y="1893" class="stage" text-anchor="start"><tspan x="896" dy="0">Code eligible</tspan></text>
+<line x1="1110" y1="1860" x2="1110" y2="2108" class="grid"/>
+<text x="1126" y="1893" class="stage" text-anchor="start"><tspan x="1126" dy="0">硬失败 / 结论</tspan></text>
+<line x1="70" y1="1912" x2="1730" y2="1912" class="grid"/>
+<text x="86" y="1943" class="body-strong" text-anchor="start"><tspan x="86" dy="0">Base</tspan></text>
+<text x="366" y="1943" class="body" text-anchor="start"><tspan x="366" dy="0">0/8</tspan></text>
+<text x="536" y="1943" class="body" text-anchor="start"><tspan x="536" dy="0">7/8</tspan></text>
+<text x="706" y="1943" class="body" text-anchor="start"><tspan x="706" dy="0">3/8</tspan></text>
+<text x="896" y="1943" class="body" text-anchor="start"><tspan x="896" dy="0">8/8</tspan></text>
+<text x="1126" y="1943" class="body" text-anchor="start"><tspan x="1126" dy="0">diagnostic baseline</tspan></text>
+<rect x="70" y="1961" width="1660" height="49" class="table-alt"/>
+<line x1="70" y1="1961" x2="1730" y2="1961" class="grid"/>
+<text x="86" y="1992" class="body-strong" text-anchor="start"><tspan x="86" dy="0">LoRA 1e-5</tspan></text>
+<text x="366" y="1992" class="body" text-anchor="start"><tspan x="366" dy="0">0/8</tspan></text>
+<text x="536" y="1992" class="body" text-anchor="start"><tspan x="536" dy="0">4/8</tspan></text>
+<text x="706" y="1992" class="body" text-anchor="start"><tspan x="706" dy="0">4/8</tspan></text>
+<text x="896" y="1992" class="body" text-anchor="start"><tspan x="896" dy="0">8/8</tspan></text>
+<text x="1126" y="1992" class="body" text-anchor="start"><tspan x="1126" dy="0">Math 比 Base −3；ineligible</tspan></text>
+<line x1="70" y1="2010" x2="1730" y2="2010" class="grid"/>
+<text x="86" y="2041" class="body-strong" text-anchor="start"><tspan x="86" dy="0">LoRA 3e-5</tspan></text>
+<text x="366" y="2041" class="body" text-anchor="start"><tspan x="366" dy="0">5/8</tspan></text>
+<text x="536" y="2041" class="body" text-anchor="start"><tspan x="536" dy="0">5/8</tspan></text>
+<text x="706" y="2041" class="body" text-anchor="start"><tspan x="706" dy="0">4/8</tspan></text>
+<text x="896" y="2041" class="body" text-anchor="start"><tspan x="896" dy="0">6/8</tspan></text>
+<text x="1126" y="2041" class="body" text-anchor="start"><tspan x="1126" dy="0">Math −2；Code &lt;7/8；ineligible</tspan></text>
+<rect x="70" y="2059" width="1660" height="49" class="table-alt"/>
+<line x1="70" y1="2059" x2="1730" y2="2059" class="grid"/>
+<text x="86" y="2090" class="body-strong" text-anchor="start"><tspan x="86" dy="0">LoRA 1e-4</tspan></text>
+<text x="366" y="2090" class="body" text-anchor="start"><tspan x="366" dy="0">6/8</tspan></text>
+<text x="536" y="2090" class="body" text-anchor="start"><tspan x="536" dy="0">6/8</tspan></text>
+<text x="706" y="2090" class="body" text-anchor="start"><tspan x="706" dy="0">4/8</tspan></text>
+<text x="896" y="2090" class="body" text-anchor="start"><tspan x="896" dy="0">0/8</tspan></text>
+<text x="1126" y="2090" class="body" text-anchor="start"><tspan x="1126" dy="0">Code &lt;7/8；ineligible</tspan></text>
+  <text x="70" y="2144" class="small" text-anchor="start"><tspan x="70" dy="0">三条 trajectory 都证明 LoRA 在单卡 H800 上可更新、可保存；表中的 Code 是静态/sandbox-execution eligibility，不是 HumanEval pass。</tspan><tspan x="70" dy="26">Main 13,197 records / 256,000 tokens 只完成准备，没有 early/mid/final checkpoint；formal PROBE-SELECTION.json 与 E2B 结果均不存在。</tspan></text>
+
+  <rect x="40" y="2360" width="1110" height="405" rx="18" class="decision"/>
+  <text x="70" y="2404" class="section">4 · 决策 / Takeaway</text>
+  <text x="70" y="2450" class="body-strong" text-anchor="start"><tspan x="70" dy="0">最终决定：closed_no_eligible_candidate_by_day20_evidence。</tspan><tspan x="70" dy="31">保留 Base active；不启动 main、不合并 adapter、不消费 confirmation、不登记 provisional anchor。</tspan><tspan x="70" dy="31">Packing 继续固定 false，直到新 charter 用同一批输入证明 labels、position IDs、</tspan><tspan x="70" dy="31">cross-sample attention isolation、loss 与吞吐都满足预注册 parity。</tspan><tspan x="70" dy="31">后续 RSI v0002 属于新的因果分支；它的成功不能回填本日 0/3 历史。</tspan></text>
+  <rect x="1180" y="2360" width="580" height="405" rx="18" class="boundary"/>
+  <text x="1210" y="2404" class="section">证据边界</text>
+  <text x="1210" y="2450" class="small" text-anchor="start"><tspan x="1210" dy="0">• E2B correctness 未运行；不得声称 HumanEval 分数。</tspan><tspan x="1210" dy="29">• formal probe selector marker 不存在。</tspan><tspan x="1210" dy="29">• packed P1 未运行；无吞吐或 semantic parity claim。</tspan><tspan x="1210" dy="29">• 三个 adapter checkpoint 均 non-resumable。</tspan><tspan x="1210" dy="29">• main early/mid/final、merge、confirmation 均不存在。</tspan><tspan x="1210" dy="29">• 结果只说明本冻结 recipe 无 eligible LR。</tspan><tspan x="1210" dy="29">• 不外推为“Qwen3.5 不适合 LoRA”。</tspan></text>
+
+  <text x="70" y="2797" class="source" text-anchor="start"><tspan x="70" dy="0">Sources · artifacts/reports/day16-gap-audit.md · day16-qwen35-sft-trajectory.md · day16-packing-parity.md · probe_metrics.json</tspan></text>
+<text x="70" y="2817" class="source" text-anchor="start"><tspan x="70" dy="0">Status · closed_no_eligible_candidate · no additional GPU · historical result preserved after later RSI success</tspan></text>
+</svg>
