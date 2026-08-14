@@ -4,7 +4,9 @@
 
 提前完成日期：`2026-08-13`
 
-状态：`done_with_handoff_pending`
+状态：`done`
+
+交接状态：`downstream_ready`
 
 强度：1 小时，阅读、复盘与已有 evidence 审计
 
@@ -22,9 +24,10 @@ full112。因此可以声明：该 recipe 获得 two-seed same-suite qualificati
 仍是 policy-selected operational winner。不能据此声明 Primary 权重被第二次复验、
 统计显著优于 early、独立 held-out 泛化已经确认，或一般金融 Agent 能力已经提升。
 
-Day 21 学习与选模判断已经完成；`downstream-ready S1` 交接仍等待 winner 权重
-归档、winner-only merged export、adapter/merged parity 与正式 downstream
-manifest。这是交付 blocker，不是重新训练 blocker。
+Day 21 学习、选模判断与 `downstream-ready S1` 交接均已完成：winner resumable
+checkpoint 已复制到新的 immutable AutoDL archive，winner-only merged export 已发布，
+Base+adapter 与 merged export 在两个 fresh GPU0 process 上通过四个固定 prompt 的严格
+prompt/output token-ID parity，promotion manifest 与 downstream key 已通过最终验证。
 
 ## Candidate Boundary
 
@@ -81,12 +84,31 @@ early 与 final 的 Total、General 相同；final 依据冻结规则的第三�
 - [`Final promotion`](../rsi-control/versions/rsi-v0002/runs/run-003-main-confirmation/attempts/attempt-001/final-promotion.json)：independent-seed confirmation 与 promote decision。
 - [`Version metrics`](../rsi-control/versions/rsi-v0002/metrics.json) 与 [`result summary`](../rsi-control/versions/rsi-v0002/RSI-V0002-RESULT.md)：Primary/Confirmation gates、成本和结论边界。
 - [`Archive audit`](../rsi-control/ARCHIVE-AUDIT-20260813.md)：checkpoint identity、compact archive 边界与恢复规则。
+- [`S1 handoff report`](../artifacts/reports/day21-qwen35-s1-handoff.md)：checkpoint archive、merged export、fresh-process exact parity、promotion/key 与 byte-exact 本地证据。
+- [`S1 promotion manifest`](../artifacts/checkpoints/day21-qwen35-s1-promotion-manifest.json) 与 [`downstream key`](../artifacts/checkpoints/day21-qwen35-s1-downstream-key.json)：下游唯一允许消费的正式 S1 身份。
 
-原计划的 `day21-qwen35-sft-selection-policy.md`、
-`day21-qwen35-blinded-selection.json` 与 downstream-ready
-`day21-qwen35-sft-promotion-manifest.json` 没有被事后补造。RSI ledger 是 superseding、
-machine-verifiable 的 fixed-suite selection evidence；正式 S1 handoff manifest 仍需在
-权重恢复和 export parity 后生成。
+原计划的 `day21-qwen35-sft-selection-policy.md` 与
+`day21-qwen35-blinded-selection.json` 没有被事后补造。RSI ledger 是 superseding、
+machine-verifiable 的 fixed-suite selection evidence；新的 S1 handoff artifacts 是
+append-only delivery evidence，没有重写旧 RSI ledger。
+
+## Downstream-ready S1
+
+```text
+downstream_key = s1:qwen35-4b:c169e0bb55b20951d27a889e4ef0deae3a01fe10acabee804b212d3d8170db0a
+promotion_manifest_sha256 = 64e6a6bd61951d1f10eb4def520273cb056625c1b041b68ba861c6d1e15d7a6c
+inference_export.manifest_sha256 = 660eed4af7f76796631561275f0190c402952520a8ccce358289e6269fb8f8d3
+```
+
+远端 merged export：
+
+```text
+/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/exports/main-s20260809-lr1e-4-final-merged
+```
+
+Parity 使用显式 `qwen3_5`、`enable_thinking=false`、greedy generation 和相同
+input IDs；adapter PID `7411`、merged PID `7747`，结果 `4/4 exact`、`0 failed`、
+未放宽阈值。它证明冻结 smoke cohort 的 conversion parity，不冒充全输入空间等价。
 
 ## 验收
 
@@ -99,15 +121,15 @@ machine-verifiable 的 fixed-suite selection evidence；正式 S1 handoff manife
 - [x] fresh-Base、独立训练 seed 的同套件 Confirmation 已一次性运行并通过。
 - [x] 已完成 Day 21 对话式 quiz：能区分 train loss/eval/guardrail、operational/statistical winner、multiple comparisons、winner's curse、CI、training-seed 与 task-sampling uncertainty，以及 export parity。
 
-### 剩余 handoff 与证据边界
+### 剩余统计与 durability 边界
 
 - [ ] frozen selector 未预注册 minimum meaningful difference 或 CI-based superiority gate；因此 statistical-best 结论为 `inconclusive`，不影响 operational selector decision。
 - [ ] paired per-sample delta/bootstrap CI：compact archive 没有本地逐样本原始字节，当前不可重算。
 - [ ] 独立 held-out confirmation：当前 Confirmation 复用了 full112，只提供 one-additional-seed same-suite reproducibility check；它不能估计 seed 分布，也不能冒充新题泛化证据。
-- [ ] 完整 raw predictions、E2B results 与 44-item inventory 的本地不可变归档。
-- [ ] winner checkpoint bytes 的本地/长期归档与 hash 复核。
-- [ ] winner-only merged inference export、fresh reload 与 adapter/merged parity。
-- [ ] downstream-ready Day 21 S1 promotion manifest/downstream key；完成前 Day 23/25 仍不得消费该权重。
+- [ ] 完整 raw predictions、E2B results 与 44-item inventory document 的本地不可变归档；当前已用 fresh isolated collector 精确重建并验证其 44-item identity，但没有把完整 inventory document 纳入本地 compact 包。
+- [x] winner checkpoint bytes 已复制到新的 immutable AutoDL archive，并按 11-file byte manifest 与冻结 snapshot hash 复核；长期对象存储备份仍是运维 durability 工作。
+- [x] winner-only merged inference export、fresh reload 与 adapter/merged 严格 token-ID parity。
+- [x] downstream-ready Day 21 S1 promotion manifest/downstream key；Day 22/23/25 可按 manifest/key 解锁各自后续 gate。
 
 ## Daily Log
 
@@ -125,7 +147,8 @@ selector 在完整 cohort 到齐后自动应用冻结规则。结果为 final �
 
 `main-s20260809-lr1e-4-final` 已通过 Primary fixed-full112 gates，并由 RSI selector
 作出 operational promotion decision；同 recipe 的另一个 seed checkpoint 也通过同套件。
-正式 downstream-ready S1 仍受权重归档、merge/export parity 和 manifest 阻塞，不需要重新训练。
+正式 downstream-ready S1 已完成 checkpoint archive、merge/export exact parity 和
+promotion/key 验证，不需要重新训练。
 
 ### Remaining selection risks
 
