@@ -157,6 +157,24 @@ def string_list(value: Any, label: str, *, nonempty: bool = False) -> list[str]:
     return result
 
 
+def evidence_ref_list(value: Any, label: str, *, nonempty: bool = False) -> list[str]:
+    refs = string_list(value, label, nonempty=nonempty)
+    for ref in refs:
+        path = Path(ref)
+        if (
+            path.is_absolute()
+            or "\\" in ref
+            or ".." in path.parts
+            or path.as_posix() != ref
+            or not path.parts
+            or path.parts[0].casefold() == "generated"
+        ):
+            raise RSIControlError(
+                f"{label} must contain canonical non-generated relative paths"
+            )
+    return refs
+
+
 def nonnegative_int(value: Any, label: str) -> int:
     if isinstance(value, bool) or not isinstance(value, int) or value < 0:
         raise RSIControlError(f"{label} must be a non-negative integer")
@@ -716,7 +734,11 @@ def validate_failure_taxonomy(
                 )
             ):
                 raise RSIControlError(f"case has unknown canonical intervention: {case_id}")
-        string_list(case.get("evidence_refs"), f"evidence refs for {case_id}", nonempty=True)
+        evidence_ref_list(
+            case.get("evidence_refs"),
+            f"evidence refs for {case_id}",
+            nonempty=True,
+        )
         case_ids.add(case_id)
 
     return {
@@ -747,7 +769,11 @@ def validate_version_diagnosis(
         if symptom_id not in failure_contract["symptoms"]:
             raise RSIControlError(f"unknown observed symptom: {symptom_id}")
         nonempty_string(symptom.get("scope"), f"scope for {symptom_id}")
-        string_list(symptom.get("evidence_refs"), f"evidence refs for {symptom_id}", nonempty=True)
+        evidence_ref_list(
+            symptom.get("evidence_refs"),
+            f"evidence refs for {symptom_id}",
+            nonempty=True,
+        )
 
     primary_failure = mapping(diagnosis.get("primary_failure"), "primary failure")
     primary_failure_id = taxonomy_id(primary_failure.get("id"), "primary failure ID")
@@ -757,7 +783,7 @@ def validate_version_diagnosis(
         nonempty_string(primary_failure.get(field), f"primary failure {field}")
     if primary_failure.get("causal_status") not in CAUSAL_STATUSES:
         raise RSIControlError("primary failure causal status is invalid")
-    string_list(
+    evidence_ref_list(
         primary_failure.get("evidence_refs"),
         "primary failure evidence refs",
         nonempty=True,
@@ -783,7 +809,7 @@ def validate_version_diagnosis(
         if failure_id in excluded_ids or failure_id == primary_failure_id or failure_id in contributing:
             raise RSIControlError(f"excluded failure overlaps another diagnosis role: {failure_id}")
         nonempty_string(alternative.get("reason"), f"exclusion reason for {failure_id}")
-        string_list(
+        evidence_ref_list(
             alternative.get("evidence_refs"),
             f"exclusion evidence for {failure_id}",
             nonempty=True,

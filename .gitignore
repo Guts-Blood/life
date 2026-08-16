@@ -64,3 +64,19 @@ training_args.bin
 /work-planning/config.json
 /work-planning/views/
 /work-planning/runs/
+
+# Day 23 local runtime/data bundles; Git keeps code and learning reports only
+/charter.json
+/learning/post-training-30-day-bootcamp/day-23-dpo-theory-smoke/charter.json
+/learning/post-training-30-day-bootcamp/day-23-dpo-theory-smoke/*next_candidate*.py
+/learning/post-training-30-day-bootcamp/day-23-dpo-theory-smoke/*next_blind*.py
+/learning/post-training-30-day-bootcamp/artifacts/configs/day23-*/
+/learning/post-training-30-day-bootcamp/artifacts/data/day23-*
+/learning/post-training-30-day-bootcamp/artifacts/eval/day23-*
+/learning/post-training-30-day-bootcamp/artifacts/reports/day23-next-candidate-runbook.md
+/learning/post-training-30-day-bootcamp/artifacts/reports/day23-dpo-iteration-analysis/artifact.json
+/learning/post-training-30-day-bootcamp/artifacts/reports/rsi-context/
+/learning/post-training-30-day-bootcamp/rsi-control/charters/goal-0002-day23-dpo/charter.json
+/learning/post-training-30-day-bootcamp/rsi-control/charters/goal-0002-day23-dpo/derived/
+/learning/post-training-30-day-bootcamp/rsi-control/charters/goal-0002-day23-dpo/events/
+/learning/post-training-30-day-bootcamp/rsi-control/charters/goal-0002-day23-dpo/versions/

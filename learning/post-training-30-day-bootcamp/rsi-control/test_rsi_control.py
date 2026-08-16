@@ -190,6 +190,33 @@ class RSITaxonomyTests(unittest.TestCase):
                 self.intervention_contract["detailed_levers"],
             )
 
+    def test_future_diagnosis_rejects_generated_evidence(self) -> None:
+        version, intervention = self.diagnosis_version()
+        version["diagnosis"]["observed_symptoms"][0]["evidence_refs"] = [
+            "generated/evidence.json"
+        ]
+        with self.assertRaisesRegex(
+            rsi_control.RSIControlError, "non-generated relative paths"
+        ):
+            rsi_control.validate_version_diagnosis(
+                version,
+                intervention,
+                self.failure_contract,
+                self.intervention_contract["detailed_levers"],
+            )
+        version["diagnosis"]["observed_symptoms"][0]["evidence_refs"] = [
+            "Generated/evidence.json"
+        ]
+        with self.assertRaisesRegex(
+            rsi_control.RSIControlError, "non-generated relative paths"
+        ):
+            rsi_control.validate_version_diagnosis(
+                version,
+                intervention,
+                self.failure_contract,
+                self.intervention_contract["detailed_levers"],
+            )
+
 
 class RSIFutureTaxonomyEnforcementTests(unittest.TestCase):
     def setUp(self) -> None:

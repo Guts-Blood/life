@@ -10,11 +10,13 @@ Read these files in order:
 2. [`state.json`](state.json) — current version and next action;
 3. [`TAXONOMY.md`](TAXONOMY.md) — symptom, first-broken-invariant failure
    diagnosis, and intervention boundaries;
-4. [`failure-taxonomy.json`](failure-taxonomy.json) — machine-readable failure
+4. [`CONTEXT-GRAPH.md`](CONTEXT-GRAPH.md) — deterministic graph addressing and
+   compact SubAgent context packets;
+5. [`failure-taxonomy.json`](failure-taxonomy.json) — machine-readable failure
    modes, symptoms, legacy aliases, intervention crosswalks, and worked cases;
-5. [`taxonomy.json`](taxonomy.json) — bounded canonical intervention lever IDs;
-6. [`metrics.json`](metrics.json) — outcome, diagnosis, cost, and RSI-policy metrics;
-7. the current directory under `versions/`.
+6. [`taxonomy.json`](taxonomy.json) — bounded canonical intervention lever IDs;
+7. [`metrics.json`](metrics.json) — outcome, diagnosis, cost, and RSI-policy metrics;
+8. the current directory under `versions/`.
 
 The append-only archive limitations for the completed v0001/v0002 evidence are
 recorded in [`ARCHIVE-AUDIT-20260813.md`](ARCHIVE-AUDIT-20260813.md).
@@ -25,6 +27,19 @@ Validate before and after every update:
 python3 rsi_control.py validate
 python3 rsi_control.py status
 ```
+
+Locate an atomic concept and build a bounded context packet before delegating a
+diagnosis subtask:
+
+```bash
+python3 rsi_context.py search "template rendering"
+python3 rsi_context.py pack \
+  --seed failure.data.supervision.template_rendering \
+  --output /tmp/rsi-context.json
+```
+
+The graph and packet are deterministic derived views. Do not edit them or use
+them as a replacement for canonical taxonomy, version, or evidence records.
 
 ## Minimal lifecycle
 
