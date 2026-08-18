@@ -1,0 +1,32 @@
+{
+  "schema_name": "day26.day29_go_no_go",
+  "schema_version": 1,
+  "recorded_at_utc": "2026-08-17T14:21:54Z",
+  "day26_run_id": "day26-slime-qwen35-20260817T141117Z",
+  "decision": "slime_qwen35_compatibility_blocked",
+  "go_day29": false,
+  "day29_slime_run_authorized": false,
+  "blocked_at": "S0_container_import_config",
+  "reason": "The rented runtime cannot prove the pinned OCI digest, exposes a two-GPU physical topology, lacks the exact slime and Megatron checkouts, and lacks Ray/SGLang and other required runtime dependencies.",
+  "gate_results": {
+    "S0": "fail",
+    "S1": "not_run_due_to_s0_fail",
+    "S2": "not_run_due_to_s0_fail",
+    "S3": "not_run_due_to_s0_fail",
+    "S4": "not_run_due_to_s0_fail",
+    "S5": "not_run_due_to_s0_fail"
+  },
+  "no_fallback": true,
+  "prohibited_follow_on": [
+    "Do not run Day 29 with a different slime release or rolling main.",
+    "Do not substitute another model, container, or topology.",
+    "Do not treat the intact S1 export or static audit as go_day29 evidence."
+  ],
+  "required_next_action_for_revalidation": "Provision the exact pinned OCI digest on a physical single-GPU 97887 MiB runtime with /root/slime and /root/Megatron-LM present at the frozen commits, then start a new append-only Day 26 run from S0.",
+  "evidence": {
+    "remote_run_root": "/root/autodl-tmp/runs/day26-slime-qwen35-20260817T141117Z",
+    "local_mirror": "tmp/day26-slime-qwen35-20260817T141117Z",
+    "s0_decision": "tmp/day26-slime-qwen35-20260817T141117Z/decision/s0-decision.json",
+    "source_run_record_sha256": "81235967bd5340a6bf50fe194e25454baab9a619d0c219392ac2fc180db52115"
+  }
+}

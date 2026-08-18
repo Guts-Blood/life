@@ -1,14 +1,24 @@
 # Day 26 — slime × Qwen3.5 Compatibility Verification（No Fallback）
 
 日期：`2026-08-21`  
-状态：`not_started`  
+状态：`slime_qwen35_compatibility_blocked`（`2026-08-17` 提前执行；S0 fail，S1–S5 按合同未运行）
 强度：4–5 小时
 
 ## 主要目标
 
-只回答一个问题：官方 slime release 中是否存在一条能对 Day 21 promoted Qwen3.5 SFT anchor 正确完成 model/processor load、rollout schema、LoRA/learner train 与 weight sync 的可复现路径。今天不启动正式 RL；`v0.3.0` 只保留为历史架构阅读基线，不能被默认当作 Qwen3.5 runtime。
+只回答一个问题：官方 slime release 中是否存在一条能对 Day 21 promoted Qwen3.5 merged SFT anchor 正确完成 model/processor load、rollout schema、full-parameter learner train 与 weight sync 的可复现路径。今天不启动正式 RL；`v0.3.0` 只保留为历史架构阅读基线，不能被默认当作 Qwen3.5 runtime。
 
 若没有兼容路径，结论必须是 `slime_qwen35_compatibility_blocked`，Day 29 随之 blocked。禁止换 0.6B、Qwen3 或其他模型完成一个无关 recipe 后称为 active track 成功。
+
+## Pre-GPU Closeout（2026-08-17）
+
+- 固定正式 release `v0.3.1@a6272da0d4f3d0a08520c99a2f3b4f6c887960dc`；不使用滚动 `main`。
+- 固定 `slimerl/slime:nightly-dev-20260804a@sha256:2feaad36b157ee1f790f139aeb6d2669a466b914f28426f468df70b2324807a7`，并记录 CUDA 12.9.1、NCCL 2.27.3、SGLang v0.5.15.post1 与 Megatron commit。
+- exact tag 已提供 Qwen3.5-4B config、GDN、HF↔Megatron conversion、Qwen3.5 loss mask、rollout、debug replay、full train/full weight-sync 源码路径；static audit 0 failed checks。
+- upstream slime v0.3.1 没有已文档化的 PEFT/LoRA learner 路径。因此冻结 Day 21 merged S1 → full Megatron → full sync；不把 adapter hack 成 slime baseline。
+- 已生成两条冻结 prompt，`2 × G=4 = 8` trajectories；Day 24 E2B batch reward adapter 单测 `4/4`，Day 25 reference adapter regression `7/7`。
+- 开卡 topology 固定为 Day 25 同级单卡约 98 GiB、colocate、TP/PP/CP=1；GPU gate 60 分钟且最低 free-memory fraction `15%`。未经授权不得加卡。
+- 该条是执行前记录；实际 GPU run 已在 S0 触发 fail-closed，最终状态见 Daily Log。
 
 ## Release/Version Gate（45 分钟）
 
@@ -53,22 +63,47 @@
 
 - `../artifacts/reports/day26-slime-qwen35-compatibility.md`
 - `../artifacts/configs/day26-slime-qwen35-runtime.json`
+- `../artifacts/eval/day26-slime-v031-static-audit.json`
+- `../artifacts/data/day26-slime-qwen35-runtime-prompts.jsonl`
+- `day26_slime_reward.py` 与 `test_day26_slime_reward.py`
+- `DAY26-GPU-GOAL-PROMPT.md`
 - S0–S5 logs、conversion/hash inventory、resolved codepath 与 Day 29 go/no-go record
+- `../artifacts/eval/day26-slime-qwen35-day29-go-no-go.json`
+- 本地未版本化的 `../tmp/day26-slime-qwen35-20260817T141117Z/` 保存 90-file runtime evidence mirror；远端仓库以 compatibility report、runtime config 和 Day 29 go/no-go JSON 作为公开证据入口。
 
 ## 验收
 
-- [ ] 实际 runtime release/tag/SHA/image 有官方依据并已冻结，或明确记录 no-supported-release。
-- [ ] Qwen3.5 model/processor/GDN/LoRA 与 Sample→rollout→train→sync 每条边有真实 code/runtime evidence。
-- [ ] Day 24 reward/schema 在该 runtime 下可重放。
-- [ ] 不使用任何不同模型 fallback。
-- [ ] 输出唯一 `go_day29` 或 `slime_qwen35_compatibility_blocked` 结论。
+- [x] release/tag/SHA/image digest 有官方依据并已在 pre-GPU contract 冻结；container 内无法证明该 digest，S0 已 fail-closed。
+- [ ] Qwen3.5 model/processor/GDN 与 Sample→rollout→train→full-sync 每条边有真实 runtime evidence；static code evidence 已完成。
+- [ ] Day 24 reward/schema 在 pinned runtime 下 live 重放；本地 adapter contract 已 `4/4`。
+- [x] pre-GPU 产物没有使用不同模型 fallback，也没有把 LoRA unsupported 边界隐藏为成功。
+- [x] 输出唯一终态 `slime_qwen35_compatibility_blocked`，S1–S5 明确为 `not_run_due_to_s0_fail`。
 
 ## Daily Log
 
 ### Candidate releases / selected runtime
 
+- Selected：`v0.3.1@a6272da0d4f3d0a08520c99a2f3b4f6c887960dc`。
+- Image：`slimerl/slime:nightly-dev-20260804a@sha256:2feaad36b157ee1f790f139aeb6d2669a466b914f28426f468df70b2324807a7`。
+- `v0.3.0` 保留为历史 release/change boundary，不进入 active command。
+
 ### Qwen3.5 load/conversion evidence
+
+- `scripts/models/qwen3.5-4B.sh` → `slime_plugins.models.qwen3_5:get_qwen3_5_spec`。
+- `Qwen3_5GatedDeltaNet` 处理 linear-attention/GDN；full-attention 沿用 Megatron spec。
+- `qwen3_5_hf_tensor` 与 `convert_qwen3_5_to_hf` 覆盖 dense attention、linear attention、MLP、norm、embedding/output。
+- Day 21 merged S1 是唯一 load input；远端复算 `11` 文件 / `9,098,708,091` bytes，inventory seal `16bc212d…53be` 通过，但因 S0 失败未执行 HF→Megatron conversion。
+- upstream LoRA learner 未证实，active path 固定为 merged full model/full sync。
 
 ### S0–S5 results
 
+- Pre-GPU：release/source audit pass；reward adapter `4/4`；frozen input ready。
+- Runtime root：`/root/autodl-tmp/runs/day26-slime-qwen35-20260817T141117Z`；未版本化的本地镜像 `../tmp/day26-slime-qwen35-20260817T141117Z` 已对 90 项远端证据逐文件回验。
+- S0：**fail**。物理 GPU `2×97887 MiB`；目标 OCI digest 无法证明；active CUDA/NCCL 为 `12.4/2.21.5`；Ray/SGLang/Megatron 与 exact source checkouts 缺失。
+- `CUDA_VISIBLE_DEVICES=0` 只让 torch 看到一张卡；Ray 因未安装无法完成 placement gate，不能覆盖物理 topology 和其他 blocker。
+- S1–S5：`not_run_due_to_s0_fail`；没有 conversion、model load、rollout、live E2B、optimizer、checkpoint 或 weight sync。
+- S0 原始 decision：未版本化本地镜像中的 `../tmp/day26-slime-qwen35-20260817T141117Z/decision/s0-decision.json`；公开结论见 compatibility report 与 Day 29 go/no-go JSON。
+
 ### Day 29 go/no-go
+
+`slime_qwen35_compatibility_blocked`；`go_day29=false`。记录：`../artifacts/eval/day26-slime-qwen35-day29-go-no-go.json`。Day 29 不得启动替代 release/model/image/topology recipe。

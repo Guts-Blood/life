@@ -79,6 +79,11 @@
 
 ### Day 26 go/no-go / exact runtime
 
+- `2026-08-17` preflight record：Day 26 唯一终态为 `slime_qwen35_compatibility_blocked`，`go_day29=false`。
+- Blocked at `S0_container_import_config`；S1–S5 未运行。Day 29 当前未获 slime GPU run 授权，不得启动替代 model/release/image/topology。
+- Machine-readable record：`../artifacts/eval/day26-slime-qwen35-day29-go-no-go.json`。
+- 原始 runtime decision 位于未版本化本地镜像 `../tmp/day26-slime-qwen35-20260817T141117Z/decision/s0-decision.json`；远端仓库以 machine-readable record 和 Day 26 compatibility report 为公开证据入口。
+
 ### Parent / processor / topology / length caps
 
 ### G0–G5 results
