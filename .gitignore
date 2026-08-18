@@ -59,6 +59,7 @@ training_args.bin
 /output/
 /outputs/
 /profile/render_*/
+/learning/post-training-30-day-bootcamp/tmp/
 
 # Local or deterministically generated planner state
 /work-planning/config.json

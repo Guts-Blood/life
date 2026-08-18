@@ -1,6 +1,6 @@
 # 30-Day LLM Post-Training Bootcamp
 
-状态：`in_progress`（Day 15/16 历史 closeout 保持不变；Day 21 fixed-full112 selection 与 downstream-ready S1 handoff 已完成；Day 22 已按 experimental AI-assisted 路径关闭，formal-human 路径仍 pending；Day 23 experimental DPO 路径已解锁但尚待 preflight，GRPO 仍有独立 data/reward/runtime gates）
+状态：`in_progress`（Day 21 downstream-ready S1 已完成；Day 23 DPO 与 Day 25 GRPO 均完成真实 GPU 路径并以 no-candidate 合法关闭；Day 26 在固定 slime runtime 的 S0 identity gate fail-closed，终态 `slime_qwen35_compatibility_blocked`，Day 29 no-go）
 
 执行日期：`2026-07-27`（周一）至 `2026-08-25`（周二）  
 建议投入：工作日 4–5 小时；周末严格控制为 1 小时 reading/review，不租 GPU  
@@ -128,10 +128,10 @@ slime 阅读基线仍固定为 `v0.3.0`，但运行时必须验证该 release �
 ### Week 4：Preference、DPO 与 Online RL（08-17 至 08-23）
 
 - [x] [Day 22 · 08-17 — Preference provenance、length bias 与 held-out](day-22-preference-data/README.md)（08-13 执行、08-14 `closed_experimental`；experimental path ready，formal-human path pending）
-- [ ] [Day 23 · 08-18 — Qwen3.5 coding DPO smoke（parent=S1）](day-23-dpo-theory-smoke/README.md)（not_started；S1 parent 与 Day 22 experimental manifest gates 已通过，先做 loss/mask/reference-policy memory preflight）
-- [ ] [Day 24 · 08-19 — Coding online-RL dataflow 与 sandbox reward contract](day-24-online-rl-dataflow-reward/README.md)
-- [ ] [Day 25 · 08-20 — Qwen3.5 coding GRPO lab（parent=S1）](day-25-grpo-small-model-lab/README.md)（S1 parent gate 已通过；仍待 online dataflow、reward 与 runtime gates）
-- [ ] [Day 26 · 08-21 — slime 固定 release 的 Qwen3.5 兼容 gate](day-26-slime-codepath-prep/README.md)
+- [x] [Day 23 · 08-18 — Qwen3.5 coding DPO smoke（parent=S1）](day-23-dpo-theory-smoke/README.md)（08-14 提前关闭；`closed_no_candidate`，checkpoint 存在但未通过 dev17 qualification）
+- [x] [Day 24 · 08-19 — Coding online-RL dataflow 与 sandbox reward contract](day-24-online-rl-dataflow-reward/README.md)（08-16 提前完成；`closed_pass_cpu_contract`，CPU mini-pipeline 与双 replay E2B 证据闭环，真实 optimizer update 留给 Day 25）
+- [x] [Day 25 · 08-20 — Qwen3.5 coding GRPO lab（parent=S1）](day-25-grpo-small-model-lab/README.md)（08-16 提前实跑并 `closed_no_candidate`；G0–G4 全通过，search40 为 S1/GRPO `24/40 → 24/40`，confirmation24 按合同未打开）
+- [x] [Day 26 · 08-21 — slime 固定 release 的 Qwen3.5 兼容 gate](day-26-slime-codepath-prep/README.md)（08-17 提前实跑；S0 因 physical topology/image identity/runtime dependencies 漂移 fail-closed，唯一终态 `slime_qwen35_compatibility_blocked`，S1–S5 未运行，Day 29 no-go）
 - [ ] [Day 27 · 08-22（周末 1h）— GRPO 与 on-policy 边界](day-27-weekend-slime-rl-reading/README.md)
 - [ ] [Day 28 · 08-23（周末 1h）— slime debug/replay/repro/observability](day-28-weekend-slime-architecture/README.md)
 

@@ -2,11 +2,11 @@
 
 开始日期：`2026-07-27`  
 目标完成日期：`2026-08-25`  
-当前 Phase：`Day 23 closed_no_candidate；隔离 qualification dev terminal NO-GO，heldout 未启动`
+当前 Phase：`Day 26 slime_qwen35_compatibility_blocked；S0 runtime identity gate fail，Day 29 no-go`
 
-当前最大阻塞：`Day 23 原 mechanism recipe 在两个预注册 5-step topology 下均只有 1/4 pairs 改善；后续隔离 RSI lineage 从 promoted S1 fresh start 完成 30-step qualification refit，但一次性 dev17 仅 8/17 positive 且两个 aggregate margin 为负，因此仍无合格 DPO candidate。full112/E2B/heldout 未运行；后续 DPO 若重开必须新建 append-only charter。Day 22 formal human-review 仍 pending。`
+当前最大阻塞：`Day 26 开出的 runtime 在 S0 即失败：物理双卡、目标 OCI digest 无法证明、CUDA/NCCL 漂移，且 Ray/SGLang/Megatron 与 frozen checkouts 缺失；S1–S5 按合同未运行，Day 29 slime path no-go。DPO/GRPO 先前也均从 promoted S1 完成真实 GPU 路径但未产生合格 candidate；任何重开都必须使用新的 append-only charter/run root。`
 
-状态使用：`not_started`、`in_progress`、`blocked`、`deferred`、`done`、`done_with_handoff_pending`、`closed_pass`、`closed_experimental`、`closed_superseded`、`closed_no_candidate`。`done_with_handoff_pending` 表示当日学习与决策目标已完成，但其下游可消费包仍有明确交付 gate；它不解锁依赖项。`closed_pass` 表示原协议及 closeout audit 均通过，不再重跑；`closed_experimental` 表示用户明确接受记录完整的协议偏离，实验下游可消费但不得宣称 formal pass；`closed_superseded` 表示原任务不再重跑、由后续更强证据关闭，但不等于原协议逐项 `pass`；`closed_no_candidate` 表示预注册 fail-closed 路径已产生合法的零候选结果。`deferred` 表示需要新决策/章程，不是当前主线阻塞。Day 01–03 的 `done` 来自用户确认；未据此补写不存在的 artifact 或用时。
+状态使用：`not_started`、`in_progress`、`cpu_ready_gpu_pending`、`blocked`、`deferred`、`done`、`done_with_handoff_pending`、`closed_pass`、`closed_experimental`、`closed_superseded`、`closed_no_candidate`。`cpu_ready_gpu_pending` 表示开卡前数据、契约与离线 gates 已通过，但模型加载、显存和训练结论仍必须由目标 GPU 实证；它不是完成状态。`done_with_handoff_pending` 表示当日学习与决策目标已完成，但其下游可消费包仍有明确交付 gate；它不解锁依赖项。`closed_pass` 表示原协议及 closeout audit 均通过，不再重跑；`closed_experimental` 表示用户明确接受记录完整的协议偏离，实验下游可消费但不得宣称 formal pass；`closed_superseded` 表示原任务不再重跑、由后续更强证据关闭，但不等于原协议逐项 `pass`；`closed_no_candidate` 表示预注册 fail-closed 路径已产生合法的零候选结果。`deferred` 表示需要新决策/章程，不是当前主线阻塞。Day 01–03 的 `done` 来自用户确认；未据此补写不存在的 artifact 或用时。
 
 ## 活动模型迁移
 
@@ -16,7 +16,7 @@
 | `qwen35-4b-day13-plus-v2` | RSI v0002 confirmed-qualified / S1 downstream-ready | 历史 Day 16 no-candidate 不改写；后续独立 charter 从同一 Base 训练 main，Primary `81/112`、独立训练 seed Confirmation `73/112`，两次均过全部 fixed-full112 gates；winner handoff 已完成。 |
 | v2 training scope | selected | text-only coding；完整 processor/conditional-generation loader；vision tower 与 aligner 冻结并做 trainable coverage 断言。 |
 | v2 `S1` | downstream-ready | `main-s20260809-lr1e-4-final` 已完成 immutable AutoDL checkpoint archive、winner-only merged export、两个 fresh process 的 `4/4` exact token-ID parity，以及 self-hashed promotion manifest/downstream key。 |
-| DPO / GRPO | S1 parent gate passed / downstream gates remain | 只能消费正式 S1 merged export 与 downstream key；Base、Day 12 0.6B export、裸 adapter URI 或不合格候选仍不得替代。 |
+| DPO / GRPO | S1 parent consumed / both closed no candidate | 两条路径都只消费正式 S1 merged export 与 downstream key；DPO dev qualification 未过，GRPO search40 无净增。Base、Day 12 0.6B export、裸 adapter URI 或不合格 checkpoint 仍不得替代。 |
 | Teacher / OPD | deferred / unselected | `teacher_model_id=null`；不自动选择 8B/9B teacher。 |
 
 迁移的完整 gate 与机器可读状态见 [`QWEN35-4B-MIGRATION-PLAN.md`](QWEN35-4B-MIGRATION-PLAN.md) 和 [`artifacts/configs/qwen35-4b-migration-contract.json`](artifacts/configs/qwen35-4b-migration-contract.json)。
@@ -59,12 +59,12 @@
 | 21 | Qwen3.5 candidate selection / fixed-suite qualification | done | 2026-08-13（提前；原计划 08-16） | | `day-21-weekend-eval-reading/README.md`、`artifacts/reports/day21-qwen35-s1-handoff.md`、promotion/key | fixed-full112 selection、independent-training-seed same-suite confirmation 与 downstream-ready S1 handoff 完成；final 是 policy-selected winner，不声明统计唯一最优。 |
 | 22 | Coding preference provenance/processor/held-out | closed_experimental | 2026-08-13 执行、08-14 关闭（原计划 08-17） | | formal machine bundle + 10 human/90 sub-agent audit + 11-case Codex adjudication + experimental close manifest | 200 个 on-policy/non-synthetic pairs、split 154/17/29 与全部 machine gates PASS；11/11 争议方向支持 verifier-chosen。Experimental DPO ready；formal-human 未声明通过。 |
 | 23 | Qwen3.5 coding DPO smoke（parent=S1） | closed_no_candidate | 2026-08-14 提前关闭（原计划 08-18） | | CPU preflight、GPU smoke、隔离 RSI/csearch/qualification、`artifacts/reports/day23-qwen35-dpo-qualification.md` | 原 mechanism 两次均仅 1/4 pair 改善；隔离 lineage 后完成 30-step qualification refit，但一次性 dev17 为 8/17 且 aggregate margins 为负。checkpoint 存在但不合格，full112/E2B/heldout 未运行。 |
-| 24 | Coding online-RL dataflow/sandbox reward contract | not_started | 2026-08-19 | | | |
-| 25 | Qwen3.5 coding GRPO lab（parent=S1） | not_started | 2026-08-20 | | | `downstream-ready S1 manifest` parent gate 已通过；仍须满足在线数据流/reward/runtime gate，首轮显式 cap 8K。 |
-| 26 | slime fixed-release Qwen3.5 compatibility gate | not_started | 2026-08-21 | | | 不支持则 runtime blocked，模型不回退。 |
+| 24 | Coding online-RL dataflow/sandbox reward contract | closed_pass | 2026-08-16（提前；原计划 08-19） | | trajectory schema、8-row input、16-row E2B evidence、4-row group rewards、`artifacts/reports/day24-coding-online-rl-dataflow.md` | CPU contract 终态为 `closed_pass_cpu_contract`：两个 train prompt × G=4，双 replay 8/8 semantic hash 一致；tests-only / tests+format-style、infra retry、zero variance 与 reward-hacking contract 均通过；0 GPU，真实 RL update 留给 Day 25。 |
+| 25 | Qwen3.5 coding GRPO lab（parent=S1） | closed_no_candidate | 2026-08-16 提前实跑并关闭（原计划 08-20） | | RTX runtime binding、G0–G4 ledgers/audits/checkpoints、search40 raw completions/E2B evidence/decision、`artifacts/reports/day25-qwen35-coding-grpo.md` | 用户授权 RTX hardware override；G0–G4 全通过，G4 完成 10 steps/80 trajectories。但 search40 为 S1 `24/40`、GRPO `24/40`，wins/regressions 均 0；合法终态 `closed_no_candidate_confirmation_unopened`。 |
+| 26 | slime fixed-release Qwen3.5 compatibility gate | blocked | 2026-08-17 提前实跑并 fail-closed（原计划 08-21） | | S0 environment/image/GPU inventory、S1 export hash verification、90-file evidence mirror、`artifacts/reports/day26-slime-qwen35-compatibility.md`、Day 29 no-go record | S0 fail：物理双卡、OCI digest 无法证明、runtime drift、Ray/SGLang/Megatron/checkouts 缺失；S1–S5 未运行。唯一终态 `slime_qwen35_compatibility_blocked`，无 fallback。 |
 | 27 | 周末：GRPO/on-policy | not_started | 2026-08-22 | | | |
 | 28 | 周末：slime debug/replay/repro | not_started | 2026-08-23 | | | |
-| 29 | Verified-runtime min loop/reward/replay | not_started | 2026-08-24 | | | 只用 Day 26 通过的 runtime；否则保留 ms-swift evidence。 |
+| 29 | Verified-runtime min loop/reward/replay | blocked | 2026-08-17 preflight（原计划 08-24） | | `artifacts/eval/day26-slime-qwen35-day29-go-no-go.json` | Day 26 S0 fail 后 `go_day29=false`；不启动替代 release/model/image/topology，保留 ms-swift evidence。 |
 | 30 | Qwen3.5 Base→SFT→DPO/GRPO clean reproduction | not_started | 2026-08-25 | | | 同时展示 v1/v2 lineage boundary。 |
 
 ## Qwen3.5-4B Policy Capstone + Deferred Teacher Extension
@@ -91,7 +91,7 @@ Day 31–42 无固定日期，在 30-Day Core 后按 readiness 与预算执行�
 - [x] Week 1：能从一个 training step 说明数据、模型、优化器、checkpoint 与 eval 的职责边界；能把 sharding 映射到 OOM、batch 和吞吐问题。（guided quiz/review evidence；runtime evidence 后补。）
 - [x] Week 2（v1）：完成数据合同、Base baseline、tiny-overfit/exact resume 与受控 SFT；逐样本 eval 的合法选择结果为“无 eligible checkpoint”，未消费 frozen test。
 - [ ] Week 3（v2）：完成 Qwen3.5 processor/runtime/data/eval 迁移、checkpoint integrity、S1 promotion、单变量优化与 failure diagnosis；exact-resume parity 为 Day 20 Optional R。
-- [ ] Week 4（v2）：审计 coding preference data，从 S1 跑通 DPO 与 coding GRPO，并画出在线 RL 数据和状态流。
+- [x] Week 4（v2）：审计 coding preference data，从 S1 跑通 DPO 与 coding GRPO，并画出在线 RL 数据和状态流；两条优化路径均按预注册 gate 合法关闭为 no-candidate。
 - [ ] Final：用已验证 runtime 从干净环境复现 Qwen3.5 Base→SFT→DPO/GRPO，并用证据讲清 lineage、状态、Eval、RL 和失败归因。
 - [ ] Policy Capstone Week 5：冻结 Qwen3.5 S0，single/TP2 parity 通过，依据实测选择 full/LoRA/QLoRA；teacher 仍可保持 deferred。
 - [ ] Policy Capstone Week 6：从 S1 运行 direct coding RL，完成 S0/S1/S2 一次性 confirmation、能力/成本对照与 clean reproduction；Teacher/OPD 仅在 charter v2 后另行验收。
