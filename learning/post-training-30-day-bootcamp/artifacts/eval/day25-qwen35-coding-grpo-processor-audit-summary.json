@@ -1,0 +1,51 @@
+{
+  "all_four_space_boundary_tokens_supervised": true,
+  "all_non_thinking_prefix_tokens_masked": true,
+  "inputs": {
+    "eval": {
+      "file_sha256": "5fdab070c2b042421c7ac9ef1975bb91e9adb61f46aede4ed22dfc23c0026bab",
+      "path": "artifacts/data/day25-qwen35-coding-grpo-eval.jsonl"
+    },
+    "train": {
+      "file_sha256": "78e7e6b23ec2b39073b8f363fa94f641b36a18b3416a63a086e423f979a39104",
+      "path": "artifacts/data/day25-qwen35-coding-grpo-train.jsonl"
+    }
+  },
+  "max_prompt_token_count": 88,
+  "max_synthetic_total_token_count": 92,
+  "min_prompt_token_count": 63,
+  "ordered_audit_row_hashes_sha256": "32d34b29f7f2f3bab9591bfbd82065bbf8d7a46203a8efe172a38fed660f155b",
+  "processor": {
+    "local_snapshot": "/Users/jiaweiqian/Desktop/python_projects/life/tmp/qwen35-v2/models/Qwen--Qwen3.5-4B-Base/1001bb4d826a52d1f399e183466143f4da7b741b",
+    "model_key": "Qwen/Qwen3.5-4B-Base",
+    "model_revision": "1001bb4d826a52d1f399e183466143f4da7b741b",
+    "weights_loaded": false
+  },
+  "prompt_token_cap": 512,
+  "records": 72,
+  "runtime": {
+    "ms_swift_commit": "565a1ad586a21d24b23931c52d2c62b49c39bee8",
+    "python": "3.11.15",
+    "swift_path": "/Users/jiaweiqian/Desktop/python_projects/life/vendor/ms-swift/swift/__init__.py",
+    "torch": "2.9.1"
+  },
+  "schema_name": "day25.qwen35_grpo_processor_audit_summary",
+  "schema_version": 1,
+  "scope": "real_pinned_qwen35_processor_no_model_weights",
+  "split_counts": {
+    "eval": 40,
+    "train": 32
+  },
+  "status": "pass",
+  "summary_sha256": "ad751b7580b8f67c91dd64c081255ae4c3aa5ffedb254d7e99e6c164dacb2e3e",
+  "template": {
+    "add_non_thinking_prefix": true,
+    "enable_thinking": false,
+    "loss_scale": "last_round",
+    "mode": "train",
+    "padding_free": false,
+    "type": "qwen3_5"
+  },
+  "training_total_token_cap": 1024,
+  "zero_prompt_truncation": true
+}

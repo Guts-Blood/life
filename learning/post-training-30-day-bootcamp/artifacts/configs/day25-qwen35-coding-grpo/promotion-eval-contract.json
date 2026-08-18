@@ -1,0 +1,286 @@
+{
+  "access_policy": {
+    "after_confirmation": "no retraining, checkpoint reselection, prompt change, decoder change, scorer change, or threshold change",
+    "confirmation24": "open exactly once only after a sealed search40 decision passes every search gate",
+    "search40": "open exactly once only after G0-G3 and complete G4 checkpoint-10 pass runtime gates"
+  },
+  "checkpoint_policy": {
+    "baseline": {
+      "artifact_sha256": "16bc212df51ecac9a5b3b34062e0ccc880c719d63248f04949be8636550e53be",
+      "checkpoint_id": "qwen35-4b-s1-main-s20260809-lr1e-4-final",
+      "downstream_key": "s1:qwen35-4b:c169e0bb55b20951d27a889e4ef0deae3a01fe10acabee804b212d3d8170db0a",
+      "role": "day21_promoted_s1"
+    },
+    "candidate": {
+      "early_stopped_or_incomplete_g4_has_no_candidate": true,
+      "g2_and_g3_checkpoints_are_never_candidates": true,
+      "intermediate_g4_checkpoint_selection_forbidden": true,
+      "must_start_fresh_from_same_s1": true,
+      "only_eligible_checkpoint_step": 10,
+      "only_eligible_stage": "g4_bounded_short_run"
+    }
+  },
+  "claim_boundary": {
+    "capability_gain_claimed_at_freeze_time": false,
+    "globally_virgin_or_pretraining_contamination_free": false,
+    "independent_of_day25_optimizer": true,
+    "model_outputs_seen_at_freeze_time": false,
+    "promotion_scope": "Day25 directional coding candidate only"
+  },
+  "completion_package_schema": {
+    "one_record_per_suite_task_in_frozen_order": true,
+    "required_evidence": [
+      "message_content",
+      "generated_text",
+      "prompt_token_ids",
+      "response_token_ids",
+      "finish_reason",
+      "model_identity",
+      "GPU binding SHA-256"
+    ],
+    "schema_name": "day25.coding_eval_completions",
+    "sealed_before_sandbox": true
+  },
+  "cpu_contract_sha256": "59e4a07abbed6581650784b264fb43da81ce913c74c81f1be2b7880504f3ed2c",
+  "decision_policy": {
+    "both_pass": "directional_code_candidate_eligible",
+    "broader_s2_promotion_allowed": false,
+    "reason": "confirmation24 is a small engineering gate and is not globally contamination-free",
+    "search_fail": "closed_no_candidate_confirmation_unopened",
+    "search_pass_confirmation_fail": "closed_no_candidate_confirmation_failed",
+    "strong_statistical_gain_claim_allowed": false
+  },
+  "eval_contract_sha256": "4a0060486184694f7caae505084d8939cf01eaeb510cdc0069f1b0fe749b8cd9",
+  "execution_contract": {
+    "challenge_tests_available": false,
+    "day24_verifier_file_sha256": "d61bedec988a0f1b8105e69e0a3673a35900dcb25750de69da66d74859c501a6",
+    "fresh_sandbox_per_completion": true,
+    "persistent_infra_invalidates_the_entire_model_suite": true,
+    "public_mbpp_test_count_per_task": "as_frozen_in_each_suite_row",
+    "sandbox_owner": "day24_coding_verifier.py"
+  },
+  "generation_contract": {
+    "add_non_thinking_prefix": true,
+    "do_sample": false,
+    "enable_thinking": false,
+    "generation_contract_sha256": "9c510a332ab111e6d14bb09fc66cc4c4ca029df56e928c31e30bbb840f475f16",
+    "max_new_tokens": 512,
+    "mode": "matched_greedy_pass_at_1",
+    "return_only_indented_continuation": true,
+    "same_runtime_processor_template_and_batching_for_both_models": true,
+    "seed": 20260820
+  },
+  "implementation_sources": {
+    "build_day25_promotion_eval.py": "644b6ad9e8eed8edbde6b4042365794773d680b1bc6fe3c16e20dd3c4b471f7d",
+    "day24_coding_verifier.py": "d61bedec988a0f1b8105e69e0a3673a35900dcb25750de69da66d74859c501a6",
+    "generate_day25_promotion_eval.py": "5b34db76186f63ef6b5d100750ec3c3c54f288fe5a5d9321802a3e60ef331e16",
+    "sandbox_day25_promotion_eval.py": "524e8cf45aa832aae93c76c0e9a3410d3c557c0619499bf8ffd50f9fc9158fb9",
+    "score_day25_promotion_eval.py": "00ec6645aa0a035f326ccdf622d0c47f449c4ab36104dd7015c831d6f60ef571",
+    "test_day25_promotion_eval.py": "0039236e351d628092bafb9d0889594b89ea0184135ebf5b0550b776826764da"
+  },
+  "inputs": {
+    "cpu_contract": {
+      "content_sha256": "59e4a07abbed6581650784b264fb43da81ce913c74c81f1be2b7880504f3ed2c",
+      "file_sha256": "97258ef44976e6af760e9e27c8d81bd178dd7fba6dd85d444c62bbd84c110bb8",
+      "path": "artifacts/configs/day25-qwen35-coding-grpo/cpu-run-contract.json"
+    },
+    "data_manifest": {
+      "content_sha256": "b52eaba89df057477c9582f28827b502446910cb990e756eb936f608e6952f99",
+      "file_sha256": "8664d7c82318057ed57ea87d7b53219ee527a32f200566abc1f0a4916d87e283",
+      "path": "artifacts/data/day25-qwen35-coding-grpo-data-manifest.json"
+    },
+    "search40": {
+      "file_sha256": "5fdab070c2b042421c7ac9ef1975bb91e9adb61f46aede4ed22dfc23c0026bab",
+      "path": "artifacts/data/day25-qwen35-coding-grpo-eval.jsonl"
+    },
+    "seed_manifest": {
+      "content_sha256": "700a7e16aa14ae62ad630c9d64f384c3c4274f9bf63a26e19babd4e4849c2ad1",
+      "file_sha256": "90943afc694d3aef121c3d58b751c52e0bbfaa0d48f7388dbc90a9088821ed8e",
+      "path": "artifacts/data/day22-qwen35-mbpp-seed-manifest.json"
+    },
+    "train32": {
+      "file_sha256": "78e7e6b23ec2b39073b8f363fa94f641b36a18b3416a63a086e423f979a39104",
+      "path": "artifacts/data/day25-qwen35-coding-grpo-train.jsonl"
+    }
+  },
+  "overlap": {
+    "search_confirmation": [],
+    "train_confirmation": [],
+    "train_search": []
+  },
+  "promotion_gates": {
+    "confirmation24": {
+      "maximum_format_valid_count_loss": 1,
+      "maximum_mean_completion_token_multiplier": 1.5,
+      "maximum_regressions": 1,
+      "maximum_truncation_count_increase": 0,
+      "minimum_candidate_correct_gain": 2,
+      "minimum_paired_net_wins": 2,
+      "require_zero_infra_error": true
+    },
+    "search40": {
+      "maximum_format_valid_count_loss": 1,
+      "maximum_mean_completion_token_multiplier": 1.5,
+      "maximum_regressions": 2,
+      "maximum_truncation_count_increase": 0,
+      "minimum_candidate_correct_gain": 3,
+      "minimum_paired_net_wins": 3,
+      "require_zero_infra_error": true
+    }
+  },
+  "required_report_metrics": [
+    "baseline_correct",
+    "candidate_correct",
+    "correct_gain",
+    "wins",
+    "regressions",
+    "ties_pass",
+    "ties_fail",
+    "paired_net_wins",
+    "one_sided_exact_sign_p",
+    "paired_delta_bootstrap_95pct",
+    "format_valid_counts",
+    "truncation_counts",
+    "mean_completion_tokens",
+    "status_counts"
+  ],
+  "result_schema": {
+    "correct_definition": "status=ok, format_valid=true, passed_tests=total_tests, finish_reason!=length",
+    "required": [
+      "schema_name",
+      "schema_version",
+      "task_family_id",
+      "task_row_sha256",
+      "status",
+      "finish_reason",
+      "format_valid",
+      "passed_tests",
+      "total_tests",
+      "completion_token_count",
+      "completion_sha256",
+      "evidence_sha256",
+      "result_sha256"
+    ],
+    "status_values": [
+      "ok",
+      "wrong_answer",
+      "runtime_error",
+      "compile_error",
+      "parse_error",
+      "candidate_timeout",
+      "truncated",
+      "aborted",
+      "infra_error"
+    ]
+  },
+  "schema_name": "day25.qwen35_coding_grpo_promotion_eval_contract",
+  "schema_version": 1,
+  "statistical_diagnostics": {
+    "diagnostics_do_not_override_conjunctive_engineering_gates": true,
+    "exact_sign_test": "one_sided_binomial_on_wins_vs_regressions",
+    "paired_bootstrap_resamples": 10000,
+    "paired_bootstrap_seed": 20260820
+  },
+  "status": "frozen_before_gpu_eval_outputs",
+  "suites": {
+    "confirmation24": {
+      "file_sha256": "b3cec2c9ba0aee29d89075ac65f28ec6c286c6cfd83934b684e87269194ceae7",
+      "ordered_family_ids": [
+        "mbpp:task:723",
+        "mbpp:task:893",
+        "mbpp:task:844",
+        "mbpp:task:773",
+        "mbpp:task:960",
+        "mbpp:task:920",
+        "mbpp:task:956",
+        "mbpp:task:765",
+        "mbpp:task:703",
+        "mbpp:task:806",
+        "mbpp:task:689",
+        "mbpp:task:826",
+        "mbpp:task:793",
+        "mbpp:task:739",
+        "mbpp:task:615",
+        "mbpp:task:731",
+        "mbpp:task:614",
+        "mbpp:task:791",
+        "mbpp:task:876",
+        "mbpp:task:747",
+        "mbpp:task:779",
+        "mbpp:task:952",
+        "mbpp:task:721",
+        "mbpp:task:834"
+      ],
+      "ordered_row_hashes_sha256": "18a2a923be37a3004d9011abc14e0f5f393d0965ac0f199e2e14beb7fb553114",
+      "path": "artifacts/data/day25-qwen35-coding-grpo-confirmation24.jsonl",
+      "quarantined_unused_family_ids": {
+        "dev": [
+          "mbpp:task:859"
+        ],
+        "heldout": [
+          "mbpp:task:867"
+        ]
+      },
+      "records": 24,
+      "role": "single_use_model_output_blind_confirmation",
+      "selection_domains": {
+        "dev": "day25.grpo.promotion.confirmation12.dev.v1",
+        "heldout": "day25.grpo.promotion.confirmation12.heldout.v1"
+      },
+      "source_splits": {
+        "day22.dev": 12,
+        "day22.heldout": 12
+      }
+    },
+    "search40": {
+      "file_sha256": "5fdab070c2b042421c7ac9ef1975bb91e9adb61f46aede4ed22dfc23c0026bab",
+      "ordered_family_ids": [
+        "mbpp:task:946",
+        "mbpp:task:690",
+        "mbpp:task:939",
+        "mbpp:task:732",
+        "mbpp:task:874",
+        "mbpp:task:768",
+        "mbpp:task:742",
+        "mbpp:task:783",
+        "mbpp:task:914",
+        "mbpp:task:667",
+        "mbpp:task:761",
+        "mbpp:task:941",
+        "mbpp:task:919",
+        "mbpp:task:887",
+        "mbpp:task:760",
+        "mbpp:task:639",
+        "mbpp:task:947",
+        "mbpp:task:686",
+        "mbpp:task:863",
+        "mbpp:task:609",
+        "mbpp:task:894",
+        "mbpp:task:674",
+        "mbpp:task:832",
+        "mbpp:task:725",
+        "mbpp:task:934",
+        "mbpp:task:751",
+        "mbpp:task:638",
+        "mbpp:task:616",
+        "mbpp:task:948",
+        "mbpp:task:606",
+        "mbpp:task:706",
+        "mbpp:task:607",
+        "mbpp:task:777",
+        "mbpp:task:974",
+        "mbpp:task:957",
+        "mbpp:task:661",
+        "mbpp:task:618",
+        "mbpp:task:635",
+        "mbpp:task:657",
+        "mbpp:task:825"
+      ],
+      "ordered_row_hashes_sha256": "994f370cabc574673391018d20713672beabfb897617b66e4eedc7bedc39a16b",
+      "path": "artifacts/data/day25-qwen35-coding-grpo-eval.jsonl",
+      "records": 40,
+      "role": "single_use_candidate_screen"
+    }
+  },
+  "training_trust_root_unchanged": true
+}
