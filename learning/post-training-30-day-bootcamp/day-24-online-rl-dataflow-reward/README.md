@@ -1,7 +1,7 @@
 # Day 24 — Coding Online RL Trajectory 与 Reward/Sandbox Contract
 
 日期：`2026-08-19`
-状态：`not_started`
+状态：`closed_pass_cpu_contract`（`2026-08-16` 提前执行）
 强度：4–5 小时
 
 ## 主要目标
@@ -69,21 +69,38 @@ Core 固定为 text-only coding；`modality=text` 和无 image/video tokens 必�
 
 ## 验收
 
-- [ ] 能从一个 coding trajectory 手工追到 sandbox evidence、reward、advantage 和 training loss。
-- [ ] Raw result、reward component、normalized reward 与 advantage 没有混用。
-- [ ] Processor/model/policy/sandbox/test versions 与 replay key 完整。
-- [ ] Infra failure 与 wrong answer 区分，verifier 有 timeout/幂等单测。
-- [ ] 至少一个 reward-hacking case 被 hidden/frozen correctness 揭示。
-- [ ] producer→schema→consumer 图可供 Day 25/26 映射真实框架。
+- [x] 能从一个 coding trajectory 手工追到 sandbox evidence、reward、advantage 和训练 loss 的输入边界；真实 log-prob/loss 明确留给 Day 25，未伪造。
+- [x] Raw result、reward component、aggregate/normalized reward 与 advantage 没有混用。
+- [x] Processor/model/policy/sandbox/test versions 与 replay key 完整。
+- [x] Infra failure 与 wrong answer 区分，verifier 有 candidate timeout、infra retry、全 infra 与幂等单测。
+- [x] `mbpp:task:602 sample:03` 的满 reward 被 frozen correctness `1/2` 揭示为 weak-test false positive。
+- [x] producer→schema→consumer 图、Day 25 薄 adapter 接口与持久化位置已落入报告。
 
 ## Daily Log
 
 ### Object / policy contracts
 
+- 冻结 train-only `mbpp:task:602`、`mbpp:task:604`，每组四条 promoted-S1 completion；Day 23 failure checkpoint 未使用。
+- Trajectory v2 保存 exact token IDs、processor/tokenizer/template、S1 parent、test/sandbox/verifier/reward hashes；text-only modality 显式记录。
+- Day 24 CPU contract 不计算 old/current/reference log-prob 或 loss mask；字段为 `null` 并带 `not_computed_day24_cpu_contract`。
+
 ### Sandbox / status semantics
+
+- 新增 `day24_coding_verifier.py`，不修改冻结的 Day 22 scorer。每条 completion 使用 fresh、禁网 E2B VM；每个 testcase 使用 fresh Python process/cwd。
+- `parse/compile/wrong_answer/runtime/candidate_timeout` 为模型结果；`infra_error` reward 为 `null`，受控重试一次仍失败则整个 G=4 group invalid。
+- Day 22 原测试 `13/13` 通过；Day 24 contract tests `22/22` 通过（常规 run 跳过 live class），显式 live E2B integration `1/1` 通过。
 
 ### Reward normalization / hacking
 
+- Live mini-pipeline：8 trajectories × 2 replays = 16 evidence；`ok=10`、`wrong_answer=6`、`infra_error=0`。
+- `tests_only` 与 `tests_format_style` 共用 raw evidence；G=4 与 pinned ms-swift 对齐，使用 sample std (`ddof=1`) 且 normalization denominator 加 `1e-4`。Zero-variance fixture 产生全零 advantage；全 infra fixture 不产生 advantage/update eligibility。
+- `task:602 sample:03` reward tests `3/3`、frozen eval `1/2`；`task:604 sample:04` 的 style/format bonus 将 aggregate 从 `0` 提到 `.1`，frozen correctness 仍为 `0`。
+
 ### Replay key / version map
 
+- 8/8 trajectories 的两次 semantic result hash 一致；event hash 保留 UUID/time/duration 差异。
+- 产物：trajectory schema、8-row frozen input、16-row verifier evidence、4-row group rewards，以及 `artifacts/reports/day24-coding-online-rl-dataflow.md`。
+
 ### Day 25 第一动作
+
+实现 pinned ms-swift 的薄 reward adapter：只做 completion/task 转换、batch verifier 调用、evidence 持久化和 scalar reward 返回；不得在 adapter 重写 tests、reward weights 或 group normalization。随后先完成 rollout-only G1，再进入 one-update G2。

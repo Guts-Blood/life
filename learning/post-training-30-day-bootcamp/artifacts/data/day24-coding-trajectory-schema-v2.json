@@ -1,0 +1,194 @@
+{
+  "$id": "https://local/day24-coding-trajectory-schema-v2.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "contracts": {
+    "group_reducer": {
+      "ddof": 1,
+      "epsilon": 0.0001,
+      "trainer_source": "pinned ms-swift swift/rl_core/advantage.py::compute_advantages",
+      "version": "day24.pinned_ms_swift_group_zscore.v2",
+      "zero_variance_advantage": 0.0
+    },
+    "reward_policies": {
+      "tests_format_style": {
+        "frozen_eval_in_aggregate": false,
+        "name": "tests_format_style",
+        "policy_sha256": "62b8875a02ef7f554af8c1e46593f57c0ce9e32900cbd94f84798e9f5cf2ba13",
+        "safety_hard_gate": true,
+        "version": "day24.tests_format_style.v1",
+        "weights": {
+          "correctness": 0.9,
+          "format": 0.05,
+          "style": 0.05
+        }
+      },
+      "tests_only": {
+        "frozen_eval_in_aggregate": false,
+        "name": "tests_only",
+        "policy_sha256": "959b78362a3c41a58ca3b8d03ca3a148d52fa6b540ec76ad3187b25290c82180",
+        "safety_hard_gate": true,
+        "version": "day24.tests_only.v1",
+        "weights": {
+          "correctness": 1.0
+        }
+      }
+    },
+    "sandbox": {
+      "allow_internet_access": false,
+      "allow_public_traffic": false,
+      "backend": "e2b_firecracker",
+      "candidate_bytes_in_shell": false,
+      "deny_out": [
+        "0.0.0.0/0"
+      ],
+      "fresh_sandbox_per_completion": true,
+      "limits": {
+        "address_space_bytes": 536870912,
+        "core_bytes": 0,
+        "cpu_seconds_per_test": 2,
+        "file_size_bytes": 1048576,
+        "max_output_bytes": 8192,
+        "open_files": 64,
+        "processes": 32,
+        "wall_seconds_per_test": 2.0
+      },
+      "sdk": {
+        "package": "e2b",
+        "version": "2.37.0"
+      },
+      "secure": true,
+      "template_id": "rki5dems9wqfm4r03t7g",
+      "testcase_isolation": "fresh_python_process_and_cwd_shared_completion_vm"
+    },
+    "verifier": {
+      "contract_sha256": "a0827dafffa203a0a4e8d18e33972a4d6c7cd91bec52fa2c66fffc5fe181c029",
+      "infra_reward": null,
+      "language": "python",
+      "missing_component": "fail_closed",
+      "sandbox_contract_sha256": "35fb6f882f664bba16644c6f4d9f7fdb660a7457293833799925c79fedb8d1ab",
+      "schema_name": "day24.coding_verifier_contract",
+      "schema_version": 1,
+      "statuses": [
+        "ok",
+        "parse_error",
+        "compile_error",
+        "wrong_answer",
+        "runtime_error",
+        "candidate_timeout",
+        "infra_error",
+        "truncated",
+        "aborted"
+      ],
+      "test_families": [
+        "visible_example",
+        "reward",
+        "frozen_eval"
+      ],
+      "version": "day24.mbpp_per_test_verifier.v1"
+    }
+  },
+  "description": "CPU contract schema; real old/current/reference log-probs remain explicitly unavailable until Day 25.",
+  "object_grains": [
+    "prompt",
+    "completion",
+    "code_artifact",
+    "execution_attempt",
+    "trajectory",
+    "group",
+    "training_sample"
+  ],
+  "policy_roles": [
+    "rollout",
+    "old",
+    "current",
+    "reference"
+  ],
+  "properties": {
+    "code_artifact": {
+      "type": "object"
+    },
+    "completion_id": {
+      "type": "string"
+    },
+    "contracts": {
+      "type": "object"
+    },
+    "deterministic_replay_key": {
+      "type": "string"
+    },
+    "group_id": {
+      "type": "string"
+    },
+    "logprobs": {
+      "type": "object"
+    },
+    "modality": {
+      "type": "object"
+    },
+    "policy": {
+      "type": "object"
+    },
+    "processor": {
+      "type": "object"
+    },
+    "prompt_id": {
+      "type": "string"
+    },
+    "run_id": {
+      "type": "string"
+    },
+    "source_parent": {
+      "type": "object"
+    },
+    "task": {
+      "type": "object"
+    },
+    "tests": {
+      "type": "object"
+    },
+    "tokens": {
+      "type": "object"
+    },
+    "trajectory_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "run_id",
+    "trajectory_id",
+    "group_id",
+    "prompt_id",
+    "completion_id",
+    "deterministic_replay_key",
+    "modality",
+    "task",
+    "code_artifact",
+    "tokens",
+    "processor",
+    "policy",
+    "logprobs",
+    "tests",
+    "contracts",
+    "source_parent"
+  ],
+  "reward_grains": [
+    "raw_test_result",
+    "reward_component",
+    "aggregate_reward",
+    "normalized_reward",
+    "advantage"
+  ],
+  "status_taxonomy": [
+    "ok",
+    "parse_error",
+    "compile_error",
+    "wrong_answer",
+    "runtime_error",
+    "candidate_timeout",
+    "infra_error",
+    "truncated",
+    "aborted"
+  ],
+  "title": "Day 24 coding online-RL trajectory v2",
+  "type": "object"
+}
