@@ -4,11 +4,13 @@
 状态：`slime_qwen35_compatibility_blocked`（`2026-08-17` 提前执行；S0 fail，S1–S5 按合同未运行）
 强度：4–5 小时
 
+课程修订说明（`2026-08-18`）：下文的 “Day 29 no-go” 只约束旧版 Day 29 slime live run。Day 29 现已改为 CPU-only Megatron architecture study，因此不受该 runtime gate 阻塞；原 go/no-go artifact 继续作为不可改写的历史实验记录。
+
 ## 主要目标
 
 只回答一个问题：官方 slime release 中是否存在一条能对 Day 21 promoted Qwen3.5 merged SFT anchor 正确完成 model/processor load、rollout schema、full-parameter learner train 与 weight sync 的可复现路径。今天不启动正式 RL；`v0.3.0` 只保留为历史架构阅读基线，不能被默认当作 Qwen3.5 runtime。
 
-若没有兼容路径，结论必须是 `slime_qwen35_compatibility_blocked`，Day 29 随之 blocked。禁止换 0.6B、Qwen3 或其他模型完成一个无关 recipe 后称为 active track 成功。
+若没有兼容路径，结论必须是 `slime_qwen35_compatibility_blocked`，原计划中的 Day 29 live run 随之 blocked。禁止换 0.6B、Qwen3 或其他模型完成一个无关 recipe 后称为 active track 成功。
 
 ## Pre-GPU Closeout（2026-08-17）
 
@@ -25,7 +27,7 @@
 1. 查看 [slime Releases](https://github.com/THUDM/slime/releases) 与官方文档，列出可能支持 Qwen3.5 的正式 release/tag；不预先指定 winner。
 2. 对每个候选核对 model architecture、Megatron bridge、SGLang/vLLM、Transformers、Ray、container/CUDA/NCCL compatibility。
 3. 选择一个候选 checkout，记录 tag/SHA、submodules/dependencies、Docker digest 与官方 example/source evidence。
-4. `v0.3.0` 可用于对照 Sample/DataSource/rollout/train 概念，但没有 runtime evidence 时不得进入 Day 29 command。
+4. `v0.3.0` 可用于对照 Sample/DataSource/rollout/train 概念，但没有 runtime evidence 时不得进入任何后续 slime live command。
 
 ## Pinned Codepath Audit（90 分钟）
 
@@ -57,7 +59,7 @@
 
 - CPU/container/config audit 为主；只有 S0/S1 通过后才允许使用 Day 25 已验证 topology，GPU gate 总计不超过 1 小时。
 - 不做正式 RL、不做大规模权重转换、不测试 8×H100 throughput。
-- Day 29 的 model、release、container、topology 和 runbook 只能来自 S0–S5 全部 runtime-verified 的结果。
+- 任何未来 slime live run 的 model、release、container、topology 和 runbook 只能来自 S0–S5 全部 runtime-verified 的新结果。
 
 ## Evidence-first 产物
 
@@ -104,6 +106,6 @@
 - S1–S5：`not_run_due_to_s0_fail`；没有 conversion、model load、rollout、live E2B、optimizer、checkpoint 或 weight sync。
 - S0 原始 decision：未版本化本地镜像中的 `../tmp/day26-slime-qwen35-20260817T141117Z/decision/s0-decision.json`；公开结论见 compatibility report 与 Day 29 go/no-go JSON。
 
-### Day 29 go/no-go
+### 旧执行计划 Day 29 go/no-go（历史记录）
 
-`slime_qwen35_compatibility_blocked`；`go_day29=false`。记录：`../artifacts/eval/day26-slime-qwen35-day29-go-no-go.json`。Day 29 不得启动替代 release/model/image/topology recipe。
+`slime_qwen35_compatibility_blocked`；`go_day29=false`。记录：`../artifacts/eval/day26-slime-qwen35-day29-go-no-go.json`。它仍禁止用替代 release/model/image/topology 补做原 slime run，但不阻塞修订后的 CPU architecture study。

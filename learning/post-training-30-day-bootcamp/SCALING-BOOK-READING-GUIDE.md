@@ -1,7 +1,7 @@
 # Scaling Book 与 Training 精读路线
 
 主教材：[How To Scale Your Model](https://jax-ml.github.io/scaling-book/)  
-适用范围：30-Day Core（Day 01–30）+ Optional Scaled Teacher–Student Capstone（Day 31–42）
+适用范围：30-Day Core（Day 01–30）+ Deferred Capstone Archive（原 Day 31–42）
 
 状态：Day 01–03 已由用户确认完成；从 Day 04 起按本路线继续。
 
@@ -352,61 +352,65 @@ Daily Log 至少留下：三题答案、一个工程映射、一个证据路径�
 - **状态/训练题**：Ray placement、rollout engine、trainer、reward 和 weight sync 各拥有何种 GPU/模型状态？
 - **诊断/判断题**：在租多卡前，哪些 processor/model mapping、Megatron/SGLang loader、checkpoint conversion、CPU schema/reward/replay dry checks 能证明 Qwen3.5 支持而不是“CLI 能启动”？
 
-当日落地：固定 tag/SHA/container，完成 Qwen3.5 support matrix、Sample/DataSource/rollout/train/weight-version 图、reward tests 与 Day 29 runbook。若完整兼容未证实，标记 slime runtime blocked，Day 25 ms-swift 仍是主线，禁止换模型。
+当日落地：固定 tag/SHA/container，完成 Qwen3.5 support matrix、Sample/DataSource/rollout/train/weight-version 图、reward tests 与历史 live-run contract。若完整兼容未证实，标记 slime runtime blocked，禁止换模型；这些 static/runtime 边界继续作为 Day 27–30 architecture study 的案例输入。
 
 <a id="day-27"></a>
 
-### Day 27 — 周末：GRPO 与 on-policy 边界
+### Day 27 — 周末：Training System 总图与框架分层
 
-阅读：[DeepSeekMath](https://arxiv.org/abs/2402.03300) 的 GRPO method/objective；对照 slime Quick Start 的 batch invariant 和 reward fields。
+回看 [Day 05 framework map](day-05-training-lifecycle-framework-map/README.md)、[slime Architecture](https://thudm.github.io/slime/blogs/introducing_slime.html) 与 [Megatron Core quickstart](https://docs.nvidia.com/megatron-core/developer-guide/latest/get-started/quickstart.html)。阅读目标不是记 API，而是区分 recipe、orchestrator、rollout engine、learner、distributed runtime、device compute 和 persistence。
 
-- **对象/数据题**：同一 prompt 的 group、response、reward、advantage 和 token mask 的 grain 分别是什么？
-- **状态/训练题**：old/reference/current policy 在 objective 中承担什么角色，哪些量来自 rollout 时刻？
-- **诊断/判断题**：generation、buffer、training 和 weight sync 的哪些延迟会让 rollout stale；importance correction 的有效边界是什么？
+- **对象/数据题**：offline training 与 online RL 分别有哪些对象；新增的 trajectory、reward、policy-version 和 weight-sync 边在哪里？
+- **状态/训练题**：ms-swift、slime、Ray、SGLang、Megatron、PyTorch/NCCL/CUDA 各拥有或委托什么状态？
+- **诊断/判断题**：一个 import/placement failure、一个 loss failure 和一个 weight-version failure分别应先归到哪层？
 
-当日落地：用自己的 Day 25 Qwen3.5 coding 样本标出 rollout/old/current/reference policy，并画同步与 stale 两条 timeline。
+当日落地：两张不以框架名起笔的 lifecycle 图，以及含 `producer / object / transport / consumer / owner / evidence` 的 node ledger。
 
 <a id="day-28"></a>
 
-### Day 28 — 周末：slime debug、replay、repro 与 observability
+### Day 28 — 周末：Megatron × slime 对象、状态与接口
 
-阅读 Day 26 已验证 runtime 的 Debug、Trace/Profiling、Reproducibility 与 Fault-tolerance 文档；若 slime 被判 blocked，则在 ms-swift/vLLM 主线做同构 replay/observability 设计，不假装 slime 已通过。
+只读两份已有 evidence：[Day 18 Megatron runtime report](artifacts/reports/day18-qwen35-megatron-compatibility.md) 与 [Day 26 slime runtime config](artifacts/configs/day26-slime-qwen35-runtime.json)。把 Sample/trajectory、learner batch、training state、serving weights、policy version、checkpoint/export 分开定义。
 
-- **对象/数据题**：一轮中每条边传什么对象、多少条、由哪个 `file:function` 生产和消费？
-- **状态/训练题**：哪些组件持久、哪些每 rollout 重建、何时 policy version 发生变化？
-- **诊断/判断题**：rollout-only、reward replay、train-only replay、weight sync 与 next-version rollout 各需要什么证据，失败时在哪一层停止？
+- **对象/数据题**：slime `Sample` 怎样才能成为 Megatron 可消费的 tensor batch，中间必须补齐哪些 mask/log-prob/version 字段？
+- **状态/训练题**：Ray actor、GPU process、distributed rank、rollout model 与 learner shard 为什么不是同一个对象？
+- **诊断/判断题**：static source evidence 能回答哪些架构问题，哪些结论必须保留为 `RUNTIME UNKNOWN`？
 
-当日落地：Day 29 五级 gate 表；周末不启动 GPU。
+当日落地：共同术语表与 Day 29/30 source-reading question list；周末不启动 GPU。
 
 <a id="day-29"></a>
 
-### Day 29 — 已验证 Runtime 的最小闭环、Reward 修改与 Replay
+### Day 29 — Megatron Architecture：进程组、状态所有权与 Training Step
 
-开机前重读 Day 26 通过的 runtime 的 batch invariant、reward customization 与 checkpoint/debug 部分；需要 profiling 时只回查 [Inference](https://jax-ml.github.io/scaling-book/inference/) 的 generation bottleneck。
+阅读 [Megatron parallelism guide](https://docs.nvidia.com/megatron-core/developer-guide/latest/user-guide/parallelism-guide.html)、[distributed optimizer](https://docs.nvidia.com/megatron-core/developer-guide/latest/user-guide/features/dist_optimizer.html) 与 Day 18 的 8-node runtime codepath。重点是从 config/source 推导 state 和 communication，不再开一个训练 run。
 
-- **对象/数据题**：每轮 prompt/response/reward/sample 数是否满足 rollout 与 train 消费守恒，坏样本能否反查原 prompt？
-- **状态/训练题**：运行日志能否证明 rollout、reward、train、checkpoint 和 weight sync 的实际顺序与 policy version？
-- **诊断/判断题**：修改 reward 后指标变化，怎样判断代码确实生效且不是 sample mix、长度或旧权重造成？
+- **对象/数据题**：DP/TP/PP/CP/EP 分别切 batch、parameter、activation、sequence 或 expert 的哪一维；global batch 为什么只随数据副本和 accumulation 改变？
+- **状态/训练题**：parameter、gradient、optimizer、activation、RNG、data cursor 和 checkpoint metadata 在哪些 rank 上 replicated/sharded/transient/persisted？
+- **诊断/判断题**：TP logits 分叉、collective hang、OOM、optimizer 不更新、checkpoint 只能推理不能 resume 时，第一检查节点是什么？
 
-当日落地：使用同一 Qwen3.5 `S1`，按 rollout-only → train-only replay → full loop → reward change 顺序跑最小闭环。若 slime 未通过兼容 gate，就在 ms-swift 主线完成可验证部分并把 slime 标 blocked；不换模型或伪造 full-loop 结论。
+当日落地：process-group 图、train-step `file:function` 链、state-ownership ledger 与 failure tree。Day 26 的旧 run no-go 是历史记录，不阻塞 CPU 学习。
 
 <a id="day-30"></a>
 
-### Day 30 — Qwen3.5 Base→SFT→DPO/GRPO Clean Reproduction
+### Day 30 — slime Architecture 与 Training System 集成
 
-阅读：[Scaling Book Conclusion](https://jax-ml.github.io/scaling-book/conclusion/)；回看 [Tülu 3](https://arxiv.org/abs/2411.15124) 的阶段设计和本月所有 manifest/run records，不引入新框架。
+阅读 pinned slime source anchors、[Architecture](https://thudm.github.io/slime/blogs/introducing_slime.html)、Debug/Trace/Reproducibility/Fault-tolerance 文档，并回看 [DeepSeekMath](https://arxiv.org/abs/2402.03300) 中 old/current/reference policy 的定义。算法只服务于解释系统中的 policy-version 和 staleness。
 
-- **对象/数据题**：clean reproduction 所需的 code/model/processor/tokenizer/data/template/freeze/config/eval/checkpoint lineage 是否能被另一环境完整解析？
-- **状态/训练题**：设计如何定义每阶段初始状态、保存状态、恢复边界和从 SFT 到 DPO/RL 的交接？
-- **诊断/判断题**：哪些结论是已实测、哪些是估算、哪些扩到多卡或更大模型前必须重新 benchmark？
+- **对象/数据题**：`DataSource -> SGLang rollout -> environment/reward -> Sample/buffer -> Megatron learner batch` 每条边的 schema、grain、transport 和 failure semantics 是什么？
+- **状态/训练题**：Ray control plane、SGLang serving state、Megatron training state、weight sync 和 resumable checkpoint 怎样连接又怎样彼此独立？
+- **诊断/判断题**：Day 18 learner pass、Day 25 ms-swift GRPO pass 和 Day 26 slime static pass/runtime S0 fail各覆盖 integrated graph 的哪些节点，为什么不能拼成不存在的 E2E success？
 
-当日落地：从干净环境重建 `Qwen3.5 S0 -> selected coding S1 -> 选定的 DPO 或 GRPO S2` 最小链，展示与 0.6B v1 的 lineage boundary，完成可评审 design 和 15 分钟综合口述。
+当日落地：control/data/weight/evidence 四张 flow、ms-swift↔slime 职责 crosswalk、20 分钟架构口述与 `KNOWN / INFERRED / RUNTIME UNKNOWN` 清单；不启动 GPU。
 
-## Qwen3.5-4B Policy Capstone：活动主线 + Deferred Teacher 扩展
+## Deferred Archive：Qwen3.5-4B Policy Capstone + Teacher 扩展
+
+Day 31–42 的执行型计划已暂停，不是 Day 30 后的活动学习主线。下列内容仅保留为未来可能重启时的实验设计参考；任何条目都需要用户明确重启和新 charter。
 
 <a id="day-31"></a>
 
 ### Day 31 — 冻结 Qwen3.5 S0、Domain Eval 与 Teacher-null Charter
+
+状态：`deferred_after_architecture_study`。当前不执行；以下仅为历史设计。
 
 阅读：[`QWEN35-4B-MIGRATION-PLAN.md`](QWEN35-4B-MIGRATION-PLAN.md)、Day 10/21 held-out hygiene 和 pinned Qwen3.5 runtime 文档。Teacher/OPD 只登记为 deferred，不选择候选。
 
@@ -419,6 +423,8 @@ Daily Log 至少留下：三题答案、一个工程映射、一个证据路径�
 <a id="day-32"></a>
 
 ### Day 32 — Qwen3.5 Single/TP2 Parity 与 Full/LoRA/QLoRA Capacity
+
+状态：`deferred_after_architecture_study`。当前不执行 GPU parity/capacity run。
 
 阅读：[Megatron parallelism guide](https://docs.nvidia.com/megatron-core/developer-guide/latest/user-guide/parallelism-guide.html)、distributed optimizer 与 Day 18 runtime evidence。
 
@@ -476,11 +482,13 @@ Daily Log 至少留下：三题答案、一个工程映射、一个证据路径�
 
 当日落地：当前只保留 T2 manifest 模板；`T2` 不存在。
 
-## Policy Capstone Week 6：Direct Coding RL、Deferred OPD 与 Final Comparison
+## Deferred Archive Week 6：Direct Coding RL、OPD 与 Final Comparison
 
 <a id="day-37"></a>
 
 ### Day 37 — S1→Direct Coding RL→S2
+
+状态：`deferred_after_architecture_study`。当前不启动 direct RL。
 
 阅读：Day 16 SFT promotion、Day 25 coding GRPO 和 Day 31 charter。活动任务与 teacher 无依赖。
 
@@ -518,6 +526,8 @@ Daily Log 至少留下：三题答案、一个工程映射、一个证据路径�
 
 ### Day 41 — S0/S1/S2 Matched Eval 与 Cost Accounting
 
+状态：`deferred_after_architecture_study`。依赖已暂停的 Capstone lineage。
+
 阅读：Day 10/21 held-out 与 paired comparison；不再阅读训练 recipe。
 
 - **对象/数据题**：`eval_suite_hash` 与 model-specific render/execution keys 为什么必须分开？
@@ -530,6 +540,8 @@ Daily Log 至少留下：三题答案、一个工程映射、一个证据路径�
 
 ### Day 42 — S1/S2 Clean Reproduction 与 Capstone Report
 
+状态：`deferred_after_architecture_study`。不属于当前毕业 gate。
+
 阅读：只使用 pinned manifests、runbooks、framework docs 和已有 evidence；不新增方法。
 
 - **对象/数据题**：另一环境重建 S0/S1/S2 DAG、coding rollout/sandbox batch 和 E2E trajectory 需要哪些不可变对象？
@@ -541,7 +553,7 @@ Daily Log 至少留下：三题答案、一个工程映射、一个证据路径�
 ## 30-Day Core 明确不做
 
 - 不构建 auto-train scheduler、自动搜索器或 auto-harness 产品。
-- 不把 30B+ full training、8×H100 slime 或未选择的 teacher 当 30-Day Core 验收；活动 capstone 只训练 Qwen3.5-4B policy。
+- 不把 30B+ full training、8×H100 slime、Policy Capstone 或未选择的 teacher 当 30-Day Core 验收；Day 27–30 只做架构学习和已有 evidence 复盘。
 - 不通读 TPU/JAX API，不实现 NCCL collective 或手写 TP kernel。
 - 不以“章节读完”“loss 下降”或 aggregate score 单独作为完成标准。
 - 不让 Scaling Book 的纯推导挤占数据审计、训练恢复和 RL 数据流验证。

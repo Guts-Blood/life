@@ -90,7 +90,7 @@ flowchart TD
     FROZEN["Base + A-selected + B-selected frozen confirmation"] --> D14
     D14["Day 14：Week 2 evidence review"] --> D21
     D21["Day 21：selection policy / held-out reliability audit"] --> D30
-    D30["Day 30：clean reproduction / training design"]
+    D30["Day 30：slime / Megatron system integration evidence"]
 ```
 
 ### 2.1 各天真正传递的 context

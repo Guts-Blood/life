@@ -1,8 +1,12 @@
 # Day 42 — S1/S2 Clean Reproduction、Failure Review 与 Report
 
-状态：`not_started`
+状态：`deferred_after_architecture_study`
 日期：`unscheduled_after_day30`
 强度：4–5 小时；最小 GPU replay + CPU 报告
+
+## 当前状态
+
+Day 27–30 已转向 Megatron/slime architecture study。本 clean reproduction 依赖已暂停的执行型 Capstone，不是当前毕业要求。
 
 ## 主要目标
 

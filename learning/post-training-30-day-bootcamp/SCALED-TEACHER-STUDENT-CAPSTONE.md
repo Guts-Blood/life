@@ -1,8 +1,8 @@
 # Qwen3.5-4B Policy Capstone + Deferred Teacher–Student Extension
 
-状态：`optional_after_day30`
+状态：`deferred_archived_plan`
 
-执行方式：Day 31–42 是无固定日期的后置扩展；前 30 天完成后，按 readiness gate 和预算分阶段执行。未执行本扩展不影响 30-Day Bootcamp 的完成状态。
+执行方式：Day 31–42 原执行型 Capstone 已在 Day 27–30 课程转向后整体暂停。本文保留为历史设计参考，不是自动衔接的活动主线；只有用户在完成 architecture study 后明确重启、重新确认学习价值、readiness 和预算，才创建新 charter 执行。未执行本扩展不影响 30-Day Bootcamp 的完成状态。
 
 当前模型决策只冻结到以下范围：
 
@@ -12,7 +12,7 @@
 - `teacher_model_id: null`、`teacher_revision: null`、`teacher_branch_status: deferred_unselected`；
 - 本文中的 teacher、teacher SFT/RL、teacher trace 和 OPD 都是未激活扩展，不代表已经选择 8B、9B 或任何其他 teacher。
 
-## 当前活动目标
+## 原计划目标（当前 deferred）
 
 在同一模型、同一 coding 任务和同一冻结评测下，完成一条可审计的 policy post-training 链：
 
@@ -30,7 +30,7 @@ deferred extension（未激活）:
   S1 -> S1d -> S3d recovery
 ```
 
-当前活动链回答四类问题：
+若未来重新激活，原计划链回答四类问题：
 
 1. **能力**：coding SFT 与 direct coding RL 是否提升可执行任务成功，且不破坏 general guardrails？
 2. **算法**：SFT 与 direct RL 各自改变什么训练信号、失败模式和稳定性？
@@ -182,8 +182,8 @@ Day 32 同时核算 full-parameter、LoRA 和 QLoRA 的 weights、gradients、op
 
 ### Week 5 — Policy Freeze/Capacity + Deferred Teacher Templates（Day 31–36）
 
-- [Day 31 — Qwen3.5-4B Charter、Coding Eval 与版本冻结](day-31-capstone-charter-eval/README.md)（active）
-- [Day 32 — Qwen3.5-4B Single/TP2 Parity 与 Capacity Plan](day-32-tp-parity-scale-accounting/README.md)（active）
+- [Day 31 — Qwen3.5-4B Charter、Coding Eval 与版本冻结](day-31-capstone-charter-eval/README.md)（deferred）
+- [Day 32 — Qwen3.5-4B Single/TP2 Parity 与 Capacity Plan](day-32-tp-parity-scale-accounting/README.md)（deferred）
 - [Day 33 — Deferred Teacher TP SFT One-step/Resume Gate](day-33-8b-tp-sft-gate/README.md)（deferred）
 - [Day 34 — Deferred Teacher Controlled SFT 与 T1 Selection](day-34-8b-sft-selection/README.md)（deferred）
 - [Day 35 — Deferred Teacher Domain RL Readiness](day-35-domain-rl-teacher-readiness/README.md)（deferred）
@@ -191,12 +191,12 @@ Day 32 同时核算 full-parameter、LoRA 和 QLoRA 的 weights、gradients、op
 
 ### Week 6 — Direct Coding RL + Deferred OPD + Final Comparison（Day 37–42）
 
-- [Day 37 — Qwen3.5-4B Common Anchor 与 Direct Coding RL](day-37-4b-direct-rl-control/README.md)（active）
+- [Day 37 — Qwen3.5-4B Common Anchor 与 Direct Coding RL](day-37-4b-direct-rl-control/README.md)（deferred）
 - [Day 38 — Deferred Teacher-trace Cold Start](day-38-teacher-trace-cold-start/README.md)（deferred）
 - [Day 39 — Deferred OPD One-update 与 Replay Gate](day-39-opd-one-update-replay/README.md)（deferred）
 - [Day 40 — Deferred Controlled OPD 与 S3 Selection](day-40-opd-controlled-run/README.md)（deferred）
-- [Day 41 — S0/S1/S2 Matched Eval、Frozen Confirmation 与 Cost](day-41-matched-eval-cost/README.md)（active）
-- [Day 42 — S1/S2 Clean Reproduction 与 Capstone Report](day-42-capstone-clean-reproduction/README.md)（active）
+- [Day 41 — S0/S1/S2 Matched Eval、Frozen Confirmation 与 Cost](day-41-matched-eval-cost/README.md)（deferred）
+- [Day 42 — S1/S2 Clean Reproduction 与 Capstone Report](day-42-capstone-clean-reproduction/README.md)（deferred）
 
 ## 当前活动 Core 验收
 

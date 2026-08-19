@@ -164,8 +164,10 @@ BF16 完整权重约 8.68 GiB，但 optimizer、gradient、activation、logits�
 | 23 | Qwen3.5 DPO smoke | parent=S1；loss/mask/reference/eval gate 通过 |
 | 24 | coding online-RL/reward contract | sandbox 与 trajectory schema 可重算 |
 | 25 | Qwen3.5 coding GRPO smoke | parent=S1；5–10 step + memory/KL/reward gate 通过 |
-| 26–29 | slime compatibility/read/replay/可选闭环 | 只用已验证支持 Qwen3.5 的 release；否则保留 ms-swift 主线并标 blocked |
-| 30 | v2 clean reproduction | 从 Base→S1→选定 DPO/GRPO 分支重建；展示 v1/v2 边界 |
+| 26 | slime compatibility gate | live runtime 在 S0 fail-closed；保留 static source evidence 与历史 no-go |
+| 27–28 | training-system 分层与 Megatron/slime 共同概念 | 完成 lifecycle/node ledger、对象与状态 glossary；CPU only |
+| 29 | Megatron architecture deep dive | process groups、train-step codepath、state ownership 与 failure tree 可独立讲清 |
+| 30 | slime architecture + integrated system map | 完成 control/data/weight/evidence flows 与职责 crosswalk；未验证边标 `RUNTIME UNKNOWN` |
 
 ## 立即停止条件
 

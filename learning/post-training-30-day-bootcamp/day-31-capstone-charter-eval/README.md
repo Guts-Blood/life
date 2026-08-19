@@ -1,8 +1,12 @@
 # Day 31 — Qwen3.5-4B Charter、Coding Eval 与版本冻结
 
-状态：`not_started`
+状态：`deferred_after_architecture_study`
 日期：`unscheduled_after_day30`
 强度：4–5 小时；CPU only
+
+## 当前状态
+
+Day 27–30 已转向 Megatron/slime architecture study。本执行型 Capstone 不再自动开始；只有用户明确重启并创建新 charter 后才恢复以下内容。
 
 ## 主要目标
 
@@ -18,7 +22,7 @@
 - Day 09 lineage/decontamination 方法；
 - Day 10/21 eval schema、selection policy 与 consumed-set 记录；
 - Day 24 verifier/trajectory schema；
-- Day 30 post-training design 与未决问题。
+- Day 30 training-system architecture report 与未决 runtime 问题。
 - [`../templates/capstone-charter.yaml`](../templates/capstone-charter.yaml)、checkpoint promotion 与 OPD trajectory schema 模板。
 
 ## 工作内容

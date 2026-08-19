@@ -1,16 +1,16 @@
 # 30-Day LLM Post-Training Bootcamp
 
-状态：`in_progress`（Day 21 downstream-ready S1 已完成；Day 23 DPO 与 Day 25 GRPO 均完成真实 GPU 路径并以 no-candidate 合法关闭；Day 26 在固定 slime runtime 的 S0 identity gate fail-closed，终态 `slime_qwen35_compatibility_blocked`，Day 29 no-go）
+状态：`in_progress`（Day 21 downstream-ready S1 已完成；Day 23 DPO 与 Day 25 GRPO 均完成真实 GPU 路径并以 no-candidate 合法关闭；Day 26 slime runtime S0 fail-closed；Day 27–30 已转向 Megatron/slime 架构与 training-system 节点关系学习）
 
 执行日期：`2026-07-27`（周一）至 `2026-08-25`（周二）  
 建议投入：工作日 4–5 小时；周末严格控制为 1 小时 reading/review，不租 GPU  
-后置扩展：Day 31–42 无固定日期，有空且 readiness/budget 通过后执行
+后置扩展：原 Day 31–42 执行型 Policy Capstone 已整体 deferred，不自动衔接 Day 30
 
-主线：`0.6B 历史证据 -> Qwen3.5-4B 迁移验收 -> Coding SFT anchor -> DPO / Coding GRPO -> 可复现训练设计 -> Qwen3.5-4B Policy Capstone`。Teacher/OPD 扩展保持 deferred，未选择 teacher。
+主线：`0.6B 历史证据 -> Qwen3.5-4B 迁移验收 -> Coding SFT anchor -> DPO / Coding GRPO -> training system 总图 -> Megatron learner -> slime online-RL orchestration`。收官重点是理解组件和接口，不是把同一训练迁移到更多框架。Policy Capstone 与 Teacher/OPD 均保持 deferred。
 
 ## 本月真正要补什么
 
-本月目标是补全 training 判断力，不是构建 auto-train 或 auto-harness 系统。最终要能跟踪一条样本如何变成训练信号、一次训练如何改变模型状态、一次异常如何被证据定位，以及 SFT/DPO/在线 RL 各自需要什么数据和运行时组件。
+本月目标是补全 training 判断力，不是构建 auto-train/auto-harness，也不是积累“我在几个框架里跑通过”的清单。最终要能跟踪一条样本如何变成训练信号、一次训练如何改变模型状态、一次异常如何被证据定位，以及 SFT/DPO/在线 RL 各自需要什么数据、状态和运行时节点。
 
 优先级固定为：
 
@@ -18,7 +18,7 @@
 2. 训练 step、优化器、batch、checkpoint、resume、复现与失败诊断。
 3. Preference data、DPO 与在线 RL 的 rollout/reward/logprob/advantage 数据流。
 4. Eval 的冻结、逐样本证据和训练阶段之间的可比性。
-5. Sharding、collective 和 Megatron：学到能读配置、判断 OOM/吞吐、理解状态归属和排障；本月不追求手写并行框架。
+5. Training-system 分层、sharding、collective、Megatron 与 slime：能从 config/source 推导进程组、状态归属、对象流、权重版本和故障边界；不追求手写并行框架。
 
 《How To Scale Your Model》仍贯穿 30 天，但 Day 04 以后按训练问题精选。Scaling 题必须落到 `OOM、throughput、global batch、并行配置或 checkpoint`，不再重复纯公式推导。
 
@@ -32,32 +32,29 @@
 - [ ] 能解释 DP/FSDP/ZeRO/TP/PP/CP/EP 切什么、通信什么，以及 global batch 为什么不乘 TP。
 - [ ] 能构造与审计 coding preference pair，解释 DPO objective，并从 promoted Qwen3.5 SFT anchor 跑通一次 DPO smoke。
 - [ ] 能画出 `prompt -> rollout -> reward -> advantage/logprob -> update -> weight sync -> next rollout`，识别 stale rollout、mask/logprob 错位和 reward hacking。
-- [ ] 能用 ms-swift 跑 Qwen3.5-4B SFT、DPO 和 coding GRPO；只有在固定 release 通过 Qwen3.5 load→rollout→train→weight-sync gate 时才用 slime 跑闭环，并能说明 Tulu/Open-Instruct、TRL、verl 提供的参照。
-- [ ] 能从干净环境复现一条最小训练链，并提交一份包含数据、状态、指标、失败处理和扩展边界的 training design。
+- [ ] 能解释 ms-swift、slime、Megatron、Ray、SGLang、PyTorch、NCCL 与 CUDA 的层级和委托关系，不把它们说成同层替代品。
+- [ ] 能沿源码和已有 evidence 追踪 `prompt -> rollout -> reward -> learner batch -> Megatron update -> weight sync -> next rollout`，并明确 `KNOWN / INFERRED / RUNTIME UNKNOWN`。
 
-## Qwen3.5-4B Policy Capstone 毕业标准
+## Deferred Policy Capstone（不属于当前毕业标准）
 
-- [ ] 能对 Qwen3.5-4B `S0` 做 single-GPU/TP2 数值、状态与 checkpoint parity，并用实测峰值选择 full/LoRA/QLoRA。
-- [ ] 能从 `S0` 晋级一个 coding SFT anchor `S1`，再从同一 `S1` 运行并选择 direct coding RL 分支 `S2`。
-- [ ] 能在新 frozen suite 上比较 `S0/S1/S2` 的能力、guardrails、reward hacking、吞吐和总 GPU 成本，并允许结论为 `inconclusive`。
-- [ ] 若以后单独批准 Teacher/OPD charter v2，才创建 `T0/T1/T2/S3`；当前 capstone 不因 teacher 未选而阻塞活动主线。
+原 Day 31–42 的 S0/S1/S2、TP parity、direct RL、Teacher/OPD 与 clean reproduction 计划已整体暂停。它只作为未来可能重启的实验设计参考；完成 Day 30 不会自动解锁训练或 GPU 预算。
 
 ## 框架各自承担什么
 
 | 角色 | 本月定位 | 是否实跑 |
 |---|---|---|
-| [modelscope/ms-swift](https://github.com/modelscope/ms-swift) | Qwen3.5-4B SFT、DPO、GRPO 主入口；processor、GDN backend 与 rollout 配置必须 pin | 30-Day Core 与 Policy Capstone 主栈 |
-| [THUDM/slime](https://github.com/THUDM/slime) | 理解 Megatron train、SGLang rollout、reward、buffer、weight sync；先验证固定 release 对 Qwen3.5 的完整闭环兼容 | Core 阅读；兼容 gate 通过才实跑 |
+| [modelscope/ms-swift](https://github.com/modelscope/ms-swift) | 已完成 Qwen3.5-4B SFT、DPO、GRPO 实操；作为 recipe/adapter/orchestration 边界的已知参照 | 已实跑，Day 27–30 用于职责 crosswalk |
+| [THUDM/slime](https://github.com/THUDM/slime) | 深入理解 Megatron learner、SGLang rollout、reward、buffer、Ray placement 与 weight sync | Day 27–30 源码学习；不为跑通而开新 runtime |
 | [AllenAI Open Instruct/Tülu](https://allenai.github.io/open-instruct/) | 参照公开的 post-training stage、数据 mixture 与 recipe | 阅读/对照 |
 | [Hugging Face TRL](https://huggingface.co/docs/trl/) | 用紧凑 trainer API 对照 SFT/DPO/GRPO 的输入输出 | 阅读/小型对照 |
-| [verl](https://verl.readthedocs.io/) | 对照 actor/rollout/ref/reward resource-pool；teacher/OPD 用法只保留为 deferred extension | 30-Day 阅读；可选 Systems Stretch |
-| [NVIDIA Megatron-LM](https://github.com/NVIDIA/Megatron-LM) | 建立最小多卡 codepath、rank/state/checkpoint 心智模型 | 最小 smoke，不做全仓通读 |
+| [verl](https://verl.readthedocs.io/) | 对照 actor/rollout/ref/reward resource-pool，验证 node ledger 是否可迁移 | 阅读对照 |
+| [NVIDIA Megatron-LM](https://github.com/NVIDIA/Megatron-LM) | 深入理解 process groups、parallel schedules、state ownership、optimizer 与 distributed checkpoint | 复用 Day 18 evidence 做源码深挖，不追加 smoke |
 
 模型策略分为两条不可混写的 lineage：Day 01–12 的 `Qwen/Qwen3-0.6B-Base@ddc928429ed09d9ad603fd762053d0434c15e865` 是 immutable `v1` 历史；Day 13+ 的唯一活动模型是 `Qwen/Qwen3.5-4B-Base`，属于 `v2`。Standalone Day 18–20 已把 exact revision `1001bb4d826a52d1f399e183466143f4da7b741b` 与文件 hash 固定为共同运行根，并以更强实际运行证据关闭 Day 15 onboarding；旧 Day 20 的三条 LoRA probe 又以合法的 no-candidate 结果收束 Day 16。`2026-08-12` 的独立 RSI v0002 charter 随后修复 Code target boundary，训练 early/mid/final 并选中 `main-s20260809-lr1e-4-final`；同 recipe 的 fresh-Base independent-training-seed checkpoint 也通过同一 full112。RSI ledger 截止时的 `merge_performed=false` 保持为历史事实；`2026-08-13` 的 append-only Day 21 evidence 进一步完成 checkpoint archive、winner-only merged export、fresh-process exact parity 与 downstream manifest/key，没有追溯改写 Day 16 或 RSI 旧记录。
 
 Qwen3.5-4B-Base 是含 vision encoder 的原生多模态 checkpoint。coding 主线保留完整官方 processor/conditional-generation loader，但输入固定为 text-only，并冻结 vision tower 与 aligner、断言 LoRA module coverage；不把它当旧 `AutoModelForCausalLM` 脚本的直接替换。DPO 和 GRPO 必须从 Day 21 已完成 handoff 的 downstream-ready coding SFT `S1` promotion manifest/downstream key 起步，不能从 Base、Day 12 的 0.6B export 或未合并 adapter URI 起步。详见 [Qwen3.5-4B 迁移计划](QWEN35-4B-MIGRATION-PLAN.md)。
 
-slime 阅读基线仍固定为 `v0.3.0`，但运行时必须验证该 release 或另一个明确 pin 的 release 是否支持 Qwen3.5 完整 load→rollout→train→weight-sync；不为跑通框架而静默换模型。Teacher/OPD 没有活动模型，只有用户另行决定后才建立 charter v2。
+slime 通用文档阅读基线保留 `v0.3.0`，Day 26 的 Qwen3.5 源码锚点固定为 `v0.3.1@a6272da...`。两者都只支持对应版本的结构结论；Day 26 的 live runtime 仍停在 S0，未验证边必须标为 `RUNTIME UNKNOWN`。当前不为跑通框架而换模型、换 runtime 或补租 GPU。
 
 ## 提前执行的 Standalone Experiments
 
@@ -74,7 +71,7 @@ slime 阅读基线仍固定为 `v0.3.0`，但运行时必须验证该 release �
 
 ## 每天固定输出
 
-每个工作日保留至少一种可复查证据：dataset manifest、样本审计表、配置、结构化日志、checkpoint 对比、恢复记录、failure report、逐样本预测或 runbook。只跑出一个 loss 数字不算完成。
+每个工作日保留至少一种可复查证据：dataset manifest、样本审计表、配置、结构化日志、checkpoint 对比、node ledger、source codepath、state-ownership map、failure tree 或逐样本预测。只跑出一个 loss 数字或只画框架 logo 方框都不算完成。
 
 每天 quiz 固定三题：
 
@@ -87,8 +84,8 @@ slime 阅读基线仍固定为 `v0.3.0`，但运行时必须验证该 release �
 | 时间 | 内容 |
 |---|---|
 | 60–75 分钟 | 定向阅读与三题 quiz |
-| 120–150 分钟 | 数据审计、训练、代码阅读或受控实验 |
-| 60–75 分钟 | 曲线、逐样本结果、恢复或 failure analysis |
+| 120–150 分钟 | 数据审计、源码追踪、代码阅读或受控实验 |
+| 60–75 分钟 | 状态/节点图、逐样本结果、恢复或 failure analysis |
 | 20–30 分钟 | 固化证据、结论、阻塞和下一步 |
 
 周末只安排 60 分钟：45–50 分钟定向阅读，10–15 分钟写复盘。未完成的工作日先删 Stretch，不占用周末补长训练。
@@ -125,42 +122,42 @@ slime 阅读基线仍固定为 `v0.3.0`，但运行时必须验证该 release �
 - [ ] [Day 20 · 08-15（周末 1h）— Training failure signatures](day-20-weekend-training-failures/README.md)（Core CPU；原 Day 17 exact-resume 实验移为 Optional R，默认可跳过）
 - [x] [Day 21 · 08-16（周末 1h）— Qwen3.5 checkpoint selection 与 fixed-suite qualification](day-21-weekend-eval-reading/README.md)（08-13 提前完成；selection/confirmation 与 downstream-ready S1 handoff 均完成）
 
-### Week 4：Preference、DPO 与 Online RL（08-17 至 08-23）
+### Week 4：Preference、Online RL 与 Training-System 转向（08-17 至 08-23）
 
 - [x] [Day 22 · 08-17 — Preference provenance、length bias 与 held-out](day-22-preference-data/README.md)（08-13 执行、08-14 `closed_experimental`；experimental path ready，formal-human path pending）
 - [x] [Day 23 · 08-18 — Qwen3.5 coding DPO smoke（parent=S1）](day-23-dpo-theory-smoke/README.md)（08-14 提前关闭；`closed_no_candidate`，checkpoint 存在但未通过 dev17 qualification）
 - [x] [Day 24 · 08-19 — Coding online-RL dataflow 与 sandbox reward contract](day-24-online-rl-dataflow-reward/README.md)（08-16 提前完成；`closed_pass_cpu_contract`，CPU mini-pipeline 与双 replay E2B 证据闭环，真实 optimizer update 留给 Day 25）
 - [x] [Day 25 · 08-20 — Qwen3.5 coding GRPO lab（parent=S1）](day-25-grpo-small-model-lab/README.md)（08-16 提前实跑并 `closed_no_candidate`；G0–G4 全通过，search40 为 S1/GRPO `24/40 → 24/40`，confirmation24 按合同未打开）
-- [x] [Day 26 · 08-21 — slime 固定 release 的 Qwen3.5 兼容 gate](day-26-slime-codepath-prep/README.md)（08-17 提前实跑；S0 因 physical topology/image identity/runtime dependencies 漂移 fail-closed，唯一终态 `slime_qwen35_compatibility_blocked`，S1–S5 未运行，Day 29 no-go）
-- [ ] [Day 27 · 08-22（周末 1h）— GRPO 与 on-policy 边界](day-27-weekend-slime-rl-reading/README.md)
-- [ ] [Day 28 · 08-23（周末 1h）— slime debug/replay/repro/observability](day-28-weekend-slime-architecture/README.md)
+- [x] [Day 26 · 08-21 — slime 固定 release 的 Qwen3.5 兼容 gate](day-26-slime-codepath-prep/README.md)（08-17 提前实跑；S0 因 physical topology/image identity/runtime dependencies 漂移 fail-closed，S1–S5 未运行；旧 Day 29 run no-go 保留为历史记录）
+- [ ] [Day 27 · 08-22（周末 1h）— Training system 总图与框架分层](day-27-training-system-architecture/README.md)
+- [ ] [Day 28 · 08-23（周末 1h）— Megatron × slime 对象、状态与接口](day-28-megatron-slime-concepts/README.md)
 
-### Final：真实闭环与训练设计（08-24 至 08-25）
+### Final：Megatron / slime 架构深挖与系统集成（08-24 至 08-25）
 
-- [ ] [Day 29 · 08-24 — 已验证 runtime 的最小闭环、reward 修改与 replay](day-29-slime-rl-run-debugging/README.md)
-- [ ] [Day 30 · 08-25 — Qwen3.5 Base→SFT→DPO/GRPO clean reproduction](day-30-training-design-reproduction/README.md)
+- [ ] [Day 29 · 08-24 — Megatron process groups、state ownership 与 training step](day-29-megatron-architecture/README.md)
+- [ ] [Day 30 · 08-25 — slime online-RL orchestration 与 training system 集成](day-30-slime-training-system-integration/README.md)
 
-## Qwen3.5-4B Policy Capstone + Deferred Teacher–Student Extension（Day 31–42，无固定日期）
+## 已暂停：Qwen3.5-4B Policy Capstone + Teacher–Student Extension（原 Day 31–42）
 
-完整章程：[Qwen3.5-4B Policy Capstone + Deferred Teacher–Student Extension](SCALED-TEACHER-STUDENT-CAPSTONE.md)
+历史章程：[Qwen3.5-4B Policy Capstone + Deferred Teacher–Student Extension](SCALED-TEACHER-STUDENT-CAPSTONE.md)。以下页面全部是 deferred reference，不是 Day 30 后的活动列表；只有用户明确重启并创建新 charter 后才执行。
 
-### Week 5：活动 Policy 主线与 Deferred Teacher 模板
+### 原 Week 5：全部 deferred
 
-- [ ] [Day 31 — 冻结 Qwen3.5 S0、domain eval、teacher deferred 状态](day-31-capstone-charter-eval/README.md)
-- [ ] [Day 32 — Qwen3.5 single/TP2 parity 与 full/LoRA/QLoRA capacity](day-32-tp-parity-scale-accounting/README.md)
+- [ ] [Day 31 — 冻结 Qwen3.5 S0、domain eval、teacher deferred 状态](day-31-capstone-charter-eval/README.md)（deferred）
+- [ ] [Day 32 — Qwen3.5 single/TP2 parity 与 full/LoRA/QLoRA capacity](day-32-tp-parity-scale-accounting/README.md)（deferred）
 - [ ] [Day 33 — Teacher TP SFT gate 模板](day-33-8b-tp-sft-gate/README.md)（deferred；需 charter v2）
 - [ ] [Day 34 — Teacher SFT/T1 selection 模板](day-34-8b-sft-selection/README.md)（deferred；需 charter v2）
 - [ ] [Day 35 — Teacher domain-RL readiness 模板](day-35-domain-rl-teacher-readiness/README.md)（deferred；需 charter v2）
 - [ ] [Day 36 — Teacher T2 freeze 模板](day-36-8b-domain-rl-teacher-freeze/README.md)（deferred；需 charter v2）
 
-### Week 6：Direct Coding RL、Deferred OPD 与 Final Comparison
+### 原 Week 6：全部 deferred
 
-- [ ] [Day 37 — 从 S1 运行 direct coding RL 并选择 S2](day-37-4b-direct-rl-control/README.md)
+- [ ] [Day 37 — 从 S1 运行 direct coding RL 并选择 S2](day-37-4b-direct-rl-control/README.md)（deferred）
 - [ ] [Day 38 — Teacher-trace cold-start 模板](day-38-teacher-trace-cold-start/README.md)（deferred；需 charter v2）
 - [ ] [Day 39 — OPD one-update/replay 模板](day-39-opd-one-update-replay/README.md)（deferred；需 charter v2）
 - [ ] [Day 40 — Controlled OPD/S3 模板](day-40-opd-controlled-run/README.md)（deferred；需 charter v2）
-- [ ] [Day 41 — S0/S1/S2 matched eval、confirmation 与成本](day-41-matched-eval-cost/README.md)
-- [ ] [Day 42 — S1/S2 clean reproduction、failure review 与报告](day-42-capstone-clean-reproduction/README.md)
+- [ ] [Day 41 — S0/S1/S2 matched eval、confirmation 与成本](day-41-matched-eval-cost/README.md)（deferred）
+- [ ] [Day 42 — S1/S2 clean reproduction、failure review 与报告](day-42-capstone-clean-reproduction/README.md)（deferred）
 
 ## Tracking 规则
 
@@ -170,7 +167,7 @@ slime 阅读基线仍固定为 `v0.3.0`，但运行时必须验证该 release �
 4. 必须保存逐样本 eval 和 bad cases；aggregate score 不能单独驱动下一轮。
 5. Checkpoint 至少区分“仅可推理权重”和“可连续训练状态”并通过完整性审计；只有研究 continuation/exactness 时，才运行 Day 20 Optional R 验证 step、LR、optimizer、数据位置与 RNG 的逐步连续性。
 6. 当天失败要保存最小证据和下一项验证，不为打勾隐藏失败。
-7. Day 07、14、21、28 使用 [`templates/weekly-review.md`](templates/weekly-review.md)。
+7. Day 07、14、21 使用 [`templates/weekly-review.md`](templates/weekly-review.md)；Day 28 改为 architecture concept preparation。
 8. v2 的 DPO/GRPO 必须从 downstream-ready `S1` manifest 分叉；仅有 selected/confirmed-qualified checkpoint 在 merged export parity 与 immutable manifest 完成前仍不能充当 parent。Base 和 0.6B checkpoint 也不能充当 parent。Teacher/OPD 若以后启用，额外记录 student rollout/policy version、teacher checkpoint/log-prob、token alignment、distillation mask/objective 和各角色 GPU-hours。
 
 ## 配套文件

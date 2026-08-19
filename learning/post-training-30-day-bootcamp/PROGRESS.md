@@ -2,9 +2,9 @@
 
 开始日期：`2026-07-27`  
 目标完成日期：`2026-08-25`  
-当前 Phase：`Day 26 slime_qwen35_compatibility_blocked；S0 runtime identity gate fail，Day 29 no-go`
+当前 Phase：`Day 27–30 architecture study ready；Training system -> Megatron learner -> slime orchestration`
 
-当前最大阻塞：`Day 26 开出的 runtime 在 S0 即失败：物理双卡、目标 OCI digest 无法证明、CUDA/NCCL 漂移，且 Ray/SGLang/Megatron 与 frozen checkouts 缺失；S1–S5 按合同未运行，Day 29 slime path no-go。DPO/GRPO 先前也均从 promoted S1 完成真实 GPU 路径但未产生合格 candidate；任何重开都必须使用新的 append-only charter/run root。`
+当前学习问题：`不用再迁移框架跑训练，而是把 ms-swift、slime、Megatron、Ray、SGLang、PyTorch/NCCL/CUDA 放进同一 training-system 图，追清对象、状态、进程、权重版本和上下游节点。Day 26 的 S0 failure 作为 control-plane/runtime-identity 案例保留，不阻塞 CPU 源码学习；若未来重开 live run，仍必须使用新的 append-only charter/run root。`
 
 状态使用：`not_started`、`in_progress`、`cpu_ready_gpu_pending`、`blocked`、`deferred`、`done`、`done_with_handoff_pending`、`closed_pass`、`closed_experimental`、`closed_superseded`、`closed_no_candidate`。`cpu_ready_gpu_pending` 表示开卡前数据、契约与离线 gates 已通过，但模型加载、显存和训练结论仍必须由目标 GPU 实证；它不是完成状态。`done_with_handoff_pending` 表示当日学习与决策目标已完成，但其下游可消费包仍有明确交付 gate；它不解锁依赖项。`closed_pass` 表示原协议及 closeout audit 均通过，不再重跑；`closed_experimental` 表示用户明确接受记录完整的协议偏离，实验下游可消费但不得宣称 formal pass；`closed_superseded` 表示原任务不再重跑、由后续更强证据关闭，但不等于原协议逐项 `pass`；`closed_no_candidate` 表示预注册 fail-closed 路径已产生合法的零候选结果。`deferred` 表示需要新决策/章程，不是当前主线阻塞。Day 01–03 的 `done` 来自用户确认；未据此补写不存在的 artifact 或用时。
 
@@ -62,29 +62,29 @@
 | 24 | Coding online-RL dataflow/sandbox reward contract | closed_pass | 2026-08-16（提前；原计划 08-19） | | trajectory schema、8-row input、16-row E2B evidence、4-row group rewards、`artifacts/reports/day24-coding-online-rl-dataflow.md` | CPU contract 终态为 `closed_pass_cpu_contract`：两个 train prompt × G=4，双 replay 8/8 semantic hash 一致；tests-only / tests+format-style、infra retry、zero variance 与 reward-hacking contract 均通过；0 GPU，真实 RL update 留给 Day 25。 |
 | 25 | Qwen3.5 coding GRPO lab（parent=S1） | closed_no_candidate | 2026-08-16 提前实跑并关闭（原计划 08-20） | | RTX runtime binding、G0–G4 ledgers/audits/checkpoints、search40 raw completions/E2B evidence/decision、`artifacts/reports/day25-qwen35-coding-grpo.md` | 用户授权 RTX hardware override；G0–G4 全通过，G4 完成 10 steps/80 trajectories。但 search40 为 S1 `24/40`、GRPO `24/40`，wins/regressions 均 0；合法终态 `closed_no_candidate_confirmation_unopened`。 |
 | 26 | slime fixed-release Qwen3.5 compatibility gate | blocked | 2026-08-17 提前实跑并 fail-closed（原计划 08-21） | | S0 environment/image/GPU inventory、S1 export hash verification、90-file evidence mirror、`artifacts/reports/day26-slime-qwen35-compatibility.md`、Day 29 no-go record | S0 fail：物理双卡、OCI digest 无法证明、runtime drift、Ray/SGLang/Megatron/checkouts 缺失；S1–S5 未运行。唯一终态 `slime_qwen35_compatibility_blocked`，无 fallback。 |
-| 27 | 周末：GRPO/on-policy | not_started | 2026-08-22 | | | |
-| 28 | 周末：slime debug/replay/repro | not_started | 2026-08-23 | | | |
-| 29 | Verified-runtime min loop/reward/replay | blocked | 2026-08-17 preflight（原计划 08-24） | | `artifacts/eval/day26-slime-qwen35-day29-go-no-go.json` | Day 26 S0 fail 后 `go_day29=false`；不启动替代 release/model/image/topology，保留 ms-swift evidence。 |
-| 30 | Qwen3.5 Base→SFT→DPO/GRPO clean reproduction | not_started | 2026-08-25 | | | 同时展示 v1/v2 lineage boundary。 |
+| 27 | Training system 总图与框架分层 | not_started | 2026-08-22 | | layer map、node ledger | 从职责出发放置 ms-swift/slime/Megatron/SGLang/Ray/PyTorch/NCCL/CUDA，不画 logo 图。 |
+| 28 | Megatron × slime 对象、状态与接口准备 | not_started | 2026-08-23 | | glossary、source-reading questions | 区分 Sample、learner batch、model state、policy version、checkpoint/export。 |
+| 29 | Megatron architecture/codepath/state ownership | not_started | 2026-08-24 | | process-group map、train-step codepath、state ledger、failure tree | 旧 slime runtime run 的 no-go 保留为历史 record，但不阻塞 CPU architecture study。 |
+| 30 | slime architecture 与 training-system integration | not_started | 2026-08-25 | | control/data/weight/evidence flows、crosswalk、综合报告 | 追清 prompt→rollout→reward→Megatron update→weight sync→next rollout；不追加 GPU。 |
 
-## Qwen3.5-4B Policy Capstone + Deferred Teacher Extension
+## Deferred Archive：Qwen3.5-4B Policy Capstone + Teacher Extension
 
-Day 31–42 无固定日期，在 30-Day Core 后按 readiness 与预算执行；不改变 `2026-08-25` Core 目标日期。
+Day 31–42 原执行型 Capstone 已在课程转向后整体暂停。以下条目仅保留历史设计，不自动衔接 Day 30；只有用户明确重启并创建新 charter 后才执行。
 
 | Day | 主题 | 状态 | 日期 | 用时 | 核心产物 | 一句话结论 |
 |---:|---|---|---|---:|---|---|
-| 31 | Freeze Qwen3.5 S0/domain eval/teacher-null charter | not_started | unscheduled | | | |
-| 32 | Qwen3.5 single/TP2 parity + full/LoRA/QLoRA capacity | not_started | unscheduled | | | |
+| 31 | Freeze Qwen3.5 S0/domain eval/teacher-null charter | deferred | unscheduled | | | Architecture study 后需用户明确重启。 |
+| 32 | Qwen3.5 single/TP2 parity + full/LoRA/QLoRA capacity | deferred | unscheduled | | | Architecture study 后需用户明确重启。 |
 | 33 | Teacher TP SFT gate template | deferred | unscheduled | | | Requires separate teacher charter v2. |
 | 34 | Teacher SFT/T1 selection template | deferred | unscheduled | | | Requires separate teacher charter v2. |
 | 35 | Teacher domain-RL readiness template | deferred | unscheduled | | | Requires separate teacher charter v2. |
 | 36 | Teacher RL/T2 freeze template | deferred | unscheduled | | | Requires separate teacher charter v2. |
-| 37 | S1→direct coding RL→S2 | not_started | unscheduled | | | 独立于 teacher 分支。 |
+| 37 | S1→direct coding RL→S2 | deferred | unscheduled | | | Architecture study 后需用户明确重启。 |
 | 38 | Teacher-trace cold-start template | deferred | unscheduled | | | Requires separate teacher charter v2. |
 | 39 | OPD one-update/scoring/replay template | deferred | unscheduled | | | Requires separate teacher charter v2. |
 | 40 | Controlled OPD/S3 template | deferred | unscheduled | | | Requires separate teacher charter v2. |
-| 41 | S0/S1/S2 matched eval/cost accounting | not_started | unscheduled | | | |
-| 42 | S1/S2 clean reproduction/final report | not_started | unscheduled | | | |
+| 41 | S0/S1/S2 matched eval/cost accounting | deferred | unscheduled | | | 依赖已暂停的 Capstone lineage。 |
+| 42 | S1/S2 clean reproduction/final report | deferred | unscheduled | | | 依赖已暂停的 Capstone lineage。 |
 
 ## 每周 Gate
 
@@ -92,6 +92,6 @@ Day 31–42 无固定日期，在 30-Day Core 后按 readiness 与预算执行�
 - [x] Week 2（v1）：完成数据合同、Base baseline、tiny-overfit/exact resume 与受控 SFT；逐样本 eval 的合法选择结果为“无 eligible checkpoint”，未消费 frozen test。
 - [ ] Week 3（v2）：完成 Qwen3.5 processor/runtime/data/eval 迁移、checkpoint integrity、S1 promotion、单变量优化与 failure diagnosis；exact-resume parity 为 Day 20 Optional R。
 - [x] Week 4（v2）：审计 coding preference data，从 S1 跑通 DPO 与 coding GRPO，并画出在线 RL 数据和状态流；两条优化路径均按预注册 gate 合法关闭为 no-candidate。
-- [ ] Final：用已验证 runtime 从干净环境复现 Qwen3.5 Base→SFT→DPO/GRPO，并用证据讲清 lineage、状态、Eval、RL 和失败归因。
-- [ ] Policy Capstone Week 5：冻结 Qwen3.5 S0，single/TP2 parity 通过，依据实测选择 full/LoRA/QLoRA；teacher 仍可保持 deferred。
-- [ ] Policy Capstone Week 6：从 S1 运行 direct coding RL，完成 S0/S1/S2 一次性 confirmation、能力/成本对照与 clean reproduction；Teacher/OPD 仅在 charter v2 后另行验收。
+- [ ] Final：完成 training-system 分层图、Megatron process/state/train-step 图和 slime control/data/weight/evidence 图；能用 Day 18/25/26 证据解释已知、推断与 runtime unknown。
+- [ ] Policy Capstone Week 5：deferred；不属于当前毕业 gate。
+- [ ] Policy Capstone Week 6：deferred；不属于当前毕业 gate。

@@ -1,8 +1,12 @@
 # Day 32 — Qwen3.5-4B Single/TP2 Parity 与 Capacity Plan
 
-状态：`not_started`
+状态：`deferred_after_architecture_study`
 日期：`unscheduled_after_day30`
 强度：4–5 小时人工工作；2×GPU 短 smoke
+
+## 当前状态
+
+Day 27–30 已转向 Megatron/slime architecture study。本 GPU parity/capacity 任务暂停，不因完成 Day 30 自动开卡；只有用户明确重启执行型 Capstone 后才恢复。
 
 ## 主要目标
 

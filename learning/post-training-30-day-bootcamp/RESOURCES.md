@@ -9,7 +9,7 @@
 - [Tülu 3 paper](https://arxiv.org/abs/2411.15124)：公开的 SFT → DPO → RLVR pipeline 参照
 - [Open Instruct 官方文档](https://allenai.github.io/open-instruct/) / [官方仓库](https://github.com/allenai/open-instruct)：数据和训练 recipe 参照
 
-本月 Core 是数据、SFT、恢复/诊断、DPO、在线 RL。auto-train/auto-harness 构建、30B+ full training 和 8×H100 slime 不属于 30-Day Core。Day 31–42 的活动 capstone 只覆盖 Qwen3.5-4B `S0→S1→S2` policy；Teacher/OPD 是 deferred extension，当前未选择 teacher。
+本月 Core 是数据、SFT、恢复/诊断、DPO、在线 RL，以及收官阶段的 training-system / Megatron / slime 架构学习。auto-train/auto-harness 构建、30B+ full training、8×H100 slime 和原 Day 31–42 Policy Capstone 都不属于当前 Core；后者已整体 deferred。
 
 ## 数据、模板与 Lineage
 
@@ -84,7 +84,7 @@ Transformers 5.2.0+ 是已确认包含 Qwen3.5 支持的最低候选线；ms-swi
 - [NCCL Troubleshooting](https://docs.nvidia.com/deeplearning/nccl/user-guide/docs/troubleshooting.html)
 - [NVIDIA nccl-tests](https://github.com/NVIDIA/nccl-tests)
 
-目标是会解释 state ownership、global batch、OOM 和 throughput，能跑/读最小 codepath；不要求手写 collective、kernel 或通读 Megatron 全仓。
+目标是能从 config/source 推导 process groups、state ownership、global batch、训练 step、checkpoint、OOM 和 throughput；复用 Day 18 已有 runtime evidence 深挖 codepath，不以再跑一个 smoke 代替理解，也不要求手写 collective/kernel 或通读 Megatron 全仓。
 
 ## Eval
 
@@ -105,7 +105,7 @@ Eval 的最低证据是 frozen config 加逐样本 prediction。aggregate score�
 
 ## Online RL 与 GRPO
 
-### 主实操
+### 已有实操与架构主读
 
 - [ms-swift GRPO](https://swift.readthedocs.io/en/latest/Instruction/GRPO/GetStarted/GRPO.html)：Qwen3.5 coding GRPO 主线；从 promoted S1 开始，并冻结 rollout/model-length/topology
 - [THUDM/slime 官方文档](https://thudm.github.io/slime/)
@@ -113,7 +113,7 @@ Eval 的最低证据是 frozen config 加逐样本 prediction。aggregate score�
 - [slime Architecture](https://thudm.github.io/slime/blogs/introducing_slime.html)
 - [slime Customization](https://thudm.github.io/slime/get_started/customization.html)
 - [slime 官方仓库](https://github.com/THUDM/slime)
-- [slime Releases](https://github.com/THUDM/slime/releases)：本计划以 `v0.3.0` 为学习基线，运行前记录 tag SHA
+- [slime Releases](https://github.com/THUDM/slime/releases)：通用文档以 `v0.3.0` 为阅读基线；Qwen3.5 源码追踪以 Day 26 的 `v0.3.1@a6272da...` 为锚
 - [slime Debug](https://github.com/THUDM/slime/blob/v0.3.0/docs/en/developer_guide/debug.md)
 - [slime Trace](https://github.com/THUDM/slime/blob/v0.3.0/docs/en/developer_guide/trace.md)
 - [slime Reproducibility](https://github.com/THUDM/slime/blob/v0.3.0/docs/en/advanced/reproducibility.md)
@@ -126,7 +126,7 @@ Eval 的最低证据是 frozen config 加逐样本 prediction。aggregate score�
 - [verl 官方文档](https://verl.readthedocs.io/)
 - [verl PPO architecture](https://verl.readthedocs.io/en/latest/examples/ppo_code_architecture.html)
 
-ms-swift 是必须实跑的主线。slime 只有在固定 release 通过 Qwen3.5 load→rollout→train→weight-sync 兼容 gate 后才实跑；不支持时保留 blocker 并继续 ms-swift，不能换模型。Tülu/Open-Instruct、TRL、verl 用于比较 stage、schema、角色和设计选择。
+ms-swift 已完成 SFT/DPO/GRPO 实跑，后续不再为积累框架经验重复训练。Day 27–30 用 slime、Megatron 和已有 ms-swift evidence 做职责 crosswalk：追踪 control/data/weight/evidence flow 与 node ownership。Day 26 未通过的 live 边保持 `RUNTIME UNKNOWN`；不为跑通 slime 而换模型、换 runtime 或追加 GPU。Tülu/Open-Instruct、TRL、verl 只用于检验这套节点心智模型能否迁移。
 
 ## On-Policy Distillation（Deferred Teacher Extension）
 

@@ -1,6 +1,6 @@
 # AutoDL 与 GPU 资源计划
 
-更新日期：2026-08-10。卡价、库存和实例拓扑以开机时 AutoDL 页面为准；本计划给出资源上限和 readiness gate，不写死单价。
+更新日期：2026-08-18。卡价、库存和实例拓扑以开机时 AutoDL 页面为准；本计划给出资源上限和 readiness gate，不写死单价。
 
 Day 15 已按 [`Day 15 Close`](artifacts/reports/day15-close.md) 关闭；Day 16 也已按 [`Day 16 Gap Audit`](artifacts/reports/day16-gap-audit.md) 以 no-candidate 收束；Day 18 已按 [`Day 18 Close`](artifacts/reports/day18-close.md) 以 C0–C5 pass 正式关闭。三者追加 GPU 预算均为 `0`。Day 17 的 [`Gap Audit`](artifacts/reports/day17-gap-audit.md) 已完成，状态仍 blocked；其 runtime 设计已降级为顺序课程 [`Day 20 Optional R`](day-20-weekend-training-failures/README.md#optional-r--exact-resume-failure-lab)，默认不租卡且不阻塞 S1。若以后选择运行，复用 candidate 的同一单卡 topology；candidate 是单卡 H800 时不额外引入 TP/多卡。
 
@@ -11,8 +11,8 @@ Day 15 已按 [`Day 15 Close`](artifacts/reports/day15-close.md) 关闭；Day 16
 3. 先用 tiny overfit/5–20 step smoke 验证数据与 loss，再进行受控 SFT、DPO 或 GRPO。
 4. 每个实验只改变一个预注册变量；不为“卡还开着”临时扩大训练。
 5. checkpoint 必须先通过 save/load；长任务再验证中断恢复。
-6. 8×H100 slime 是 Stretch，不是毕业门槛。Core 先完成 ms-swift 主线；slime 只有在 Day 26 证明固定 release 完整支持 Qwen3.5 后才分配 GPU。
-7. Day 31–42 Capstone 与 30-Day Core 分账；每个 block 在前一级 smoke 后单独冻结 GPU-hour cap。Teacher/OPD 当前 deferred，GPU 预算为 0。
+6. Day 27–30 是 CPU architecture study，GPU 预算为 0；不为“看懂框架”补跑 slime/Megatron training。
+7. Day 31–42 Policy Capstone 已整体 deferred，GPU 预算为 0；未来只有用户明确重启并创建新 charter 后才重新估算。
 8. Day 1–12 的 `Qwen3-0.6B-Base`、Transformers 4.57.3 与已有 checkpoint 是历史复现链；Qwen3.5-4B v2 使用独立环境、模型合同、baseline 和预算，不原地覆盖。
 
 AutoDL 按实例开关机时间计费，不按 GPU kernel 活跃时间计费。关机后 GPU 不再预留，实例数据也有保留边界；使用前复核官方[计费规则](https://www.autodl.com/docs/price/)、[省钱说明](https://www.autodl.com/docs/save_money/)与[实例数据规则](https://www.autodl.com/docs/instance_data/)。
@@ -73,11 +73,13 @@ v2 依据：[Qwen3.5-4B-Base model card](https://huggingface.co/Qwen/Qwen3.5-4B-
 | E | 19 | 1×H100；必要时复用 2 卡 | 3–5h | optimizer/LR 对照、failure injection 与 profiler | LR、mask/processor、resume、throughput failure 可识别、可恢复 |
 | F | 22–23 | CPU 准备；1×H100 80GB | 3–6h GPU | coding preference audit 与 Qwen3.5 DPO smoke | parent=S1；pair/logprob/mask 与 v2 eval 完整 |
 | G | 24–25 | 1×80GB smoke；优先 2×48/80GB 分离 | smoke 后冻结，参考 4–8h | Qwen3.5 coding GRPO | parent=S1；reward/group/8K cap/peak/update 守恒 |
-| H | 26–28 | CPU/无卡模式 | 0h | 固定 release 的 Qwen3.5 compatibility、replay 与 runbook | 明确 pass 或 blocked；不猜参数、不换模型 |
-| I | 29 | Day 26 验证的最小拓扑，≤4×H100 | smoke 后冻结，参考 4–8h | verified-runtime rollout/replay/full loop 与 reward 修改 | 不支持 slime 时保留 ms-swift 主线证据，不伪造 full loop |
-| J | 30 | 1×80GB 或已验证的最小 topology | 2–3h | Qwen3.5 clean reproduction | Base→S1→DPO/GRPO 分支与 v1/v2 boundary 可重建 |
+| H | 26–28 | CPU/无卡模式 | 0h | Day 26 compatibility evidence；Day 27–28 system map / concept prep | static/runtime 边界与 node ledger 清楚 |
+| I | 29 | CPU/无卡模式 | 0h | Megatron process groups、state ownership、train-step source trace | 使用 Day 18 evidence，不追加 smoke |
+| J | 30 | CPU/无卡模式 | 0h | slime control/data/weight/evidence flow 与系统集成 | `KNOWN/INFERRED/RUNTIME UNKNOWN` 完整 |
 
-### Optional Capstone Blocks（与 A–J 分账）
+### Deferred Capstone Blocks（历史估算；当前全部 0 GPU）
+
+下表保留原设计的参考拓扑，但不构成租卡授权。Day 31–42 整体暂停；若未来重启，必须废弃旧估算并按新 charter 重新测算。
 
 | Block | Days | 参考配置 | 初始 planning window | 目标 | 关机 Gate |
 |---|---|---|---:|---|---|
@@ -88,9 +90,9 @@ v2 依据：[Qwen3.5-4B-Base model card](https://huggingface.co/Qwen/Qwen3.5-4B-
 | O | 38–40 | CPU/无卡 | 0h GPU | deferred teacher-trace/OPD templates | 无 S1d/S3/S3d、无伪 teacher payload |
 | P | 41–42 | 1–2× inference；最小 replay topology | 3–6h wall | S0/S1/S2 confirmation、成本与 clean replay | consumption record、paired evidence、clean reproduction 完整 |
 
-活动 Capstone 不预付一个总 GPU-hours 配额；Day 32 的 measured capacity 与 Day 37 one-update peak 分别冻结后续上限。Deferred teacher/OPD 不占 GPU 预算，只有 charter v2 获批后才另做容量与成本核算。
+当前 Capstone 与 Teacher/OPD 均不占 GPU 预算。只有用户明确重启并批准新 charter 后，才按当时环境重新做容量与成本核算。
 
-8×H100 Stretch 另设 2–4 小时硬上限，只允许在 Block I 已成功、官方 recipe 与当前 pinned commit 完全对齐、数据/模型缓存命中且用户再次确认预算后执行。
+8×H100 Stretch 当前取消，不属于活动计划。未来若另行提出，必须作为独立任务重新评估。
 
 ## 开机前 Checklist
 
@@ -147,7 +149,9 @@ v2 依据：[Qwen3.5-4B-Base model card](https://huggingface.co/Qwen/Qwen3.5-4B-
 - [ ] 2–4 卡拓扑、角色放置、显存预算和 weight-sync 路径已写入 runbook。
 - [ ] 8 卡参数未混入 Core 配置；不支持时状态写 `blocked` 并继续 ms-swift 主线，不换模型。
 
-### Qwen3.5-4B Policy Capstone
+### Deferred Qwen3.5-4B Policy Capstone
+
+以下 checklist 仅在未来明确重启后使用，当前不得据此开卡。
 
 - [ ] S0 exact revision、processor/template、vision/aligner freeze、data/code/container 与 S1/S2 selection policy 已冻结。
 - [ ] single/TP2 parity、global-batch assertion、distributed save/reload 与 inference export 已通过。

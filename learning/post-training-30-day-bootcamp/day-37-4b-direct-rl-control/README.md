@@ -1,8 +1,12 @@
 # Day 37 — Qwen3.5-4B Common Anchor 与 Direct Coding RL
 
-状态：`not_started`
+状态：`deferred_after_architecture_study`
 日期：`unscheduled_after_day30`
 强度：4–5 小时人工工作；GPU wall time 由 smoke 决定
+
+## 当前状态
+
+Day 27–30 已转向 Megatron/slime architecture study。本 direct-RL 训练任务暂停，不因前置阅读完成而自动获得 GPU 或训练授权；只有用户明确重启执行型 Capstone 后才恢复。
 
 ## 主要目标
 

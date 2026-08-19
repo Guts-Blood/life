@@ -224,7 +224,7 @@ source acquisition
 
 - [Day 24 · Online RL dataflow](../../../post-training-30-day-bootcamp/day-24-online-rl-dataflow-reward/README.md)
 - [Day 25 · GRPO lab](../../../post-training-30-day-bootcamp/day-25-grpo-small-model-lab/README.md)
-- [Day 28 · slime replay/observability](../../../post-training-30-day-bootcamp/day-28-weekend-slime-architecture/README.md)
+- [Day 30 · slime control/data/weight/evidence flows](../../../post-training-30-day-bootcamp/day-30-slime-training-system-integration/README.md)
 
 ### 验收题
 

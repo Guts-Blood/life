@@ -1,8 +1,12 @@
 # Day 41 — S0/S1/S2 Matched Eval、Frozen Confirmation 与 Cost
 
-状态：`not_started`
+状态：`deferred_after_architecture_study`
 日期：`unscheduled_after_day30`
 强度：4–5 小时；inference/eval GPU
+
+## 当前状态
+
+Day 27–30 已转向 Megatron/slime architecture study。本 matched eval 依赖已暂停的 S0/S1/S2 Capstone，不是当前主线任务。
 
 ## 主要目标
 
