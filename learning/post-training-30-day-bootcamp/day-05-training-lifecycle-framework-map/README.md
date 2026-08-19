@@ -10,6 +10,11 @@
 
 从一条 raw sample 追到 checkpoint 与 eval，建立完整 training lifecycle；同时明确用户代码、训练 repo、框架、通信库和 CUDA 各自负责什么。结果是能追踪和诊断训练，不是搭一个 auto-train 平台。
 
+核心可视化：
+
+- [`day05-training-lifecycle-roadmap.svg`](../artifacts/reports/day05-training-lifecycle-roadmap.svg)：training lifecycle、framework ownership、loss、optimizer 与 resume 主链。
+- [`day05-moe-transformer-forward-backward-anatomy.svg`](../artifacts/reports/day05-moe-transformer-forward-backward-anatomy.svg)：以 Qwen3-30B-A3B 为 worked example，展开 48 层 MoE Transformer、单层 GQA/MoE 的全部重要矩阵、`B=1/T=8192` logical temporary tensors、forward/backward 公式与 activation-checkpoint lifetime。
+
 ## 理论（75 分钟）
 
 精读清单：[Day 05 — Training lifecycle 与 framework boundaries](../SCALING-BOOK-READING-GUIDE.md#day-05)。
@@ -51,6 +56,7 @@
 - `../artifacts/reports/day05-training-lifecycle.mmd`
 - `../artifacts/reports/day05-framework-responsibility-map.md`
 - `../artifacts/reports/day05-resume-state-checklist.md`
+- `../artifacts/reports/day05-moe-transformer-forward-backward-anatomy.svg`
 
 ## 验收
 
