@@ -129,7 +129,7 @@ slime 通用文档阅读基线保留 `v0.3.0`，Day 26 的 Qwen3.5 源码锚点�
 - [x] [Day 24 · 08-19 — Coding online-RL dataflow 与 sandbox reward contract](day-24-online-rl-dataflow-reward/README.md)（08-16 提前完成；`closed_pass_cpu_contract`，CPU mini-pipeline 与双 replay E2B 证据闭环，真实 optimizer update 留给 Day 25）
 - [x] [Day 25 · 08-20 — Qwen3.5 coding GRPO lab（parent=S1）](day-25-grpo-small-model-lab/README.md)（08-16 提前实跑并 `closed_no_candidate`；G0–G4 全通过，search40 为 S1/GRPO `24/40 → 24/40`，confirmation24 按合同未打开）
 - [x] [Day 26 · 08-21 — slime 固定 release 的 Qwen3.5 兼容 gate](day-26-slime-codepath-prep/README.md)（08-17 提前实跑；S0 因 physical topology/image identity/runtime dependencies 漂移 fail-closed，S1–S5 未运行；旧 Day 29 run no-go 保留为历史记录）
-- [ ] [Day 27 · 08-22（周末 1h）— Training system 总图与框架分层](day-27-training-system-architecture/README.md)
+- [x] [Day 27 · 08-22（周末 1h）— Training system 总图与框架分层](day-27-training-system-architecture/README.md)（guided Core Quiz `3/3`；slime architecture + node ledger 合并 SVG 完成）
 - [ ] [Day 28 · 08-23（周末 1h）— Megatron × slime 对象、状态与接口](day-28-megatron-slime-concepts/README.md)
 
 ### Final：Megatron / slime 架构深挖与系统集成（08-24 至 08-25）

@@ -1,7 +1,7 @@
 # Day 27 — Training System 总图：框架分层与节点关系
 
 日期：`2026-08-22`  
-状态：`not_started`  
+状态：`done`（guided Core Quiz `3/3`；slime architecture、node ledger 与 failure triage 合并 SVG 完成）<br>
 强度：1 小时，仅阅读、画图与口述
 
 ## 课程转向
@@ -56,24 +56,28 @@ prompt source -> rollout engine -> environment/reward -> trajectory buffer
 
 ## 当日产物
 
-- `../artifacts/reports/day27-training-system-layer-map.mmd`
-- `../artifacts/reports/day27-node-ledger.md`
+- [`day27-slime-training-system-architecture.svg`](../artifacts/reports/day27-slime-training-system-architecture.svg)：把原计划的 layer map 与 node ledger 合并为一张可复查总图，覆盖 slime/Ray/SGLang/Megatron 职责、control/data/weight/evidence flow、对象/version 字段、state ownership 与 failure triage。
 
 Node ledger 至少包含：`node / concrete component / process or Ray actor / input / output / owned state / upstream / downstream / observable evidence / likely failures`。
 
 ## 验收
 
-- [ ] 能解释 ms-swift、slime、Megatron、SGLang、Ray、PyTorch、NCCL、CUDA 各自处在哪一层，且不把它们说成互斥替代品。
-- [ ] 能区分 control flow、data flow、weight flow 和 checkpoint/evidence flow。
-- [ ] 能指出 online RL 相比 SFT 新增了哪些节点和反馈边。
-- [ ] 每条箭头都写出了传输对象和版本字段，而不是只连接两个框架名字。
+- [x] 能解释 ms-swift、slime、Megatron、SGLang、Ray、PyTorch、NCCL、CUDA 各自处在哪一层，且不把它们说成互斥替代品。
+- [x] 能区分 control flow、data flow、weight flow 和 checkpoint/evidence flow。
+- [x] 能指出 online RL 相比 SFT 新增了哪些节点和反馈边。
+- [x] 每条箭头都写出了传输对象和版本字段，而不是只连接两个框架名字。
 
 ## Daily Log
 
 ### 最容易混淆的两个边界
 
+1. slime 定义 RL workflow 与对象语义；Ray 负责 actor/process/GPU placement 和异步执行，不理解 trajectory、reward 或 policy loss。
+2. Ray actor `alive` 只证明进程存活；SGLang 的 model-ready、loaded policy version、weight hash 与 KV/cache barrier 必须由 serving 层证据证明。
+
 ### 仍然无法解释的三条边
 
-1.
-2.
-3.
+概念链已能解释；以下三条在 Day 26 固定 runtime 中仍是 `RUNTIME UNKNOWN`，不能被 Day 27 CPU 图改写成已实跑：
+
+1. Day 21 merged S1 → Megatron conversion/model load。
+2. SGLang rollout → live reward → learner optimizer step。
+3. Megatron full-weight sync → SGLang loaded-version ACK → next-version rollout。

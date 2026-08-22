@@ -2,7 +2,7 @@
 
 开始日期：`2026-07-27`  
 目标完成日期：`2026-08-25`  
-当前 Phase：`Day 27–30 architecture study ready；Training system -> Megatron learner -> slime orchestration`
+当前 Phase：`Day 27 done；Day 28 Megatron × slime object/state/interface study ready`
 
 当前学习问题：`不用再迁移框架跑训练，而是把 ms-swift、slime、Megatron、Ray、SGLang、PyTorch/NCCL/CUDA 放进同一 training-system 图，追清对象、状态、进程、权重版本和上下游节点。Day 26 的 S0 failure 作为 control-plane/runtime-identity 案例保留，不阻塞 CPU 源码学习；若未来重开 live run，仍必须使用新的 append-only charter/run root。`
 
@@ -62,7 +62,7 @@
 | 24 | Coding online-RL dataflow/sandbox reward contract | closed_pass | 2026-08-16（提前；原计划 08-19） | | trajectory schema、8-row input、16-row E2B evidence、4-row group rewards、`artifacts/reports/day24-coding-online-rl-dataflow.md` | CPU contract 终态为 `closed_pass_cpu_contract`：两个 train prompt × G=4，双 replay 8/8 semantic hash 一致；tests-only / tests+format-style、infra retry、zero variance 与 reward-hacking contract 均通过；0 GPU，真实 RL update 留给 Day 25。 |
 | 25 | Qwen3.5 coding GRPO lab（parent=S1） | closed_no_candidate | 2026-08-16 提前实跑并关闭（原计划 08-20） | | RTX runtime binding、G0–G4 ledgers/audits/checkpoints、search40 raw completions/E2B evidence/decision、`artifacts/reports/day25-qwen35-coding-grpo.md` | 用户授权 RTX hardware override；G0–G4 全通过，G4 完成 10 steps/80 trajectories。但 search40 为 S1 `24/40`、GRPO `24/40`，wins/regressions 均 0；合法终态 `closed_no_candidate_confirmation_unopened`。 |
 | 26 | slime fixed-release Qwen3.5 compatibility gate | blocked | 2026-08-17 提前实跑并 fail-closed（原计划 08-21） | | S0 environment/image/GPU inventory、S1 export hash verification、90-file evidence mirror、`artifacts/reports/day26-slime-qwen35-compatibility.md`、Day 29 no-go record | S0 fail：物理双卡、OCI digest 无法证明、runtime drift、Ray/SGLang/Megatron/checkouts 缺失；S1–S5 未运行。唯一终态 `slime_qwen35_compatibility_blocked`，无 fallback。 |
-| 27 | Training system 总图与框架分层 | not_started | 2026-08-22 | | layer map、node ledger | 从职责出发放置 ms-swift/slime/Megatron/SGLang/Ray/PyTorch/NCCL/CUDA，不画 logo 图。 |
+| 27 | Training system 总图与框架分层 | done | 2026-08-22 | | `artifacts/reports/day27-slime-training-system-architecture.svg` | guided Core Quiz 3/3；总图合并 layer map、node ledger、四类 flow、对象/version 字段与 failure triage，并保留 Day 26 runtime-unknown 边界。 |
 | 28 | Megatron × slime 对象、状态与接口准备 | not_started | 2026-08-23 | | glossary、source-reading questions | 区分 Sample、learner batch、model state、policy version、checkpoint/export。 |
 | 29 | Megatron architecture/codepath/state ownership | not_started | 2026-08-24 | | process-group map、train-step codepath、state ledger、failure tree | 旧 slime runtime run 的 no-go 保留为历史 record，但不阻塞 CPU architecture study。 |
 | 30 | slime architecture 与 training-system integration | not_started | 2026-08-25 | | control/data/weight/evidence flows、crosswalk、综合报告 | 追清 prompt→rollout→reward→Megatron update→weight sync→next rollout；不追加 GPU。 |
