@@ -1,0 +1,182 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="2460" viewBox="0 0 1800 2460" role="img" aria-labelledby="title desc">
+  <title id="title">Day 04 distributed failure evidence worked examples</title>
+  <desc id="desc">Three concrete distributed-training investigations: an FSDP out-of-memory perturbation matrix, an empty-label rank causing a ReduceScatter hang, and a same-world-size checkpoint topology mismatch, each organized around the first divergent evidence.</desc>
+
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2563eb"/>
+    </marker>
+    <style>
+      text { font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; fill: #172033; }
+      .title { font-size: 34px; font-weight: 700; }
+      .subtitle { font-size: 18px; fill: #526078; }
+      .section { font-size: 23px; font-weight: 700; }
+      .stage { font-size: 14px; font-weight: 700; letter-spacing: .5px; fill: #475569; }
+      .label { font-size: 17px; font-weight: 650; }
+      .body { font-size: 15px; }
+      .small { font-size: 13px; fill: #526078; }
+      .tiny { font-size: 12px; fill: #526078; }
+      .formula { font-family: "SFMono-Regular", Consolas, monospace; font-size: 14px; fill: #273449; }
+      .formula-small { font-family: "SFMono-Regular", Consolas, monospace; font-size: 12px; fill: #273449; }
+      .panel { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1.5; }
+      .hero { fill: #eef2ff; stroke: #6366f1; stroke-width: 1.8; }
+      .blue { fill: #dbeafe; stroke: #2563eb; stroke-width: 1.5; }
+      .cyan { fill: #cffafe; stroke: #0891b2; stroke-width: 1.5; }
+      .purple { fill: #f3e8ff; stroke: #9333ea; stroke-width: 1.5; }
+      .green { fill: #dcfce7; stroke: #16a34a; stroke-width: 1.5; }
+      .amber { fill: #fef3c7; stroke: #d97706; stroke-width: 1.5; }
+      .red { fill: #fee2e2; stroke: #dc2626; stroke-width: 1.5; }
+      .muted { fill: #f1f5f9; stroke: #94a3b8; stroke-width: 1.3; }
+      .good { fill: #f0fdf4; stroke: #16a34a; stroke-width: 1.5; }
+      .warning { fill: #fff7ed; stroke: #ea580c; stroke-width: 1.5; }
+      .line { fill: none; stroke: #475569; stroke-width: 2; marker-end: url(#arrow); }
+      .line-blue { fill: none; stroke: #2563eb; stroke-width: 2; marker-end: url(#arrow-blue); }
+      .dash { fill: none; stroke: #64748b; stroke-width: 1.6; stroke-dasharray: 7 5; marker-end: url(#arrow); }
+      .divider { stroke: #cbd5e1; stroke-width: 1.4; }
+      .grid { stroke: #cbd5e1; stroke-width: 1; }
+    </style>
+  </defs>
+
+  <rect width="1800" height="2460" fill="#f5f7fb"/>
+  <text x="50" y="58" class="title">Day 04 · Distributed Failure Evidence Worked Examples</text>
+  <text x="50" y="90" class="subtitle">OOM、collective hang、checkpoint mismatch：从最小扰动与全 rank 时间线找到第一处分歧，而不是从 timeout 文案猜根因。</text>
+
+  <rect x="40" y="118" width="1720" height="112" rx="18" class="hero"/>
+  <text x="70" y="155" class="section">一句话 Gate</text>
+  <text x="270" y="155" class="label">先还原 local shape、state ownership、collective order 与 layout metadata，再改变一个变量做证伪实验。</text>
+  <text x="270" y="188" class="body">symptom → first divergent event → smallest discriminating experiment → verified cause → scoped fix</text>
+
+  <!-- Overview -->
+  <rect x="40" y="254" width="1720" height="312" rx="18" class="panel"/>
+  <text x="70" y="294" class="section">1 · 三张故障卡：症状相似，证据对象完全不同</text>
+  <text x="70" y="321" class="small">每张卡只保留能区分候选原因的第一轮证据；“最后报错的 rank”不自动等于“最先出错的 rank”。</text>
+
+  <rect x="70" y="354" width="510" height="158" rx="15" class="blue"/>
+  <text x="96" y="390" class="label">OOM · FSDP 后仍爆显存</text>
+  <text x="96" y="422" class="body">对象：activation / attention / materialization timeline</text>
+  <text x="96" y="452" class="small">证据：allocated / reserved / device-used peak</text>
+  <text x="96" y="482" class="formula-small">B↓ · S↓ · prefetch/materialized units↓</text>
+
+  <rect x="645" y="354" width="510" height="158" rx="15" class="red"/>
+  <text x="671" y="390" class="label">Hang · ranks 停在 ReduceScatter</text>
+  <text x="671" y="422" class="body">对象：每个 rank 的 collective enter / exit sequence</text>
+  <text x="671" y="452" class="small">证据：valid labels、skip flag、control flow</text>
+  <text x="671" y="482" class="formula-small">first rank that does not execute the same next op</text>
+
+  <rect x="1220" y="354" width="510" height="158" rx="15" class="amber"/>
+  <text x="1246" y="390" class="label">Checkpoint · world size 相同仍加载失败</text>
+  <text x="1246" y="422" class="body">对象：source mesh、shard axis/offset、target layout</text>
+  <text x="1246" y="452" class="small">证据：canonical FQN / global shape / optimizer schema</text>
+  <text x="1246" y="482" class="formula-small">same world size ≠ same topology</text>
+
+  <!-- OOM -->
+  <rect x="40" y="590" width="1720" height="570" rx="18" class="panel"/>
+  <text x="70" y="630" class="section">2 · FSDP OOM：用三次单变量扰动区分线性、二次项与 materialization peak</text>
+  <text x="70" y="657" class="small">Baseline：B_micro=2 · S=8192 · FSDP enabled · OOM。不要先假设“FSDP 没生效”；先观察哪类 tensor 对扰动最敏感。</text>
+
+  <rect x="70" y="690" width="1660" height="48" rx="9" class="muted"/>
+  <text x="94" y="721" class="stage">EXPERIMENT</text>
+  <text x="360" y="721" class="stage">LINEAR ACTIVATION</text>
+  <text x="690" y="721" class="stage">NAIVE ATTENTION SCORE</text>
+  <text x="1055" y="721" class="stage">FSDP MATERIALIZATION</text>
+  <text x="1410" y="721" class="stage">INTERPRETATION</text>
+
+  <rect x="70" y="752" width="1660" height="92" rx="10" class="blue"/>
+  <text x="94" y="788" class="label">A · B_micro 2 → 1</text>
+  <text x="360" y="788" class="formula">≈ 1/2</text>
+  <text x="690" y="788" class="formula">≈ 1/2</text>
+  <text x="1055" y="788" class="body">近似不变</text>
+  <text x="1410" y="780" class="body">若 peak 近半，batch-linear</text>
+  <text x="1410" y="810" class="small">activation 是主要驱动</text>
+
+  <rect x="70" y="858" width="1660" height="92" rx="10" class="purple"/>
+  <text x="94" y="894" class="label">B · Sequence 8192 → 4096</text>
+  <text x="360" y="894" class="formula">≈ 1/2</text>
+  <text x="690" y="894" class="formula">≈ 1/4</text>
+  <text x="1055" y="894" class="body">近似不变</text>
+  <text x="1410" y="886" class="body">降幅远超一半时，检查</text>
+  <text x="1410" y="916" class="small">显式 [B,H,S,S] 或相关 workspace</text>
+
+  <rect x="70" y="964" width="1660" height="92" rx="10" class="amber"/>
+  <text x="94" y="1000" class="label">C · 限制 prefetch / full units</text>
+  <text x="360" y="1000" class="body">不变</text>
+  <text x="690" y="1000" class="body">不变</text>
+  <text x="1055" y="1000" class="formula">simultaneous units ↓</text>
+  <text x="1410" y="992" class="body">只有此实验明显改善时，</text>
+  <text x="1410" y="1022" class="small">首查 AllGather / wrap / prefetch concurrency</text>
+
+  <rect x="70" y="1080" width="1660" height="52" rx="10" class="warning"/>
+  <text x="94" y="1112" class="body">必须同时记录 PyTorch allocated/reserved 与 device-level used memory；NCCL/CUDA 直接分配不一定出现在 allocator snapshot 中。</text>
+
+  <!-- Hang -->
+  <rect x="40" y="1184" width="1720" height="528" rx="18" class="panel"/>
+  <text x="70" y="1224" class="section">3 · Collective hang：rank 3 的 empty-label 分支跳过 backward</text>
+  <text x="70" y="1251" class="small">四个 DP ranks 必须按相同顺序参与 gradient ReduceScatter。timeout 发生在等待者，第一处分歧发生在未进入 collective 的 rank。</text>
+
+  <rect x="70" y="1284" width="1660" height="44" rx="8" class="muted"/>
+  <text x="94" y="1313" class="stage">RANK</text>
+  <text x="250" y="1313" class="stage">LABEL GATE</text>
+  <text x="620" y="1313" class="stage">BACKWARD</text>
+  <text x="980" y="1313" class="stage">BUCKET 17</text>
+  <text x="1350" y="1313" class="stage">OBSERVED STATE</text>
+
+  <g>
+    <rect x="70" y="1342" width="1660" height="62" rx="8" class="blue"/>
+    <text x="102" y="1381" class="label">rank 0</text><text x="250" y="1381" class="body">valid labels &gt; 0</text><text x="620" y="1381" class="body">enter backward</text><text x="980" y="1381" class="formula">enter ReduceScatter</text><text x="1350" y="1381" class="body">waiting</text>
+    <rect x="70" y="1414" width="1660" height="62" rx="8" class="blue"/>
+    <text x="102" y="1453" class="label">rank 1</text><text x="250" y="1453" class="body">valid labels &gt; 0</text><text x="620" y="1453" class="body">enter backward</text><text x="980" y="1453" class="formula">enter ReduceScatter</text><text x="1350" y="1453" class="body">waiting</text>
+    <rect x="70" y="1486" width="1660" height="62" rx="8" class="blue"/>
+    <text x="102" y="1525" class="label">rank 2</text><text x="250" y="1525" class="body">valid labels &gt; 0</text><text x="620" y="1525" class="body">enter backward</text><text x="980" y="1525" class="formula">enter ReduceScatter</text><text x="1350" y="1525" class="body">waiting</text>
+    <rect x="70" y="1558" width="1660" height="62" rx="8" class="red"/>
+    <text x="102" y="1597" class="label">rank 3</text><text x="250" y="1597" class="body">valid labels = 0</text><text x="620" y="1597" class="body">continue / skip</text><text x="980" y="1597" class="formula">never enters</text><text x="1350" y="1597" class="label">FIRST DIVERGENCE</text>
+  </g>
+
+  <rect x="70" y="1640" width="795" height="44" rx="9" class="good"/>
+  <text x="94" y="1668" class="body">Fix A：构造 graph-connected zero loss，让所有 ranks 仍执行 backward / collectives。</text>
+  <rect x="895" y="1640" width="835" height="44" rx="9" class="good"/>
+  <text x="919" y="1668" class="body">Fix B：先 all-rank 汇总 skip decision；只有所有 ranks 同意时才整体跳过。</text>
+
+  <!-- Checkpoint -->
+  <rect x="40" y="1736" width="1720" height="510" rx="18" class="panel"/>
+  <text x="70" y="1776" class="section">4 · Checkpoint mismatch：world_size=8，但 mesh 与 shard 语义已经改变</text>
+  <text x="70" y="1803" class="small">rank 数量相同只说明进程数相同，不说明参数、optimizer state、layer 与 tensor axis 的 ownership 相同。</text>
+
+  <rect x="70" y="1836" width="680" height="184" rx="15" class="blue"/>
+  <text x="96" y="1872" class="label">Source topology · DP=2 · TP=2 · PP=2</text>
+  <text x="96" y="1904" class="formula">world = 2 × 2 × 2 = 8</text>
+  <text x="96" y="1936" class="body">每个 parameter / optimizer shard 带 source mesh、axis、</text>
+  <text x="96" y="1964" class="body">offset、placement 与 pipeline-stage ownership。</text>
+  <text x="96" y="1992" class="small">rank mapping 是本题约定；真实框架必须读取其 metadata。</text>
+
+  <path d="M 750 1928 L 1045 1928" class="line-blue"/>
+  <rect x="790" y="1854" width="215" height="148" rx="14" class="muted"/>
+  <text x="817" y="1890" class="label">Canonical bridge</text>
+  <text x="817" y="1922" class="formula-small">FQN + global shape</text>
+  <text x="817" y="1950" class="formula-small">dtype + optimizer schema</text>
+  <text x="817" y="1978" class="formula-small">full/global → reshard</text>
+
+  <rect x="1045" y="1836" width="685" height="184" rx="15" class="purple"/>
+  <text x="1071" y="1872" class="label">Target topology · DP=1 · TP=4 · PP=2</text>
+  <text x="1071" y="1904" class="formula">world = 1 × 4 × 2 = 8</text>
+  <text x="1071" y="1936" class="body">TP shard axis/width 与 DP replication degree 已改变；</text>
+  <text x="1071" y="1964" class="body">同一个 global tensor 需要重新切成 target layouts。</text>
+  <text x="1071" y="1992" class="small">optimizer slot 必须与 parameter FQN 和 target shard 对齐。</text>
+
+  <rect x="70" y="2044" width="1660" height="156" rx="14" class="warning"/>
+  <text x="96" y="2080" class="label">加载顺序</text>
+  <text x="96" y="2112" class="body">1 · 校验 format/schema 与 canonical FQN/global shape　→　2 · 读取 source mesh/shard metadata</text>
+  <text x="96" y="2144" class="body">3 · 检查 framework 是否支持 source→target reshard　→　4 · 不支持时先重建 canonical full/global state</text>
+  <text x="96" y="2176" class="small">只比较文件数量、rank 数或 world size，会错过真正决定 layout compatibility 的字段。</text>
+
+  <!-- Close -->
+  <rect x="40" y="2270" width="1720" height="130" rx="18" class="hero"/>
+  <text x="70" y="2308" class="section">最终检查顺序</text>
+  <text x="270" y="2308" class="label">local shape → lifetime / order → ownership group → first divergent event → one-variable experiment</text>
+  <text x="270" y="2342" class="body">OOM 看同时存活对象；hang 看全 rank collective 序列；checkpoint 看 source/target layout metadata。</text>
+  <text x="270" y="2374" class="small">证据不足时只报告候选原因，不把 timeout reporter、最后一个 allocation 或 same world size 当作根因证明。</text>
+
+  <text x="50" y="2432" class="tiny">Source: Day 04 Reading Quiz · Companion to day-04-parallelism-roadmap.svg · 30-Day LLM Post-Training Bootcamp</text>
+</svg>

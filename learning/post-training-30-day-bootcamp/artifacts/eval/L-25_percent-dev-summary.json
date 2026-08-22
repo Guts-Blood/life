@@ -1,0 +1,153 @@
+{
+  "aggregates": {
+    "four_slice_macro": {
+      "accuracy": 0.116071428571,
+      "correct": 13,
+      "included_slices": [
+        "general",
+        "math",
+        "code",
+        "finance"
+      ],
+      "scored": 112,
+      "status": "complete",
+      "uncertainty_status": "preregistered_stratified_bootstrap_not_computed",
+      "wilson_95": null
+    },
+    "provisional_three_slice_macro": {
+      "accuracy": 0.142857142857,
+      "correct": 12,
+      "included_slices": [
+        "general",
+        "math",
+        "finance"
+      ],
+      "pooled_wilson_95": {
+        "lower": 0.083650205406,
+        "upper": 0.233301029176
+      },
+      "scored": 84,
+      "status": "provisional_excludes_code_sandbox"
+    }
+  },
+  "counts": {
+    "code_results": 28,
+    "dev": 112,
+    "frozen_test": 0,
+    "predictions": 112
+  },
+  "domain": "day10.baseline_summary",
+  "per_slice": {
+    "code": {
+      "accuracy": 0.035714285714,
+      "ceiling_hits": 28,
+      "correct": 1,
+      "input_tokens": 4958,
+      "latency_seconds": 361.115958,
+      "n": 28,
+      "output_tokens": 14336,
+      "parse_error": 0,
+      "sandbox_pending": 0,
+      "scored": 28,
+      "tokens_per_second": 39.699159,
+      "wilson_95": {
+        "lower": 0.006332519849,
+        "upper": 0.177121977434
+      },
+      "wrong_answer": 27
+    },
+    "finance": {
+      "accuracy": 0.0,
+      "ceiling_hits": 28,
+      "correct": 0,
+      "input_tokens": 15269,
+      "latency_seconds": 362.810221,
+      "n": 28,
+      "output_tokens": 14336,
+      "parse_error": 16,
+      "sandbox_pending": 0,
+      "scored": 28,
+      "tokens_per_second": 39.513771,
+      "wilson_95": {
+        "lower": 0.0,
+        "upper": 0.120643304766
+      },
+      "wrong_answer": 12
+    },
+    "general": {
+      "accuracy": 0.142857142857,
+      "ceiling_hits": 28,
+      "correct": 4,
+      "input_tokens": 4657,
+      "latency_seconds": 22.562699,
+      "n": 28,
+      "output_tokens": 896,
+      "parse_error": 15,
+      "sandbox_pending": 0,
+      "scored": 28,
+      "tokens_per_second": 39.711561,
+      "wilson_95": {
+        "lower": 0.056990053197,
+        "upper": 0.314898021635
+      },
+      "wrong_answer": 9
+    },
+    "math": {
+      "accuracy": 0.285714285714,
+      "ceiling_hits": 28,
+      "correct": 8,
+      "input_tokens": 2770,
+      "latency_seconds": 358.222698,
+      "n": 28,
+      "output_tokens": 14336,
+      "parse_error": 0,
+      "sandbox_pending": 0,
+      "scored": 28,
+      "tokens_per_second": 40.019798,
+      "wilson_95": {
+        "lower": 0.152539960567,
+        "upper": 0.470592884333
+      },
+      "wrong_answer": 20
+    }
+  },
+  "provenance": {
+    "code_sandbox": {
+      "backend": "e2b_firecracker",
+      "code_execution_protocol_hash": "sha256:9571c64301029e230ab2d01e1b8daf8a6dcf7c4a5c8b0696e21d9b073a730c87",
+      "code_run_hash": "sha256:e9c34ad994c05dae55f8ffb2bfd84d25db6732bba408822f6d314741306c6802",
+      "complete_comparison_key": "sha256:f33b389071b844f8c2db221c09e4e0f0a39970718e7d4ba76fa639b90f921f8e",
+      "evaluator_source_sha256": "ee5581f3a29f02737ae08cbd7591e839b996168b3d1276670227e67157bcd4b0",
+      "results_file_sha256": "1963fdf8f59e59e72780d5ed23fee564cd83cc9ed183e69ca1c1bfff9f859e50",
+      "results_semantic_hash": "sha256:9cecc92e57f524163a9d03fe3055d32f4952e3e02bfc738824ed58877b6c4850",
+      "sandbox_contract_file_sha256": "d4841e1e0479f6488306e916eb5d664d848716e80cfc7aef9943e6134ecbfc8c",
+      "sdk": {
+        "package": "e2b",
+        "version": "2.37.0"
+      },
+      "source_file_sha256": "b796127e635a67f93fb35c04f4cb03cf06f38c8072ee7cee8833d7bee06979ef",
+      "source_revision": "6d43fb980f9fee3c892a914eda09951f772ad10d",
+      "template_id": "rki5dems9wqfm4r03t7g"
+    },
+    "comparison_key": "sha256:fcae58c2fe207b28bd91037672b4282d23078ae94fcdb7b5152ec56d2a56cfbf",
+    "execution_protocol_hash": "sha256:e0e57113102d2c514e04ff1a1d1a8fda18f267082c38452d42d13a1b2a60b4f2",
+    "manifest_file_sha256": "be4b79f93d8c850360f3f2d38c223fcd347517796daaa9a1a4d3bc1a5eab7491",
+    "manifest_hash": "sha256:70749bf91842e2a3f10b66051d0fe3b26a8b6b3225198753f5861e2c39570cc0",
+    "model_id": "day12/L-25_percent",
+    "model_revision": "f8f6b02567b3d88b062a5b75c65ae255745525a764f8df6e8a5ea9a6320a2e4e",
+    "model_snapshot_hash": "sha256:9c27e671e86d92e688deee8993ae4e9b6a6cb611960b78434107a55f1d6729d1",
+    "observed_run_started_at_utc": "2026-08-06T15:48:20.998364+00:00",
+    "protocol_hash": "sha256:4aa329a2566f0a3864d0bf35c158e1b22b08670afb6770b48a25161aed4e7c06",
+    "run_hash": "sha256:4dd21b94272087591e46eeda0a9321e4c47f86cc83b00f5c9f637823fa62707e",
+    "scorer_registry_hash": "sha256:593de0e8411ce4b3af85d593c6856afbcd310c256823e3f9e1b5c218575c866d"
+  },
+  "schema_version": 1,
+  "status": "complete_code_sandbox_scored",
+  "summary_hash": "sha256:9ba883937aa92c295abf72741021dfa4660fb6566229cf34ca2b0d390b5f4081",
+  "summary_hash_definition": "RFC 8785 over this summary excluding summary_hash, provenance.observed_run_started_at_utc, and provenance.code_sandbox.results_file_sha256; exact sidecar bytes and analysis wall-clock timestamps are not semantic result identity.",
+  "uncertainty": {
+    "interpretation": "Pilot-set sensitivity only; these intervals do not establish population coverage or benchmark-level confidence.",
+    "interval": "wilson_score_interval_95_v1",
+    "z": 1.959963984540054
+  }
+}

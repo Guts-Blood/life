@@ -1,0 +1,242 @@
+{
+  "acceptance_hash": "8d2dbd871e7902086a4fd1cd31084ab10b3506c6c06717652205cfb0fa9f0d0c",
+  "checks": {
+    "common_supervised_tokens_equal": true,
+    "frozen_manifest_plan_and_mixes_byte_identical": true,
+    "full_rebuild_budget_equal": true,
+    "full_rebuild_clean_pool_hash_equal": true,
+    "full_rebuild_clean_records_equal": true,
+    "full_rebuild_ratios_equal": true,
+    "full_rebuild_selections_equal": true,
+    "gate_c_waiver_explicit": true,
+    "required_artifacts_present": true,
+    "steps_2_to_9_data_files_byte_identical": true,
+    "tests_passed": true
+  },
+  "claim_boundary": "Automated reproducibility passed. Gate C was waived by the user and must not be described as a passed human occurrence review.",
+  "frozen_artifact_comparisons": {
+    "clean_parent_manifest": {
+      "byte_identical": true,
+      "official_sha256": "97661d5482256dbaa3f33a96b32703fcdbc1f1aaa5084b64e4baba80b8f984bb",
+      "rebuilt_sha256": "97661d5482256dbaa3f33a96b32703fcdbc1f1aaa5084b64e4baba80b8f984bb"
+    },
+    "mix_A_manifest": {
+      "byte_identical": true,
+      "official_sha256": "cb0d4819d383e4a22fd2c389c27c9cf058a20287c08e0fa5d924703f0af77492",
+      "rebuilt_sha256": "cb0d4819d383e4a22fd2c389c27c9cf058a20287c08e0fa5d924703f0af77492"
+    },
+    "mix_B_manifest": {
+      "byte_identical": true,
+      "official_sha256": "d87e32b7925080c4e1abc6676354cb35e60af3f2311b969d6441a8aacc319837",
+      "rebuilt_sha256": "d87e32b7925080c4e1abc6676354cb35e60af3f2311b969d6441a8aacc319837"
+    },
+    "token_budget_plan": {
+      "byte_identical": true,
+      "official_sha256": "d1e536d5f1f1703487b80d9ac281d94ce5dda98489ca012984fe1d376d84e873",
+      "rebuilt_sha256": "d1e536d5f1f1703487b80d9ac281d94ce5dda98489ca012984fe1d376d84e873"
+    }
+  },
+  "full_rebuild_semantic_hashes": {
+    "official_clean_pool_hash": "ab7dee175c140ef5fa5bf8e0f9197046d166f4e0eef98af5ec14ba543e2eb073",
+    "official_clean_records_sha256": "ab7dee175c140ef5fa5bf8e0f9197046d166f4e0eef98af5ec14ba543e2eb073",
+    "official_selection_proofs_sha256": "51d6838dde3be1ec0356b23cc96b547e03f7ea0e13a19c8ae7afcf7241242ce4",
+    "rebuilt_clean_pool_hash": "ab7dee175c140ef5fa5bf8e0f9197046d166f4e0eef98af5ec14ba543e2eb073",
+    "rebuilt_clean_records_sha256": "ab7dee175c140ef5fa5bf8e0f9197046d166f4e0eef98af5ec14ba543e2eb073",
+    "rebuilt_selection_proofs_sha256": "51d6838dde3be1ec0356b23cc96b547e03f7ea0e13a19c8ae7afcf7241242ce4"
+  },
+  "full_rebuild_stage_file_comparisons": {
+    "code-candidates.jsonl": {
+      "byte_identical": true,
+      "official_sha256": "edfcdf7d581ceae4c4f475dd68aca508cbe8b704d4bcf3e9d70a35262c4b5fb5",
+      "rebuilt_sha256": "edfcdf7d581ceae4c4f475dd68aca508cbe8b704d4bcf3e9d70a35262c4b5fb5"
+    },
+    "finance-candidates.jsonl": {
+      "byte_identical": true,
+      "official_sha256": "7c09b8b07f8c7b848b6b11047f53b8a0eb342b091870988aa3ba23c583a6028a",
+      "rebuilt_sha256": "7c09b8b07f8c7b848b6b11047f53b8a0eb342b091870988aa3ba23c583a6028a"
+    },
+    "general-candidates.jsonl": {
+      "byte_identical": true,
+      "official_sha256": "7c04077f7fa6ff217d4ee898d4b41fbc0b15788e59ed3715625046f048342182",
+      "rebuilt_sha256": "7c04077f7fa6ff217d4ee898d4b41fbc0b15788e59ed3715625046f048342182"
+    },
+    "math-candidates.jsonl": {
+      "byte_identical": true,
+      "official_sha256": "d6e5ae115bcd82e71c5ac45ce5979827c979d1c5ebeffd77b1a297e3ac8dc194",
+      "rebuilt_sha256": "d6e5ae115bcd82e71c5ac45ce5979827c979d1c5ebeffd77b1a297e3ac8dc194"
+    },
+    "step3-max2048/code-accepted.jsonl": {
+      "byte_identical": true,
+      "official_sha256": "4824c63a0ae2b60993fa70f132d107270859b1e70c55c35e437a4222da9dbe63",
+      "rebuilt_sha256": "4824c63a0ae2b60993fa70f132d107270859b1e70c55c35e437a4222da9dbe63"
+    },
+    "step3-max2048/code-rejected.jsonl": {
+      "byte_identical": true,
+      "official_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "rebuilt_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "step3-max2048/finance-accepted.jsonl": {
+      "byte_identical": true,
+      "official_sha256": "828e534897fbba4c7f3d666de43d4ada4a0bf07f6b891b7cb0922bd8b930d010",
+      "rebuilt_sha256": "828e534897fbba4c7f3d666de43d4ada4a0bf07f6b891b7cb0922bd8b930d010"
+    },
+    "step3-max2048/finance-rejected.jsonl": {
+      "byte_identical": true,
+      "official_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "rebuilt_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "step3-max2048/general-accepted.jsonl": {
+      "byte_identical": true,
+      "official_sha256": "261a8f9491d301425f02ad62d701cfa3a4edb5b6e305c76ec18eae268c1b0ba1",
+      "rebuilt_sha256": "261a8f9491d301425f02ad62d701cfa3a4edb5b6e305c76ec18eae268c1b0ba1"
+    },
+    "step3-max2048/general-rejected.jsonl": {
+      "byte_identical": true,
+      "official_sha256": "b68603604d70ea1ae2e72a32a4aecbde71cbd9d9d51cfaab9406e93c834105ec",
+      "rebuilt_sha256": "b68603604d70ea1ae2e72a32a4aecbde71cbd9d9d51cfaab9406e93c834105ec"
+    },
+    "step3-max2048/math-accepted.jsonl": {
+      "byte_identical": true,
+      "official_sha256": "ed3ca592a8d523e1b9d19ba65b75bd2a2a72f1f89b1a471a117ca615027c582e",
+      "rebuilt_sha256": "ed3ca592a8d523e1b9d19ba65b75bd2a2a72f1f89b1a471a117ca615027c582e"
+    },
+    "step3-max2048/math-rejected.jsonl": {
+      "byte_identical": true,
+      "official_sha256": "de43dd2dc1d7d1db4cf59fa55e5bdef63e9b7253d49d9a503270890deb82bc30",
+      "rebuilt_sha256": "de43dd2dc1d7d1db4cf59fa55e5bdef63e9b7253d49d9a503270890deb82bc30"
+    },
+    "step4-audit/evidence-index.jsonl": {
+      "byte_identical": true,
+      "official_sha256": "f5536ac58093100db024a02193839903bf13d5a75505b2df12d2b41701d268bf",
+      "rebuilt_sha256": "f5536ac58093100db024a02193839903bf13d5a75505b2df12d2b41701d268bf"
+    },
+    "step5-filter/code-filtered.jsonl": {
+      "byte_identical": true,
+      "official_sha256": "ff0eda370e4c463f073da1f3b627df033577a12162cd32258e4f577624ece772",
+      "rebuilt_sha256": "ff0eda370e4c463f073da1f3b627df033577a12162cd32258e4f577624ece772"
+    },
+    "step5-filter/filter-decisions.jsonl": {
+      "byte_identical": true,
+      "official_sha256": "e4078038909a51baafa4f8e0c64daf0ca82de800326cc68146340530f72f5dd0",
+      "rebuilt_sha256": "e4078038909a51baafa4f8e0c64daf0ca82de800326cc68146340530f72f5dd0"
+    },
+    "step5-filter/finance-filtered.jsonl": {
+      "byte_identical": true,
+      "official_sha256": "16ab4105cdcdbba73306b296272ffc9a2fd86c28ac2308fe200cf47e1df50125",
+      "rebuilt_sha256": "16ab4105cdcdbba73306b296272ffc9a2fd86c28ac2308fe200cf47e1df50125"
+    },
+    "step5-filter/general-filtered.jsonl": {
+      "byte_identical": true,
+      "official_sha256": "17df4fe63b738ecb6abb95dc7f3ed90abe677d00a6867a0f21245e7bfa3148e1",
+      "rebuilt_sha256": "17df4fe63b738ecb6abb95dc7f3ed90abe677d00a6867a0f21245e7bfa3148e1"
+    },
+    "step5-filter/math-filtered.jsonl": {
+      "byte_identical": true,
+      "official_sha256": "d32faf4c261d52f38b5d7e42a912212606b51f02b7517dfb11da3aa492e38951",
+      "rebuilt_sha256": "d32faf4c261d52f38b5d7e42a912212606b51f02b7517dfb11da3aa492e38951"
+    },
+    "step6-exact-dedup/code-deduped.jsonl": {
+      "byte_identical": true,
+      "official_sha256": "ff0eda370e4c463f073da1f3b627df033577a12162cd32258e4f577624ece772",
+      "rebuilt_sha256": "ff0eda370e4c463f073da1f3b627df033577a12162cd32258e4f577624ece772"
+    },
+    "step6-exact-dedup/exact-dedup-decisions.jsonl": {
+      "byte_identical": true,
+      "official_sha256": "586356fc89426b81909e8d1449f8f5312a60b4681522718bd0b099fe23842bcb",
+      "rebuilt_sha256": "586356fc89426b81909e8d1449f8f5312a60b4681522718bd0b099fe23842bcb"
+    },
+    "step6-exact-dedup/exact-match-groups.jsonl": {
+      "byte_identical": true,
+      "official_sha256": "d27244c7c2657f63a4a060e8df2f278fd9f42b40f142c6460399dda71e7b8205",
+      "rebuilt_sha256": "d27244c7c2657f63a4a060e8df2f278fd9f42b40f142c6460399dda71e7b8205"
+    },
+    "step6-exact-dedup/finance-deduped.jsonl": {
+      "byte_identical": true,
+      "official_sha256": "152dcfb8b6a366ee6704c95fbdee4e6c9ca1f20aefd5b20c65789c4c283a1892",
+      "rebuilt_sha256": "152dcfb8b6a366ee6704c95fbdee4e6c9ca1f20aefd5b20c65789c4c283a1892"
+    },
+    "step6-exact-dedup/general-deduped.jsonl": {
+      "byte_identical": true,
+      "official_sha256": "c653571edc693aecebf23c10ff30fd919332bead5218c564a880a5e6b8da56c9",
+      "rebuilt_sha256": "c653571edc693aecebf23c10ff30fd919332bead5218c564a880a5e6b8da56c9"
+    },
+    "step6-exact-dedup/math-deduped.jsonl": {
+      "byte_identical": true,
+      "official_sha256": "d32faf4c261d52f38b5d7e42a912212606b51f02b7517dfb11da3aa492e38951",
+      "rebuilt_sha256": "d32faf4c261d52f38b5d7e42a912212606b51f02b7517dfb11da3aa492e38951"
+    },
+    "step7-near-candidates/near-duplicate-candidates.jsonl": {
+      "byte_identical": true,
+      "official_sha256": "12ad9b0ddcfb1d66105e68da6ee669ca0f7e97336d9934c1d0a58eaf19434b14",
+      "rebuilt_sha256": "12ad9b0ddcfb1d66105e68da6ee669ca0f7e97336d9934c1d0a58eaf19434b14"
+    },
+    "step8-eval-candidates/code-eval-candidates.jsonl": {
+      "byte_identical": true,
+      "official_sha256": "51d7083a0789e52b75176df194884aa92b744361afbd8ae9d54f4ef77a06ae54",
+      "rebuilt_sha256": "51d7083a0789e52b75176df194884aa92b744361afbd8ae9d54f4ef77a06ae54"
+    },
+    "step8-eval-candidates/finance-eval-candidates.jsonl": {
+      "byte_identical": true,
+      "official_sha256": "572ebdc04c4dcacc6e54496f4707a07f8b0010cd53b70ace495d7356b9f6ddad",
+      "rebuilt_sha256": "572ebdc04c4dcacc6e54496f4707a07f8b0010cd53b70ace495d7356b9f6ddad"
+    },
+    "step8-eval-candidates/general-eval-candidates.jsonl": {
+      "byte_identical": true,
+      "official_sha256": "fee5ff431b2d20528b6a64c15bb23fd57a82a60e55c493046ff3bff04865ff6c",
+      "rebuilt_sha256": "fee5ff431b2d20528b6a64c15bb23fd57a82a60e55c493046ff3bff04865ff6c"
+    },
+    "step8-eval-candidates/math-eval-candidates.jsonl": {
+      "byte_identical": true,
+      "official_sha256": "6023cb474a1f29eade19bdb03d256cd327a4c9a0e6fc9d24953fc3cee558f1ff",
+      "rebuilt_sha256": "6023cb474a1f29eade19bdb03d256cd327a4c9a0e6fc9d24953fc3cee558f1ff"
+    },
+    "step9-decontamination/train-eval-overlap-candidates.jsonl": {
+      "byte_identical": true,
+      "official_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "rebuilt_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "gate_c": {
+    "claim_boundary": "Gate C was waived, not passed; no final occurrence-level human quality evidence was collected.",
+    "decision_basis": "User explicitly requested that Gate C be skipped and Day 09 be completed.",
+    "decision_date": "2026-08-05",
+    "downstream_training_eligible_under_waiver": true,
+    "required_occurrences_per_mix": 30,
+    "reviewed_occurrences_mix_A": 0,
+    "reviewed_occurrences_mix_B": 0,
+    "status": "waived_by_user"
+  },
+  "required_artifacts": {
+    "clean_parent_manifest": {
+      "file_sha256": "97661d5482256dbaa3f33a96b32703fcdbc1f1aaa5084b64e4baba80b8f984bb",
+      "path": "learning/post-training-30-day-bootcamp/artifacts/data/day09-dataset-manifest.json"
+    },
+    "data_quality_audit": {
+      "file_sha256": "e41bd4f6f76c75a169bb58c371762cbf4731b55c75f998fe23a006bc4a83e84b",
+      "path": "learning/post-training-30-day-bootcamp/artifacts/reports/day09-data-quality-audit.md"
+    },
+    "decontamination_report": {
+      "file_sha256": "a11386ad1fc3ae9b3b1405a7a71e290755e6ac12b70e5665a625a7e93b307db8",
+      "path": "learning/post-training-30-day-bootcamp/artifacts/reports/day09-decontamination-report.md"
+    },
+    "mix_A_manifest": {
+      "file_sha256": "cb0d4819d383e4a22fd2c389c27c9cf058a20287c08e0fa5d924703f0af77492",
+      "path": "learning/post-training-30-day-bootcamp/artifacts/data/day09-mix-A-balanced.json"
+    },
+    "mix_B_manifest": {
+      "file_sha256": "d87e32b7925080c4e1abc6676354cb35e60af3f2311b969d6441a8aacc319837",
+      "path": "learning/post-training-30-day-bootcamp/artifacts/data/day09-mix-B-targeted.json"
+    }
+  },
+  "scope": {
+    "frozen_replay": "Steps 10-12 exact artifact replay from frozen reviewed inputs",
+    "full_rebuild": "Steps 2-11 semantic/data outputs from cached pinned sources in a fresh directory"
+  },
+  "status": "complete_with_gate_c_waiver",
+  "tests": {
+    "command": "/Users/jiaweiqian/miniforge3/envs/agent_backend/bin/python -m unittest discover -s /Users/jiaweiqian/Desktop/python_projects/life/learning/post-training-30-day-bootcamp/day-09-data-quality-mixture-lineage -p test_day09_*.py",
+    "exit_code": 0,
+    "passed": true,
+    "tests_run": 44
+  }
+}

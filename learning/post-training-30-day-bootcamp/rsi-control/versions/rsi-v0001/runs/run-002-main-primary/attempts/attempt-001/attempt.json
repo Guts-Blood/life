@@ -1,0 +1,21 @@
+{
+  "schema_name": "rsi.attempt",
+  "schema_version": 1,
+  "version_id": "rsi-v0001",
+  "run_id": "run-002-main-primary",
+  "attempt_id": "attempt-001",
+  "ordinal": 1,
+  "kind": "fresh",
+  "status": "planned",
+  "parent_attempt": null,
+  "resume_checkpoint": null,
+  "run_contract_sha256": null,
+  "execution_identity": null,
+  "started_at_utc": null,
+  "ended_at_utc": null,
+  "exit_code": null,
+  "consumed_gpu_hours": 0.0,
+  "last_valid_checkpoint": null,
+  "retry_count": 0,
+  "error": null
+}

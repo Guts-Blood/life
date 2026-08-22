@@ -1,0 +1,24 @@
+{
+  "candidate_ids_sha256": "aa78c21100d0536f40fdfecac3fc84c2a575d9b814dd187c4769feb10e228657",
+  "candidate_rows_sha256": "07462de5de692526b2d4154624bb85ffeedb6ad2ccfaee4501da08588c0c9a86",
+  "families": 189,
+  "generation_seeds_sha256": "80a3f639f5eaf401360767a646fce0e315058903a06bfaeee97bf824a270dd89",
+  "manifest_sha256": "49e29b8580b87cb21d391a83753972d5f323b021a6213205cb1125f5c20b037d",
+  "output": {
+    "bytes": 14937774,
+    "file_sha256": "a310562c28e37eaab136ed6a4f1a118cdc8d96529cc40a0f0164d2d53f0bbd12",
+    "path": "/root/autodl-tmp/day22-preference-20260813/adaptive-r1/rollout/day22-s1-adaptive-r1-candidates.jsonl"
+  },
+  "parent_rollout_contract_sha256": "0b0c412a52bbfc419804307562fef29716195efe62e54b45e9be3737b939794f",
+  "profile_counts": {
+    "supplemental_t08": 2268
+  },
+  "rollout_contract_sha256": "4c0f64361a223924b98128a6a6956e7c432547c556cb5fc7b3e727c4865310d6",
+  "round_id": "adaptive-r1",
+  "rows": 2268,
+  "samples_per_family": 12,
+  "schema_name": "day22.s1_adaptive_rollout_merge_manifest",
+  "schema_version": 1,
+  "source_selection_summary_sha256": "bb02326a8c54505957137fe96b6577230bde19ceed2a44967fd12b8e0ef9f0ef",
+  "status": "complete"
+}

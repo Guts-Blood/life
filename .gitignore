@@ -1,2 +1,83 @@
 .DS_Store
 ~$*.docx
+
+# Local IDE state
+/.idea/
+
+# Local service credentials
+/.env.e2b
+
+# Python caches
+__pycache__/
+*.py[cod]
+
+# Local ML weights, checkpoints, and duplicated run snapshots
+*.safetensors
+*.ckpt
+*.pt
+*.pth
+adapter_model.bin
+pytorch_model*.bin
+training_args.bin
+/learning/post-training-30-day-bootcamp/**/remote-runs/
+/learning/post-training-30-day-bootcamp/**/snapshots/
+/learning/post-training-30-day-bootcamp/**/checkpoint-*/
+/learning/post-training-30-day-bootcamp/**/adapters/
+
+# In-progress/generated analysis workspaces; publish only a curated final report
+/learning/post-training-30-day-bootcamp/day-20-qwen35-balanced-lora-sft/reports/full-sft-vs-lora-analysis-20260809/
+
+# Day 22 raw rollout/replay intermediates; canonical pairs, evidence, and manifests stay tracked
+/learning/post-training-30-day-bootcamp/artifacts/data/day22-qwen35-formal-s1-rollout-candidates.jsonl
+/learning/post-training-30-day-bootcamp/artifacts/data/day22-qwen35-formal-s1-e2b-requests.jsonl
+/learning/post-training-30-day-bootcamp/artifacts/data/day22-qwen35-formal-s1-adaptive-r1-rollout-candidates.jsonl
+/learning/post-training-30-day-bootcamp/artifacts/data/day22-qwen35-formal-s1-adaptive-r1-e2b-requests.jsonl
+/learning/post-training-30-day-bootcamp/artifacts/data/day22-qwen35-formal-s1-replay-input.jsonl
+/learning/post-training-30-day-bootcamp/artifacts/data/day22-qwen35-formal-s1-selections.jsonl
+/learning/post-training-30-day-bootcamp/artifacts/data/day22-qwen35-formal-s1-multiround-rollouts.jsonl
+/learning/post-training-30-day-bootcamp/artifacts/data/day22-qwen35-mbpp-smoke-candidates.jsonl
+/learning/post-training-30-day-bootcamp/artifacts/data/day22-qwen35-mbpp-smoke-replay-input.jsonl
+/learning/post-training-30-day-bootcamp/artifacts/eval/day22-qwen35-formal-s1-candidate-e2b-evidence.jsonl
+/learning/post-training-30-day-bootcamp/artifacts/eval/day22-qwen35-formal-s1-adaptive-r1-candidate-e2b-evidence.jsonl
+/learning/post-training-30-day-bootcamp/artifacts/reports/day22-qwen35-formal-s1-rollout-shard-receipts/shard-0.log
+/learning/post-training-30-day-bootcamp/artifacts/reports/day22-qwen35-formal-s1-rollout-shard-receipts/shard-1.log
+/learning/post-training-30-day-bootcamp/artifacts/reports/day22-qwen35-formal-s1-adaptive-r1-rollout-shard-receipts/shard-0.log
+/learning/post-training-30-day-bootcamp/artifacts/reports/day22-qwen35-formal-s1-adaptive-r1-rollout-shard-receipts/shard-1.log
+/learning/post-training-30-day-bootcamp/artifacts/reports/day22-qwen35-formal-s1-adaptive-r1-rollout-shard-receipts/shard-0-initial-failed.log
+/learning/post-training-30-day-bootcamp/artifacts/reports/day22-qwen35-formal-s1-adaptive-r1-rollout-shard-receipts/shard-1-initial-failed.log
+
+# Third-party report binaries are referenced upstream with verified hashes
+/learning/training-learning/reports/frontier-training-2026-08/sources/*.pdf
+
+# Local external repositories
+/finLLM-Eval/
+/vendor/ms-swift/
+/learning/training-learning/ms-swift/
+
+# Ephemeral and legacy generated outputs
+/tmp/
+/output/
+/outputs/
+/profile/render_*/
+/learning/post-training-30-day-bootcamp/tmp/
+
+# Local or deterministically generated planner state
+/work-planning/config.json
+/work-planning/views/
+/work-planning/runs/
+
+# Day 23 local runtime/data bundles; Git keeps code and learning reports only
+/charter.json
+/learning/post-training-30-day-bootcamp/day-23-dpo-theory-smoke/charter.json
+/learning/post-training-30-day-bootcamp/day-23-dpo-theory-smoke/*next_candidate*.py
+/learning/post-training-30-day-bootcamp/day-23-dpo-theory-smoke/*next_blind*.py
+/learning/post-training-30-day-bootcamp/artifacts/configs/day23-*/
+/learning/post-training-30-day-bootcamp/artifacts/data/day23-*
+/learning/post-training-30-day-bootcamp/artifacts/eval/day23-*
+/learning/post-training-30-day-bootcamp/artifacts/reports/day23-next-candidate-runbook.md
+/learning/post-training-30-day-bootcamp/artifacts/reports/day23-dpo-iteration-analysis/artifact.json
+/learning/post-training-30-day-bootcamp/artifacts/reports/rsi-context/
+/learning/post-training-30-day-bootcamp/rsi-control/charters/goal-0002-day23-dpo/charter.json
+/learning/post-training-30-day-bootcamp/rsi-control/charters/goal-0002-day23-dpo/derived/
+/learning/post-training-30-day-bootcamp/rsi-control/charters/goal-0002-day23-dpo/events/
+/learning/post-training-30-day-bootcamp/rsi-control/charters/goal-0002-day23-dpo/versions/

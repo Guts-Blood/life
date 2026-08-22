@@ -1,0 +1,23 @@
+# Direct dependency candidates from the pinned ms-swift checkout's 2026-08 docs.
+# This is intentionally not called a resolved lock: the Linux/Hopper bootstrap must
+# record the AutoDL boot-runtime reference, pip freeze, wheel hashes, pip check, and CUDA imports.
+transformers==5.12.1
+qwen-vl-utils==0.0.14
+datasets==4.8.4
+megatron-core==0.18.0
+mcore-bridge==1.6.0
+# Install the CUDA-12 core explicitly, then build transformer-engine-torch 2.16.0
+# from its sdist under torch cu126 with --no-build-isolation.  The published
+# aggregate extra was generated in a CUDA-13 environment and is unsafe here.
+transformer-engine==2.16.0
+transformer-engine-cu12==2.16.0
+flash-linear-attention==0.4.2
+flash-attn==2.8.3
+peft==0.19.1
+trl==0.29.1
+accelerate==1.14.0
+causal-conv1d @ git+https://github.com/Dao-AILab/causal-conv1d.git@4f6ae4e26ae5fe8af9372f8d312ab25cc4595223
+
+# decord 0.6.0 is deliberately excluded: its Linux wheel is internally tagged
+# cp36 and is not a valid Python-3.12 install.  Day18 is text-only and uses no
+# video reader; qwen-vl-utils keeps decord optional.

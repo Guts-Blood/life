@@ -1,0 +1,14 @@
+{
+  "checkpoint_id": "qwen35-4b-s1-main-s20260809-lr1e-4-final",
+  "downstream_key": "s1:qwen35-4b:c169e0bb55b20951d27a889e4ef0deae3a01fe10acabee804b212d3d8170db0a",
+  "key_sha256": "4a3a467232288feb675eb7d15cc00ff95bc7255a1c4dc2d1debdd55da5831241",
+  "promotion_manifest": {
+    "content_sha256": "64e6a6bd61951d1f10eb4def520273cb056625c1b041b68ba861c6d1e15d7a6c",
+    "file_sha256": "40c76f690dcb73805250e0036f8e124ef07b8d2d32b1723637656ae4304d94f8",
+    "path": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/handoff/S1-PROMOTION-MANIFEST.json"
+  },
+  "role": "S1",
+  "schema_name": "day21.qwen35_s1_downstream_key",
+  "schema_version": 1,
+  "status": "active"
+}

@@ -1,0 +1,43 @@
+{
+  "active_retry": null,
+  "attempt_id": "attempt-001",
+  "consumed_gpu_hours": 0.251139846,
+  "ended_at_utc": "2026-08-12T10:31:01.218180Z",
+  "error": null,
+  "event_log": {
+    "head_sha256": "10b33f4063e91405aa54c47cac694cb1f57d85f4a137fdf5bcbbd1e6a7ee01ae",
+    "path": "logs/operations.jsonl",
+    "records": 24
+  },
+  "execution_identity": {
+    "e2b_preflight_sha256": "912fcf64c4e97f62397a730ff76d2c7891eeeef426377879822f7d65b33bc9c8",
+    "gpu_names": [
+      "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+      "NVIDIA RTX PRO 6000 Blackwell Server Edition"
+    ],
+    "host": "autodl-container-6acf40b03d-62d686fe",
+    "orchestration": "nohup_remote_pid_monitored",
+    "run_root": "/root/autodl-tmp/runs/day20-v2-qwen35-lora-20260812T092806Z",
+    "runner_command": [
+      "bash",
+      "run_day20_v2_autodl.sh",
+      "probe-funnel"
+    ],
+    "runtime_identity_sha256": "6e1018b2528288e459a0e5707468ac8ede284ca497e03e30f91139ff2b3cc2d8",
+    "ssh_endpoint": "connect.westd.seetacloud.com:36153"
+  },
+  "exit_code": 0,
+  "kind": "fresh",
+  "last_valid_checkpoint": null,
+  "ordinal": 1,
+  "parent_attempt": null,
+  "resume_checkpoint": null,
+  "retry_count": 2,
+  "run_contract_sha256": "4fcf80d093ccf435a1968f743003e95724a448649422e0dda9e94dc982a9dec3",
+  "run_id": "run-001-probe-primary",
+  "schema_name": "rsi.attempt",
+  "schema_version": 1,
+  "started_at_utc": "2026-08-12T09:37:32.011795Z",
+  "status": "succeeded",
+  "version_id": "rsi-v0001"
+}

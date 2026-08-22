@@ -1,0 +1,104 @@
+{
+  "schema_version": "day18_closeout_v1",
+  "close_date": "2026-08-10",
+  "status": "closed_pass_c0_c5",
+  "run_id": "day18-qwen35-20260808T073811Z",
+  "rerun_required": false,
+  "additional_gpu_runs": 0,
+  "decision_basis": "The original Day 18 compatibility and learnability protocol passed C0 through C5 under its frozen envelope. Local closeout revalidation confirmed the evidence bundle, immutable PASS manifest, every hashed evidence inventory entry, and the preparation/finalizer tests.",
+  "model": {
+    "model_id": "Qwen/Qwen3.5-4B-Base",
+    "revision": "1001bb4d826a52d1f399e183466143f4da7b741b",
+    "scope": "text_only_bf16_qwen35_megatron_compatibility_and_two_row_learnability"
+  },
+  "actual_runtime_envelope": {
+    "hardware": "same_host_2x_NVIDIA_H800_PCIe_81105_MiB_each",
+    "topology": "SYS_cross_NUMA_no_NVLink_TP_DP_NCCL_P2P_passed",
+    "python": "3.12.13",
+    "torch": "2.10.0+cu126",
+    "cuda_runtime": "12.6",
+    "nccl": "2.27.5",
+    "transformers": "5.12.1",
+    "megatron_core": "0.18.0",
+    "mcore_bridge": "1.6.0",
+    "ms_swift_commit": "565a1ad586a21d24b23931c52d2c62b49c39bee8"
+  },
+  "acceptance": {
+    "required_gate_count": 10,
+    "required_gates_passed": 10,
+    "c0_conversion": "pass",
+    "c1_single_rank_parity": "pass",
+    "c2_tp1_dp2_optimizer_and_checkpoint": "pass",
+    "c3_tp2_dp1_optimizer_and_checkpoint": "pass",
+    "c4_fresh_process_continuation_and_export": "pass",
+    "c5_150_step_tiny_overfit_and_ownership": "pass",
+    "runtime_codepath_nodes": 8,
+    "hashed_evidence_entries": 65,
+    "open_problem_count": 0,
+    "finalizer_failures": []
+  },
+  "closeout_revalidation": {
+    "performed_on": "2026-08-10",
+    "bundle_tar_member_count": 113,
+    "inventory_entries_checked": 65,
+    "inventory_missing_files": 0,
+    "inventory_hash_or_size_mismatches": 0,
+    "unit_test_command": "python3 -m unittest -v test_day18_preparation.py",
+    "unit_tests_passed": 16,
+    "unit_tests_failed": 0,
+    "portable_sha256_sidecar_verified": true
+  },
+  "source_artifacts": {
+    "preregistered_run_contract": {
+      "path": "artifacts/configs/day18-qwen35-megatron/run-contract.json",
+      "sha256": "59d5bfe7a5e18924350d95b04b706810775247fa54e3329d95b8c8b84af2d9a9",
+      "mutation_policy": "preserve_as_historical_preregistration_do_not_rewrite_status"
+    },
+    "parity_thresholds": {
+      "path": "artifacts/configs/day18-qwen35-megatron/parity-thresholds.json",
+      "sha256": "c137fc36962a20ffb9c21e6a407012bc146954b6f17a6c7bc2e0a07b2a6002d2"
+    },
+    "golden_fixture": {
+      "path": "artifacts/data/day18-qwen35-golden-text-2.jsonl",
+      "sha256": "a2ecf73b439ea11a3d060c9362e062d7dd1efbe41f3b886d4c7c959ba1ade2a5"
+    },
+    "compatibility_report": "artifacts/reports/day18-qwen35-megatron-compatibility.md",
+    "close_report": "artifacts/reports/day18-close.md"
+  },
+  "evidence_bundle": {
+    "workspace_relative_path": "tmp/day18-qwen35-results/day18-qwen35-20260808T073811Z-evidence.tar",
+    "sha256": "2afc7ad1b39bdde3aad40832ceb78ab1e01116ee4f7bbc19ccf85beb4570c9c0",
+    "portable_sidecar": "tmp/day18-qwen35-results/day18-qwen35-20260808T073811Z-evidence.tar.sha256",
+    "present_and_verified_at_close": true,
+    "tracked_in_git": false,
+    "pass_manifest_sha256": "0a15a4db004319741ab1d3da5a11c02e515cd75d54e98e92c6dded8fcc53ccdd"
+  },
+  "large_payload_retention": {
+    "full_checkpoints_or_exports_archived_locally": false,
+    "remote_canonical_run": "/root/autodl-tmp/runs/day18-qwen35-20260808T073811Z/",
+    "remote_access_reverified_at_close": false,
+    "retention_status": "unknown_remote_retention_evidence_bundle_retained",
+    "required_for_day18_close": false,
+    "reuse_policy": "Do not claim that C2-C5 payloads are reloadable now. Recover them from the original AutoDL data disk if it still exists, otherwise rebuild from the frozen Base, contract, scripts, and evidence."
+  },
+  "claims": {
+    "qwen35_megatron_compatibility_in_frozen_envelope": true,
+    "same_fixture_learnability": true,
+    "distributed_checkpoint_fresh_process_continuation": true,
+    "hf_export_reload_parity": true,
+    "vision_path_proven": false,
+    "long_sequence_proven": false,
+    "multi_node_or_scaling_proven": false,
+    "generalization_proven": false,
+    "exact_resume_equivalence_proven": false,
+    "promoted_s1_created": false
+  },
+  "curriculum_effect": {
+    "day18": "closed_pass",
+    "day15": "already_closed_superseded_by_day18_20_combined_evidence",
+    "day16": "already_closed_no_eligible_candidate",
+    "day17": "status_unchanged_exact_resume_optional_sequential_day20",
+    "day21": "blocked_until_new_sft_candidate",
+    "dpo_and_grpo": "blocked_until_promoted_s1"
+  }
+}

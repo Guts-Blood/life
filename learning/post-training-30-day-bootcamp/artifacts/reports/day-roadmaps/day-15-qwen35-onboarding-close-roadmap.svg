@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="2840" viewBox="0 0 1800 2840" role="img" aria-labelledby="title desc">
+  <title id="title">Day 15 · Qwen3.5 Onboarding：从 S0 身份到可训练入口</title>
+  <desc id="desc">A Chinese roadmap showing the Qwen3.5 onboarding gates and how later Day 18 through Day 20 operational evidence closed the need for a duplicate run without pretending that the original Day 15 protocol artifacts existed.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+    <style>
+      text { font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", "PingFang SC", sans-serif; fill: #172033; }
+      .title { font-size: 34px; font-weight: 750; }
+      .subtitle { font-size: 18px; fill: #526078; }
+      .section { font-size: 23px; font-weight: 750; }
+      .stage { font-size: 13px; font-weight: 750; letter-spacing: .45px; fill: #475569; }
+      .label { font-size: 18px; font-weight: 700; }
+      .body { font-size: 15px; }
+      .body-strong { font-size: 15px; font-weight: 700; }
+      .small { font-size: 14px; fill: #475569; }
+      .tiny { font-size: 12px; fill: #526078; }
+      .source { font-size: 11px; fill: #64748b; }
+      .metric-value { font-family: "SFMono-Regular", Consolas, monospace; font-size: 27px; font-weight: 750; fill: #1e3a8a; }
+      .number { font-size: 13px; font-weight: 800; fill: #ffffff; }
+      .panel { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1.5; }
+      .hero { fill: #eef2ff; stroke: #6366f1; stroke-width: 1.8; }
+      .blue { fill: #dbeafe; stroke: #2563eb; stroke-width: 1.5; }
+      .cyan { fill: #cffafe; stroke: #0891b2; stroke-width: 1.5; }
+      .purple { fill: #f3e8ff; stroke: #9333ea; stroke-width: 1.5; }
+      .green { fill: #dcfce7; stroke: #16a34a; stroke-width: 1.5; }
+      .amber { fill: #fef3c7; stroke: #d97706; stroke-width: 1.5; }
+      .teal { fill: #ccfbf1; stroke: #0f766e; stroke-width: 1.5; }
+      .indigo { fill: #e0e7ff; stroke: #4f46e5; stroke-width: 1.5; }
+      .red { fill: #fee2e2; stroke: #dc2626; stroke-width: 1.5; }
+      .blue-soft { fill: #eff6ff; stroke: #93c5fd; stroke-width: 1.3; }
+      .purple-soft { fill: #faf5ff; stroke: #d8b4fe; stroke-width: 1.3; }
+      .green-soft { fill: #f0fdf4; stroke: #86efac; stroke-width: 1.3; }
+      .amber-soft { fill: #fffbeb; stroke: #fcd34d; stroke-width: 1.3; }
+      .cyan-soft { fill: #ecfeff; stroke: #67e8f9; stroke-width: 1.3; }
+      .slate-soft { fill: #f8fafc; stroke: #cbd5e1; stroke-width: 1.3; }
+      .number-dot { fill: #475569; }
+      .metric { fill: #f8fafc; stroke: #94a3b8; stroke-width: 1.4; }
+      .table-bg { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1.3; }
+      .table-head { fill: #e2e8f0; stroke: #94a3b8; stroke-width: 1.2; }
+      .table-alt { fill: #f8fafc; }
+      .status-good { fill: #dcfce7; stroke: #16a34a; stroke-width: 1.4; }
+      .status-warn { fill: #fef3c7; stroke: #d97706; stroke-width: 1.4; }
+      .status-stop { fill: #fee2e2; stroke: #dc2626; stroke-width: 1.4; }
+      .status-info { fill: #dbeafe; stroke: #2563eb; stroke-width: 1.4; }
+      .status-slate { fill: #f1f5f9; stroke: #64748b; stroke-width: 1.4; }
+      .decision { fill: #eef2ff; stroke: #6366f1; stroke-width: 1.7; }
+      .boundary { fill: #fff7ed; stroke: #ea580c; stroke-width: 1.7; }
+      .divider { stroke: #cbd5e1; stroke-width: 1.2; }
+      .grid { stroke: #cbd5e1; stroke-width: 1; }
+      .line { fill: none; stroke: #475569; stroke-width: 2; marker-end: url(#arrow); }
+      .line-dash { fill: none; stroke: #64748b; stroke-width: 1.8; stroke-dasharray: 7 5; marker-end: url(#arrow); }
+    </style>
+  </defs>
+
+  <rect width="1800" height="2840" fill="#f5f7fb"/>
+  <text x="50" y="62" class="title">Day 15 · Qwen3.5 Onboarding：从 S0 身份到可训练入口</text>
+  <text x="50" y="95" class="subtitle">不是换 Model ID，而是重建 loader、processor、训练 scope、状态与容量的完整契约。</text>
+  <rect x="1190" y="108" width="570" height="38" rx="19" class="status-warn"/>
+  <text x="1475" y="133" class="stage" text-anchor="middle">CLOSED BY SUPERSEDING EVIDENCE ≠ ORIGINAL PROTOCOL PASS</text>
+
+  <rect x="40" y="165" width="1720" height="112" rx="18" class="hero"/>
+  <text x="70" y="203" class="section">一句话 Gate</text>
+  <text x="270" y="203" class="label" text-anchor="start"><tspan x="270" dy="0">后续更强实跑证据可以关闭重复 onboarding，但只能按 evidence crosswalk 标注 covered / partial / not executed。</tspan><tspan x="270" dy="31">closed_superseded 表示“不再重跑”，不是把原 Day 15 六件未生成产物事后改写成 PASS；onboarding 也不会自动创建 S1。</tspan></text>
+
+  <rect x="40" y="310" width="1720" height="650" rx="18" class="panel"/>
+  <text x="70" y="352" class="section">1 · Roadmap：从输入边界到可交付结论</text>
+  <text x="70" y="382" class="small">每一步都回答“对象是什么、证据在哪里、失败时停在哪一层”；编号代表依赖顺序。</text>
+  <text x="70" y="391" class="stage">01 · IDENTITY</text>
+<rect x="70" y="405" width="360" height="210" rx="16" class="blue"/>
+<text x="94" y="445" class="label" text-anchor="start"><tspan x="94" dy="0">冻结 S0 文件身份</tspan></text>
+<line x1="94" y1="463" x2="406" y2="463" class="divider"/>
+<text x="94" y="497" class="small" text-anchor="start"><tspan x="94" dy="0">exact revision / license / config</tspan><tspan x="94" dy="28">shards、processor 与 template hashes</tspan><tspan x="94" dy="28">禁止 main/latest 漂移</tspan></text>
+<text x="480" y="391" class="stage">02 · LOADER</text>
+<rect x="480" y="405" width="360" height="210" rx="16" class="cyan"/>
+<text x="504" y="445" class="label" text-anchor="start"><tspan x="504" dy="0">解析真实模型入口</tspan></text>
+<line x1="504" y1="463" x2="816" y2="463" class="divider"/>
+<text x="504" y="497" class="small" text-anchor="start"><tspan x="504" dy="0">Qwen3_5ForConditionalGeneration</tspan><tspan x="504" dy="28">Qwen3VLProcessor + GDN / MTP</tspan><tspan x="504" dy="28">纯文本也保留完整 checkpoint</tspan></text>
+<text x="890" y="391" class="stage">03 · SCOPE</text>
+<rect x="890" y="405" width="360" height="210" rx="16" class="purple"/>
+<text x="914" y="445" class="label" text-anchor="start"><tspan x="914" dy="0">冻结 text-only ownership</tspan></text>
+<line x1="914" y1="463" x2="1226" y2="463" class="divider"/>
+<text x="914" y="497" class="small" text-anchor="start"><tspan x="914" dy="0">image/video count = 0</tspan><tspan x="914" dy="28">ViT / aligner 必须 bitwise unchanged</tspan><tspan x="914" dy="28">LoRA targets 先枚举后白名单</tspan></text>
+<text x="1300" y="391" class="stage">04 · SUPERVISION</text>
+<rect x="1300" y="405" width="360" height="210" rx="16" class="green"/>
+<text x="1324" y="445" class="label" text-anchor="start"><tspan x="1324" dy="0">验证 processor 与 loss</tspan></text>
+<line x1="1324" y1="463" x2="1636" y2="463" class="divider"/>
+<text x="1324" y="497" class="small" text-anchor="start"><tspan x="1324" dy="0">template / thinking / special tokens</tspan><tspan x="1324" dy="28">现场编码 supervised tokens</tspan><tspan x="1324" dy="28">response boundary 与 truncation audit</tspan></text>
+<text x="280" y="676" class="stage">05 · TRAINING</text>
+<rect x="280" y="690" width="360" height="210" rx="16" class="amber"/>
+<text x="304" y="730" class="label" text-anchor="start"><tspan x="304" dy="0">分层证明可训练</tspan></text>
+<line x1="304" y1="748" x2="616" y2="748" class="divider"/>
+<text x="304" y="782" class="small" text-anchor="start"><tspan x="304" dy="0">optimizer update ≠ loader success</tspan><tspan x="304" dy="28">checkpoint continuation + export/reload</tspan><tspan x="304" dy="28">tiny overfit 证明入口可学习</tspan></text>
+<text x="720" y="676" class="stage">06 · CAPACITY</text>
+<rect x="720" y="690" width="360" height="210" rx="16" class="teal"/>
+<text x="744" y="730" class="label" text-anchor="start"><tspan x="744" dy="0">在真实 topology 测峰值</tspan></text>
+<line x1="744" y1="748" x2="1056" y2="748" class="divider"/>
+<text x="744" y="782" class="small" text-anchor="start"><tspan x="744" dy="0">2×H800 full-state TP/DP</tspan><tspan x="744" dy="28">1×H800 BF16 LoRA @ 2304</tspan><tspan x="744" dy="28">记录 peak / disk / runtime</tspan></text>
+<text x="1160" y="676" class="stage">07 · CLOSE</text>
+<rect x="1160" y="690" width="360" height="210" rx="16" class="indigo"/>
+<text x="1184" y="730" class="label" text-anchor="start"><tspan x="1184" dy="0">保留缺口后关闭</tspan></text>
+<line x1="1184" y1="748" x2="1496" y2="748" class="divider"/>
+<text x="1184" y="782" class="small" text-anchor="start"><tspan x="1184" dy="0">逐 Gate 映射 superseding evidence</tspan><tspan x="1184" dy="28">不补造原 manifest / split / resume</tspan><tspan x="1184" dy="28">Base active；S1 仍需独立 promotion</tspan></text>
+  <path d="M 430 510 L 470 510" class="line"/>
+<path d="M 840 510 L 880 510" class="line"/>
+<path d="M 1250 510 L 1290 510" class="line"/>
+<path d="M 1660 615 C 1660 650 1520 650 1520 680" class="line-dash"/>
+<path d="M 640 795 L 710 795" class="line"/>
+<path d="M 1080 795 L 1150 795" class="line"/>
+
+  <rect x="40" y="990" width="1720" height="590" rx="18" class="panel"/>
+  <text x="70" y="1033" class="section">2 · 真正学到的知识：可迁移的判断框架</text>
+  <rect x="70" y="1075" width="530" height="205" rx="16" class="blue-soft"/>
+<circle cx="106" cy="1114" r="18" class="number-dot"/>
+<text x="106" y="1120" class="number" text-anchor="middle">1</text>
+<text x="136" y="1120" class="label" text-anchor="start"><tspan x="136" dy="0">模型身份是文件集合</tspan></text>
+<text x="96" y="1161" class="small" text-anchor="start"><tspan x="96" dy="0">repo ID 不足以复现；revision、config、shards、</tspan><tspan x="96" dy="27">processor、template 和 license 必须共同冻结。</tspan></text>
+<rect x="635" y="1075" width="530" height="205" rx="16" class="purple-soft"/>
+<circle cx="671" cy="1114" r="18" class="number-dot"/>
+<text x="671" y="1120" class="number" text-anchor="middle">2</text>
+<text x="701" y="1120" class="label" text-anchor="start"><tspan x="701" dy="0">能加载不等于能训练</tspan></text>
+<text x="661" y="1161" class="small" text-anchor="start"><tspan x="661" dy="0">forward、真实 update、full-state save/load、</tspan><tspan x="661" dy="27">export/reload 与 learnability 是不同 gate。</tspan></text>
+<rect x="1200" y="1075" width="530" height="205" rx="16" class="green-soft"/>
+<circle cx="1236" cy="1114" r="18" class="number-dot"/>
+<text x="1236" y="1120" class="number" text-anchor="middle">3</text>
+<text x="1266" y="1120" class="label" text-anchor="start"><tspan x="1266" dy="0">冻结需要运行时证据</tspan></text>
+<text x="1226" y="1161" class="small" text-anchor="start"><tspan x="1226" dy="0">配置里写 freeze 不够；必须比较 parameter</tspan><tspan x="1226" dy="27">ownership 与训练前后 tensor identity。</tspan></text>
+<rect x="70" y="1310" width="530" height="205" rx="16" class="amber-soft"/>
+<circle cx="106" cy="1349" r="18" class="number-dot"/>
+<text x="106" y="1355" class="number" text-anchor="middle">4</text>
+<text x="136" y="1355" class="label" text-anchor="start"><tspan x="136" dy="0">Supersede 不是回填</tspan></text>
+<text x="96" y="1396" class="small" text-anchor="start"><tspan x="96" dy="0">更长、更真实路径可降低重复运行价值；</tspan><tspan x="96" dy="27">它不能生成从未存在的 protocol artifact。</tspan></text>
+<rect x="635" y="1310" width="530" height="205" rx="16" class="cyan-soft"/>
+<circle cx="671" cy="1349" r="18" class="number-dot"/>
+<text x="671" y="1355" class="number" text-anchor="middle">5</text>
+<text x="701" y="1355" class="label" text-anchor="start"><tspan x="701" dy="0">Capacity 与 correctness 正交</tspan></text>
+<text x="661" y="1396" class="small" text-anchor="start"><tspan x="661" dy="0">显存可容纳只解除工程 blocker；</tspan><tspan x="661" dy="27">不会证明数据合同或 checkpoint 可晋级。</tspan></text>
+<rect x="1200" y="1310" width="530" height="205" rx="16" class="slate-soft"/>
+<circle cx="1236" cy="1349" r="18" class="number-dot"/>
+<text x="1236" y="1355" class="number" text-anchor="middle">6</text>
+<text x="1266" y="1355" class="label" text-anchor="start"><tspan x="1266" dy="0">Onboarding 之后仍是 S0</tspan></text>
+<text x="1226" y="1396" class="small" text-anchor="start"><tspan x="1226" dy="0">runtime compatible / learnable 只证明入口；</tspan><tspan x="1226" dy="27">S1 需要受控 candidate set 与 selection。</tspan></text>
+
+  <rect x="40" y="1610" width="1720" height="720" rx="18" class="panel"/>
+  <text x="70" y="1653" class="section">3 · Evidence：关键数字、对照与决策依据</text>
+  <rect x="70" y="1690" width="385" height="140" rx="16" class="metric"/>
+<text x="94" y="1724" class="stage" text-anchor="start"><tspan x="94" dy="0">CONVERSION</tspan></text>
+<text x="94" y="1769" class="metric-value" text-anchor="start"><tspan x="94" dy="0">738 mappings</tspan></text>
+<text x="94" y="1802" class="tiny" text-anchor="start"><tspan x="94" dy="0">15/15 MTP tensors exact round-trip</tspan></text>
+<rect x="480" y="1690" width="385" height="140" rx="16" class="metric"/>
+<text x="504" y="1724" class="stage" text-anchor="start"><tspan x="504" dy="0">DISTRIBUTED SMOKE</tspan></text>
+<text x="504" y="1769" class="metric-value" text-anchor="start"><tspan x="504" dy="0">TP1/DP2 · TP2/DP1</tspan></text>
+<text x="504" y="1802" class="tiny" text-anchor="start"><tspan x="504" dy="0">两种 topology 各 3 个 optimizer updates</tspan></text>
+<rect x="890" y="1690" width="385" height="140" rx="16" class="metric"/>
+<text x="914" y="1724" class="stage" text-anchor="start"><tspan x="914" dy="0">LEARNABILITY</tspan></text>
+<text x="914" y="1769" class="metric-value" text-anchor="start"><tspan x="914" dy="0">150 / 150 updates</tspan></text>
+<text x="914" y="1802" class="tiny" text-anchor="start"><tspan x="914" dy="0">72/72 teacher-forced targets correct</tspan></text>
+<rect x="1300" y="1690" width="385" height="140" rx="16" class="metric"/>
+<text x="1324" y="1724" class="stage" text-anchor="start"><tspan x="1324" dy="0">OWNERSHIP</tspan></text>
+<text x="1324" y="1769" class="metric-value" text-anchor="start"><tspan x="1324" dy="0">297 unchanged</tspan></text>
+<text x="1324" y="1802" class="tiny" text-anchor="start"><tspan x="1324" dy="0">all vision / aligner tensors bitwise stable</tspan></text>
+  <rect x="70" y="1860" width="1660" height="346" rx="12" class="table-bg"/>
+<rect x="70" y="1860" width="1660" height="52" rx="12" class="table-head"/>
+<text x="86" y="1893" class="stage" text-anchor="start"><tspan x="86" dy="0">原 Day 15 Gate</tspan></text>
+<line x1="370" y1="1860" x2="370" y2="2206" class="grid"/>
+<text x="386" y="1893" class="stage" text-anchor="start"><tspan x="386" dy="0">后续 evidence</tspan></text>
+<line x1="800" y1="1860" x2="800" y2="2206" class="grid"/>
+<text x="816" y="1893" class="stage" text-anchor="start"><tspan x="816" dy="0">Close disposition</tspan></text>
+<line x1="1190" y1="1860" x2="1190" y2="2206" class="grid"/>
+<text x="1206" y="1893" class="stage" text-anchor="start"><tspan x="1206" dy="0">仍保留的边界</tspan></text>
+<line x1="70" y1="1912" x2="1730" y2="1912" class="grid"/>
+<text x="86" y="1943" class="body-strong" text-anchor="start"><tspan x="86" dy="0">Revision / files</tspan></text>
+<text x="386" y="1943" class="body" text-anchor="start"><tspan x="386" dy="0">S0 registry + Day 18</tspan></text>
+<text x="816" y="1943" class="body" text-anchor="start"><tspan x="816" dy="0">covered</tspan></text>
+<text x="1206" y="1943" class="body" text-anchor="start"><tspan x="1206" dy="0">冻结身份不等于 GPU train</tspan></text>
+<rect x="70" y="1961" width="1660" height="49" class="table-alt"/>
+<line x1="70" y1="1961" x2="1730" y2="1961" class="grid"/>
+<text x="86" y="1992" class="body-strong" text-anchor="start"><tspan x="86" dy="0">Runtime / loader</tspan></text>
+<text x="386" y="1992" class="body" text-anchor="start"><tspan x="386" dy="0">Day 18 C0–C5</tspan></text>
+<text x="816" y="1992" class="body" text-anchor="start"><tspan x="816" dy="0">covered</tspan></text>
+<text x="1206" y="1992" class="body" text-anchor="start"><tspan x="1206" dy="0">只在固定 2×H800 envelope</tspan></text>
+<line x1="70" y1="2010" x2="1730" y2="2010" class="grid"/>
+<text x="86" y="2041" class="body-strong" text-anchor="start"><tspan x="86" dy="0">Processor / loss</tspan></text>
+<text x="386" y="2041" class="body" text-anchor="start"><tspan x="386" dy="0">Day 18 + Day 19/20</tspan></text>
+<text x="816" y="2041" class="body" text-anchor="start"><tspan x="816" dy="0">operationally covered</tspan></text>
+<text x="1206" y="2041" class="body" text-anchor="start"><tspan x="1206" dy="0">原 10+10 golden audit 未生成</tspan></text>
+<rect x="70" y="2059" width="1660" height="49" class="table-alt"/>
+<line x1="70" y1="2059" x2="1730" y2="2059" class="grid"/>
+<text x="86" y="2090" class="body-strong" text-anchor="start"><tspan x="86" dy="0">7,860 manifest / split</tspan></text>
+<text x="386" y="2090" class="body" text-anchor="start"><tspan x="386" dy="0">无 protocol-equivalent artifact</tspan></text>
+<text x="816" y="2090" class="body" text-anchor="start"><tspan x="816" dy="0">not executed</tspan></text>
+<text x="1206" y="2090" class="body" text-anchor="start"><tspan x="1206" dy="0">实际六源合同不能改名冒充</tspan></text>
+<line x1="70" y1="2108" x2="1730" y2="2108" class="grid"/>
+<text x="86" y="2139" class="body-strong" text-anchor="start"><tspan x="86" dy="0">LoRA exact resume</tspan></text>
+<text x="386" y="2139" class="body" text-anchor="start"><tspan x="386" dy="0">save + other-stack continuation</tspan></text>
+<text x="816" y="2139" class="body" text-anchor="start"><tspan x="816" dy="0">carried / optional</tspan></text>
+<text x="1206" y="2139" class="body" text-anchor="start"><tspan x="1206" dy="0">无 uninterrupted-vs-resumed comparator</tspan></text>
+<rect x="70" y="2157" width="1660" height="49" class="table-alt"/>
+<line x1="70" y1="2157" x2="1730" y2="2157" class="grid"/>
+<text x="86" y="2188" class="body-strong" text-anchor="start"><tspan x="86" dy="0">Capacity</tspan></text>
+<text x="386" y="2188" class="body" text-anchor="start"><tspan x="386" dy="0">2×H800 full + 1×H800 LoRA</tspan></text>
+<text x="816" y="2188" class="body" text-anchor="start"><tspan x="816" dy="0">covered</tspan></text>
+<text x="1206" y="2188" class="body" text-anchor="start"><tspan x="1206" dy="0">packing parity 与 S1 仍独立</tspan></text>
+  <text x="70" y="2242" class="small" text-anchor="start"><tspan x="70" dy="0">Day 18 close：C0–C5、10/10 required gates、65 项 hashed evidence、open problems=0；Day 20 另证明单卡 H800 LoRA 可更新与保存。</tspan><tspan x="70" dy="26">这些证据足以回答“入口是否可运行”，但不能回答“哪一个 checkpoint 应当晋级”。</tspan></text>
+
+  <rect x="40" y="2360" width="1110" height="405" rx="18" class="decision"/>
+  <text x="70" y="2404" class="section">4 · 决策 / Takeaway</text>
+  <text x="70" y="2450" class="body-strong" text-anchor="start"><tspan x="70" dy="0">最终处置：Day 15 closed_superseded_by_day18_20，追加 GPU = 0。</tspan><tspan x="70" dy="31">允许陈述：exact Qwen3.5 S0、conditional loader、text-only freeze scope、真实 update、</tspan><tspan x="70" dy="31">distributed checkpoint/export 与单卡 LoRA capacity 都有运行证据。</tspan><tspan x="70" dy="31">禁止陈述：原 Day 15 manifest、独立 split、10+10 audit、LoRA exact resume 全部通过。</tspan><tspan x="70" dy="31">最重要的知识：用 evidence level 关闭问题，而不是用一个“done”标签抹平证据差异。</tspan></text>
+  <rect x="1180" y="2360" width="580" height="405" rx="18" class="boundary"/>
+  <text x="1210" y="2404" class="section">证据边界</text>
+  <text x="1210" y="2450" class="small" text-anchor="start"><tspan x="1210" dy="0">• 原计划 6 个 Day 15 artifact 未生成。</tspan><tspan x="1210" dy="29">• Day 09 的 7,860 条数据没有 Qwen3.5 v2 manifest。</tspan><tspan x="1210" dy="29">• 新 selection / confirmation split 未按原协议冻结。</tspan><tspan x="1210" dy="29">• C4 continuation 没有 uninterrupted comparator。</tspan><tspan x="1210" dy="29">• packing correctness / throughput parity 未运行。</tspan><tspan x="1210" dy="29">• Day 15 close 时 Base remains active；无 S1。</tspan><tspan x="1210" dy="29">• 后续 S1 不能追溯改写本日 closeout。</tspan></text>
+
+  <text x="70" y="2797" class="source" text-anchor="start"><tspan x="70" dy="0">Sources · artifacts/reports/day15-close.md · day18-qwen35-megatron-compatibility.md · day-20-qwen35-balanced-lora-sft/README.md</tspan></text>
+<text x="70" y="2817" class="source" text-anchor="start"><tspan x="70" dy="0">Status · closed_superseded_by_day18_20 · original protocol artifacts intentionally not backfilled</tspan></text>
+</svg>

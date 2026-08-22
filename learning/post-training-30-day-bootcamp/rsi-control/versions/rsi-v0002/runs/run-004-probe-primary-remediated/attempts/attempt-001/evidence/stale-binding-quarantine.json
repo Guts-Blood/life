@@ -1,0 +1,19 @@
+{
+  "schema_name": "rsi.operational_quarantine_evidence",
+  "schema_version": 1,
+  "version_id": "rsi-v0002",
+  "run_id": "run-004-probe-primary-remediated",
+  "attempt_id": "attempt-001",
+  "action": "atomic_rename",
+  "reason": "Preserve the old run-001 binding bytes while removing its canonical active filename so the unchanged runner skips the non-resumable zero-step attempt and allocates internal attempt-002.",
+  "source_path": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/evidence/probe/s20260809/lr1e-4/attempt-001/target-binding-config.json",
+  "destination_path": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/evidence/probe/s20260809/lr1e-4/attempt-001/target-binding-config.stale-plugin-08b51728.json",
+  "file_sha256_before": "16223176aee46f097c2288bbf532df357e2307dba3f2d54dbd37b39e1d0e9b04",
+  "file_sha256_after": "16223176aee46f097c2288bbf532df357e2307dba3f2d54dbd37b39e1d0e9b04",
+  "bytes_preserved": true,
+  "recoverable": true,
+  "old_adapter_attempt_preserved": true,
+  "old_checkpoints": 0,
+  "training_semantics_changed": false,
+  "run_contract_changed": false
+}

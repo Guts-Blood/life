@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "domain": "day12.autodl_e2b_binding",
+  "status": "configured_runtime_credential_excluded",
+  "purpose": "Bind the frozen Day 10 HumanEval E2B contract to the Day 12 AutoDL filesystem without changing sandbox or scoring semantics.",
+  "remote": {
+    "host_alias": "autodl-day11",
+    "bootcamp_root": "/root/autodl-tmp/day11-ready/post-training-30-day-bootcamp",
+    "run_root": "/root/autodl-tmp/runs/day12-20260806"
+  },
+  "runtime": {
+    "generation_python": "/root/miniconda3/bin/python",
+    "sandbox_python": "/root/autodl-tmp/envs/day12-e2b/bin/python",
+    "requirements_file": "day-12-controlled-sft-checkpoints/requirements-day12-e2b.txt",
+    "required_packages": {
+      "e2b": "2.37.0",
+      "rfc8785": "0.1.4"
+    }
+  },
+  "credential": {
+    "environment_variable": "E2B_API_KEY",
+    "env_file": "/root/autodl-tmp/secrets/day12-e2b.env",
+    "required_file_mode": "0600",
+    "repository_storage_forbidden": true,
+    "artifact_or_log_capture_forbidden": true
+  },
+  "frozen_inputs": {
+    "sandbox_contract": {
+      "path": "day-10-frozen-eval-baseline/day10_e2b_sandbox_config.json",
+      "file_sha256": "d4841e1e0479f6488306e916eb5d664d848716e80cfc7aef9943e6134ecbfc8c",
+      "semantic_hash": "sha256:9571c64301029e230ab2d01e1b8daf8a6dcf7c4a5c8b0696e21d9b073a730c87",
+      "template_id": "rki5dems9wqfm4r03t7g"
+    },
+    "scorer": {
+      "path": "day-10-frozen-eval-baseline/score_day10_code_e2b.py",
+      "file_sha256": "ee5581f3a29f02737ae08cbd7591e839b996168b3d1276670227e67157bcd4b0"
+    },
+    "manifest": {
+      "path": "artifacts/eval/day10-frozen-eval-manifest.json",
+      "file_sha256": "be4b79f93d8c850360f3f2d38c223fcd347517796daaa9a1a4d3bc1a5eab7491",
+      "manifest_hash": "sha256:70749bf91842e2a3f10b66051d0fe3b26a8b6b3225198753f5861e2c39570cc0"
+    },
+    "humaneval_source": {
+      "path": "/root/autodl-tmp/tmp/day09-eval-sources/human-eval/data/HumanEval.jsonl.gz",
+      "file_sha256": "b796127e635a67f93fb35c04f4cb03cf06f38c8072ee7cee8833d7bee06979ef"
+    },
+    "tokenizer_snapshot": {
+      "path": "/root/autodl-tmp/tmp/day09-hf-cache/tokenizer/models--Qwen--Qwen3-0.6B-Base/snapshots/ddc928429ed09d9ad603fd762053d0434c15e865",
+      "mapped_model_path": "/root/autodl-tmp/day11-ready/models/Qwen3-0.6B-Base",
+      "required_file_sha256": {
+        "tokenizer.json": "c0382117ea329cdf097041132f6d735924b697924d6f6fc3945713e96ce87539",
+        "tokenizer_config.json": "7d0fc4691628c9f6b0c77f8138a80517896a307e074dd5ac87e279ea85515774",
+        "vocab.json": "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910"
+      }
+    }
+  },
+  "execution_rules": {
+    "generation_and_scoring_are_separate_processes": true,
+    "candidate_code_must_never_execute_on_autodl_host": true,
+    "fresh_network_denied_e2b_sandbox_per_code_sample": true,
+    "frozen_test_before_checkpoint_selection": "forbidden",
+    "live_sandbox_smoke_requires_runtime_credential": true
+  }
+}

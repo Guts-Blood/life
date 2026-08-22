@@ -1,0 +1,119 @@
+{
+  "available_supervised_tokens": {
+    "code": 264296,
+    "finance": 72073,
+    "general": 602901,
+    "math": 1835132
+  },
+  "config_file_sha256": "ec77424aa79c9d2e05bd4ddc951b2954e3e38c717c409d2e689097f8162d1733",
+  "config_hash": "b14279997291013c2adc0b8e0367880947c1a6f59f294e27aafb3d756400b13b",
+  "config_path": "learning/post-training-30-day-bootcamp/artifacts/configs/day12-controlled-sft-I.yaml",
+  "distribution_by_skill": {
+    "code": {
+      "actual_ratio": "5/12",
+      "actual_ratio_decimal": 0.4166666666666667,
+      "input_tokens": 316366,
+      "occurrences": 786,
+      "raw_tokens": 299860,
+      "supervised_tokens": 102890,
+      "target_ratio": "5/12",
+      "unique_canonical_examples": 786
+    },
+    "finance": {
+      "actual_ratio": "1/24",
+      "actual_ratio_decimal": 0.041666666666666664,
+      "input_tokens": 62041,
+      "occurrences": 283,
+      "raw_tokens": 56098,
+      "supervised_tokens": 10289,
+      "target_ratio": "1/24",
+      "unique_canonical_examples": 283
+    },
+    "general": {
+      "actual_ratio": "1/8",
+      "actual_ratio_decimal": 0.125,
+      "input_tokens": 40288,
+      "occurrences": 109,
+      "raw_tokens": 37999,
+      "supervised_tokens": 30867,
+      "target_ratio": "1/8",
+      "unique_canonical_examples": 109
+    },
+    "math": {
+      "actual_ratio": "5/12",
+      "actual_ratio_decimal": 0.4166666666666667,
+      "input_tokens": 135559,
+      "occurrences": 103,
+      "raw_tokens": 133396,
+      "supervised_tokens": 102890,
+      "target_ratio": "5/12",
+      "unique_canonical_examples": 103
+    }
+  },
+  "hypothesis": "Keeping H's LoRA and 5e-5 optimization fixed while reallocating supervised tokens toward math and code will recover the two missing math cases and add the two missing code cases needed to pass every gate.",
+  "manifest_file_sha256": "245b10ade54f982ee786ad34e3f51079e00cf04a99cff7fb099328cd49f0031c",
+  "manifest_hash": "83712d7666962d336b7e8d9016543e1f26ca575a38249dc7ec98ec21e3793908",
+  "manifest_path": "learning/post-training-30-day-bootcamp/artifacts/data/day12-mix-I-math-code-focused.json",
+  "maximum_input_tokens": 2017,
+  "ordinal": 7,
+  "parent_run_id": "H",
+  "plan_file_sha256": "ec6a70f20a42dea2b79b7b78fadc8ef62d575b180443b1c73e7af1611486b0de",
+  "plan_hash": "31a5397b74ab859010f7416bd65c63c32696f7b667a7f39208f3a92e76f07785",
+  "plan_path": "learning/post-training-30-day-bootcamp/artifacts/data/day12-mix-I-math-code-focused-plan.json",
+  "primary_change": {
+    "parent_value": {
+      "code": "7/24",
+      "finance": "1/8",
+      "general": "7/24",
+      "math": "7/24"
+    },
+    "path": "data.target_ratios",
+    "rollout_value": {
+      "code": "5/12",
+      "finance": "1/24",
+      "general": "1/8",
+      "math": "5/12"
+    }
+  },
+  "run_id": "I",
+  "schedule_file_sha256": "67a09710af18483e70e35c2b83cecbec0bf2cc6e4b7892ecbbb603fd714b845f",
+  "schedule_hash": "0521bc329d798977e21c29a61f31051928115586f4038b8fa00943c93f1ec7d1",
+  "schedule_path": "learning/post-training-30-day-bootcamp/artifacts/data/day12-training-schedule-I.json",
+  "status": "day12_run_i_preparation_pass",
+  "summary_hash": "b032d32ebbdc80c712123b7ef8d8498816f5c20ee85118d12260088778a5e95f",
+  "target_ratios": {
+    "code": "5/12",
+    "finance": "1/24",
+    "general": "1/8",
+    "math": "5/12"
+  },
+  "target_supervised_tokens": {
+    "code": 102890,
+    "finance": 10289,
+    "general": 30867,
+    "math": 102890
+  },
+  "total_supervised_tokens": 246936,
+  "truncation_filtered_records": {
+    "code": 0,
+    "finance": 0,
+    "general": 0,
+    "math": 6
+  },
+  "validation_checks": {
+    "canonical_ids_unique": true,
+    "finance_dsl_removed": true,
+    "finance_final_answer_present": true,
+    "finance_natural_reasoning_prefix": true,
+    "manifest_hash_valid": true,
+    "maximum_length_respected": true,
+    "no_truncation": true,
+    "occurrence_ids_unique": true,
+    "optimizer_reused_from_H": true,
+    "planned_ids_cover_manifest": true,
+    "routing_suffixes_present": true,
+    "schedule_total_exact": true,
+    "slice_ratios_exact": true,
+    "supervised_total_exact": true
+  }
+}

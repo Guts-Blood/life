@@ -1,0 +1,6 @@
+{
+  "layer": "infrastructure",
+  "code": "v3_callback_training_arguments_interface_mismatch",
+  "message": "The target-binding callback read ms-swift SFT-only fields from Transformers TrainingArguments and failed before optimizer step 1.",
+  "retryable": false
+}

@@ -1,0 +1,263 @@
+{
+  "budget": {
+    "eval_accesses_already_consumed": 1,
+    "gpu_hours_already_consumed_by_verified_base_and_infrastructure": 0.032935653,
+    "probe_gpu_hours_original_cap": 0.2,
+    "remaining_eval_accesses": 4,
+    "stop_before_additional_unplanned_gpu_work": true,
+    "version_gpu_hours_cap": 2.5
+  },
+  "candidate_policy": {
+    "candidate_factory_version": "day20_qwen35_candidate_factory_v2",
+    "confirmation_seed": 20260810,
+    "main_supervised_tokens": 320000,
+    "ordering_version": "token_aware_temporal_interleave_v2",
+    "primary_seed": 20260809,
+    "probe_checkpoint_tokens": {
+      "t12000": 12000,
+      "t18000": 18000,
+      "t24000": 24000,
+      "t6000": 6000
+    },
+    "probe_supervised_tokens": 24000,
+    "probe_tokens_by_skill": {
+      "code": 6000,
+      "finance": 6000,
+      "general": 6000,
+      "math": 6000
+    }
+  },
+  "checkpoint_labels": [
+    "t6000",
+    "t12000",
+    "t18000",
+    "t24000"
+  ],
+  "contract_sha256": "ea10e0490ee8a1e5d126cf7c6de35ea601626109708f628757c41d5c7d328228",
+  "frozen_files": [
+    {
+      "path": "artifacts/eval/day10-frozen-eval-manifest.json",
+      "sha256": "be4b79f93d8c850360f3f2d38c223fcd347517796daaa9a1a4d3bc1a5eab7491"
+    },
+    {
+      "path": "day-10-frozen-eval-baseline/day10_scorers.py",
+      "sha256": "18be9a87b857ba80baf8718bf3c75276f58c96f29359b07400e56e09ecb11d54"
+    },
+    {
+      "path": "day-10-frozen-eval-baseline/score_day10_code_e2b.py",
+      "sha256": "ee5581f3a29f02737ae08cbd7591e839b996168b3d1276670227e67157bcd4b0"
+    },
+    {
+      "path": "day-10-frozen-eval-baseline/day10_e2b_sandbox_config.json",
+      "sha256": "d4841e1e0479f6488306e916eb5d664d848716e80cfc7aef9943e6134ecbfc8c"
+    }
+  ],
+  "implementation": [
+    {
+      "path": "day-20-qwen35-balanced-lora-sft/day20_candidate_factory_v2.py",
+      "role": "candidate_factory",
+      "sha256": "92b9b575b5ac80d6c896924de4e930badd26be98633dcea133347263dda144de"
+    },
+    {
+      "path": "day-20-qwen35-balanced-lora-sft/day20_contract_v2.py",
+      "role": "target_contract",
+      "sha256": "ad67937b1deeb9cf5cbc044aaa6b9d6315df7486f8ae6a48b9252becb6cad5d7"
+    },
+    {
+      "path": "day-20-qwen35-balanced-lora-sft/day20_ordering_v2.py",
+      "role": "temporal_ordering",
+      "sha256": "4d2ab319814821463b1fcf2f7ff2dcfe43ca1e095576dec4ed3d6ab5cab83a6b"
+    },
+    {
+      "path": "day-20-qwen35-balanced-lora-sft/day20_train_runtime_v2.py",
+      "role": "core_training_runtime",
+      "sha256": "8473e5d4fe55f0d072f6f112418c0439809452c206d3a7b0f2c4cc7ae899de9d"
+    },
+    {
+      "path": "day-20-qwen35-balanced-lora-sft/day20_train_plugin_v2.py",
+      "role": "core_training_plugin",
+      "sha256": "7129e5e3606756f242129539c740c303a13806ee636170df8ac8a86b070fbf5e"
+    },
+    {
+      "path": "day-20-qwen35-balanced-lora-sft/day20_target_encoding_v3.py",
+      "role": "target_encoding",
+      "sha256": "a2ab893f6c52d0ce514ec442304f6d279e0c4313f7fff9c7cb3c90866695fc06"
+    },
+    {
+      "path": "day-20-qwen35-balanced-lora-sft/prepare_day20_v3.py",
+      "role": "target_preparer",
+      "sha256": "210f84be57604e7252c877da632b55cbd2c0c0fa6bed83021ffe47a10b0eab34"
+    },
+    {
+      "path": "day-20-qwen35-balanced-lora-sft/day20_train_runtime_v3.py",
+      "role": "target_runtime",
+      "sha256": "b523703ccea84bdf9c09463c4982e9677347eadc8f500e62d294c170a35f0c99"
+    },
+    {
+      "path": "day-20-qwen35-balanced-lora-sft/day20_train_plugin_v3.py",
+      "role": "target_plugin",
+      "sha256": "1c26257aad3095f77e4b3fa9ce1b881272ea3bdfe6acfaafd8126ea13a35549b"
+    },
+    {
+      "path": "day-20-qwen35-balanced-lora-sft/run_day20_v3_autodl.sh",
+      "role": "runner",
+      "sha256": "dc12f83e49161b7f04d328bc73d15d677a8af85da1b47eb72832e66ba7a85c6a"
+    },
+    {
+      "path": "day-20-qwen35-balanced-lora-sft/evaluate_day20_v2.py",
+      "role": "raw_evaluator",
+      "sha256": "4da1e7bed95a628e6914711842001b491b25e821ba6711c7bafac8c08e837963"
+    },
+    {
+      "path": "day-20-qwen35-balanced-lora-sft/rescore_day20_qwen35_v3.py",
+      "role": "normalized_rescorer",
+      "sha256": "0f8cffad3265fa85af920d5e0a8c2e88554b8c49c91d85f9a3885e899c7b06f2"
+    },
+    {
+      "path": "day-20-qwen35-balanced-lora-sft/score_day20_code_e2b_v3.py",
+      "role": "code_e2b",
+      "sha256": "cda49ee80e356ee4f419b6de512cca95a728998a7c88c3511bce373dd0a08784"
+    },
+    {
+      "path": "day-20-qwen35-balanced-lora-sft/select_day20_v2.py",
+      "role": "probe_selector",
+      "sha256": "99887e23150c7b0ff34185dfd89fd69e7cc5c8671ece699b53c75a469786a3fe"
+    }
+  ],
+  "inputs": [
+    {
+      "content_sha256": "f3acfd8fe38c69e8864182ef9247b27c4f2483bde9228faab9b8b521f0053ce6",
+      "file_sha256": "a112674cd186a3ee8dea3687a9e5ab6ef12e393402fd0cc3924d74b4fcf75723",
+      "path_or_uri": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/DAY20-V3-MANIFEST.json",
+      "role": "outer_experiment_manifest"
+    },
+    {
+      "content_sha256": "dc90dee5ae68463e9ceed0c41c662eb56b0dfda81b9ef78d3547f4830a428b0d",
+      "file_sha256": "476847f1d311c2f6c1432dba0767ea978c410f3c65e5c937dfceee20d0b9fac6",
+      "path_or_uri": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/DAY20-V2-MANIFEST.json",
+      "role": "core_experiment_manifest"
+    },
+    {
+      "content_sha256": "bc6da3fe02f18ea801e0fccdf5801d62dcb46c59e7d936f4e961bba326429e81",
+      "file_sha256": "019d2ef1b87b5c2b8cfaf20a5c3145fbffb40ab0f5e9b00b7a95c07b28a97054",
+      "path_or_uri": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/TARGET-ENCODING-AUDIT.json",
+      "role": "target_encoding_audit"
+    },
+    {
+      "content_sha256": "03d13757bd892ba0361d83548569078402564958795be4a3ac7f1f7af3bc3299",
+      "file_sha256": "3d2a54bdff88a5f7ca43486aca86f5f3f9f5b5d902575314ba43821ba7a8b82a",
+      "path_or_uri": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/SELECTION-EQUIVALENCE.json",
+      "role": "selection_equivalence"
+    },
+    {
+      "file_sha256": "48e7d538cdc4c4810e9476ff12bdc2f45a7d57dc2cde0f2ac2d3cfd65d09e402",
+      "path_or_uri": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/data/probe-v2.jsonl",
+      "records": 1232,
+      "role": "probe_dataset",
+      "selection_sha256": "b611e82a3b760cdc75f173fe9396af80c5379f89915edc7e6f6deae9bc09fdb4",
+      "supervised_tokens": 24000,
+      "temporal_mix_sha256": "05215b196d3d501d6cb19a5b000376091ff455c00322899a367ccf3afcc1e3dc"
+    },
+    {
+      "file_sha256": "fb6484acc8afd47d712fdbeaa42361f9fb13270e794685f98b1c1ea0b99524b4",
+      "path_or_uri": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/data/diagnostic-v2.jsonl",
+      "records": 32,
+      "role": "diagnostic_probe32",
+      "selection_sha256": "3241ee281c86688d00342c47931f708e50f2e60c99ac2fefbb2787e64b5ea4e4"
+    },
+    {
+      "file_sha256": "e81414063fa1b90c8798c79b7cf60131c50aee8b8812301a9e6fbc4b73cfcd41",
+      "immutable_sha256": "30f384fb442925b979c1c76bef78f648b80c0e535d3548c55732adb2888b086c",
+      "path_or_uri": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/configs/probe-s20260809-lr1e-4.json",
+      "role": "probe_config_1e-4"
+    },
+    {
+      "content_sha256": "3a3e6060ffb441f0390a05e3aaf2d06c6656c5ec35c917e810910f100d8a0da7",
+      "e2b_version": "2.37.0",
+      "file_sha256": "088eab8545e9f039e51aba1dcd0179040cadb34e3b6ea7f87c04d3f979baec2a",
+      "path_or_uri": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/evidence/E2B-PREFLIGHT.json",
+      "role": "e2b_preflight"
+    },
+    {
+      "content_sha256": "35992378e04970101c1ab907d5442c04af8717b5d9994a2df2bf7fd85608bb7d",
+      "file_sha256": "4bb19e3d7cc618c4ad0a3e6b1213e45285c4ed20b927624547ebed2594e8bc6a",
+      "path_or_uri": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/eval/base-probe-probe32-raw-summary-v2.json",
+      "role": "verified_base_raw"
+    },
+    {
+      "content_sha256": "a00d2988264c7517341314e4772854810c17a17b5223aaba3206c6f037d2e8f4",
+      "file_sha256": "10bbcf501f8a3f6288ada50122ee1927c2c498763f819a46b4272df43970d4d7",
+      "normalized_comparison_key": "e07b6fe42581ef50b487375271e0ec61aab92337f880570b72f9b29316b82215",
+      "path_or_uri": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/eval/base-probe.qwen35-v3.json",
+      "role": "verified_base_normalized"
+    },
+    {
+      "complete_comparison_key": "293fcbfd9aa69b9e7512e00aa6e0d4cdaab71a9518a353247844a932dd8b7945",
+      "content_sha256": "7d9b940076065bbc6a76af5301e92dad3c6f3ec95e1db3914b5ebcde3dea89a3",
+      "file_sha256": "0cb81a37bb9783c7d08eeec5466fccd5bba22f82a15829f507ab12ff4b5be2b5",
+      "path_or_uri": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/eval/base-probe-code-e2b-qwen35-v3-summary.json",
+      "role": "verified_base_e2b"
+    }
+  ],
+  "learning_rate_policy": {
+    "bracket_trigger": "strict factory near-miss only",
+    "near_miss_bracket": [
+      "3e-5",
+      "6e-5",
+      "8e-5"
+    ],
+    "stage_a": "1e-4"
+  },
+  "operational_remediation": {
+    "change": "validate Transformer TrainingArguments only from callback args and validate SFT/template fields from the bound config plus live trainer.template",
+    "failure_code": "v3_callback_training_arguments_interface_mismatch",
+    "failure_layer": "infrastructure",
+    "model_data_eval_scorer_gate_changed": false,
+    "previous_optimizer_steps": 0,
+    "replaces_run": "run-001-probe-primary",
+    "training_semantics_changed": false
+  },
+  "phase": "probe_funnel",
+  "pre_execution_facts": {
+    "base_evidence_reused_without_new_eval_access": true,
+    "base_raw_normalized_e2b_verification_status": "pass",
+    "e2b_preflight_status": "pass",
+    "gpus_idle_before_launch": true,
+    "materialization_status": "pass",
+    "previous_training_global_step": 0,
+    "remote_v3_regression_tests": "28/28 pass",
+    "selection_equivalence_status": "pass",
+    "target_encoding_audit_status": "pass"
+  },
+  "run_id": "run-004-probe-primary-remediated",
+  "runtime": {
+    "core_runtime_identity_sha256": "6e1018b2528288e459a0e5707468ac8ede284ca497e03e30f91139ff2b3cc2d8",
+    "e2b_version": "2.37.0",
+    "gpu_count_available": 2,
+    "gpu_count_used_by_probe": 1,
+    "gpu_names": [
+      "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+      "NVIDIA RTX PRO 6000 Blackwell Server Edition"
+    ],
+    "ms_swift_commit": "565a1ad586a21d24b23931c52d2c62b49c39bee8",
+    "ms_swift_worktree_clean": true,
+    "peft_version": "0.19.1",
+    "target_runtime_identity_sha256": "f5117f90f30e8209ab2cc3b9c2d9761c81e718cdbe29cfb1ad3e638ae3c8edf5",
+    "torch_version": "2.10.0+cu128",
+    "transformers_version": "5.12.1"
+  },
+  "schema_name": "rsi.run_contract",
+  "schema_version": 1,
+  "scope": "probe32",
+  "seed": 20260809,
+  "target_encoding": {
+    "contract_sha256": "7f835342861cc9aabfd6299228033df80437b183227e04db311450437cd07ded",
+    "contract_version": "day20.qwen35_code_boundary_target_v3",
+    "dependent_lever": "model.target.masking",
+    "inference_template": "qwen3_5",
+    "mechanism": "supervise Code boundary indent token 257 and mask structural suffix newline token 198 while retaining im_end 248046 and every row supervised-token count",
+    "primary_lever": "model.target.representation",
+    "template_alias": "day20_qwen3_5_target_v3"
+  },
+  "version_id": "rsi-v0002"
+}

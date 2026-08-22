@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="2840" viewBox="0 0 1800 2840" role="img" aria-labelledby="title desc">
+  <title id="title">Day 18 · Qwen3.5 × Megatron：从源码链到 C0–C5 闭环</title>
+  <desc id="desc">A Chinese roadmap for the Qwen3.5 Megatron compatibility and learnability run, covering the pinned runtime codepath, HF-to-MCore conversion, parity, DP and TP optimizer smokes, distributed checkpoint continuation, export and 150-step tiny overfit with ownership audit.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+    <style>
+      text { font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", "PingFang SC", sans-serif; fill: #172033; }
+      .title { font-size: 34px; font-weight: 750; }
+      .subtitle { font-size: 18px; fill: #526078; }
+      .section { font-size: 23px; font-weight: 750; }
+      .stage { font-size: 13px; font-weight: 750; letter-spacing: .45px; fill: #475569; }
+      .label { font-size: 18px; font-weight: 700; }
+      .body { font-size: 15px; }
+      .body-strong { font-size: 15px; font-weight: 700; }
+      .small { font-size: 14px; fill: #475569; }
+      .tiny { font-size: 12px; fill: #526078; }
+      .source { font-size: 11px; fill: #64748b; }
+      .metric-value { font-family: "SFMono-Regular", Consolas, monospace; font-size: 27px; font-weight: 750; fill: #1e3a8a; }
+      .number { font-size: 13px; font-weight: 800; fill: #ffffff; }
+      .panel { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1.5; }
+      .hero { fill: #eef2ff; stroke: #6366f1; stroke-width: 1.8; }
+      .blue { fill: #dbeafe; stroke: #2563eb; stroke-width: 1.5; }
+      .cyan { fill: #cffafe; stroke: #0891b2; stroke-width: 1.5; }
+      .purple { fill: #f3e8ff; stroke: #9333ea; stroke-width: 1.5; }
+      .green { fill: #dcfce7; stroke: #16a34a; stroke-width: 1.5; }
+      .amber { fill: #fef3c7; stroke: #d97706; stroke-width: 1.5; }
+      .teal { fill: #ccfbf1; stroke: #0f766e; stroke-width: 1.5; }
+      .indigo { fill: #e0e7ff; stroke: #4f46e5; stroke-width: 1.5; }
+      .red { fill: #fee2e2; stroke: #dc2626; stroke-width: 1.5; }
+      .blue-soft { fill: #eff6ff; stroke: #93c5fd; stroke-width: 1.3; }
+      .purple-soft { fill: #faf5ff; stroke: #d8b4fe; stroke-width: 1.3; }
+      .green-soft { fill: #f0fdf4; stroke: #86efac; stroke-width: 1.3; }
+      .amber-soft { fill: #fffbeb; stroke: #fcd34d; stroke-width: 1.3; }
+      .cyan-soft { fill: #ecfeff; stroke: #67e8f9; stroke-width: 1.3; }
+      .slate-soft { fill: #f8fafc; stroke: #cbd5e1; stroke-width: 1.3; }
+      .number-dot { fill: #475569; }
+      .metric { fill: #f8fafc; stroke: #94a3b8; stroke-width: 1.4; }
+      .table-bg { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1.3; }
+      .table-head { fill: #e2e8f0; stroke: #94a3b8; stroke-width: 1.2; }
+      .table-alt { fill: #f8fafc; }
+      .status-good { fill: #dcfce7; stroke: #16a34a; stroke-width: 1.4; }
+      .status-warn { fill: #fef3c7; stroke: #d97706; stroke-width: 1.4; }
+      .status-stop { fill: #fee2e2; stroke: #dc2626; stroke-width: 1.4; }
+      .status-info { fill: #dbeafe; stroke: #2563eb; stroke-width: 1.4; }
+      .status-slate { fill: #f1f5f9; stroke: #64748b; stroke-width: 1.4; }
+      .decision { fill: #eef2ff; stroke: #6366f1; stroke-width: 1.7; }
+      .boundary { fill: #fff7ed; stroke: #ea580c; stroke-width: 1.7; }
+      .divider { stroke: #cbd5e1; stroke-width: 1.2; }
+      .grid { stroke: #cbd5e1; stroke-width: 1; }
+      .line { fill: none; stroke: #475569; stroke-width: 2; marker-end: url(#arrow); }
+      .line-dash { fill: none; stroke: #64748b; stroke-width: 1.8; stroke-dasharray: 7 5; marker-end: url(#arrow); }
+    </style>
+  </defs>
+
+  <rect width="1800" height="2840" fill="#f5f7fb"/>
+  <text x="50" y="62" class="title">Day 18 · Qwen3.5 × Megatron：从源码链到 C0–C5 闭环</text>
+  <text x="50" y="95" class="subtitle">兼容性不是“命令能启动”，而是 conversion、parity、update、checkpoint、export 与 ownership 的证据链。</text>
+  <rect x="1190" y="108" width="570" height="38" rx="19" class="status-good"/>
+  <text x="1475" y="133" class="stage" text-anchor="middle">CLOSED PASS · C0–C5 · 10/10 REQUIRED GATES</text>
+
+  <rect x="40" y="165" width="1720" height="112" rx="18" class="hero"/>
+  <text x="70" y="203" class="section">一句话 Gate</text>
+  <text x="270" y="203" class="label" text-anchor="start"><tspan x="270" dy="0">10/10 required gates PASS：只在 exact revision、BF16、2×H800、text-only 两行 fixture、冻结 TP/DP/MTP/checkpoint/export envelope 内成立。</tspan><tspan x="270" dy="31">它证明兼容与可学习，不证明 vision、长序列、多节点、吞吐 scaling、泛化、exact resume 或可晋级 S1。</tspan></text>
+
+  <rect x="40" y="310" width="1720" height="650" rx="18" class="panel"/>
+  <text x="70" y="352" class="section">1 · Roadmap：从输入边界到可交付结论</text>
+  <text x="70" y="382" class="small">每一步都回答“对象是什么、证据在哪里、失败时停在哪一层”；编号代表依赖顺序。</text>
+  <text x="70" y="391" class="stage">01 · FREEZE ENVELOPE</text>
+<rect x="70" y="405" width="360" height="210" rx="16" class="blue"/>
+<text x="94" y="445" class="label" text-anchor="start"><tspan x="94" dy="0">冻结运行边界</tspan></text>
+<line x1="94" y1="463" x2="406" y2="463" class="divider"/>
+<text x="94" y="497" class="small" text-anchor="start"><tspan x="94" dy="0">Qwen3.5 revision + ms-swift commit</tspan><tspan x="94" dy="28">2×H800 PCIe · BF16 · same host</tspan><tspan x="94" dy="28">2 rows · 72 supervised targets</tspan></text>
+<text x="480" y="391" class="stage">02 · TRACE SOURCE</text>
+<rect x="480" y="405" width="360" height="210" rx="16" class="cyan"/>
+<text x="504" y="445" class="label" text-anchor="start"><tspan x="504" dy="0">插桩 8-node codepath</tspan></text>
+<line x1="504" y1="463" x2="816" y2="463" class="divider"/>
+<text x="504" y="497" class="small" text-anchor="start"><tspan x="504" dy="0">loader → processor → conversion</tspan><tspan x="504" dy="28">GDN → loss → optimizer</tspan><tspan x="504" dy="28">distributed save/load → HF export</tspan></text>
+<text x="890" y="391" class="stage">03 · C0</text>
+<rect x="890" y="405" width="360" height="210" rx="16" class="purple"/>
+<text x="914" y="445" class="label" text-anchor="start"><tspan x="914" dy="0">HF → MCore conversion</tspan></text>
+<line x1="914" y1="463" x2="1226" y2="463" class="divider"/>
+<text x="914" y="497" class="small" text-anchor="start"><tspan x="914" dy="0">核对 parameter names / shapes</tspan><tspan x="914" dy="28">738 tensor mappings accounted</tspan><tspan x="914" dy="28">15 MTP tensors round-trip</tspan></text>
+<text x="1300" y="391" class="stage">04 · C1</text>
+<rect x="1300" y="405" width="360" height="210" rx="16" class="green"/>
+<text x="1324" y="445" class="label" text-anchor="start"><tspan x="1324" dy="0">单 rank 数值 parity</tspan></text>
+<line x1="1324" y1="463" x2="1636" y2="463" class="divider"/>
+<text x="1324" y="497" class="small" text-anchor="start"><tspan x="1324" dy="0">HF vs MCore logits / loss</tspan><tspan x="1324" dy="28">loss-token argmax mismatch = 0</tspan><tspan x="1324" dy="28">在预注册 tolerance 内</tspan></text>
+<text x="280" y="676" class="stage">05 · C2 / C3</text>
+<rect x="280" y="690" width="360" height="210" rx="16" class="amber"/>
+<text x="304" y="730" class="label" text-anchor="start"><tspan x="304" dy="0">DP 与 TP 真更新</tspan></text>
+<line x1="304" y1="748" x2="616" y2="748" class="divider"/>
+<text x="304" y="782" class="small" text-anchor="start"><tspan x="304" dy="0">TP1/DP2：3 updates</tspan><tspan x="304" dy="28">TP2/DP1：3 updates</tspan><tspan x="304" dy="28">固定 label-token budget 与 ownership</tspan></text>
+<text x="720" y="676" class="stage">06 · C4</text>
+<rect x="720" y="690" width="360" height="210" rx="16" class="teal"/>
+<text x="744" y="730" class="label" text-anchor="start"><tspan x="744" dy="0">分布式 checkpoint</tspan></text>
+<line x1="744" y1="748" x2="1056" y2="748" class="divider"/>
+<text x="744" y="782" class="small" text-anchor="start"><tspan x="744" dy="0">新进程 iteration 3 → 5</tspan><tspan x="744" dy="28">恢复 model / Adam / RNG</tspan><tspan x="744" dy="28">HF export/reload parity</tspan></text>
+<text x="1160" y="676" class="stage">07 · C5</text>
+<rect x="1160" y="690" width="360" height="210" rx="16" class="indigo"/>
+<text x="1184" y="730" class="label" text-anchor="start"><tspan x="1184" dy="0">同入口 tiny overfit</tspan></text>
+<line x1="1184" y1="748" x2="1496" y2="748" class="divider"/>
+<text x="1184" y="782" class="small" text-anchor="start"><tspan x="1184" dy="0">fresh Base → 150 updates</tspan><tspan x="1184" dy="28">72/72 teacher-forced targets</tspan><tspan x="1184" dy="28">vision / aligner bitwise unchanged</tspan></text>
+  <path d="M 430 510 L 470 510" class="line"/>
+<path d="M 840 510 L 880 510" class="line"/>
+<path d="M 1250 510 L 1290 510" class="line"/>
+<path d="M 1660 615 C 1660 650 1520 650 1520 680" class="line-dash"/>
+<path d="M 640 795 L 710 795" class="line"/>
+<path d="M 1080 795 L 1150 795" class="line"/>
+
+  <rect x="40" y="990" width="1720" height="590" rx="18" class="panel"/>
+  <text x="70" y="1033" class="section">2 · 真正学到的知识：可迁移的判断框架</text>
+  <rect x="70" y="1075" width="530" height="205" rx="16" class="blue-soft"/>
+<circle cx="106" cy="1114" r="18" class="number-dot"/>
+<text x="106" y="1120" class="number" text-anchor="middle">1</text>
+<text x="136" y="1120" class="label" text-anchor="start"><tspan x="136" dy="0">Compatibility 是端到端属性</tspan></text>
+<text x="96" y="1161" class="small" text-anchor="start"><tspan x="96" dy="0">loader、conversion、kernel、loss、optimizer、</tspan><tspan x="96" dy="27">checkpoint/export 任一断裂都不能叫兼容。</tspan></text>
+<rect x="635" y="1075" width="530" height="205" rx="16" class="purple-soft"/>
+<circle cx="671" cy="1114" r="18" class="number-dot"/>
+<text x="671" y="1120" class="number" text-anchor="middle">2</text>
+<text x="701" y="1120" class="label" text-anchor="start"><tspan x="701" dy="0">TP/DP 要比较语义</tspan></text>
+<text x="661" y="1161" class="small" text-anchor="start"><tspan x="661" dy="0">不仅看进程存活；还要固定 label-token budget、</tspan><tspan x="661" dy="27">首个 loss、真实 update 与 state ownership。</tspan></text>
+<rect x="1200" y="1075" width="530" height="205" rx="16" class="green-soft"/>
+<circle cx="1236" cy="1114" r="18" class="number-dot"/>
+<text x="1236" y="1120" class="number" text-anchor="middle">3</text>
+<text x="1266" y="1120" class="label" text-anchor="start"><tspan x="1266" dy="0">Text-only 仍审计 vision</tspan></text>
+<text x="1226" y="1161" class="small" text-anchor="start"><tspan x="1226" dy="0">无视觉 token 不是冻结证明；需比较训练前后</tspan><tspan x="1226" dy="27">所有 vision / aligner tensors。</tspan></text>
+<rect x="70" y="1310" width="530" height="205" rx="16" class="amber-soft"/>
+<circle cx="106" cy="1349" r="18" class="number-dot"/>
+<text x="106" y="1355" class="number" text-anchor="middle">4</text>
+<text x="136" y="1355" class="label" text-anchor="start"><tspan x="136" dy="0">Parity 要提前写 tolerance</tspan></text>
+<text x="96" y="1396" class="small" text-anchor="start"><tspan x="96" dy="0">先冻结 logits/loss/argmax 标准，</tspan><tspan x="96" dy="27">再运行，避免看结果后放宽阈值。</tspan></text>
+<rect x="635" y="1310" width="530" height="205" rx="16" class="cyan-soft"/>
+<circle cx="671" cy="1349" r="18" class="number-dot"/>
+<text x="671" y="1355" class="number" text-anchor="middle">5</text>
+<text x="701" y="1355" class="label" text-anchor="start"><tspan x="701" dy="0">Continuation ≠ exact resume</tspan></text>
+<text x="661" y="1396" class="small" text-anchor="start"><tspan x="661" dy="0">C4 证明新进程能继续；没有 uninterrupted</tspan><tspan x="661" dy="27">5-step comparator 就不能声称 trajectory exact。</tspan></text>
+<rect x="1200" y="1310" width="530" height="205" rx="16" class="slate-soft"/>
+<circle cx="1236" cy="1349" r="18" class="number-dot"/>
+<text x="1236" y="1355" class="number" text-anchor="middle">6</text>
+<text x="1266" y="1355" class="label" text-anchor="start"><tspan x="1266" dy="0">Tiny overfit 是入口证据</tspan></text>
+<text x="1226" y="1396" class="small" text-anchor="start"><tspan x="1226" dy="0">它证明相同训练入口能学、保存、导出；</tspan><tspan x="1226" dy="27">不证明对未见任务的泛化。</tspan></text>
+
+  <rect x="40" y="1610" width="1720" height="720" rx="18" class="panel"/>
+  <text x="70" y="1653" class="section">3 · Evidence：关键数字、对照与决策依据</text>
+  <rect x="70" y="1690" width="385" height="140" rx="16" class="metric"/>
+<text x="94" y="1724" class="stage" text-anchor="start"><tspan x="94" dy="0">CONVERSION</tspan></text>
+<text x="94" y="1769" class="metric-value" text-anchor="start"><tspan x="94" dy="0">738 · 15/15 MTP</tspan></text>
+<text x="94" y="1802" class="tiny" text-anchor="start"><tspan x="94" dy="0">HF mappings · exact MTP round-trip</tspan></text>
+<rect x="480" y="1690" width="385" height="140" rx="16" class="metric"/>
+<text x="504" y="1724" class="stage" text-anchor="start"><tspan x="504" dy="0">TOPOLOGY</tspan></text>
+<text x="504" y="1769" class="metric-value" text-anchor="start"><tspan x="504" dy="0">3 + 3 updates</tspan></text>
+<text x="504" y="1802" class="tiny" text-anchor="start"><tspan x="504" dy="0">TP1/DP2 and TP2/DP1</tspan></text>
+<rect x="890" y="1690" width="385" height="140" rx="16" class="metric"/>
+<text x="914" y="1724" class="stage" text-anchor="start"><tspan x="914" dy="0">C5 LEARNING</tspan></text>
+<text x="914" y="1769" class="metric-value" text-anchor="start"><tspan x="914" dy="0">150/150 · 72/72</tspan></text>
+<text x="914" y="1802" class="tiny" text-anchor="start"><tspan x="914" dy="0">loss 2.4077 → 3.31e-08</tspan></text>
+<rect x="1300" y="1690" width="385" height="140" rx="16" class="metric"/>
+<text x="1324" y="1724" class="stage" text-anchor="start"><tspan x="1324" dy="0">CLOSEOUT</tspan></text>
+<text x="1324" y="1769" class="metric-value" text-anchor="start"><tspan x="1324" dy="0">65 hashes · 0 open</tspan></text>
+<text x="1324" y="1802" class="tiny" text-anchor="start"><tspan x="1324" dy="0">16/16 tests · 17 issue classes resolved/observed</tspan></text>
+  <rect x="70" y="1860" width="1660" height="346" rx="12" class="table-bg"/>
+<rect x="70" y="1860" width="1660" height="52" rx="12" class="table-head"/>
+<text x="86" y="1893" class="stage" text-anchor="start"><tspan x="86" dy="0">Gate</tspan></text>
+<line x1="240" y1="1860" x2="240" y2="2206" class="grid"/>
+<text x="256" y="1893" class="stage" text-anchor="start"><tspan x="256" dy="0">关键测试</tspan></text>
+<line x1="890" y1="1860" x2="890" y2="2206" class="grid"/>
+<text x="906" y="1893" class="stage" text-anchor="start"><tspan x="906" dy="0">运行结果</tspan></text>
+<line x1="70" y1="1912" x2="1730" y2="1912" class="grid"/>
+<text x="86" y="1943" class="body-strong" text-anchor="start"><tspan x="86" dy="0">C0</tspan></text>
+<text x="256" y="1943" class="body" text-anchor="start"><tspan x="256" dy="0">HF→MCore→HF tensor accounting</tspan></text>
+<text x="906" y="1943" class="body" text-anchor="start"><tspan x="906" dy="0">738 mappings；15/15 MTP exact round-trip</tspan></text>
+<rect x="70" y="1961" width="1660" height="49" class="table-alt"/>
+<line x1="70" y1="1961" x2="1730" y2="1961" class="grid"/>
+<text x="86" y="1992" class="body-strong" text-anchor="start"><tspan x="86" dy="0">C1</tspan></text>
+<text x="256" y="1992" class="body" text-anchor="start"><tspan x="256" dy="0">2-row logits / loss parity</tspan></text>
+<text x="906" y="1992" class="body" text-anchor="start"><tspan x="906" dy="0">HF 2.407724 vs MCore 2.402899；argmax mismatch 0</tspan></text>
+<line x1="70" y1="2010" x2="1730" y2="2010" class="grid"/>
+<text x="86" y="2041" class="body-strong" text-anchor="start"><tspan x="86" dy="0">C2</tspan></text>
+<text x="256" y="2041" class="body" text-anchor="start"><tspan x="256" dy="0">TP1 / DP2 optimizer + checkpoint</tspan></text>
+<text x="906" y="2041" class="body" text-anchor="start"><tspan x="906" dy="0">loss 2.4034→0.2631；peak 52.34 GiB/GPU</tspan></text>
+<rect x="70" y="2059" width="1660" height="49" class="table-alt"/>
+<line x1="70" y1="2059" x2="1730" y2="2059" class="grid"/>
+<text x="86" y="2090" class="body-strong" text-anchor="start"><tspan x="86" dy="0">C3</tspan></text>
+<text x="256" y="2090" class="body" text-anchor="start"><tspan x="256" dy="0">TP2 / DP1 optimizer + checkpoint</tspan></text>
+<text x="906" y="2090" class="body" text-anchor="start"><tspan x="906" dy="0">loss 2.4001→0.2518；peak 38.91 GiB/GPU</tspan></text>
+<line x1="70" y1="2108" x2="1730" y2="2108" class="grid"/>
+<text x="86" y="2139" class="body-strong" text-anchor="start"><tspan x="86" dy="0">C4</tspan></text>
+<text x="256" y="2139" class="body" text-anchor="start"><tspan x="256" dy="0">fresh continuation + export/reload</tspan></text>
+<text x="906" y="2139" class="body" text-anchor="start"><tspan x="906" dy="0">iteration 3→5；export argmax mismatch 0</tspan></text>
+<rect x="70" y="2157" width="1660" height="49" class="table-alt"/>
+<line x1="70" y1="2157" x2="1730" y2="2157" class="grid"/>
+<text x="86" y="2188" class="body-strong" text-anchor="start"><tspan x="86" dy="0">C5</tspan></text>
+<text x="256" y="2188" class="body" text-anchor="start"><tspan x="256" dy="0">150-step overfit + ownership audit</tspan></text>
+<text x="906" y="2188" class="body" text-anchor="start"><tspan x="906" dy="0">accuracy 0.541667→1.0；297 visual tensors unchanged</tspan></text>
+  <text x="70" y="2242" class="small" text-anchor="start"><tspan x="70" dy="0">C2/C3 first-loss difference = 0.00330782；C4 export max difference = 0.00941098；所有 required gates 在预注册 tolerance 内通过。</tspan><tspan x="70" dy="26">Closeout 重新验证 evidence tar、113 members、65 inventory entries、portable SHA sidecar 与 16 tests；追加 GPU = 0。</tspan></text>
+
+  <rect x="40" y="2360" width="1110" height="405" rx="18" class="decision"/>
+  <text x="70" y="2404" class="section">4 · 决策 / Takeaway</text>
+  <text x="70" y="2450" class="body-strong" text-anchor="start"><tspan x="70" dy="0">结论：Qwen3.5-4B Base 在冻结的 Megatron envelope 内 compatible + learnable。</tspan><tspan x="70" dy="31">安全复用方式：把它作为后续 loader/GDN/TP/DP/checkpoint/export 的 runtime evidence，</tspan><tspan x="70" dy="31">而不是把 C5 的 two-row overfit checkpoint 当成正式 SFT candidate。</tspan><tspan x="70" dy="31">最重要的工程方法：沿真实 source codepath 绑定每个 tensor、rank、state owner 与 artifact，</tspan><tspan x="70" dy="31">并让每个失败停在第一个可辨别 gate，而不是用最终 exception 猜根因。</tspan></text>
+  <rect x="1180" y="2360" width="580" height="405" rx="18" class="boundary"/>
+  <text x="1210" y="2404" class="section">证据边界</text>
+  <text x="1210" y="2450" class="small" text-anchor="start"><tspan x="1210" dy="0">• exact revision + 2×H800 + BF16 + two-row fixture。</tspan><tspan x="1210" dy="29">• 不覆盖 vision/image/video input path。</tspan><tspan x="1210" dy="29">• 不覆盖长序列、多节点或其它 TP/PP/CP 组合。</tspan><tspan x="1210" dy="29">• 不是 throughput benchmark 或 scaling claim。</tspan><tspan x="1210" dy="29">• C4 无 uninterrupted comparator；exact resume 未证明。</tspan><tspan x="1210" dy="29">• 不证明泛化，也不产生 S1。</tspan><tspan x="1210" dy="29">• Git 内 evidence tar 不含大型 checkpoint/export payload。</tspan></text>
+
+  <text x="70" y="2797" class="source" text-anchor="start"><tspan x="70" dy="0">Sources · artifacts/reports/day18-qwen35-megatron-compatibility.md · day18-close.md · day18-closeout.json</tspan></text>
+<text x="70" y="2817" class="source" text-anchor="start"><tspan x="70" dy="0">Run · day18-qwen35-20260808T073811Z · close 2026-08-10 · status closed_pass_c0_c5</tspan></text>
+</svg>

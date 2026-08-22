@@ -1,0 +1,37 @@
+{
+  "schema_name": "rsi.metrics",
+  "schema_version": 1,
+  "outcome": {
+    "confirmed_qualified": "Primary and confirmation both pass every hard and evidence gate.",
+    "worst_gate_margin": "Minimum signed gate margin; non-negative means all numeric gates pass.",
+    "total_gate_deficit": "Sum of max(0, -margin) across gates.",
+    "cost_to_qualification_gpu_hours": "Cumulative GPU hours through first confirmed qualification."
+  },
+  "required_per_version": [
+    "predicted_outcome",
+    "observed_gate_values",
+    "worst_gate_margin",
+    "total_gate_deficit",
+    "gpu_hours",
+    "eval_accesses",
+    "assumption_outcome",
+    "decision"
+  ],
+  "optional_diagnostics": [
+    "domain_and_capability_delta",
+    "base_retention_and_recovery",
+    "checkpoint_slope_and_peak_drop",
+    "sample_token_loss_gradient_share",
+    "kl_to_base_and_update_norm",
+    "code_format_ast_e2b_funnel",
+    "transfer_matrix"
+  ],
+  "rsi_policy": [
+    "prediction_error",
+    "qualification_brier_score",
+    "intervention_reproducibility",
+    "repeated_failure_rate",
+    "policy_lift_at_equal_budget"
+  ],
+  "selection_rule": "Before qualification minimize total_gate_deficit, then maximize worst_gate_margin, then minimize cost. Hard gates always control promotion."
+}

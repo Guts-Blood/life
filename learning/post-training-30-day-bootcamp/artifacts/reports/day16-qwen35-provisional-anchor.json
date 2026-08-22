@@ -1,0 +1,100 @@
+{
+  "schema_version": "day16_qwen35_provisional_anchor_v1",
+  "decision_date": "2026-08-09",
+  "status": "no_eligible_qwen35_sft_anchor",
+  "source_run": {
+    "run_id": "day20-qwen35-lora-20260809T042005Z",
+    "role": "superseding_day16_controlled_lora_probe_evidence",
+    "manifest": "day-20-qwen35-balanced-lora-sft/remote-runs/day20-qwen35-lora-20260809T042005Z/DAY20-MANIFEST.json",
+    "manifest_file_sha256": "32c5dafc4a273b7067091244379233e45dad6a02a64d168165b6da04d049720f",
+    "manifest_content_sha256": "017ac87be748146b278601eba063bd77504f71d0ce95de46d5990f94fc99d30e"
+  },
+  "parent": {
+    "lineage_id": "qwen35-4b-day13-plus-v2",
+    "model_id": "Qwen/Qwen3.5-4B-Base",
+    "revision": "1001bb4d826a52d1f399e183466143f4da7b741b",
+    "base_snapshot_sha256": "a176a3c982da5480a0ca98280848474133d105d2e4ab45dc37ce2c68a7c2195b"
+  },
+  "packing": {
+    "selected": false,
+    "packing": false,
+    "padding_free": false,
+    "parity_status": "not_run",
+    "reason": "Day 15 produced no packing contract and the evidence-bound Day 20 run was deliberately unpacked."
+  },
+  "candidate_set": {
+    "kind": "learning_rate_probes_only",
+    "main_started": false,
+    "early_checkpoint": null,
+    "mid_checkpoint": null,
+    "final_checkpoint": null,
+    "probes": [
+      {
+        "name": "probe-1e-5",
+        "learning_rate": 0.00001,
+        "optimizer_steps": 103,
+        "supervised_tokens": 16000,
+        "training_summary_sha256": "84ac6e45dd0ddefe6efb80f2a543127e9a51cf36e10e27d023c2c6e4ad7a2a75",
+        "adapter_model_sha256": "9c558612efce2b15cc0a576fa7039614da6faf3711ad87ee280eb5aca2433ff0",
+        "eligible": false,
+        "hard_failures": [
+          "math_regression_gt_1"
+        ]
+      },
+      {
+        "name": "probe-3e-5",
+        "learning_rate": 0.00003,
+        "optimizer_steps": 103,
+        "supervised_tokens": 16000,
+        "training_summary_sha256": "27274659f99631d60dd86cd9ec03fc2fa808130ed6698f46a20ef012e93f2c90",
+        "adapter_model_sha256": "2735f44af14993abd99ce439fb584696d858183983f509e5eb7004e08c69d1b9",
+        "eligible": false,
+        "hard_failures": [
+          "math_regression_gt_1",
+          "code_static_execution_eligible_below_7_of_8"
+        ]
+      },
+      {
+        "name": "probe-1e-4",
+        "learning_rate": 0.0001,
+        "optimizer_steps": 103,
+        "supervised_tokens": 16000,
+        "training_summary_sha256": "51b9e2edd072cc78621272dadc5551778dcbea6b373f678c41ee798108263d55",
+        "adapter_model_sha256": "f9ffcb58fdcca4dc6bfaffc69ebe17cf22c7c40665dc6838e107a06dd22dc138",
+        "eligible": false,
+        "hard_failures": [
+          "code_static_execution_eligible_below_7_of_8"
+        ]
+      }
+    ]
+  },
+  "selection": {
+    "formal_probe_selection_marker": null,
+    "e2b_results": null,
+    "candidate_metrics": "day-20-qwen35-balanced-lora-sft/reports/day20-probe-analysis-20260809/evidence/probe_metrics.json",
+    "candidate_metrics_file_sha256": "bb1ca54fb2f94e61387c602b636897d02d87c0094c53ba04d753abffd03f1908",
+    "decision": "no_candidate",
+    "reason": "Every LoRA probe violated at least one preregistered necessary gate that is independent of missing E2B correctness."
+  },
+  "provisional_anchor": {
+    "checkpoint": null,
+    "adapter": null,
+    "merged_export": null,
+    "eligible": false
+  },
+  "S1": {
+    "checkpoint": null,
+    "status": "nonexistent"
+  },
+  "confirmation": {
+    "manifest": null,
+    "consumed": false,
+    "note": "No candidate existed, so a new confirmation split was neither created nor consumed. A future charter must freeze its own contract."
+  },
+  "downstream": {
+    "day17_anchor_resume": "blocked_no_selected_resumable_candidate",
+    "day21_promotion": "blocked_no_candidate",
+    "dpo": "blocked_until_S1",
+    "grpo": "blocked_until_S1"
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "schema_name": "rsi.final_promotion_verification",
+  "schema_version": 1,
+  "version_id": "rsi-v0002",
+  "run_id": "run-003-main-confirmation",
+  "attempt_id": "attempt-001",
+  "status": "complete",
+  "verifier": "pass",
+  "finalize": "pass",
+  "promotion": {
+    "file_sha256": "c5ce7f522706040ac1628659ccc1ee53c2ac61eb820861a092a5dcd7bf8049e4",
+    "content_sha256": "de72a8f43da23e955e9525bccb365b49edcba7976018d6b58a9b34f903c2caa7",
+    "bytes": 5633
+  },
+  "decision": {
+    "action": "promote_primary_checkpoint",
+    "selected_candidate": "main-s20260809-lr1e-4-final",
+    "validated_primary_candidate": "main-s20260809-lr1e-4-final",
+    "confirmation_candidate": "main-s20260810-lr1e-4-final",
+    "reason": "primary_and_confirmation_passed_main_floors",
+    "merge_performed": false
+  },
+  "primary_selection": {
+    "file_sha256": "4bffbf9d19f5318fafd07af72df0f218010ce41bf6f37f41883a15b44d419585",
+    "content_sha256": "28ea80fe582c2ed8738ed471335794a9919bfa3ccbdb0e06a0fd52b3c9679b80"
+  },
+  "confirmation_metrics": {
+    "general": 21,
+    "math": 21,
+    "finance": 14,
+    "code": 17,
+    "total": 73,
+    "eligible": 28,
+    "format": 112,
+    "infra": 0
+  },
+  "collector": {
+    "status": "pass",
+    "inventory_sha256": "9d6a78e9954e37e74fae9698ad6729dc253cb3c8156f3008d86ad24ed7ccab5b",
+    "items": 44,
+    "operational_incomplete": 0,
+    "verification_failures": 0,
+    "confirmation_evidence_sha256": {
+      "checkpoint": "526e09e05c872beee47b337d92d1aa993621cff2d6d685220d0972f2b28045a0",
+      "raw": "159cc68aa8889f214219790177ecfcfef9a8af027d95115ed8771531801faaee",
+      "normalized": "4225e4c966fdc861ba5031cf28424c8593098510628e8ea3fe0092d93375447e",
+      "sandbox": "085555d6e5863db788aeeffc77d6e235016e28c5d0ea74abac12ff72b278f4c0",
+      "final_promotion": "ead5feb9bc0a465c9cba05cf1d947d3f8e7582f4e8f7d09b87d4182200a788a6"
+    }
+  },
+  "cost": {"gpu_hours": 0.0, "eval_accesses": 0, "measurement_method": "selector_and_finalize_cpu_only"}
+}

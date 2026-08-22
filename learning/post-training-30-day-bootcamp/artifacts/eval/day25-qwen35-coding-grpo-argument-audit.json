@@ -1,0 +1,157 @@
+{
+  "advantage_parity": {
+    "ddof": 1,
+    "epsilon": 0.0001,
+    "fixture_rewards": [
+      1.0,
+      1.0,
+      1.0,
+      0.0,
+      1.0,
+      1.0,
+      0.6666666666666666,
+      0.6666666666666666
+    ],
+    "maximum_absolute_error": 0.0,
+    "offline_advantages": [
+      0.4999000199960008,
+      0.4999000199960008,
+      0.4999000199960008,
+      -1.4997000599880024,
+      0.8655756374898612,
+      0.8655756374898612,
+      -0.8655756374898605,
+      -0.8655756374898605
+    ],
+    "status": "pass",
+    "trainer_advantages": [
+      0.4999000199960008,
+      0.4999000199960008,
+      0.4999000199960008,
+      -1.4997000599880024,
+      0.8655756374898612,
+      0.8655756374898612,
+      -0.8655756374898605,
+      -0.8655756374898605
+    ]
+  },
+  "audit_sha256": "fc597ba71cf59669ad5eb7db542f6ebd1a6895d2f5e26d34fcce5d79838c5c5b",
+  "claim_boundary": {
+    "e2b_live_call": false,
+    "gpu_ready": false,
+    "json_cli_and_dataset_loader": "pass",
+    "model_weights_loaded": false,
+    "pinned_advantage_math": "pass",
+    "reward_plugin_import_and_init": "pass",
+    "vllm_engine_created": false
+  },
+  "pinned_ms_swift": {
+    "advantage_source_sha256": "2661cc49c24e3d9f6ca96b9e81297c71636d72f697f3d7bd4deaa535543bb788",
+    "checkout_clean": true,
+    "commit": "565a1ad586a21d24b23931c52d2c62b49c39bee8",
+    "import_path": "/Users/jiaweiqian/Desktop/python_projects/life/vendor/ms-swift/swift/__init__.py",
+    "reward_bridge_source_sha256": "9f64a67b53b9cfa33b8cbb8270370c175f321910a057f28e54c34c52f7e18a9b"
+  },
+  "rlhf_argument_field_count": 474,
+  "run_contract": {
+    "content_sha256": "59e4a07abbed6581650784b264fb43da81ce913c74c81f1be2b7880504f3ed2c",
+    "file_sha256": "97258ef44976e6af760e9e27c8d81bd178dd7fba6dd85d444c62bbd84c110bb8",
+    "path": "artifacts/configs/day25-qwen35-coding-grpo/cpu-run-contract.json"
+  },
+  "runtime": {
+    "e2b": "not-installed",
+    "ms_swift": "4.5.0.dev0",
+    "peft": "0.18.0",
+    "python": "3.11.15",
+    "torch": "2.9.1",
+    "transformers": "5.12.1",
+    "trl": "0.29.1",
+    "vllm": "not-installed"
+  },
+  "schema_name": "day25.qwen35_coding_grpo_argument_audit",
+  "schema_version": 1,
+  "scope": "real_pinned_json_cli_plugin_loader_and_advantage_no_model_weights",
+  "stages": {
+    "g1_rollout_only": {
+      "dataset_records": 32,
+      "max_steps": 1,
+      "resolved": {
+        "adapters": [],
+        "beta": 0.0,
+        "generation_batch_size": 8,
+        "num_generations": 4,
+        "ref_adapters": [],
+        "ref_model": null,
+        "resume_from_checkpoint": null,
+        "scale_rewards": "group",
+        "steps_per_generation": 8,
+        "vllm_enable_lora": true,
+        "vllm_mode": "colocate"
+      },
+      "reward_plugin_registered_and_initialized": true,
+      "status": "pass",
+      "validation_records": 0
+    },
+    "g2_one_update": {
+      "dataset_records": 32,
+      "max_steps": 1,
+      "resolved": {
+        "adapters": [],
+        "beta": 0.0,
+        "generation_batch_size": 8,
+        "num_generations": 4,
+        "ref_adapters": [],
+        "ref_model": null,
+        "resume_from_checkpoint": null,
+        "scale_rewards": "group",
+        "steps_per_generation": 8,
+        "vllm_enable_lora": true,
+        "vllm_mode": "colocate"
+      },
+      "reward_plugin_registered_and_initialized": true,
+      "status": "pass",
+      "validation_records": 0
+    },
+    "g3_weight_sync_probe": {
+      "dataset_records": 32,
+      "max_steps": 2,
+      "resolved": {
+        "adapters": [],
+        "beta": 0.0,
+        "generation_batch_size": 8,
+        "num_generations": 4,
+        "ref_adapters": [],
+        "ref_model": null,
+        "resume_from_checkpoint": null,
+        "scale_rewards": "group",
+        "steps_per_generation": 8,
+        "vllm_enable_lora": true,
+        "vllm_mode": "colocate"
+      },
+      "reward_plugin_registered_and_initialized": true,
+      "status": "pass",
+      "validation_records": 0
+    },
+    "g4_bounded_short_run": {
+      "dataset_records": 32,
+      "max_steps": 10,
+      "resolved": {
+        "adapters": [],
+        "beta": 0.0,
+        "generation_batch_size": 8,
+        "num_generations": 4,
+        "ref_adapters": [],
+        "ref_model": null,
+        "resume_from_checkpoint": null,
+        "scale_rewards": "group",
+        "steps_per_generation": 8,
+        "vllm_enable_lora": true,
+        "vllm_mode": "colocate"
+      },
+      "reward_plugin_registered_and_initialized": true,
+      "status": "pass",
+      "validation_records": 0
+    }
+  },
+  "status": "pass"
+}

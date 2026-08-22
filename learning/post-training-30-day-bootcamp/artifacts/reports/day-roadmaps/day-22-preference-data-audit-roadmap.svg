@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="2840" viewBox="0 0 1800 2840" role="img" aria-labelledby="title desc">
+  <title id="title">Day 22 · 从 S1 Rollout 到可审计 Preference Pairs</title>
+  <desc id="desc">A Chinese roadmap from the downstream-ready Qwen3.5 S1 through on-policy MBPP rollouts, bounded adaptive resampling, duplicate filtering, two-run sandbox classification, preference-pair construction, processor auditing, family-level split isolation and position-swapped human blind review gating.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+    <style>
+      text { font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", "PingFang SC", sans-serif; fill: #172033; }
+      .title { font-size: 34px; font-weight: 750; }
+      .subtitle { font-size: 18px; fill: #526078; }
+      .section { font-size: 23px; font-weight: 750; }
+      .stage { font-size: 13px; font-weight: 750; letter-spacing: .45px; fill: #475569; }
+      .label { font-size: 18px; font-weight: 700; }
+      .body { font-size: 15px; }
+      .body-strong { font-size: 15px; font-weight: 700; }
+      .small { font-size: 14px; fill: #475569; }
+      .tiny { font-size: 12px; fill: #526078; }
+      .source { font-size: 11px; fill: #64748b; }
+      .metric-value { font-family: "SFMono-Regular", Consolas, monospace; font-size: 27px; font-weight: 750; fill: #1e3a8a; }
+      .number { font-size: 13px; font-weight: 800; fill: #ffffff; }
+      .panel { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1.5; }
+      .hero { fill: #eef2ff; stroke: #6366f1; stroke-width: 1.8; }
+      .blue { fill: #dbeafe; stroke: #2563eb; stroke-width: 1.5; }
+      .cyan { fill: #cffafe; stroke: #0891b2; stroke-width: 1.5; }
+      .purple { fill: #f3e8ff; stroke: #9333ea; stroke-width: 1.5; }
+      .green { fill: #dcfce7; stroke: #16a34a; stroke-width: 1.5; }
+      .amber { fill: #fef3c7; stroke: #d97706; stroke-width: 1.5; }
+      .teal { fill: #ccfbf1; stroke: #0f766e; stroke-width: 1.5; }
+      .indigo { fill: #e0e7ff; stroke: #4f46e5; stroke-width: 1.5; }
+      .red { fill: #fee2e2; stroke: #dc2626; stroke-width: 1.5; }
+      .blue-soft { fill: #eff6ff; stroke: #93c5fd; stroke-width: 1.3; }
+      .purple-soft { fill: #faf5ff; stroke: #d8b4fe; stroke-width: 1.3; }
+      .green-soft { fill: #f0fdf4; stroke: #86efac; stroke-width: 1.3; }
+      .amber-soft { fill: #fffbeb; stroke: #fcd34d; stroke-width: 1.3; }
+      .cyan-soft { fill: #ecfeff; stroke: #67e8f9; stroke-width: 1.3; }
+      .slate-soft { fill: #f8fafc; stroke: #cbd5e1; stroke-width: 1.3; }
+      .number-dot { fill: #475569; }
+      .metric { fill: #f8fafc; stroke: #94a3b8; stroke-width: 1.4; }
+      .table-bg { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1.3; }
+      .table-head { fill: #e2e8f0; stroke: #94a3b8; stroke-width: 1.2; }
+      .table-alt { fill: #f8fafc; }
+      .status-good { fill: #dcfce7; stroke: #16a34a; stroke-width: 1.4; }
+      .status-warn { fill: #fef3c7; stroke: #d97706; stroke-width: 1.4; }
+      .status-stop { fill: #fee2e2; stroke: #dc2626; stroke-width: 1.4; }
+      .status-info { fill: #dbeafe; stroke: #2563eb; stroke-width: 1.4; }
+      .status-slate { fill: #f1f5f9; stroke: #64748b; stroke-width: 1.4; }
+      .decision { fill: #eef2ff; stroke: #6366f1; stroke-width: 1.7; }
+      .boundary { fill: #fff7ed; stroke: #ea580c; stroke-width: 1.7; }
+      .divider { stroke: #cbd5e1; stroke-width: 1.2; }
+      .grid { stroke: #cbd5e1; stroke-width: 1; }
+      .line { fill: none; stroke: #475569; stroke-width: 2; marker-end: url(#arrow); }
+      .line-dash { fill: none; stroke: #64748b; stroke-width: 1.8; stroke-dasharray: 7 5; marker-end: url(#arrow); }
+    </style>
+  </defs>
+
+  <rect width="1800" height="2840" fill="#f5f7fb"/>
+  <text x="50" y="62" class="title">Day 22 · 从 S1 Rollout 到可审计 Preference Pairs</text>
+  <text x="50" y="95" class="subtitle">Provenance、双跑 Sandbox、Processor、family split 与盲审缺一不可；pair 数量不是可信度。</text>
+  <rect x="1190" y="108" width="570" height="38" rx="19" class="status-warn"/>
+  <text x="1475" y="133" class="stage" text-anchor="middle">MACHINE GATES PASS · HUMAN BLIND REVIEW PENDING</text>
+
+  <rect x="40" y="165" width="1720" height="112" rx="18" class="hero"/>
+  <text x="70" y="203" class="section">一句话 Gate</text>
+  <text x="270" y="203" class="label" text-anchor="start"><tspan x="270" dy="0">200 个 promoted-S1 on-policy、non-synthetic pairs 已通过全部 machine gates；formal manifest machine_ready=true。</tspan><tspan x="270" dy="31">但 50 对 × primary/swapped 的正式人工盲审尚未完成，formal_dpo_ready=false，Day 23 必须继续 BLOCKED。</tspan></text>
+
+  <rect x="40" y="310" width="1720" height="650" rx="18" class="panel"/>
+  <text x="70" y="352" class="section">1 · Roadmap：从输入边界到可交付结论</text>
+  <text x="70" y="382" class="small">每一步都回答“对象是什么、证据在哪里、失败时停在哪一层”；编号代表依赖顺序。</text>
+  <text x="70" y="391" class="stage">01 · FREEZE PARENT</text>
+<rect x="70" y="405" width="360" height="210" rx="16" class="blue"/>
+<text x="94" y="445" class="label" text-anchor="start"><tspan x="94" dy="0">绑定正式 S1 与 family</tspan></text>
+<line x1="94" y1="463" x2="406" y2="463" class="divider"/>
+<text x="94" y="497" class="small" text-anchor="start"><tspan x="94" dy="0">只允许 Day 21 downstream key</tspan><tspan x="94" dy="28">351 MBPP main families − 21 probe</tspan><tspan x="94" dy="28">冻结 330 clean train families</tspan></text>
+<text x="480" y="391" class="stage">02 · BASE ROUND</text>
+<rect x="480" y="405" width="360" height="210" rx="16" class="cyan"/>
+<text x="504" y="445" class="label" text-anchor="start"><tspan x="504" dy="0">同策略 K=6 rollout</tspan></text>
+<line x1="504" y1="463" x2="816" y2="463" class="divider"/>
+<text x="504" y="497" class="small" text-anchor="start"><tspan x="504" dy="0">330 × 6 = 1,980 responses</tspan><tspan x="504" dy="28">temperature 0.8 · top_p 0.95</tspan><tspan x="504" dy="28">family-isolated generation</tspan></text>
+<text x="890" y="391" class="stage">03 · FILTER + E2B</text>
+<rect x="890" y="405" width="360" height="210" rx="16" class="purple"/>
+<text x="914" y="445" class="label" text-anchor="start"><tspan x="914" dy="0">只执行独特候选</tspan></text>
+<line x1="914" y1="463" x2="1226" y2="463" class="divider"/>
+<text x="914" y="497" class="small" text-anchor="start"><tspan x="914" dy="0">格式过滤 + exact-response dedup</tspan><tspan x="914" dy="28">1,638 unique candidates</tspan><tspan x="914" dy="28">每条两次 fresh、断网 sandbox</tspan></text>
+<text x="1300" y="391" class="stage">04 · ADAPTIVE R1</text>
+<rect x="1300" y="405" width="360" height="210" rx="16" class="green"/>
+<text x="1324" y="445" class="label" text-anchor="start"><tspan x="1324" dy="0">只补无 pair 的 family</tspan></text>
+<line x1="1324" y1="463" x2="1636" y2="463" class="divider"/>
+<text x="1324" y="497" class="small" text-anchor="start"><tspan x="1324" dy="0">189 families × K=12</tspan><tspan x="1324" dy="28">跨轮去重后执行 1,405 new</tspan><tspan x="1324" dy="28">同一 S1 / sampler contract</tspan></text>
+<text x="280" y="676" class="stage">05 · PAIR</text>
+<rect x="280" y="690" width="360" height="210" rx="16" class="amber"/>
+<text x="304" y="730" class="label" text-anchor="start"><tspan x="304" dy="0">稳定 pass 对 stable wrong</tspan></text>
+<line x1="304" y1="748" x2="616" y2="748" class="divider"/>
+<text x="304" y="782" class="small" text-anchor="start"><tspan x="304" dy="0">chosen = pass,pass</tspan><tspan x="304" dy="28">rejected = wrong_answer,wrong_answer</tspan><tspan x="304" dy="28">runtime/timeout/infra 全 quarantine</tspan></text>
+<text x="720" y="676" class="stage">06 · PROCESS + SPLIT</text>
+<rect x="720" y="690" width="360" height="210" rx="16" class="teal"/>
+<text x="744" y="730" class="label" text-anchor="start"><tspan x="744" dy="0">重新编码并隔离 family</tspan></text>
+<line x1="744" y1="748" x2="1056" y2="748" class="divider"/>
+<text x="744" y="782" class="small" text-anchor="start"><tspan x="744" dy="0">200/200 processor audits pass</tspan><tspan x="744" dy="28">prompt prefix identical · response-only loss</tspan><tspan x="744" dy="28">train/dev/heldout = 154/17/29</tspan></text>
+<text x="1160" y="676" class="stage">07 · BLIND REVIEW</text>
+<rect x="1160" y="690" width="360" height="210" rx="16" class="indigo"/>
+<text x="1184" y="730" class="label" text-anchor="start"><tspan x="1184" dy="0">Position swap 后 fail closed</tspan></text>
+<line x1="1184" y1="748" x2="1496" y2="748" class="divider"/>
+<text x="1184" y="782" class="small" text-anchor="start"><tspan x="1184" dy="0">50 pairs × 2 orderings = 100 rows</tspan><tspan x="1184" dy="28">concealed key 与 worksheet 分离</tspan><tspan x="1184" dy="28">formal human gate 未完成，不启 DPO</tspan></text>
+  <path d="M 430 510 L 470 510" class="line"/>
+<path d="M 840 510 L 880 510" class="line"/>
+<path d="M 1250 510 L 1290 510" class="line"/>
+<path d="M 1660 615 C 1660 650 1520 650 1520 680" class="line-dash"/>
+<path d="M 640 795 L 710 795" class="line"/>
+<path d="M 1080 795 L 1150 795" class="line"/>
+
+  <rect x="40" y="990" width="1720" height="590" rx="18" class="panel"/>
+  <text x="70" y="1033" class="section">2 · 真正学到的知识：可迁移的判断框架</text>
+  <rect x="70" y="1075" width="530" height="205" rx="16" class="blue-soft"/>
+<circle cx="106" cy="1114" r="18" class="number-dot"/>
+<text x="106" y="1120" class="number" text-anchor="middle">1</text>
+<text x="136" y="1120" class="label" text-anchor="start"><tspan x="136" dy="0">Preference 不天然等于正确</tspan></text>
+<text x="96" y="1161" class="small" text-anchor="start"><tspan x="96" dy="0">chosen/rejected 只表达相对偏好；</tspan><tspan x="96" dy="27">必须绑定测试、verifier、环境与 provenance。</tspan></text>
+<rect x="635" y="1075" width="530" height="205" rx="16" class="purple-soft"/>
+<circle cx="671" cy="1114" r="18" class="number-dot"/>
+<text x="671" y="1120" class="number" text-anchor="middle">2</text>
+<text x="701" y="1120" class="label" text-anchor="start"><tspan x="701" dy="0">错误类型不能混用</tspan></text>
+<text x="661" y="1161" class="small" text-anchor="start"><tspan x="661" dy="0">wrong answer、runtime、timeout、infra error</tspan><tspan x="661" dy="27">语义不同；只有稳定 wrong 才能作 rejected。</tspan></text>
+<rect x="1200" y="1075" width="530" height="205" rx="16" class="green-soft"/>
+<circle cx="1236" cy="1114" r="18" class="number-dot"/>
+<text x="1236" y="1120" class="number" text-anchor="middle">3</text>
+<text x="1266" y="1120" class="label" text-anchor="start"><tspan x="1266" dy="0">Adaptive 只补 coverage</tspan></text>
+<text x="1226" y="1161" class="small" text-anchor="start"><tspan x="1226" dy="0">只对首轮没有 pass-vs-wrong 的 family 采样；</tspan><tspan x="1226" dy="27">不能换 policy 或改变采样合同。</tspan></text>
+<rect x="70" y="1310" width="530" height="205" rx="16" class="amber-soft"/>
+<circle cx="106" cy="1349" r="18" class="number-dot"/>
+<text x="106" y="1355" class="number" text-anchor="middle">4</text>
+<text x="136" y="1355" class="label" text-anchor="start"><tspan x="136" dy="0">长度是潜在 shortcut</tspan></text>
+<text x="96" y="1396" class="small" text-anchor="start"><tspan x="96" dy="0">pair selection 先最小化相对 token-length delta，</tspan><tspan x="96" dy="27">再考虑失败难度，降低 length bias。</tspan></text>
+<rect x="635" y="1310" width="530" height="205" rx="16" class="cyan-soft"/>
+<circle cx="671" cy="1349" r="18" class="number-dot"/>
+<text x="671" y="1355" class="number" text-anchor="middle">5</text>
+<text x="701" y="1355" class="label" text-anchor="start"><tspan x="701" dy="0">DPO processor 必须重审</tspan></text>
+<text x="661" y="1396" class="small" text-anchor="start"><tspan x="661" dy="0">chosen/rejected 共享相同 prompt prefix；</tspan><tspan x="661" dy="27">只对连续 response span 计 log-prob。</tspan></text>
+<rect x="1200" y="1310" width="530" height="205" rx="16" class="slate-soft"/>
+<circle cx="1236" cy="1349" r="18" class="number-dot"/>
+<text x="1236" y="1355" class="number" text-anchor="middle">6</text>
+<text x="1266" y="1355" class="label" text-anchor="start"><tspan x="1266" dy="0">Split 的单位是 family</tspan></text>
+<text x="1226" y="1396" class="small" text-anchor="start"><tspan x="1226" dy="0">problem / prompt / test / source family</tspan><tspan x="1226" dy="27">不能随机按行切，否则会泄漏同题变体。</tspan></text>
+
+  <rect x="40" y="1610" width="1720" height="720" rx="18" class="panel"/>
+  <text x="70" y="1653" class="section">3 · Evidence：关键数字、对照与决策依据</text>
+  <rect x="70" y="1690" width="385" height="140" rx="16" class="metric"/>
+<text x="94" y="1724" class="stage" text-anchor="start"><tspan x="94" dy="0">SOURCE FAMILIES</tspan></text>
+<text x="94" y="1769" class="metric-value" text-anchor="start"><tspan x="94" dy="0">330 clean MBPP</tspan></text>
+<text x="94" y="1802" class="tiny" text-anchor="start"><tspan x="94" dy="0">promoted S1 only · probe families excluded</tspan></text>
+<rect x="480" y="1690" width="385" height="140" rx="16" class="metric"/>
+<text x="504" y="1724" class="stage" text-anchor="start"><tspan x="504" dy="0">UNIQUE CANDIDATES</tspan></text>
+<text x="504" y="1769" class="metric-value" text-anchor="start"><tspan x="504" dy="0">3,043</tspan></text>
+<text x="504" y="1802" class="tiny" text-anchor="start"><tspan x="504" dy="0">1,230 pass · 1,430 wrong · 383 quarantine</tspan></text>
+<rect x="890" y="1690" width="385" height="140" rx="16" class="metric"/>
+<text x="914" y="1724" class="stage" text-anchor="start"><tspan x="914" dy="0">FORMAL PAIRS</tspan></text>
+<text x="914" y="1769" class="metric-value" text-anchor="start"><tspan x="914" dy="0">200 · synthetic 0%</tspan></text>
+<text x="914" y="1802" class="tiny" text-anchor="start"><tspan x="914" dy="0">processor 200/200 · no truncation</tspan></text>
+<rect x="1300" y="1690" width="385" height="140" rx="16" class="metric"/>
+<text x="1324" y="1724" class="stage" text-anchor="start"><tspan x="1324" dy="0">HUMAN GATE</tspan></text>
+<text x="1324" y="1769" class="metric-value" text-anchor="start"><tspan x="1324" dy="0">0 / 50 complete pairs</tspan></text>
+<text x="1324" y="1802" class="tiny" text-anchor="start"><tspan x="1324" dy="0">10 human presentations ≠ 10 completed pairs</tspan></text>
+  <rect x="70" y="1860" width="1660" height="248" rx="12" class="table-bg"/>
+<rect x="70" y="1860" width="1660" height="52" rx="12" class="table-head"/>
+<text x="86" y="1893" class="stage" text-anchor="start"><tspan x="86" dy="0">Stage</tspan></text>
+<line x1="360" y1="1860" x2="360" y2="2108" class="grid"/>
+<text x="376" y="1893" class="stage" text-anchor="start"><tspan x="376" dy="0">Raw</tspan></text>
+<line x1="570" y1="1860" x2="570" y2="2108" class="grid"/>
+<text x="586" y="1893" class="stage" text-anchor="start"><tspan x="586" dy="0">Unique / new</tspan></text>
+<line x1="840" y1="1860" x2="840" y2="2108" class="grid"/>
+<text x="856" y="1893" class="stage" text-anchor="start"><tspan x="856" dy="0">Stable pass</tspan></text>
+<line x1="1070" y1="1860" x2="1070" y2="2108" class="grid"/>
+<text x="1086" y="1893" class="stage" text-anchor="start"><tspan x="1086" dy="0">Stable wrong</tspan></text>
+<line x1="1320" y1="1860" x2="1320" y2="2108" class="grid"/>
+<text x="1336" y="1893" class="stage" text-anchor="start"><tspan x="1336" dy="0">Pair / quarantine result</tspan></text>
+<line x1="70" y1="1912" x2="1730" y2="1912" class="grid"/>
+<text x="86" y="1943" class="body-strong" text-anchor="start"><tspan x="86" dy="0">Base round · K6</tspan></text>
+<text x="376" y="1943" class="body" text-anchor="start"><tspan x="376" dy="0">1,980</tspan></text>
+<text x="586" y="1943" class="body" text-anchor="start"><tspan x="586" dy="0">1,638</tspan></text>
+<text x="856" y="1943" class="body" text-anchor="start"><tspan x="856" dy="0">746</tspan></text>
+<text x="1086" y="1943" class="body" text-anchor="start"><tspan x="1086" dy="0">719</tspan></text>
+<text x="1336" y="1943" class="body" text-anchor="start"><tspan x="1336" dy="0">141 base/base pairs</tspan></text>
+<rect x="70" y="1961" width="1660" height="49" class="table-alt"/>
+<line x1="70" y1="1961" x2="1730" y2="1961" class="grid"/>
+<text x="86" y="1992" class="body-strong" text-anchor="start"><tspan x="86" dy="0">Adaptive R1 · K12</tspan></text>
+<text x="376" y="1992" class="body" text-anchor="start"><tspan x="376" dy="0">2,268</tspan></text>
+<text x="586" y="1992" class="body" text-anchor="start"><tspan x="586" dy="0">1,405</tspan></text>
+<text x="856" y="1992" class="body" text-anchor="start"><tspan x="856" dy="0">484</tspan></text>
+<text x="1086" y="1992" class="body" text-anchor="start"><tspan x="1086" dy="0">711</tspan></text>
+<text x="1336" y="1992" class="body" text-anchor="start"><tspan x="1336" dy="0">adds cross-round + adaptive pairs</tspan></text>
+<line x1="70" y1="2010" x2="1730" y2="2010" class="grid"/>
+<text x="86" y="2041" class="body-strong" text-anchor="start"><tspan x="86" dy="0">Combined</tspan></text>
+<text x="376" y="2041" class="body" text-anchor="start"><tspan x="376" dy="0">—</tspan></text>
+<text x="586" y="2041" class="body" text-anchor="start"><tspan x="586" dy="0">3,043</tspan></text>
+<text x="856" y="2041" class="body" text-anchor="start"><tspan x="856" dy="0">1,230</tspan></text>
+<text x="1086" y="2041" class="body" text-anchor="start"><tspan x="1086" dy="0">1,430</tspan></text>
+<text x="1336" y="2041" class="body" text-anchor="start"><tspan x="1336" dy="0">200 families with pass-vs-wrong</tspan></text>
+<rect x="70" y="2059" width="1660" height="49" class="table-alt"/>
+<line x1="70" y1="2059" x2="1730" y2="2059" class="grid"/>
+<text x="86" y="2090" class="body-strong" text-anchor="start"><tspan x="86" dy="0">Quarantine</tspan></text>
+<text x="376" y="2090" class="body" text-anchor="start"><tspan x="376" dy="0">—</tspan></text>
+<text x="586" y="2090" class="body" text-anchor="start"><tspan x="586" dy="0">383</tspan></text>
+<text x="856" y="2090" class="body" text-anchor="start"><tspan x="856" dy="0">70 only-pass</tspan></text>
+<text x="1086" y="2090" class="body" text-anchor="start"><tspan x="1086" dy="0">60 only-fail</tspan></text>
+<text x="1336" y="2090" class="body" text-anchor="start"><tspan x="1336" dy="0">runtime/unstable/both-side cases excluded</tspan></text>
+  <text x="70" y="2144" class="small" text-anchor="start"><tspan x="70" dy="0">Pair origin：base/base 141 · base/adaptive 11 · adaptive/base 6 · adaptive/adaptive 42；每 family 最多一对。</tspan><tspan x="70" dy="26">Split 154/17/29；problem / prompt / test / source overlap = 0/0/0/0；blind packet = 50 unique pairs / 100 position-swapped presentations。</tspan></text>
+
+  <rect x="40" y="2360" width="1110" height="405" rx="18" class="decision"/>
+  <text x="70" y="2404" class="section">4 · 决策 / Takeaway</text>
+  <text x="70" y="2450" class="body-strong" text-anchor="start"><tspan x="70" dy="0">机器链路已经完成：S1 identity、rollout receipts、dedup、双跑 E2B、pair rubric、processor audit、</tspan><tspan x="70" dy="31">family split、hash manifest 与 strict validator 全部可重放；machine_ready=true。</tspan><tspan x="70" dy="31">正式 DPO 仍不能启动，因为 human_blind_review_pending 是唯一 blocker。</tspan><tspan x="70" dy="31">10 human + 90 AI 的混合审计得到 84/89 directional agreement，只能用于校准；</tspan><tspan x="70" dy="31">AI judgment 不能伪装成人工结论。完成 50 对正式盲审并裁决 position disagreement 后，才可发布 ready manifest。</tspan></text>
+  <rect x="1180" y="2360" width="580" height="405" rx="18" class="boundary"/>
+  <text x="1210" y="2404" class="section">证据边界</text>
+  <text x="1210" y="2450" class="small" text-anchor="start"><tspan x="1210" dy="0">• historical 63-pair smoke 为 synthetic mechanism evidence，</tspan><tspan x="1210" dy="29">  不进入 formal bundle。</tspan><tspan x="1210" dy="29">• 双跑 E2B 只证明在现有 tests 下稳定。</tspan><tspan x="1210" dy="29">• 单一 MBPP source，不能声称 source-held-out。</tspan><tspan x="1210" dy="29">• heldout 是 preference-stage in-domain，不是 model unseen。</tspan><tspan x="1210" dy="29">• formal human review 仍为 0/50 complete pairs。</tspan><tspan x="1210" dy="29">• machine-ready ≠ formal-DPO-ready。</tspan><tspan x="1210" dy="29">• 任一 pair 被人工排除后仍需重新满足 ≥200 门槛。</tspan></text>
+
+  <text x="70" y="2797" class="source" text-anchor="start"><tspan x="70" dy="0">Sources · day-22-preference-data/README.md · artifacts/data/day22-qwen35-formal-s1-manifest.json</tspan></text>
+<text x="70" y="2817" class="source" text-anchor="start"><tspan x="70" dy="0">Evidence · day22-qwen35-formal-s1-multiround-candidate-e2b-evidence.jsonl · processor-audit.jsonl · assembly-audit.json</tspan></text>
+</svg>

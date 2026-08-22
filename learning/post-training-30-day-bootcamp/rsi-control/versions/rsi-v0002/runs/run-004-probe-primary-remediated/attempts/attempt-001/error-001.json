@@ -1,0 +1,6 @@
+{
+  "layer": "infrastructure",
+  "code": "stale_incomplete_training_binding_blocks_new_attempt",
+  "message": "Before any GPU/model load, the runner verified run-001's incomplete internal attempt-001 binding against the remediated plugin and stopped on the expected file-identity mismatch.",
+  "retryable": true
+}

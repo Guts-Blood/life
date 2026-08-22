@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "domain": "day12.recovery_rollout_outcome",
+  "ordinal": 8,
+  "run_id": "J",
+  "status": "failed_all_gates",
+  "hypothesis": "Run I's math/code-focused mixture supplies the right tasks, but H's 5e-5 LoRA update magnitude still causes math forgetting; reducing only adapter learning rate to 3e-5 should move math from eight to at least ten while retaining at least five executable code solutions.",
+  "primary_change": {"path": "optimizer.learning_rate", "parent": 0.00005, "rollout": 0.00003},
+  "fixed_parent": "Run I exact manifest/order, rank-16 all-linear LoRA, Base revision and every non-LR invariant",
+  "scores": {
+    "I_25_percent": {"general": 5, "math": 8, "code": 3, "finance": 0, "total": 16},
+    "J_25_percent": {"general": 2, "math": 9, "code": 1, "finance": 0, "total": 12},
+    "J_minus_I": {"general": -3, "math": 1, "code": -2, "finance": 0, "total": -4},
+    "base": {"general": 2, "math": 12, "code": 0, "finance": 1, "total": 15}
+  },
+  "gate": {
+    "math": {"actual": 9, "minimum": 10, "passed": false},
+    "code": {"actual": 1, "minimum": 5, "passed": false},
+    "total": {"actual": 12, "minimum": 15, "passed": false},
+    "accepted": false
+  },
+  "diagnostics": {
+    "general_parse_errors": 15,
+    "math_parse_errors": 0,
+    "math_ceiling_hits": 28,
+    "code_ceiling_hits": 28,
+    "finance_parse_errors": 17,
+    "finance_ceiling_hits": 28,
+    "all_slice_ceiling_hits": 112,
+    "output_tokens": 43904,
+    "generation_latency_seconds": 1166.815526,
+    "parameter_counts": {"total": 606142464, "trainable": 10092544, "frozen": 596049920},
+    "maximum_cuda_memory_gib": 6.760619640350342
+  },
+  "training": {
+    "checkpoint": "25_percent",
+    "supervised_tokens": 61734,
+    "optimizer_steps": 79,
+    "checkpoint_manifest_sha256": "4ce6e47ff35624ab987ad162d871db16c13f35b5ae8b0c9b637d0a7c31cc52c2",
+    "inference_export_manifest_sha256": "f464d031039a4655b75a773a554cedd72ccdc7181ea87b06be22eb494211621c",
+    "summary_path": "artifacts/logs/day12-run-J-25-training-summary.json",
+    "summary_file_sha256": "592ea45f11ab94783af3b895d803d10e5de7a3eb6a9a1463cf65d7324be84512",
+    "preflight_path": "artifacts/logs/day12-preflight-J.json",
+    "preflight_file_sha256": "9a3f264934d28db120a5da2da7a15626baafabb1074c8ad575b421fe08e9eaf3",
+    "step_trace_path": "artifacts/logs/day12-run-J-step-trace.jsonl",
+    "step_trace_file_sha256": "61c7ad3e8278b0523f85b86d95578682f3857637c46048a51b75883cb624b087"
+  },
+  "eval": {
+    "summary_hash": "sha256:033a1730899f67350d26723b6a1342f8c007e54de776067f7fd24ab428bfa093",
+    "predictions": {"path": "artifacts/eval/J-25_percent-dev-predictions.jsonl", "records": 112, "file_sha256": "717b123242bf132812b3f465598871b3a9024899bb9d942bfdf6abdb42f52e66"},
+    "code_results": {"path": "artifacts/eval/J-25_percent-dev-code-e2b.jsonl", "records": 28, "file_sha256": "198ce054cfaa6252795361a816d1e180e1f6cb9bd061fbed5e8841acd06839de"},
+    "summary": {"path": "artifacts/eval/J-25_percent-dev-summary.json", "file_sha256": "670553002b97101df8e8515595ef193cf0c7eada5d0872635b81e1fae5ae29df"}
+  },
+  "interpretation": {
+    "supported": "Lowering LoRA LR from 5e-5 to 3e-5 recovered one math case, confirming a real update-magnitude retention trend.",
+    "rejected": "The LR reduction was not sufficient for the math gate and did not retain code capability: code fell from three to one and aggregate fell below Base.",
+    "remaining_failure": "Every prediction still hit its generation ceiling; lowering LR further before addressing output-layer adaptation is likely to erase the remaining code signal.",
+    "next_rollout": "Keep J's LR and all data/order invariants, but extend LoRA coverage from the decoder linear projections to the same projections plus lm_head."
+  },
+  "storage": {
+    "full_checkpoint_deleted": true,
+    "bf16_export_deleted": true,
+    "recoverability": "Retraining and BF16 export only"
+  },
+  "frozen_test_consumed": false
+}

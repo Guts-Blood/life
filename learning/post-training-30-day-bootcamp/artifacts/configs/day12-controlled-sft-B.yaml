@@ -1,0 +1,8 @@
+extends: day12-controlled-sft-base.yaml
+run:
+  id: B
+data:
+  manifest_path: learning/post-training-30-day-bootcamp/artifacts/data/day09-mix-B-targeted.json
+  manifest_file_sha256: d87e32b7925080c4e1abc6676354cb35e60af3f2311b969d6441a8aacc319837
+  manifest_hash: 8409de2d47c51cf0a29a22f5af0fd7bd136b98cfb1ed7de72682ffebb3bd5aaf
+  mix_name: mix_B_targeted

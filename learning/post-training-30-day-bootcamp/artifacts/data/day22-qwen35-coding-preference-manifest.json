@@ -1,0 +1,110 @@
+{
+  "content_identities": {
+    "concealed_review_key_sha256": "fc22d2838166fa7d156e1a347ff61677fd70cbc07cde86ba8181ae5b11cbad5e",
+    "ordered_pair_hashes_sha256": "c859e3cbe138e4285c0441ddd3303ff099ffaf777840b5389f6f67730444fdc1",
+    "split_ids_sha256": "d75f64f53002976a7db3ce7e09cb52eee8951ac9e13141f4b560db0442b359c4",
+    "worksheet_sha256": "b5349ab739b1727c028fe86c3fd6e7084b5a420e2f68bf869b6b94da879bf329"
+  },
+  "contract_summary": {
+    "ordered_pair_hashes_sha256": "c859e3cbe138e4285c0441ddd3303ff099ffaf777840b5389f6f67730444fdc1",
+    "pair_status_counts": {
+      "accepted": 63
+    },
+    "records": 63,
+    "split_counts": {
+      "dev": 7,
+      "heldout": 6,
+      "train": 50
+    }
+  },
+  "dataset_role": "audited_smoke_not_formal_dpo_data",
+  "formal_dpo_ready": false,
+  "inputs": {
+    "candidates": {
+      "file_sha256": "310f67868261a61448a9591002c2f3f5f68dd521bf2b9adae768886939ad36da",
+      "path": "artifacts/data/day22-qwen35-mbpp-smoke-candidates.jsonl"
+    },
+    "processor_audit": {
+      "file_sha256": "0a38009b5d85b9ed7c093a9de5be9d94098c5182623fae9a871ce251ba8efbbc",
+      "path": "artifacts/eval/day22-qwen35-mbpp-smoke-processor-audit.jsonl"
+    },
+    "replay_input": {
+      "file_sha256": "3224c0883d40304a6faab19118f645b6b74c64d8dd13f4064b69ce52f2a454c2",
+      "path": "artifacts/data/day22-qwen35-mbpp-smoke-replay-input.jsonl"
+    },
+    "sandbox_evidence": {
+      "file_sha256": "de2e21f5db3bb494b49aaa531e9e8087ac646108ed247e1fc029630e8be6d070",
+      "path": "artifacts/eval/day22-qwen35-mbpp-smoke-e2b-sandbox-evidence.jsonl"
+    },
+    "seed": {
+      "file_sha256": "90943afc694d3aef121c3d58b751c52e0bbfaa0d48f7388dbc90a9088821ed8e",
+      "path": "artifacts/data/day22-qwen35-mbpp-seed-manifest.json"
+    }
+  },
+  "join_counts": {
+    "accepted_pairs": 63,
+    "candidate_records": 80,
+    "processor_records": 80,
+    "quarantine_reason_counts": {
+      "execution_not_pass_vs_stable_wrong_answer": 17
+    },
+    "quarantined_pairs": 17,
+    "replay_records": 80,
+    "sandbox_records": 80,
+    "seed_records": 330
+  },
+  "manifest_sha256": "794b13c7ba852a03368f370a6c9760be484e1fc2f93f0edea7df991698bd21c5",
+  "output_files": {
+    "day22-qwen35-coding-preference-blind-review-key.json": {
+      "file_sha256": "951ad2b377a809d74114b1d708ffdbea63ddb07a7801cdbcf37429f7cf6ae094",
+      "path": "artifacts/data/day22-qwen35-coding-preference-blind-review-key.json"
+    },
+    "day22-qwen35-coding-preference-blind-review.jsonl": {
+      "file_sha256": "c502537a85cd6d4353d0efbf294beb5e0e0d547b219429455d39bd6b449ba3c7",
+      "path": "artifacts/data/day22-qwen35-coding-preference-blind-review.jsonl"
+    },
+    "day22-qwen35-coding-preference-pairs.jsonl": {
+      "file_sha256": "2c624344813acbe4f90023d84a8637ce859fbab9282187b9283580997e5966c7",
+      "path": "artifacts/data/day22-qwen35-coding-preference-pairs.jsonl"
+    },
+    "day22-qwen35-coding-preference-split-ids.json": {
+      "file_sha256": "50814e888c421794044ba142709de018a5b97377769a4d033b845bdb023cf757",
+      "path": "artifacts/data/day22-qwen35-coding-preference-split-ids.json"
+    }
+  },
+  "readiness": "BLOCKED",
+  "readiness_gates": {
+    "human_blind_review": {
+      "observed_completed_unique_pairs": 0,
+      "passed": false,
+      "reason": "worksheet generated; adjudicated review evidence is not an assembler input",
+      "required_unique_pairs": 50,
+      "worksheet_unique_pairs": 50
+    },
+    "minimum_accepted_pairs": {
+      "observed": 63,
+      "passed": false,
+      "required": 200
+    },
+    "promoted_s1_on_policy_source": {
+      "observed_non_synthetic_pairs": 0,
+      "observed_promoted_s1_on_policy_pairs": 0,
+      "passed": false,
+      "required": "all non-synthetic pairs carry promoted_s1=true and on_policy=true generator evidence"
+    },
+    "secure_sandbox": {
+      "observed_secure_pairs": 63,
+      "passed": true,
+      "required": "all accepted pairs replayed twice per side in attested E2B"
+    },
+    "synthetic_pair_fraction": {
+      "maximum": 0.2,
+      "observed": 1.0,
+      "passed": false,
+      "synthetic_pairs": 63
+    }
+  },
+  "schema_name": "day22.audited_smoke_assembly_manifest",
+  "schema_version": 1,
+  "warning": "Synthetic smoke validates the evidence pipeline; it is not formal DPO training data."
+}

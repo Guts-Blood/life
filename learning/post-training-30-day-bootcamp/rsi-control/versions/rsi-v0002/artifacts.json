@@ -1,0 +1,176 @@
+{
+  "schema_name": "rsi.version_artifacts",
+  "schema_version": 1,
+  "version_id": "rsi-v0002",
+  "path_base": "bootcamp_root",
+  "implementation": [
+    {
+      "role": "candidate_factory_frozen",
+      "path": "day-20-qwen35-balanced-lora-sft/day20_candidate_factory_v2.py",
+      "sha256": "92b9b575b5ac80d6c896924de4e930badd26be98633dcea133347263dda144de"
+    },
+    {
+      "role": "target_contract_frozen",
+      "path": "day-20-qwen35-balanced-lora-sft/day20_contract_v2.py",
+      "sha256": "ad67937b1deeb9cf5cbc044aaa6b9d6315df7486f8ae6a48b9252becb6cad5d7"
+    },
+    {
+      "role": "temporal_ordering_frozen",
+      "path": "day-20-qwen35-balanced-lora-sft/day20_ordering_v2.py",
+      "sha256": "4d2ab319814821463b1fcf2f7ff2dcfe43ca1e095576dec4ed3d6ab5cab83a6b"
+    },
+    {
+      "role": "core_training_runtime_frozen",
+      "path": "day-20-qwen35-balanced-lora-sft/day20_train_runtime_v2.py",
+      "sha256": "8473e5d4fe55f0d072f6f112418c0439809452c206d3a7b0f2c4cc7ae899de9d"
+    },
+    {
+      "role": "core_training_plugin_frozen",
+      "path": "day-20-qwen35-balanced-lora-sft/day20_train_plugin_v2.py",
+      "sha256": "7129e5e3606756f242129539c740c303a13806ee636170df8ac8a86b070fbf5e"
+    },
+    {
+      "role": "raw_evaluator_frozen",
+      "path": "day-20-qwen35-balanced-lora-sft/evaluate_day20_v2.py",
+      "sha256": "4da1e7bed95a628e6914711842001b491b25e821ba6711c7bafac8c08e837963"
+    },
+    {
+      "role": "normalized_rescorer_frozen",
+      "path": "day-20-qwen35-balanced-lora-sft/rescore_day20_qwen35_v3.py",
+      "sha256": "0f8cffad3265fa85af920d5e0a8c2e88554b8c49c91d85f9a3885e899c7b06f2"
+    },
+    {
+      "role": "code_e2b_frozen",
+      "path": "day-20-qwen35-balanced-lora-sft/score_day20_code_e2b_v3.py",
+      "sha256": "cda49ee80e356ee4f419b6de512cca95a728998a7c88c3511bce373dd0a08784"
+    },
+    {
+      "role": "probe_selector_frozen",
+      "path": "day-20-qwen35-balanced-lora-sft/select_day20_v2.py",
+      "sha256": "99887e23150c7b0ff34185dfd89fd69e7cc5c8671ece699b53c75a469786a3fe"
+    },
+    {
+      "role": "main_selector_frozen",
+      "path": "day-20-qwen35-balanced-lora-sft/select_day20_main_v2.py",
+      "sha256": "6e861507286bde99128d94f6b9f9c0ec04b229c656f99c68a79e03b3b2125187"
+    },
+    {
+      "role": "e2b_preflight_frozen",
+      "path": "day-20-qwen35-balanced-lora-sft/day20_e2b_preflight_v2.py",
+      "sha256": "f3ed7045da293488ebb77c175ea3757253270dfb8c6217794ce423de1e0ee9d6"
+    },
+    {
+      "role": "target_encoding_intervention",
+      "path": "day-20-qwen35-balanced-lora-sft/day20_target_encoding_v3.py",
+      "sha256": "a2ab893f6c52d0ce514ec442304f6d279e0c4313f7fff9c7cb3c90866695fc06"
+    },
+    {
+      "role": "target_encoding_preparer",
+      "path": "day-20-qwen35-balanced-lora-sft/prepare_day20_v3.py",
+      "sha256": "210f84be57604e7252c877da632b55cbd2c0c0fa6bed83021ffe47a10b0eab34"
+    },
+    {
+      "role": "target_binding_runtime",
+      "path": "day-20-qwen35-balanced-lora-sft/day20_train_runtime_v3.py",
+      "sha256": "b523703ccea84bdf9c09463c4982e9677347eadc8f500e62d294c170a35f0c99"
+    },
+    {
+      "role": "target_binding_plugin",
+      "path": "day-20-qwen35-balanced-lora-sft/day20_train_plugin_v3.py",
+      "sha256": "1c26257aad3095f77e4b3fa9ce1b881272ea3bdfe6acfaafd8126ea13a35549b"
+    },
+    {
+      "role": "runner",
+      "path": "day-20-qwen35-balanced-lora-sft/run_day20_v3_autodl.sh",
+      "sha256": "dc12f83e49161b7f04d328bc73d15d677a8af85da1b47eb72832e66ba7a85c6a"
+    }
+  ],
+  "runtime_requirements": {
+    "ms_swift_commit": "565a1ad586a21d24b23931c52d2c62b49c39bee8",
+    "ms_swift_version": "4.5.0.dev0",
+    "transformers_version": "5.12.1",
+    "peft_version": "0.19.1",
+    "torch_version": "2.10.0+cu128",
+    "e2b_version": "2.37.0"
+  },
+  "produced_artifacts": [
+    {
+      "bytes": 1717595,
+      "content_sha256": "f3acfd8fe38c69e8864182ef9247b27c4f2483bde9228faab9b8b521f0053ce6",
+      "file_sha256": "a112674cd186a3ee8dea3687a9e5ab6ef12e393402fd0cc3924d74b4fcf75723",
+      "path": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/DAY20-V3-MANIFEST.json",
+      "role": "outer_experiment_manifest"
+    },
+    {
+      "bytes": 1717396,
+      "content_sha256": "dc90dee5ae68463e9ceed0c41c662eb56b0dfda81b9ef78d3547f4830a428b0d",
+      "file_sha256": "476847f1d311c2f6c1432dba0767ea978c410f3c65e5c937dfceee20d0b9fac6",
+      "path": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/DAY20-V2-MANIFEST.json",
+      "role": "core_experiment_manifest"
+    },
+    {
+      "bytes": 5027,
+      "content_sha256": "bc6da3fe02f18ea801e0fccdf5801d62dcb46c59e7d936f4e961bba326429e81",
+      "file_sha256": "019d2ef1b87b5c2b8cfaf20a5c3145fbffb40ab0f5e9b00b7a95c07b28a97054",
+      "path": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/TARGET-ENCODING-AUDIT.json",
+      "role": "target_encoding_audit"
+    },
+    {
+      "bytes": 2510,
+      "content_sha256": "03d13757bd892ba0361d83548569078402564958795be4a3ac7f1f7af3bc3299",
+      "file_sha256": "3d2a54bdff88a5f7ca43486aca86f5f3f9f5b5d902575314ba43821ba7a8b82a",
+      "path": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/SELECTION-EQUIVALENCE.json",
+      "role": "selection_equivalence"
+    },
+    {
+      "bytes": 1783,
+      "content_sha256": "3a3e6060ffb441f0390a05e3aaf2d06c6656c5ec35c917e810910f100d8a0da7",
+      "file_sha256": "088eab8545e9f039e51aba1dcd0179040cadb34e3b6ea7f87c04d3f979baec2a",
+      "path": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/evidence/E2B-PREFLIGHT.json",
+      "role": "e2b_preflight"
+    },
+    {
+      "bytes": 11212,
+      "content_sha256": "cd56a594ea04f3c5dd43644a66fe875e2dc4f86b12b13eec321d293aa8fb9cfb",
+      "file_sha256": "fc5dc58a4df06ffa3b46a773f1f69e4b8a149ce2d77f7ab0096e42a44b3ae4cf",
+      "path": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/evidence/main/s20260809/lr1e-4/training-summary.json",
+      "role": "primary_main_training_summary"
+    },
+    {
+      "bytes": 10130,
+      "content_sha256": "28ea80fe582c2ed8738ed471335794a9919bfa3ccbdb0e06a0fd52b3c9679b80",
+      "file_sha256": "4bffbf9d19f5318fafd07af72df0f218010ce41bf6f37f41883a15b44d419585",
+      "path": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/PRIMARY-MAIN-SELECTION.json",
+      "role": "primary_main_selection"
+    },
+    {
+      "bytes": 7395,
+      "content_sha256": "a55886aa92f91aa866137c6bbe329e51d9594ed5c68e12470032dfe3ab7d9ae2",
+      "file_sha256": "2241d94928f493658445e686fb562d914e09ba6f2341b35595cbf8b48dad62f9",
+      "path": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/eval/main-s20260809-lr1e-4-final-code-e2b-qwen35-v3-summary.json",
+      "role": "primary_full112_e2b_summary"
+    },
+    {
+      "bytes": 11212,
+      "content_sha256": "dd93ab6f7cef55c991163b98b4cb8a2a1b5dd19e0e6bf18ba68533afd386efde",
+      "file_sha256": "8651cc74824eb25ff4049def2ba9bbe134cd5bcc0bbe5bda3c9e86ab2336a292",
+      "path": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/evidence/main/s20260810/lr1e-4/training-summary.json",
+      "role": "confirmation_main_training_summary"
+    },
+    {
+      "bytes": 7397,
+      "content_sha256": "41dcc2ce3c2327d05263ef891e45a72b59c78c1b59f1632849dd30165e015a4e",
+      "file_sha256": "b8d8c6599438e1f23c4e90de619ce831df9dea4ccfcead26ec0602dec4e1a323",
+      "path": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/eval/main-s20260810-lr1e-4-final-code-e2b-qwen35-v3-summary.json",
+      "role": "confirmation_full112_e2b_summary"
+    },
+    {
+      "bytes": 5633,
+      "content_sha256": "de72a8f43da23e955e9525bccb365b49edcba7976018d6b58a9b34f903c2caa7",
+      "file_sha256": "c5ce7f522706040ac1628659ccc1ee53c2ac61eb820861a092a5dcd7bf8049e4",
+      "path": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/FINAL-PROMOTION.json",
+      "role": "final_promotion"
+    }
+  ],
+  "not_yet_materialized": []
+}

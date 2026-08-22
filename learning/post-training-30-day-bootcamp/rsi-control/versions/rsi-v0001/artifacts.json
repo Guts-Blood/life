@@ -1,0 +1,135 @@
+{
+  "schema_name": "rsi.version_artifacts",
+  "schema_version": 1,
+  "version_id": "rsi-v0001",
+  "path_base": "bootcamp_root",
+  "implementation": [
+    {
+      "role": "candidate_factory",
+      "path": "day-20-qwen35-balanced-lora-sft/day20_candidate_factory_v2.py",
+      "sha256": "92b9b575b5ac80d6c896924de4e930badd26be98633dcea133347263dda144de"
+    },
+    {
+      "role": "target_contract",
+      "path": "day-20-qwen35-balanced-lora-sft/day20_contract_v2.py",
+      "sha256": "ad67937b1deeb9cf5cbc044aaa6b9d6315df7486f8ae6a48b9252becb6cad5d7"
+    },
+    {
+      "role": "temporal_ordering",
+      "path": "day-20-qwen35-balanced-lora-sft/day20_ordering_v2.py",
+      "sha256": "4d2ab319814821463b1fcf2f7ff2dcfe43ca1e095576dec4ed3d6ab5cab83a6b"
+    },
+    {
+      "role": "source_expansion",
+      "path": "day-20-qwen35-balanced-lora-sft/day20_source_expansion_v2.py",
+      "sha256": "ae281574b06f4918ae0bab30e1608793c5201241f53500c1f5b2eef0197b374c"
+    },
+    {
+      "role": "preparer",
+      "path": "day-20-qwen35-balanced-lora-sft/prepare_day20_v2.py",
+      "sha256": "cac56cfeca16cefbf62ae3799ac7bce1cb82b466e539a6d57e4ec8d1315ac75e"
+    },
+    {
+      "role": "training_runtime",
+      "path": "day-20-qwen35-balanced-lora-sft/day20_train_runtime_v2.py",
+      "sha256": "8473e5d4fe55f0d072f6f112418c0439809452c206d3a7b0f2c4cc7ae899de9d"
+    },
+    {
+      "role": "training_plugin",
+      "path": "day-20-qwen35-balanced-lora-sft/day20_train_plugin_v2.py",
+      "sha256": "7129e5e3606756f242129539c740c303a13806ee636170df8ac8a86b070fbf5e"
+    },
+    {
+      "role": "e2b_preflight",
+      "path": "day-20-qwen35-balanced-lora-sft/day20_e2b_preflight_v2.py",
+      "sha256": "f3ed7045da293488ebb77c175ea3757253270dfb8c6217794ce423de1e0ee9d6"
+    },
+    {
+      "role": "eval_identity",
+      "path": "day-20-qwen35-balanced-lora-sft/day20_eval_identity_v2.py",
+      "sha256": "a060803ce0fd982ca7585fca544ee15909f5ec5e3c189bdda618810fbcc8ce89"
+    },
+    {
+      "role": "response_adapter",
+      "path": "day-20-qwen35-balanced-lora-sft/qwen35_response_adapter_v3.py",
+      "sha256": "a00795df99067032c7b2a659c8dba33bf0572a88f9b6451b3a0e97db3d12dde8"
+    },
+    {
+      "role": "raw_evaluator",
+      "path": "day-20-qwen35-balanced-lora-sft/evaluate_day20_v2.py",
+      "sha256": "4da1e7bed95a628e6914711842001b491b25e821ba6711c7bafac8c08e837963"
+    },
+    {
+      "role": "normalized_rescorer",
+      "path": "day-20-qwen35-balanced-lora-sft/rescore_day20_qwen35_v3.py",
+      "sha256": "0f8cffad3265fa85af920d5e0a8c2e88554b8c49c91d85f9a3885e899c7b06f2"
+    },
+    {
+      "role": "code_e2b",
+      "path": "day-20-qwen35-balanced-lora-sft/score_day20_code_e2b_v3.py",
+      "sha256": "cda49ee80e356ee4f419b6de512cca95a728998a7c88c3511bce373dd0a08784"
+    },
+    {
+      "role": "probe_selector",
+      "path": "day-20-qwen35-balanced-lora-sft/select_day20_v2.py",
+      "sha256": "99887e23150c7b0ff34185dfd89fd69e7cc5c8671ece699b53c75a469786a3fe"
+    },
+    {
+      "role": "main_selector",
+      "path": "day-20-qwen35-balanced-lora-sft/select_day20_main_v2.py",
+      "sha256": "6e861507286bde99128d94f6b9f9c0ec04b229c656f99c68a79e03b3b2125187"
+    },
+    {
+      "role": "runner",
+      "path": "day-20-qwen35-balanced-lora-sft/run_day20_v2_autodl.sh",
+      "sha256": "71560b68534fb15032aa562a63640c42baeedad93d730cfc9485e7a24e1efb95"
+    },
+    {
+      "role": "runbook",
+      "path": "day-20-qwen35-balanced-lora-sft/V2-GPU-RUNBOOK.md",
+      "sha256": "809845a2a80d90a96a35e132cf3a74945ac8fbce134ab7d93db6d63f14e5f83f"
+    }
+  ],
+  "runtime_requirements": {
+    "ms_swift_commit": "565a1ad586a21d24b23931c52d2c62b49c39bee8",
+    "ms_swift_version": "4.5.0.dev0",
+    "transformers_version": "5.12.1",
+    "peft_version": "0.19.1",
+    "torch_version": "2.10.0+cu128",
+    "e2b_version": "2.37.0"
+  },
+  "produced_artifacts": [
+    {
+      "role": "remote_run_root",
+      "path_or_uri": "/root/autodl-tmp/runs/day20-v2-qwen35-lora-20260812T092806Z"
+    },
+    {
+      "role": "verified_stage_a_inventory",
+      "path": "versions/rsi-v0001/runs/run-001-probe-primary/attempts/attempt-001/evidence/stage-a-full-inventory.json",
+      "file_sha256": "b59f56dcfa4f1c5347d1ca371e3c1b7fff97e4c8b400fbe2efbea3de15e951e2",
+      "content_sha256": "6941a1d653efc1c1dd172382acbd562fad945200c83dec69cfaa5d066fbcb1a2"
+    },
+    {
+      "role": "root_cause_diagnosis",
+      "path": "versions/rsi-v0001/runs/run-001-probe-primary/attempts/attempt-001/evidence/stage-a-root-cause-diagnosis.json",
+      "file_sha256": "604b38a32e49305d94aea06a86e714e58213d8309c9c9f3767c1b1ee46921742",
+      "content_sha256": "c816ff51eca41f119493288c96e7b20c1b8513988ed9e1df4db7e4ec555da468"
+    },
+    {
+      "role": "probe_selection",
+      "path_or_uri": "/root/autodl-tmp/runs/day20-v2-qwen35-lora-20260812T092806Z/PROBE-SELECTION.json",
+      "file_sha256": "077e69d7fbfa4ed867812fd7e12c4a9119feba5c032a4cd178f54c8332660fa2",
+      "content_sha256": "5fdd36eb38271b458d78612b637ee26ca3e7168b84777df0178c46b4f24da519"
+    },
+    {
+      "role": "analysis_and_next_assumption",
+      "path": "versions/rsi-v0001/RSI-V0001-ANALYSIS-AND-V0002-ASSUMPTION.md",
+      "file_sha256": "8074bca3cff70e25f49bd5c0c089cce57a997cbbe12c2dc2c2914bcc93ceb3a6"
+    }
+  ],
+  "not_yet_materialized": [
+    "main_primary_not_executed_condition_false",
+    "main_confirmation_not_executed_condition_false",
+    "final_promotion_not_materialized_no_probe_candidate"
+  ]
+}

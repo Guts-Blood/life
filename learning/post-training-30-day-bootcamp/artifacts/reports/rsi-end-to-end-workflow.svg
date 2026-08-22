@@ -1,0 +1,691 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2200" height="5000" viewBox="0 0 2200 5000" role="img" aria-labelledby="title desc">
+  <title id="title">当前 Repo 的 RSI 端到端工作流</title>
+  <desc id="desc">从目标与版本控制、v0001 失败诊断、v0002 Probe、Primary Main、独立 Confirmation、最终晋级，到 Day 21 checkpoint 归档、winner-only merge、严格 token parity 和 S1 downstream handoff 的完整流程图。</desc>
+
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#526078"/>
+    </marker>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2563eb"/>
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#15803d"/>
+    </marker>
+    <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#dc2626"/>
+    </marker>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="#172033" flood-opacity="0.10"/>
+    </filter>
+    <style>
+      text { font-family: Inter, "PingFang SC", "Noto Sans CJK SC", "Microsoft YaHei", system-ui, sans-serif; fill: #172033; }
+      .h1 { font-size: 42px; font-weight: 700; }
+      .subtitle { font-size: 19px; fill: #526078; }
+      .section { font-size: 27px; font-weight: 700; }
+      .section-note { font-size: 15px; fill: #64748b; }
+      .lane { font-size: 15px; font-weight: 700; letter-spacing: .7px; fill: #475569; }
+      .node-title { font-size: 18px; font-weight: 700; }
+      .card-title { font-size: 21px; font-weight: 700; }
+      .body { font-size: 15px; }
+      .body-strong { font-size: 15px; font-weight: 700; }
+      .small { font-size: 13px; fill: #526078; }
+      .tiny { font-size: 12px; fill: #64748b; }
+      .mono { font-family: "SFMono-Regular", Consolas, monospace; font-size: 13px; fill: #334155; }
+      .metric { font-size: 24px; font-weight: 700; }
+      .panel { fill: #ffffff; stroke: #d5dce8; stroke-width: 1.5; }
+      .hero { fill: #eef2ff; stroke: #6366f1; stroke-width: 1.7; }
+      .blue { fill: #eaf2ff; stroke: #2563eb; stroke-width: 1.5; }
+      .purple { fill: #f3edff; stroke: #7c3aed; stroke-width: 1.5; }
+      .teal { fill: #e8faf7; stroke: #0f766e; stroke-width: 1.5; }
+      .green { fill: #eaf9ef; stroke: #16a34a; stroke-width: 1.5; }
+      .amber { fill: #fff6d9; stroke: #d97706; stroke-width: 1.5; }
+      .red { fill: #ffeded; stroke: #dc2626; stroke-width: 1.5; }
+      .muted { fill: #f3f6fa; stroke: #94a3b8; stroke-width: 1.3; }
+      .dark { fill: #172033; stroke: #172033; stroke-width: 1.5; }
+      .dark-text { fill: #ffffff; }
+      .divider { stroke: #d7dee9; stroke-width: 1.2; }
+      .arrow { fill: none; stroke: #526078; stroke-width: 2.2; marker-end: url(#arrow); }
+      .arrow-blue { fill: none; stroke: #2563eb; stroke-width: 2.4; marker-end: url(#arrow-blue); }
+      .arrow-green { fill: none; stroke: #15803d; stroke-width: 2.5; marker-end: url(#arrow-green); }
+      .arrow-red { fill: none; stroke: #dc2626; stroke-width: 2.2; marker-end: url(#arrow-red); }
+      .dash { fill: none; stroke: #64748b; stroke-width: 2; stroke-dasharray: 9 7; marker-end: url(#arrow); }
+      .dash-green { fill: none; stroke: #15803d; stroke-width: 2; stroke-dasharray: 9 7; marker-end: url(#arrow-green); }
+      .boundary { stroke: #7c3aed; stroke-width: 2; stroke-dasharray: 10 8; }
+      .badge-blue { fill: #2563eb; }
+      .badge-green { fill: #15803d; }
+      .badge-red { fill: #dc2626; }
+      .badge-amber { fill: #d97706; }
+      .badge-gray { fill: #64748b; }
+      .badge-text { fill: #ffffff; font-size: 13px; font-weight: 700; }
+      .table-head { fill: #e8edf5; }
+      .table-line { stroke: #cbd5e1; stroke-width: 1; }
+      .winner-row { fill: #dcfce7; }
+      .pass-row { fill: #f0fdf4; }
+      .fail-row { fill: #fff1f2; }
+      .unused-row { fill: #f3f4f6; stroke: #94a3b8; stroke-dasharray: 6 5; }
+    </style>
+  </defs>
+
+  <rect width="2200" height="5000" fill="#f5f7fb"/>
+
+  <!-- Header -->
+  <text id="title-visible" x="60" y="70" class="h1">当前 Repo · RSI 端到端工作流</text>
+  <text x="60" y="108" class="subtitle">Recursive Self-Improvement：控制账本冻结科学语义，AutoDL runner 执行，证据链决定转移；当前终态为 fixed-full112 双 seed 合格。</text>
+
+  <rect x="1540" y="28" width="600" height="108" rx="18" class="dark" filter="url(#shadow)"/>
+  <text x="1570" y="59" class="small" style="fill:#ffffff">CURRENT STATE</text>
+  <text x="1570" y="91" class="node-title" style="fill:#ffffff">goal achieved · rsi-v0002 qualified</text>
+  <text x="1570" y="119" class="small" style="fill:#ffffff">winner: main-s20260809-lr1e-4-final</text>
+
+  <rect x="60" y="148" width="1320" height="66" rx="14" class="hero"/>
+  <text x="86" y="178" class="body-strong">一句话：</text>
+  <text x="164" y="178" class="body">先用 Probe 低成本证伪假设，再从 fresh Base 跑 Main，最后用另一个 fresh Base / 独立 seed 确认；任一硬门失败就回退或开新版本。</text>
+  <text x="86" y="202" class="small">重要边界：RSI 的 final promotion 只做选模与确认，v3 finalize 明确 merge_performed=false。</text>
+
+  <g transform="translate(1420 155)">
+    <rect x="0" y="0" width="16" height="16" rx="4" class="blue"/><text x="25" y="14" class="small">冻结合同 / 控制</text>
+    <rect x="170" y="0" width="16" height="16" rx="4" class="purple"/><text x="195" y="14" class="small">训练执行</text>
+    <rect x="330" y="0" width="16" height="16" rx="4" class="amber"/><text x="355" y="14" class="small">选择门禁</text>
+    <rect x="470" y="0" width="16" height="16" rx="4" class="green"/><text x="495" y="14" class="small">合格 / 晋级</text>
+    <path d="M 0 43 L 70 43" class="arrow"/><text x="82" y="48" class="tiny">脚本/强依赖</text>
+    <path d="M 230 43 L 300 43" class="dash"/><text x="312" y="48" class="tiny">外部编排/证据复用</text>
+  </g>
+
+  <!-- Section 1 -->
+  <rect x="50" y="245" width="2100" height="625" rx="22" class="panel" filter="url(#shadow)"/>
+  <text x="80" y="292" class="section">1 · 系统全貌：三个平面协同，但职责分离</text>
+  <text x="80" y="320" class="section-note">rsi-control 是紧凑真相源；Day 20 runner 执行训练；collector 只读重算证据。runner 与账本之间是外部记录桥，不是直接函数调用。</text>
+
+  <!-- lane backgrounds and labels -->
+  <rect x="75" y="348" width="2050" height="142" rx="16" fill="#f7faff"/>
+  <rect x="75" y="512" width="2050" height="142" rx="16" fill="#fbf9ff"/>
+  <rect x="75" y="676" width="2050" height="158" rx="16" fill="#fbfcfe"/>
+  <text x="96" y="382" class="lane">CONTROL / LEDGER</text>
+  <text x="96" y="405" class="small">策略、版本、审计写回</text>
+  <text x="96" y="546" class="lane">AUTODL EXECUTION</text>
+  <text x="96" y="569" class="small">可恢复训练与候选生成</text>
+  <text x="96" y="710" class="lane">EVIDENCE / DELIVERY</text>
+  <text x="96" y="733" class="small">重算、选择与交付边界</text>
+
+  <!-- lane 1 -->
+  <rect x="325" y="366" width="300" height="98" rx="14" class="blue"/>
+  <text x="347" y="397" class="node-title">Goal + frozen gates</text>
+  <text x="347" y="424" class="small">goal.json · taxonomy.json</text>
+  <text x="347" y="447" class="small">允许 lever / 禁止改 eval</text>
+  <path d="M 625 415 L 674 415" class="arrow-blue"/>
+
+  <rect x="675" y="366" width="300" height="98" rx="14" class="blue"/>
+  <text x="697" y="397" class="node-title">Version charter</text>
+  <text x="697" y="424" class="small">假设 · prediction · falsifier</text>
+  <text x="697" y="447" class="small">1 primary + ≤1 dependent lever</text>
+  <path d="M 975 415 L 1024 415" class="arrow-blue"/>
+
+  <rect x="1025" y="366" width="300" height="98" rx="14" class="blue"/>
+  <text x="1047" y="397" class="node-title">Run / attempt / retry</text>
+  <text x="1047" y="424" class="small">self-hashed run contract</text>
+  <text x="1047" y="447" class="small">retry 必须同语义、同 contract</text>
+  <path d="M 1325 415 L 1374 415" class="arrow-blue"/>
+
+  <rect x="1375" y="366" width="300" height="98" rx="14" class="blue"/>
+  <text x="1397" y="397" class="node-title">Artifacts + metrics</text>
+  <text x="1397" y="424" class="small">GPUh / eval accesses / gates</text>
+  <text x="1397" y="447" class="small">hash-chained operations.jsonl</text>
+  <path d="M 1675 415 L 1724 415" class="arrow-blue"/>
+
+  <rect x="1725" y="366" width="330" height="98" rx="14" class="green"/>
+  <text x="1747" y="397" class="node-title">validate + state</text>
+  <text x="1747" y="424" class="small">state.json 与目录/metrics 对齐</text>
+  <text x="1747" y="447" class="small">confirmed → goal_status=achieved</text>
+
+  <!-- lane 2 -->
+  <rect x="325" y="530" width="300" height="98" rx="14" class="purple"/>
+  <text x="347" y="561" class="node-title">init + prepare</text>
+  <text x="347" y="588" class="small">安全 run root · no-overwrite</text>
+  <text x="347" y="611" class="small">重编码 / manifests / configs</text>
+  <path d="M 625 579 L 674 579" class="arrow"/>
+
+  <rect x="675" y="530" width="300" height="98" rx="14" class="purple"/>
+  <text x="697" y="561" class="node-title">fail-closed preflight</text>
+  <text x="697" y="588" class="small">target audit → E2B → runtime/GPU</text>
+  <text x="697" y="611" class="small">全部通过后才允许 Swift</text>
+  <path d="M 975 579 L 1024 579" class="arrow"/>
+
+  <rect x="1025" y="530" width="300" height="98" rx="14" class="purple"/>
+  <text x="1047" y="561" class="node-title">Probe → Main → Confirm</text>
+  <text x="1047" y="588" class="small">24k → 320k → 320k tokens</text>
+  <text x="1047" y="611" class="small">milestones 均可审计 / 可恢复</text>
+  <path d="M 1325 579 L 1374 579" class="arrow"/>
+
+  <rect x="1375" y="530" width="300" height="98" rx="14" class="amber"/>
+  <text x="1397" y="561" class="node-title">raw → normalized → E2B</text>
+  <text x="1397" y="588" class="small">同 sample order / comparison keys</text>
+  <text x="1397" y="611" class="small">selector 只消费完整 evidence</text>
+  <path d="M 1675 579 L 1724 579" class="arrow"/>
+
+  <rect x="1725" y="530" width="330" height="98" rx="14" class="amber"/>
+  <text x="1747" y="561" class="node-title">FINAL-PROMOTION.json</text>
+  <text x="1747" y="588" class="small">重建并逐字节复验决策</text>
+  <text x="1747" y="611" class="body-strong">merge_performed = false</text>
+
+  <!-- lane 3 -->
+  <rect x="325" y="694" width="300" height="112" rx="14" class="muted"/>
+  <text x="347" y="725" class="node-title">Immutable identities</text>
+  <text x="347" y="752" class="small">manifest / config / checkpoint hash</text>
+  <text x="347" y="775" class="small">失败、retry、partial evidence 不隐藏</text>
+  <path d="M 625 750 L 674 750" class="arrow"/>
+
+  <rect x="675" y="694" width="300" height="112" rx="14" class="teal"/>
+  <text x="697" y="725" class="node-title">Operation ledger</text>
+  <text x="697" y="752" class="small">event SHA chain + cost aggregation</text>
+  <text x="697" y="775" class="small">terminal attempt 不可重写</text>
+  <path d="M 975 750 L 1024 750" class="arrow"/>
+
+  <rect x="1025" y="694" width="300" height="112" rx="14" class="teal"/>
+  <text x="1047" y="725" class="node-title">Read-only collector</text>
+  <text x="1047" y="752" class="small">training / eval / E2B / selections</text>
+  <text x="1047" y="775" class="small">pass / incomplete / verification_failed</text>
+  <path d="M 1325 750 L 1374 750" class="arrow"/>
+
+  <rect x="1375" y="694" width="300" height="112" rx="14" class="green"/>
+  <text x="1397" y="725" class="node-title">Qualification evidence</text>
+  <text x="1397" y="752" class="small">Primary + Confirmation 全部门</text>
+  <text x="1397" y="775" class="small">当前 collector: 44 items / pass</text>
+
+  <line x1="1704" y1="681" x2="1704" y2="820" class="boundary"/>
+  <text x="1716" y="815" class="tiny">RSI core boundary</text>
+  <rect x="1765" y="694" width="290" height="112" rx="14" class="muted"/>
+  <text x="1787" y="725" class="node-title">Day 21 delivery</text>
+  <text x="1787" y="752" class="small">archive / merge / parity / S1 key</text>
+  <text x="1787" y="775" class="small">append-only，不回写旧 ledger</text>
+
+  <path d="M 1175 530 L 1175 480" class="dash"/>
+  <text x="1190" y="505" class="tiny">外部记录桥</text>
+  <path d="M 1540 694 L 1540 655" class="dash-green"/>
+
+  <!-- Section 2 -->
+  <rect x="50" y="900" width="2100" height="615" rx="22" class="panel" filter="url(#shadow)"/>
+  <text x="80" y="947" class="section">2 · 通用 RSI 闭环：失败不是终点，而是下一版诊断输入</text>
+  <text x="80" y="975" class="section-note">版本改变科学语义；run 固定 phase/seed；attempt 是一次 launch；retry 只能修运维问题且 contract 不变。</text>
+
+  <rect x="85" y="1015" width="225" height="125" rx="16" class="blue"/>
+  <circle cx="112" cy="1043" r="17" class="badge-blue"/><text x="107" y="1048" class="badge-text">1</text>
+  <text x="138" y="1049" class="node-title">冻结 Goal</text>
+  <text x="107" y="1080" class="small">hard gates · confirmation</text>
+  <text x="107" y="1104" class="small">eval/scorer/hash 禁区</text>
+  <path d="M 310 1077 L 344 1077" class="arrow-blue"/>
+
+  <rect x="345" y="1015" width="225" height="125" rx="16" class="amber"/>
+  <circle cx="372" cy="1043" r="17" class="badge-amber"/><text x="367" y="1048" class="badge-text">2</text>
+  <text x="398" y="1049" class="node-title">诊断上一版</text>
+  <text x="367" y="1080" class="small">失败层 / signature / root cause</text>
+  <text x="367" y="1104" class="small">不能靠降门槛“修好”</text>
+  <path d="M 570 1077 L 604 1077" class="arrow"/>
+
+  <rect x="605" y="1015" width="285" height="125" rx="16" class="blue"/>
+  <circle cx="632" cy="1043" r="17" class="badge-blue"/><text x="627" y="1048" class="badge-text">3</text>
+  <text x="658" y="1049" class="node-title">声明 Lever</text>
+  <text x="627" y="1080" class="small">prediction + falsifier 先写后跑</text>
+  <text x="627" y="1104" class="small">1 主 lever + 最多 1 个依赖 lever</text>
+  <path d="M 890 1077 L 924 1077" class="arrow-blue"/>
+
+  <rect x="925" y="1015" width="225" height="125" rx="16" class="blue"/>
+  <circle cx="952" cy="1043" r="17" class="badge-blue"/><text x="947" y="1048" class="badge-text">4</text>
+  <text x="978" y="1049" class="node-title">创建 Version</text>
+  <text x="947" y="1080" class="small">version / artifacts / metrics</text>
+  <text x="947" y="1104" class="small">validate before execution</text>
+  <path d="M 1150 1077 L 1184 1077" class="arrow-blue"/>
+
+  <rect x="1185" y="1015" width="245" height="125" rx="16" class="blue"/>
+  <circle cx="1212" cy="1043" r="17" class="badge-blue"/><text x="1207" y="1048" class="badge-text">5</text>
+  <text x="1238" y="1049" class="node-title">绑定 Run contract</text>
+  <text x="1207" y="1080" class="small">phase / seed / data / runtime</text>
+  <text x="1207" y="1104" class="small">self-hash 后不可换语义</text>
+  <path d="M 1430 1077 L 1464 1077" class="arrow"/>
+
+  <rect x="1465" y="1015" width="245" height="125" rx="16" class="purple"/>
+  <circle cx="1492" cy="1043" r="17" class="badge-gray"/><text x="1487" y="1048" class="badge-text">6</text>
+  <text x="1518" y="1049" class="node-title">Attempt / Retry</text>
+  <text x="1487" y="1080" class="small">start → operations → finish</text>
+  <text x="1487" y="1104" class="small">失败可同 contract retry</text>
+  <path d="M 1710 1077 L 1744 1077" class="arrow"/>
+
+  <rect x="1745" y="1015" width="360" height="125" rx="16" class="purple"/>
+  <circle cx="1772" cy="1043" r="17" class="badge-gray"/><text x="1767" y="1048" class="badge-text">7</text>
+  <text x="1798" y="1049" class="node-title">执行 + 完整证据链</text>
+  <text x="1767" y="1080" class="small">train → raw → normalized → E2B</text>
+  <text x="1767" y="1104" class="small">selector + collector + cost ledger</text>
+
+  <!-- retry loop -->
+  <path d="M 1587 1140 L 1587 1192 L 1490 1192 L 1490 1142" class="arrow-red"/>
+  <rect x="1504" y="1166" width="250" height="58" rx="12" class="red"/>
+  <text x="1523" y="1191" class="body-strong">仅运维修复可 retry</text>
+  <text x="1523" y="1212" class="tiny">semantic drift ⇒ new run/version</text>
+
+  <!-- decision row -->
+  <path d="M 1925 1140 L 1925 1270 L 1735 1270" class="arrow"/>
+  <polygon points="1575,1200 1705,1270 1575,1340 1445,1270" class="amber"/>
+  <text x="1511" y="1267" class="node-title">所有 hard +</text>
+  <text x="1511" y="1291" class="node-title">evidence gates?</text>
+  <path d="M 1445 1270 L 1230 1270" class="arrow-red"/>
+  <rect x="935" y="1216" width="295" height="108" rx="15" class="red"/>
+  <text x="960" y="1248" class="node-title">否：停止 / Base fallback</text>
+  <text x="960" y="1277" class="small">归因失败 → 写 observed metrics</text>
+  <text x="960" y="1300" class="small">创建下一 rsi-vNNNN</text>
+  <path d="M 935 1270 L 520 1270 L 520 1142" class="dash"/>
+  <text x="545" y="1253" class="tiny">failure → diagnosis → next version</text>
+
+  <path d="M 1575 1340 L 1575 1380" class="arrow-green"/>
+  <rect x="1390" y="1380" width="370" height="90" rx="16" class="green"/>
+  <text x="1415" y="1414" class="node-title">是：confirmed qualified</text>
+  <text x="1415" y="1442" class="small">promote Primary → state.goal_status=achieved</text>
+
+  <rect x="95" y="1205" width="670" height="248" rx="16" class="muted"/>
+  <text x="120" y="1238" class="node-title">Attempt 状态机（controller 强约束）</text>
+  <text x="120" y="1274" class="mono">planned → running → succeeded</text>
+  <text x="120" y="1302" class="mono">                 ↘ infrastructure_failed</text>
+  <text x="120" y="1330" class="mono">                 ↘ model_failed</text>
+  <text x="120" y="1358" class="mono">                 ↘ interrupted</text>
+  <text x="120" y="1393" class="small">失败 / interrupted → retry-start → running → retry-finish</text>
+  <text x="120" y="1418" class="small">terminal record 不可改写；事件 sequence、previous SHA、contract SHA 必须一致。</text>
+
+  <!-- Section 3 -->
+  <rect x="50" y="1545" width="2100" height="620" rx="22" class="panel" filter="url(#shadow)"/>
+  <text x="80" y="1592" class="section">3 · 递归改进实例：v0001 的失败如何变成 v0002 的单因果干预</text>
+  <text x="80" y="1620" class="section-note">这里的 “RSI” 核心不是多跑几个 LR，而是从可复算证据中定位 failure layer，然后只改变被证据支持的 lever。</text>
+
+  <rect x="80" y="1655" width="600" height="440" rx="18" class="red"/>
+  <rect x="104" y="1679" width="160" height="30" rx="15" class="badge-red"/>
+  <text x="128" y="1700" class="badge-text">rsi-v0001 · STOP</text>
+  <text x="104" y="1743" class="card-title">Probe 全部 gross fail</text>
+  <line x1="104" y1="1761" x2="656" y2="1761" class="divider"/>
+  <text x="112" y="1796" class="body-strong">Candidate</text><text x="350" y="1796" class="body-strong">Total</text><text x="445" y="1796" class="body-strong">Code</text><text x="530" y="1796" class="body-strong">eligible</text>
+  <text x="112" y="1830" class="body">Base</text><text x="358" y="1830" class="body">15</text><text x="455" y="1830" class="body">3</text><text x="540" y="1830" class="body">7/8</text>
+  <text x="112" y="1862" class="body">t6000</text><text x="358" y="1862" class="body">15</text><text x="455" y="1862" class="body">1</text><text x="540" y="1862" class="body">3/8</text>
+  <text x="112" y="1894" class="body">t12000</text><text x="358" y="1894" class="body">18</text><text x="455" y="1894" class="body">0</text><text x="540" y="1894" class="body">0/8</text>
+  <text x="112" y="1926" class="body">t18000 / t24000</text><text x="358" y="1926" class="body">18</text><text x="455" y="1926" class="body">0</text><text x="540" y="1926" class="body">0/8</text>
+  <line x1="104" y1="1950" x2="656" y2="1950" class="divider"/>
+  <text x="104" y="1982" class="body-strong">selector: stop_no_passing_probe</text>
+  <text x="104" y="2011" class="small">继续相同 template 加 token / 扫 LR 无证据依据。</text>
+  <text x="104" y="2038" class="small">v0001 记为 complete_not_qualified，失败完整保留。</text>
+
+  <path d="M 680 1875 L 758 1875" class="arrow-red"/>
+
+  <rect x="760" y="1655" width="600" height="440" rx="18" class="amber"/>
+  <rect x="784" y="1679" width="170" height="30" rx="15" class="badge-amber"/>
+  <text x="808" y="1700" class="badge-text">CAUSAL DIAGNOSIS</text>
+  <text x="784" y="1743" class="card-title">问题在训练 label 边界</text>
+  <line x1="784" y1="1761" x2="1336" y2="1761" class="divider"/>
+  <text x="784" y="1800" class="metric">105 / 105</text>
+  <text x="925" y="1800" class="body">Code 源 target 以四空格开头</text>
+  <text x="784" y="1845" class="metric">0 / 105</text>
+  <text x="925" y="1845" class="body">live nonmasked labels 保留四空格</text>
+  <text x="784" y="1888" class="body-strong">因果链：</text>
+  <text x="784" y="1917" class="body">native template 对 assistant content 调用 strip()</text>
+  <text x="784" y="1946" class="body">＋ ignore-empty-think mask 再屏蔽 indentation token</text>
+  <text x="784" y="1975" class="body">→ LoRA 学到“从第 0 列输出函数体”</text>
+  <text x="784" y="2016" class="small">E2B preflight 已通过且 infra=0，排除 sandbox 故障。</text>
+  <text x="784" y="2043" class="small">t18000 与 t24000 Code raw outputs 字节相同，显示已平台化。</text>
+
+  <path d="M 1360 1875 L 1438 1875" class="arrow-green"/>
+
+  <rect x="1440" y="1655" width="680" height="440" rx="18" class="green"/>
+  <rect x="1464" y="1679" width="190" height="30" rx="15" class="badge-green"/>
+  <text x="1488" y="1700" class="badge-text">rsi-v0002 · CHARTER</text>
+  <text x="1464" y="1743" class="card-title">Balanced Code target-boundary supervision</text>
+  <line x1="1464" y1="1761" x2="2096" y2="1761" class="divider"/>
+  <text x="1464" y="1800" class="body-strong">Primary lever</text>
+  <text x="1600" y="1800" class="mono">model.target.representation</text>
+  <text x="1464" y="1831" class="body-strong">Dependent lever</text>
+  <text x="1600" y="1831" class="mono">model.target.masking</text>
+  <text x="1464" y="1875" class="body">• 恢复并监督开头四空格 token</text>
+  <text x="1464" y="1904" class="body">• mask 结构性尾 newline，保持每行 supervised-token 数不变</text>
+  <text x="1464" y="1933" class="body">• Non-Code input IDs / labels 必须逐字节不变</text>
+  <text x="1464" y="1976" class="body-strong">冻结不变</text>
+  <text x="1570" y="1976" class="small">rows / order / 24k+320k budget / LoRA / inference</text>
+  <text x="1570" y="2001" class="small">eval cases / scorer / E2B / selectors / gates</text>
+  <text x="1464" y="2043" class="small">GPU 前硬审计：Probe 105/105、Main 1540/1540 Code boundary pass。</text>
+
+  <rect x="80" y="2110" width="2040" height="34" rx="12" class="muted"/>
+  <text x="101" y="2133" class="small">预提交 falsifier：若 4 个 Stage-A checkpoint 仍 eligibility&lt;7/8，或 eligibility 恢复但 Code&lt;2 / strict gate 全失败，则停止 v0002，不开 Main。</text>
+
+  <!-- Section 4 -->
+  <rect x="50" y="2200" width="2100" height="1215" rx="22" class="panel" filter="url(#shadow)"/>
+  <text x="80" y="2247" class="section">4 · v0002 的真实执行轨迹（依赖顺序不是 run 编号顺序）</text>
+  <text x="80" y="2275" class="section-note">真实时序：run-001 → run-004（替代/修复）→ run-002（Primary Main）→ run-003（Independent Confirmation）。</text>
+
+  <!-- timeline -->
+  <line x1="290" y1="2325" x2="1900" y2="2325" stroke="#cbd5e1" stroke-width="5"/>
+  <circle cx="300" cy="2325" r="16" class="badge-red"/>
+  <circle cx="820" cy="2325" r="16" class="badge-green"/>
+  <circle cx="1340" cy="2325" r="16" class="badge-green"/>
+  <circle cx="1860" cy="2325" r="16" class="badge-green"/>
+  <path d="M 316 2325 L 804 2325" class="arrow"/>
+  <path d="M 836 2325 L 1324 2325" class="arrow-green"/>
+  <path d="M 1356 2325 L 1844 2325" class="arrow-green"/>
+
+  <!-- run 001 card -->
+  <rect x="75" y="2360" width="485" height="940" rx="18" class="panel"/>
+  <rect x="75" y="2360" width="485" height="72" rx="18" class="red"/>
+  <text x="101" y="2391" class="card-title">run-001 · Probe 首发</text>
+  <text x="101" y="2417" class="small">status: infrastructure_failed_replaced</text>
+  <text x="101" y="2470" class="body-strong">① 预检通过（Swift 尚未启动）</text>
+  <text x="101" y="2499" class="small">Probe/Main = 24k/320k supervised tokens</text>
+  <text x="101" y="2524" class="small">Code boundary = 105/105、1540/1540</text>
+
+  <rect x="98" y="2550" width="439" height="112" rx="13" class="red"/>
+  <text x="119" y="2580" class="body-strong">运维失败 A · 缺 core-v2 marker</text>
+  <text x="119" y="2608" class="small">模型/训练/推理均未开始 · 0 GPUh</text>
+  <text x="119" y="2635" class="small">补精确 marker → 同 contract retry</text>
+
+  <text x="101" y="2700" class="body-strong">② Base probe32 成功</text>
+  <text x="101" y="2729" class="body">G1 / M7 / F4 / C3 · Total 15</text>
+  <text x="101" y="2755" class="body">Code eligible 7/8 · infra 0</text>
+
+  <rect x="98" y="2780" width="439" height="128" rx="13" class="red"/>
+  <text x="119" y="2810" class="body-strong">运维失败 B · callback interface</text>
+  <text x="119" y="2838" class="small">on_train_begin 读取错 TrainingArguments</text>
+  <text x="119" y="2864" class="small">optimizer step 0 · checkpoint 0</text>
+  <text x="119" y="2890" class="small">partial evidence 不可晋级 → run 被替代</text>
+
+  <rect x="98" y="2934" width="439" height="83" rx="13" class="muted"/>
+  <text x="119" y="2964" class="body-strong">保留可复用证据</text>
+  <text x="119" y="2991" class="small">Base raw + normalized + E2B 已完整验证</text>
+
+  <text x="101" y="3058" class="body-strong">成本</text>
+  <text x="178" y="3058" class="body">0.032935653 GPUh · 1 eval access</text>
+  <text x="101" y="3094" class="tiny">retry 只修 marker；callback 修复改变实现身份，</text>
+  <text x="101" y="3117" class="tiny">因此用 run-004 替代，而不是伪装同一次成功。</text>
+
+  <!-- run 004 card -->
+  <rect x="595" y="2360" width="485" height="940" rx="18" class="panel"/>
+  <rect x="595" y="2360" width="485" height="72" rx="18" class="green"/>
+  <text x="621" y="2391" class="card-title">run-004 · Remediated Probe</text>
+  <text x="621" y="2417" class="small">实际第二步；替代 run-001，训练语义不变</text>
+
+  <path d="M 520 2980 C 570 2980 570 2485 615 2485" class="dash-green"/>
+  <text x="538" y="2468" class="tiny">Base evidence reuse</text>
+  <text x="621" y="2470" class="body-strong">① callback 字段投影修复</text>
+  <text x="621" y="2499" class="small">28/28 tests；model/data/recipe/eval/gates 不变</text>
+  <text x="621" y="2537" class="body-strong">② 复用 run-001 Base evidence</text>
+  <text x="621" y="2566" class="small">0 新 GPUh · 0 新 eval access</text>
+
+  <rect x="618" y="2590" width="439" height="98" rx="13" class="amber"/>
+  <text x="639" y="2620" class="body-strong">运维小分支 · stale zero-step binding</text>
+  <text x="639" y="2648" class="small">原子 quarantine，保留 bytes/hash → retry</text>
+  <text x="639" y="2673" class="small">内部 attempt-002 才真正训练</text>
+
+  <text x="621" y="2723" class="body-strong">③ Stage-A · LR 1e-4 · 24k tokens</text>
+  <text x="621" y="2750" class="small">154 optimizer steps · 4 resumable milestones</text>
+
+  <rect x="618" y="2770" width="439" height="34" rx="7" class="table-head"/>
+  <text x="631" y="2793" class="tiny">checkpoint</text><text x="756" y="2793" class="tiny">G/M/F/C</text><text x="885" y="2793" class="tiny">Total</text><text x="949" y="2793" class="tiny">eligible</text>
+  <rect x="618" y="2804" width="439" height="36" class="pass-row"/>
+  <text x="631" y="2828" class="small">t6000</text><text x="756" y="2828" class="small">4/6/4/5</text><text x="895" y="2828" class="small">19</text><text x="966" y="2828" class="small">8/8</text>
+  <rect x="618" y="2840" width="439" height="36" class="winner-row"/>
+  <text x="631" y="2864" class="body-strong">t12000 ★</text><text x="756" y="2864" class="body-strong">5/7/6/5</text><text x="895" y="2864" class="body-strong">23</text><text x="966" y="2864" class="body-strong">8/8</text>
+  <rect x="618" y="2876" width="439" height="36" class="pass-row"/>
+  <text x="631" y="2900" class="small">t18000</text><text x="756" y="2900" class="small">5/7/6/5</text><text x="895" y="2900" class="small">23</text><text x="966" y="2900" class="small">8/8</text>
+  <rect x="618" y="2912" width="439" height="36" class="pass-row"/>
+  <text x="631" y="2936" class="small">t24000</text><text x="756" y="2936" class="small">5/7/6/5</text><text x="895" y="2936" class="small">23</text><text x="966" y="2936" class="small">8/8</text>
+
+  <rect x="618" y="2972" width="439" height="98" rx="13" class="green"/>
+  <text x="639" y="3002" class="body-strong">4 个 checkpoint 全部 strict pass</text>
+  <text x="639" y="3030" class="small">t12000 / t18000 / t24000 同分</text>
+  <text x="639" y="3055" class="small">按更早 token tie-break → 选 t12000</text>
+
+  <rect x="618" y="3090" width="439" height="60" rx="12" class="unused-row"/>
+  <text x="639" y="3116" class="small">未触发：near-miss → 3e-5 / 6e-5 / 8e-5 bracket</text>
+  <text x="639" y="3139" class="tiny">也未触发 gross/no-pass → stop</text>
+
+  <text x="621" y="3192" class="body-strong">成本</text>
+  <text x="698" y="3192" class="body">0.163165650 GPUh · 4 accesses</text>
+  <text x="621" y="3230" class="tiny">Probe checkpoint 只授权 LR/recipe；不会 warm-start Main。</text>
+
+  <!-- run 002 card -->
+  <rect x="1115" y="2360" width="485" height="940" rx="18" class="panel"/>
+  <rect x="1115" y="2360" width="485" height="72" rx="18" class="green"/>
+  <text x="1141" y="2391" class="card-title">run-002 · Primary Main</text>
+  <text x="1141" y="2417" class="small">seed 20260809 · fresh Base start</text>
+  <text x="1141" y="2470" class="body-strong">Activation gate</text>
+  <text x="1141" y="2499" class="small">verified Probe t12000 → authorize LR=1e-4</text>
+  <text x="1141" y="2524" class="body-strong">authorization only · NOT warm-start</text>
+
+  <rect x="1138" y="2550" width="439" height="105" rx="13" class="purple"/>
+  <text x="1159" y="2580" class="body-strong">Main training</text>
+  <text x="1159" y="2608" class="small">fresh Base → 320k tokens / 1904 steps</text>
+  <text x="1159" y="2634" class="small">early 80k · mid 192k · final 320k</text>
+
+  <text x="1141" y="2703" class="body-strong">full112：Base + 3 checkpoints 全量收齐</text>
+  <rect x="1138" y="2723" width="439" height="34" rx="7" class="table-head"/>
+  <text x="1151" y="2746" class="tiny">candidate</text><text x="1271" y="2746" class="tiny">G/M/F/C</text><text x="1401" y="2746" class="tiny">Total</text><text x="1472" y="2746" class="tiny">gate</text>
+  <rect x="1138" y="2757" width="439" height="38" class="fail-row"/>
+  <text x="1151" y="2782" class="small">Base</text><text x="1271" y="2782" class="small">1/24/16/18</text><text x="1411" y="2782" class="small">59</text><text x="1472" y="2782" class="small">fail</text>
+  <rect x="1138" y="2795" width="439" height="38" class="pass-row"/>
+  <text x="1151" y="2820" class="small">early</text><text x="1271" y="2820" class="small">21/21/22/17</text><text x="1411" y="2820" class="small">81</text><text x="1472" y="2820" class="small">pass</text>
+  <rect x="1138" y="2833" width="439" height="38" class="pass-row"/>
+  <text x="1151" y="2858" class="small">mid</text><text x="1271" y="2858" class="small">21/20/17/17</text><text x="1411" y="2858" class="small">75</text><text x="1472" y="2858" class="small">pass</text>
+  <rect x="1138" y="2871" width="439" height="38" class="winner-row"/>
+  <text x="1151" y="2896" class="body-strong">final ★</text><text x="1271" y="2896" class="body-strong">21/21/19/20</text><text x="1411" y="2896" class="body-strong">81</text><text x="1472" y="2896" class="body-strong">pass</text>
+
+  <rect x="1138" y="2935" width="439" height="117" rx="13" class="green"/>
+  <text x="1159" y="2965" class="body-strong">Primary selector → final 胜出</text>
+  <text x="1159" y="2993" class="small">ranking: Total ↓ → General ↓ → Code ↓ → earlier</text>
+  <text x="1159" y="3019" class="small">final 与 early Total/G 同分，Code 20&gt;17</text>
+  <text x="1159" y="3043" class="small">decision: run_confirmation</text>
+
+  <rect x="1138" y="3074" width="439" height="62" rx="12" class="unused-row"/>
+  <text x="1159" y="3101" class="small">失败分支：无 eligible checkpoint → Base fallback</text>
+  <text x="1159" y="3124" class="tiny">Base 只作 fallback，不参与 LoRA 排名</text>
+
+  <text x="1141" y="3180" class="body-strong">成本</text>
+  <text x="1218" y="3180" class="body">0.911158293 GPUh · 4 accesses</text>
+  <text x="1141" y="3217" class="tiny">训练 .650779823 GPUh；4 次 full112 eval 各自绑定 raw/normalized/E2B。</text>
+
+  <!-- run 003 card -->
+  <rect x="1635" y="2360" width="490" height="940" rx="18" class="panel"/>
+  <rect x="1635" y="2360" width="490" height="72" rx="18" class="green"/>
+  <text x="1661" y="2391" class="card-title">run-003 · Confirmation</text>
+  <text x="1661" y="2417" class="small">seed 20260810 · independent fresh Base</text>
+
+  <text x="1661" y="2470" class="body-strong">确认相同 recipe，而非复制 Primary 权重</text>
+  <text x="1661" y="2499" class="small">same LR=1e-4 · same label=final</text>
+  <text x="1661" y="2524" class="small">same sample order / common eval identity</text>
+  <text x="1661" y="2549" class="body-strong">fresh Base · NOT primary warm-start</text>
+
+  <rect x="1658" y="2575" width="444" height="100" rx="13" class="purple"/>
+  <text x="1679" y="2605" class="body-strong">Confirmation training</text>
+  <text x="1679" y="2633" class="small">320k tokens / 1904 steps</text>
+  <text x="1679" y="2659" class="small">只评与 Primary winner 对应的 final</text>
+
+  <rect x="1658" y="2700" width="444" height="160" rx="13" class="green"/>
+  <text x="1679" y="2732" class="card-title">73 / 112 · 全部门通过</text>
+  <text x="1679" y="2765" class="body">G 21 · M 21 · F 14 · Code 17</text>
+  <text x="1679" y="2793" class="body">eligible 28 · format 112 · infra 0</text>
+  <text x="1679" y="2829" class="small">独立 seed 结果用于验证同 LR / checkpoint label</text>
+
+  <path d="M 1880 2860 L 1880 2900" class="arrow-green"/>
+  <rect x="1658" y="2900" width="444" height="116" rx="13" class="green"/>
+  <text x="1679" y="2932" class="body-strong">promote Primary checkpoint</text>
+  <text x="1679" y="2961" class="mono">main-s20260809-lr1e-4-final</text>
+  <text x="1679" y="2990" class="small">不是 promote confirmation checkpoint</text>
+
+  <rect x="1658" y="3040" width="444" height="74" rx="13" class="teal"/>
+  <text x="1679" y="3070" class="body-strong">Final collector</text>
+  <text x="1679" y="3097" class="small">44 items · 0 incomplete · 0 rejected</text>
+
+  <rect x="1658" y="3138" width="444" height="64" rx="12" class="unused-row"/>
+  <text x="1679" y="3166" class="small">失败分支：Confirmation miss → Base fallback</text>
+  <text x="1679" y="3189" class="tiny">不降低门槛，不晋级 Primary</text>
+
+  <text x="1661" y="3243" class="body-strong">成本</text>
+  <text x="1738" y="3243" class="body">0.732813239 GPUh · 1 access</text>
+
+  <rect x="75" y="3320" width="2050" height="70" rx="14" class="dark"/>
+  <text x="101" y="3350" class="node-title" style="fill:#ffffff">v0002 总账：1.840072835 GPU-hours · 10 eval accesses · total gate deficit 0</text>
+  <text x="101" y="3376" class="small" style="fill:#ffffff">Primary 81 / Confirmation 73；终态 complete_qualified。注意：Git 保留 compact evidence 与哈希，不包含远端 checkpoint 权重。</text>
+
+  <!-- Section 5 -->
+  <rect x="50" y="3445" width="2100" height="545" rx="22" class="panel" filter="url(#shadow)"/>
+  <text x="80" y="3492" class="section">5 · 门禁与身份规则：决定“能不能往下走”</text>
+  <text x="80" y="3520" class="section-note">硬门优先于平均分；selector 从原始证据重算，不能人工指定 winner，也不能跨 scope / seed / comparison identity 拼接。</text>
+
+  <rect x="80" y="3555" width="625" height="385" rx="18" class="blue"/>
+  <text x="105" y="3590" class="card-title">full112 hard gates</text>
+  <line x1="105" y1="3608" x2="680" y2="3608" class="divider"/>
+  <text x="112" y="3642" class="body">Total correct</text><text x="615" y="3642" class="body-strong">≥ 65</text>
+  <text x="112" y="3678" class="body">General / Math</text><text x="558" y="3678" class="body-strong">≥ 5 / ≥ 17</text>
+  <text x="112" y="3714" class="body">Finance / Code</text><text x="552" y="3714" class="body-strong">≥ 10 / ≥ 14</text>
+  <text x="112" y="3750" class="body">Format compliant</text><text x="615" y="3750" class="body-strong">≥ 90</text>
+  <text x="112" y="3786" class="body">Code sandbox eligible</text><text x="615" y="3786" class="body-strong">≥ 26</text>
+  <text x="112" y="3822" class="body">Infrastructure failures</text><text x="631" y="3822" class="body-strong">= 0</text>
+  <line x1="105" y1="3842" x2="680" y2="3842" class="divider"/>
+  <text x="105" y="3873" class="small">Qualification = Primary 与 Confirmation 都满足 numeric gates</text>
+  <text x="105" y="3898" class="small">＋ evidence gates；两个 seed 必须同 LR / checkpoint label。</text>
+
+  <rect x="735" y="3555" width="650" height="385" rx="18" class="amber"/>
+  <text x="760" y="3590" class="card-title">Selector 状态转移</text>
+  <line x1="760" y1="3608" x2="1360" y2="3608" class="divider"/>
+  <text x="760" y="3642" class="body-strong">Probe strict pass</text>
+  <text x="935" y="3642" class="small">Total≥Base+2；M/F/C ≥ Base−1；eligible≥7；infra=0</text>
+  <text x="760" y="3680" class="body-strong">Near miss</text>
+  <text x="935" y="3680" class="small">仅用于授权 3e-5 / 6e-5 / 8e-5 bracket</text>
+  <text x="760" y="3718" class="body-strong">Gross / no pass</text>
+  <text x="935" y="3718" class="small">stop_no_passing_probe；Main 禁止启动</text>
+  <line x1="760" y1="3740" x2="1360" y2="3740" class="divider"/>
+  <text x="760" y="3774" class="body-strong">Primary rank</text>
+  <text x="935" y="3774" class="small">Total ↓ → General ↓ → Code ↓ → earlier tokens</text>
+  <text x="760" y="3812" class="body-strong">No Main winner</text>
+  <text x="935" y="3812" class="small">Base fallback；不运行 Confirmation</text>
+  <text x="760" y="3850" class="body-strong">Confirmation</text>
+  <text x="935" y="3850" class="small">身份相同且过门 → promote Primary；否则 Base fallback</text>
+  <text x="760" y="3900" class="small">所有 selection JSON 自哈希；verify 会从其绑定输入重新构建并逐字节比较。</text>
+
+  <rect x="1415" y="3555" width="705" height="385" rx="18" class="green"/>
+  <text x="1440" y="3590" class="card-title">五条最容易画错的身份关系</text>
+  <line x1="1440" y1="3608" x2="2095" y2="3608" class="divider"/>
+  <circle cx="1460" cy="3644" r="13" class="badge-green"/><text x="1456" y="3649" class="badge-text">1</text>
+  <text x="1485" y="3649" class="body">Probe t12000 只授权 LR / recipe，不把权重传给 Main。</text>
+  <circle cx="1460" cy="3694" r="13" class="badge-green"/><text x="1456" y="3699" class="badge-text">2</text>
+  <text x="1485" y="3699" class="body">Primary Main 从 frozen Base fresh start。</text>
+  <circle cx="1460" cy="3744" r="13" class="badge-green"/><text x="1456" y="3749" class="badge-text">3</text>
+  <text x="1485" y="3749" class="body">Confirmation 也从 fresh Base 开始，并使用独立 seed。</text>
+  <circle cx="1460" cy="3794" r="13" class="badge-green"/><text x="1456" y="3799" class="badge-text">4</text>
+  <text x="1485" y="3799" class="body">Confirmation pass 后晋级的是 Primary checkpoint。</text>
+  <circle cx="1460" cy="3844" r="13" class="badge-green"/><text x="1456" y="3849" class="badge-text">5</text>
+  <text x="1485" y="3849" class="body">v3 finalize 是 verify-only；RSI core 没有 merge/export。</text>
+  <rect x="1440" y="3880" width="655" height="42" rx="10" class="muted"/>
+  <text x="1460" y="3907" class="small">Claim boundary：只证明 frozen full112 的 two-training-seed qualification。</text>
+
+  <!-- Section 6 -->
+  <rect x="50" y="4020" width="2100" height="905" rx="22" class="panel" filter="url(#shadow)"/>
+  <text x="80" y="4067" class="section">6 · RSI 之后的 Day 21 交付链：从“合格 checkpoint”到“下游可消费 S1”</text>
+  <text x="80" y="4095" class="section-note">这是 append-only delivery，不改写 RSI 结论。handoff 脚本本身不执行 merge，只验证已经完成的 winner-only export。</text>
+
+  <!-- row 1 -->
+  <rect x="80" y="4140" width="330" height="185" rx="18" class="green"/>
+  <circle cx="110" cy="4170" r="18" class="badge-green"/><text x="105" y="4176" class="badge-text">0</text>
+  <text x="140" y="4176" class="node-title">RSI core 终点</text>
+  <text x="105" y="4212" class="body-strong">FINAL-PROMOTION.json</text>
+  <text x="105" y="4240" class="small">Primary 81 + Confirm 73</text>
+  <text x="105" y="4265" class="small">selected Primary · merge=false</text>
+  <text x="105" y="4298" class="tiny">compact evidence / remote checkpoint URI + hashes</text>
+
+  <line x1="448" y1="4118" x2="448" y2="4780" class="boundary"/>
+  <text x="429" y="4355" class="tiny" transform="rotate(-90 429 4355)">RSI CORE ENDS · DAY 21 DELIVERY BEGINS</text>
+
+  <path d="M 410 4232 L 505 4232" class="arrow-green"/>
+  <rect x="505" y="4140" width="340" height="185" rx="18" class="teal"/>
+  <circle cx="535" cy="4170" r="18" class="badge-gray"/><text x="530" y="4176" class="badge-text">1</text>
+  <text x="565" y="4176" class="node-title">Recover + archive</text>
+  <text x="530" y="4212" class="body">fresh subprocess collector</text>
+  <text x="530" y="4239" class="small">44 items / exact inventory hash</text>
+  <text x="530" y="4266" class="small">checkpoint + envelope + promotion verify</text>
+  <text x="530" y="4293" class="small">11-file byte-exact resumable archive</text>
+
+  <path d="M 845 4232 L 895 4232" class="arrow"/>
+  <rect x="895" y="4140" width="340" height="185" rx="18" class="purple"/>
+  <circle cx="925" cy="4170" r="18" class="badge-gray"/><text x="920" y="4176" class="badge-text">2</text>
+  <text x="955" y="4176" class="node-title">External winner-only merge</text>
+  <text x="920" y="4212" class="mono">python -m swift.cli.export</text>
+  <text x="920" y="4240" class="small">Base + promoted LoRA → merged HF</text>
+  <text x="920" y="4267" class="small">BF16 · frozen winner namespace</text>
+  <text x="920" y="4294" class="body-strong">不在 day21_s1_handoff.py 内执行</text>
+
+  <path d="M 1235 4232 L 1285 4232" class="arrow"/>
+  <rect x="1285" y="4140" width="340" height="185" rx="18" class="blue"/>
+  <circle cx="1315" cy="4170" r="18" class="badge-blue"/><text x="1310" y="4176" class="badge-text">3</text>
+  <text x="1345" y="4176" class="node-title">Export manifest</text>
+  <text x="1310" y="4212" class="body">validate merged HF export</text>
+  <text x="1310" y="4239" class="small">11 files · 2 safetensors shards</text>
+  <text x="1310" y="4266" class="small">processor / tokenizer assets</text>
+  <text x="1310" y="4293" class="small">Base / adapter / checkpoint lineage hash</text>
+
+  <path d="M 1625 4232 L 1675 4232" class="arrow"/>
+  <rect x="1675" y="4140" width="420" height="185" rx="18" class="purple"/>
+  <circle cx="1705" cy="4170" r="18" class="badge-gray"/><text x="1700" y="4176" class="badge-text">4</text>
+  <text x="1735" y="4176" class="node-title">Two fresh GPU captures</text>
+  <text x="1700" y="4212" class="body">PID 7411: Base + adapter</text>
+  <text x="1700" y="4240" class="body">PID 7747: merged export</text>
+  <text x="1700" y="4267" class="small">同 4 prompts · greedy · fixed seed</text>
+  <text x="1700" y="4294" class="small">保存 prompt / output token IDs</text>
+
+  <!-- snake down -->
+  <path d="M 1885 4325 L 1885 4390" class="arrow"/>
+  <rect x="1675" y="4390" width="420" height="175" rx="18" class="green"/>
+  <circle cx="1705" cy="4420" r="18" class="badge-green"/><text x="1700" y="4426" class="badge-text">5</text>
+  <text x="1735" y="4426" class="node-title">Exact token-ID parity</text>
+  <text x="1700" y="4462" class="metric">4 passed / 0 failed</text>
+  <text x="1700" y="4494" class="small">prompt IDs exact + output IDs exact</text>
+  <text x="1700" y="4521" class="small">fresh PIDs different · no threshold relaxation</text>
+
+  <path d="M 1675 4478 L 1625 4478" class="arrow-green"/>
+  <rect x="1285" y="4390" width="340" height="175" rx="18" class="green"/>
+  <circle cx="1315" cy="4420" r="18" class="badge-green"/><text x="1310" y="4426" class="badge-text">6</text>
+  <text x="1345" y="4426" class="node-title">S1 promotion manifest</text>
+  <text x="1310" y="4462" class="body">downstream_ready = true</text>
+  <text x="1310" y="4490" class="small">bind archive + export + parity</text>
+  <text x="1310" y="4517" class="small">bind RSI primary/confirmation selection</text>
+  <text x="1310" y="4544" class="small">self-hashed lineage contract</text>
+
+  <path d="M 1285 4478 L 1235 4478" class="arrow-green"/>
+  <rect x="895" y="4390" width="340" height="175" rx="18" class="green"/>
+  <circle cx="925" cy="4420" r="18" class="badge-green"/><text x="920" y="4426" class="badge-text">7</text>
+  <text x="955" y="4426" class="node-title">Downstream key</text>
+  <text x="920" y="4462" class="body">status = active · role = S1</text>
+  <text x="920" y="4490" class="small">key 由 checkpoint snapshot SHA 派生</text>
+  <text x="920" y="4517" class="small">绑定已落盘 promotion manifest</text>
+  <text x="920" y="4544" class="small">最终 CLI verify 复算双方 self-hash</text>
+
+  <path d="M 895 4478 L 845 4478" class="arrow-green"/>
+  <rect x="505" y="4390" width="340" height="175" rx="18" class="teal"/>
+  <circle cx="535" cy="4420" r="18" class="badge-gray"/><text x="530" y="4426" class="badge-text">8</text>
+  <text x="565" y="4426" class="node-title">Day 22 consume</text>
+  <text x="530" y="4462" class="body">实际加载 merged export</text>
+  <text x="530" y="4490" class="small">直接校验 promotion manifest</text>
+  <text x="530" y="4517" class="small">downstream key = 发布/查找身份</text>
+  <text x="530" y="4544" class="small">resumable archive ≠ rollout loader</text>
+
+  <!-- archive boundary notes -->
+  <rect x="80" y="4605" width="2015" height="245" rx="18" class="muted"/>
+  <text x="105" y="4640" class="card-title">交付物各自解决什么问题</text>
+  <line x1="105" y1="4658" x2="2070" y2="4658" class="divider"/>
+  <text x="120" y="4694" class="body-strong">Compact RSI JSON in Git</text>
+  <text x="410" y="4694" class="small">决策、身份、成本、失败与 hash；不是权重备份。</text>
+  <text x="120" y="4730" class="body-strong">Resumable archive</text>
+  <text x="410" y="4730" class="small">adapter + optimizer/scheduler/RNG/trainer state；用于 continuation / durability。</text>
+  <text x="120" y="4766" class="body-strong">Merged export</text>
+  <text x="410" y="4766" class="small">下游实际加载的 inference 权重；通过 fresh-process exact parity。</text>
+  <text x="120" y="4802" class="body-strong">Promotion manifest / key</text>
+  <text x="410" y="4802" class="small">lineage contract / 稳定查找身份；Day 22 直接校验前者。</text>
+  <text x="1250" y="4694" class="body-strong">仍然未证明</text>
+  <text x="1430" y="4694" class="small">独立 held-out 泛化</text>
+  <text x="1430" y="4730" class="small">统计意义上的唯一最优</text>
+  <text x="1430" y="4766" class="small">全输入空间的 adapter/merged 等价</text>
+  <text x="1430" y="4802" class="small">exact-resume trajectory 等价（当前非 S1 硬门）</text>
+
+  <!-- Footer -->
+  <rect x="50" y="4950" width="2100" height="2" fill="#cbd5e1"/>
+  <text x="60" y="4982" class="tiny">主要代码锚点：rsi-control/{README.md,goal.json,state.json,rsi_control.py,rsi_day20_collect.py} · day-20-qwen35-balanced-lora-sft/{run_day20_v3_autodl.sh,day20_candidate_factory_v2.py,select_day20_v2.py,select_day20_main_v2.py} · day-21-weekend-eval-reading/day21_s1_handoff.py</text>
+  <text x="1995" y="4982" class="tiny">2026-08-13 repo state</text>
+</svg>

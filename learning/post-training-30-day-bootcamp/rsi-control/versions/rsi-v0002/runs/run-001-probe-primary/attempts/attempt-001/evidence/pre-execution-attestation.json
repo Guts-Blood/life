@@ -1,0 +1,55 @@
+{
+  "schema_name": "rsi.v0002_pre_execution_attestation",
+  "schema_version": 1,
+  "version_id": "rsi-v0002",
+  "run_id": "run-001-probe-primary",
+  "attempt_id": "attempt-001",
+  "status": "pass",
+  "swift_started": false,
+  "gpu_hours": 0.0,
+  "run_contract_sha256": "c1298e655bb4e9157c8fafcd6798ffb0c2b80502dc98800fbd648eba08b826f5",
+  "remote_run_root": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z",
+  "implementation": {
+    "target_encoding_sha256": "a2ab893f6c52d0ce514ec442304f6d279e0c4313f7fff9c7cb3c90866695fc06",
+    "preparer_sha256": "210f84be57604e7252c877da632b55cbd2c0c0fa6bed83021ffe47a10b0eab34",
+    "target_runtime_sha256": "b523703ccea84bdf9c09463c4982e9677347eadc8f500e62d294c170a35f0c99",
+    "target_plugin_sha256": "08b517281f9752e4bd7a507d0b3366a4c542edf8e56a2f8bcd04a0302ed0f32b",
+    "runner_sha256": "dc12f83e49161b7f04d328bc73d15d677a8af85da1b47eb72832e66ba7a85c6a",
+    "core_runtime_identity_sha256": "6e1018b2528288e459a0e5707468ac8ede284ca497e03e30f91139ff2b3cc2d8",
+    "target_runtime_identity_sha256": "c15561dd276468e4be98d34dd6b1e290c26577b512362895dd0eb22829e64357"
+  },
+  "materialization": {
+    "outer_manifest_file_sha256": "a112674cd186a3ee8dea3687a9e5ab6ef12e393402fd0cc3924d74b4fcf75723",
+    "outer_manifest_content_sha256": "f3acfd8fe38c69e8864182ef9247b27c4f2483bde9228faab9b8b521f0053ce6",
+    "core_manifest_content_sha256": "dc90dee5ae68463e9ceed0c41c662eb56b0dfda81b9ef78d3547f4830a428b0d",
+    "target_audit_content_sha256": "bc6da3fe02f18ea801e0fccdf5801d62dcb46c59e7d936f4e961bba326429e81",
+    "selection_equivalence_content_sha256": "03d13757bd892ba0361d83548569078402564958795be4a3ac7f1f7af3bc3299",
+    "probe_records": 1232,
+    "probe_supervised_tokens": 24000,
+    "main_records": 15226,
+    "main_supervised_tokens": 320000,
+    "probe_code_boundary_pass": "105/105",
+    "main_code_boundary_pass": "1540/1540",
+    "probe_non_code_native_identity": "1127/1127",
+    "main_non_code_native_identity": "13686/13686"
+  },
+  "e2b": {
+    "preflight_file_sha256": "088eab8545e9f039e51aba1dcd0179040cadb34e3b6ea7f87c04d3f979baec2a",
+    "preflight_content_sha256": "3a3e6060ffb441f0390a05e3aaf2d06c6656c5ec35c917e810910f100d8a0da7",
+    "version": "2.37.0",
+    "sandbox_created": true,
+    "sandbox_killed": true,
+    "candidate_code_executed": false
+  },
+  "system": {
+    "status": "pass",
+    "gpu_count_available": 2,
+    "gpu_count_used_by_probe": 1,
+    "gpu_name": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+    "cuda_available": true,
+    "bf16_supported": true,
+    "minimum_free_gib": 80,
+    "ms_swift_commit": "565a1ad586a21d24b23931c52d2c62b49c39bee8",
+    "ms_swift_worktree_clean": true
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "domain": "day12.recovery_rollout_spec",
+  "ordinal": 5,
+  "run_id": "G",
+  "parent_run_id": "E",
+  "status": "planned",
+  "hypothesis": "Freezing the Base model and training a small all-linear LoRA adapter will preserve Base math capability while retaining enough of the repaired dataset's code and routing gains to pass the dev gate.",
+  "primary_change": {
+    "path": "training.parameterization",
+    "parent_value": "full_parameters",
+    "rollout_value": "lora",
+    "implementation": {
+      "peft_version": "0.17.1",
+      "target_modules": "all-linear",
+      "rank": 16,
+      "alpha": 32,
+      "dropout": 0.0,
+      "bias": "none"
+    }
+  },
+  "fixed_invariants": [
+    "Run E format-repaired data manifest",
+    "learning rate 1e-5 and every AdamW/scheduler setting",
+    "61,734 supervised-token first checkpoint",
+    "base model revision, seed, order, loss mask and BF16 compute",
+    "frozen 112-example dev and E2B protocols"
+  ],
+  "first_gate": "25_percent",
+  "acceptance_gate_source": "artifacts/configs/day12-recovery-rollout-policy.json"
+}

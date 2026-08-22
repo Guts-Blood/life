@@ -1,0 +1,39 @@
+{
+  "authorized_differences": {
+    "optimizer.learning_rate": {
+      "parent": 2e-05,
+      "rollout": 1e-05
+    },
+    "run.id": {
+      "parent": "D",
+      "rollout": "E"
+    }
+  },
+  "checkpoint_budgets": {
+    "100_percent": 246936,
+    "25_percent": 61734,
+    "60_percent": 148162
+  },
+  "config_hash": "51336eec01658ee302a3c04f01ac2f6e3ea7ce994c64453a54f2bf0e5e9a336e",
+  "first_gate": {
+    "checkpoint": "25_percent",
+    "code_correct_minimum_out_of_28": 5,
+    "four_slice_total_minimum_out_of_112": 15,
+    "math_correct_minimum_out_of_28": 10
+  },
+  "hypothesis": "The remaining math regression is driven mainly by excessive full-parameter update magnitude; halving peak learning rate should retain Base math while preserving the format-repaired code gain.",
+  "manifest_hash": "f76e6a9538f10b245a831d891899a1d825bf687d7e2eeb4bb949bbf83141b369",
+  "ordinal": 3,
+  "parent_run_id": "D",
+  "run_id": "E",
+  "schedule_file_sha256": "6935af46f154ae282e59d0b8c100859c9d6db091b494158508dc3181ff65410b",
+  "schedule_hash": "463ca95be18e7f0b17ea642654a4660f2efc659f6f49fe1f96976a7e749cf38b",
+  "schedule_path": "learning/post-training-30-day-bootcamp/artifacts/data/day12-training-schedule-E.json",
+  "status": "day12_run_e_preparation_pass",
+  "summary_hash": "134b1ef429d028ee41c08539c759a8a0c43571ef091e3005f6c606ccdf41a7e6",
+  "validation_checks": {
+    "manifest_reused_exactly": true,
+    "only_run_id_and_learning_rate_changed": true,
+    "schedule_total_exact": true
+  }
+}

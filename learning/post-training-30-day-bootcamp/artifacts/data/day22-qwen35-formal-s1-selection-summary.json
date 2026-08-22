@@ -1,0 +1,83 @@
+{
+  "common_generator_provenance_sha256": "75cac27d3a6f271d7519977aee2ea2ad4909f87fca6e55faacedafb1926e62b3",
+  "common_sandbox_digest": "4811d4b4bc4414efd5f6ccaef9834194bf3269d1d9c3970dc7fc648e06e160d4",
+  "content_identities": {
+    "ordered_replay_sha256": "75867c8dc5d7e71d37bf60345dea537a83c3a3d500d2d6b8d1f292f2f02aacae",
+    "ordered_selection_sha256": "5d6457d21bb7d1242f66341dd79d5b4c86f38d3f2cf917f73003e43f4dbb10eb"
+  },
+  "counts": {
+    "candidate_evidence": 1638,
+    "candidate_execution_classes": {
+      "quarantine": 173,
+      "stable_pass": 746,
+      "stable_wrong_answer": 719
+    },
+    "decision_reasons": {
+      "both_fail": 85,
+      "both_pass": 101,
+      "runtime_error_not_preference_eligible": 3,
+      "stable_pass_vs_stable_wrong_answer": 141
+    },
+    "eligible_pairs": 141,
+    "exact_response_duplicates": 338,
+    "format_ineligible_candidates": 4,
+    "input_candidate_rows": 1980,
+    "quarantined_families": 189,
+    "retained_execution_unique_candidates": 1638,
+    "rollout_candidates": 1638,
+    "rollout_families": 330
+  },
+  "dataset_role": "formal_s1_pair_selection_pending_processor_and_human_review",
+  "formal_dpo_blockers": [
+    "processor_audit_pending",
+    "human_blind_review_pending",
+    "final_assembly_pending"
+  ],
+  "formal_dpo_ready": false,
+  "inputs": {
+    "candidate_evidence": {
+      "file_sha256": "5b05b6e4030ed3cc0198b979e98f3c738c05399b42470d7961e92755bf11b4da",
+      "path": "learning/post-training-30-day-bootcamp/artifacts/eval/day22-qwen35-formal-s1-candidate-e2b-evidence.jsonl"
+    },
+    "rollout_contract": {
+      "file_sha256": "727e14053c2416ef7ac6214f411b32058e0f7e6e4645ca84323b64a9bc2b43dc",
+      "path": "learning/post-training-30-day-bootcamp/artifacts/configs/day22-qwen35-formal-s1-rollout-contract.json"
+    },
+    "rollouts": {
+      "file_sha256": "eb2aa2d985241f83ba871bd2b945aca35c8a23944163579d564b640e5768e58b",
+      "path": "learning/post-training-30-day-bootcamp/artifacts/data/day22-qwen35-formal-s1-rollout-candidates.jsonl"
+    },
+    "seed_manifest": {
+      "file_sha256": "90943afc694d3aef121c3d58b751c52e0bbfaa0d48f7388dbc90a9088821ed8e",
+      "path": "learning/post-training-30-day-bootcamp/artifacts/data/day22-qwen35-mbpp-seed-manifest.json"
+    }
+  },
+  "rubric": {
+    "actor_type": "codex_subagent",
+    "agent_role": "formal_s1_preference_labeler",
+    "chosen_gate": "two fresh E2B runs both pass",
+    "decision_basis": "execution_evidence_only",
+    "final_tiebreak": "lexicographic candidate IDs",
+    "name": "day22.promoted_s1_verifier_pair_selection",
+    "one_pair_per_family": true,
+    "primary_rank": "minimum symmetric relative response-token length delta",
+    "quarantine": [
+      "identical_or_ast_equivalent_responses",
+      "both_pass",
+      "both_fail",
+      "unstable_execution",
+      "syntax_error",
+      "runtime_error",
+      "timeout",
+      "infra_error"
+    ],
+    "rejected_gate": "two fresh E2B runs both verifier-classified wrong_answer",
+    "rubric_sha256": "542c1fbc15e55217ef40dc3a225465c4a5d8adb3be04565b4977e9c401b38869",
+    "secondary_rank": "maximum attested test pass ratio when available",
+    "version": "day22.promoted_s1_verifier_pair_selection.v1"
+  },
+  "schema_name": "day22.s1_pair_selection_summary",
+  "schema_version": 1,
+  "status": "pass",
+  "summary_sha256": "bb02326a8c54505957137fe96b6577230bde19ceed2a44967fd12b8e0ef9f0ef"
+}

@@ -1,0 +1,34 @@
+{
+  "schema_name": "rsi.probe_sandbox_verification",
+  "schema_version": 1,
+  "version_id": "rsi-v0002",
+  "run_id": "run-001-probe-primary",
+  "attempt_id": "attempt-001",
+  "retry_ordinal": 1,
+  "candidate": "base-probe",
+  "scope": "probe32",
+  "status": "pass",
+  "metrics": {
+    "records": 7,
+    "sandbox_execution_eligible": 7,
+    "passed": 3,
+    "failed": 4,
+    "infrastructure_failures": 0,
+    "outcomes": {"passed": 3, "failed": 3, "timeout": 1}
+  },
+  "comparison": {
+    "normalized_comparison_key": "e07b6fe42581ef50b487375271e0ec61aab92337f880570b72f9b29316b82215",
+    "e2b_comparison_key": "bdae42f17b45fbfaa0ccd530e975d017aafacdc3e4802b744852d8647fbb6253",
+    "complete_comparison_key": "293fcbfd9aa69b9e7512e00aa6e0d4cdaab71a9518a353247844a932dd8b7945",
+    "e2b_run_sha256": "039a839956ac9d4ca79e132d3a5be5040e765a5b7cf970ce70677dcbee61b516"
+  },
+  "artifacts": [
+    {"role": "e2b_results", "path": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/eval/base-probe-code-e2b-qwen35-v3.jsonl", "file_sha256": "463ed39c4ced6f0fe1d9cb46da0722d1cd036eb9d8b8c3c3ad4e35c699a987ec", "content_sha256": "d024f0ba0d8fe355ba0290c78d405946244a398c8554ff1e1880cea3a61592d4"},
+    {"role": "e2b_summary", "path": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/eval/base-probe-code-e2b-qwen35-v3-summary.json", "file_sha256": "0cb81a37bb9783c7d08eeec5466fccd5bba22f82a15829f507ab12ff4b5be2b5", "content_sha256": "7d9b940076065bbc6a76af5301e92dad3c6f3ec95e1db3914b5ebcde3dea89a3"}
+  ],
+  "cost": {
+    "local_gpu_hours": 0.0,
+    "eval_accesses": 0,
+    "measurement_method": "external_e2b_sandbox_no_local_gpu_cost"
+  }
+}

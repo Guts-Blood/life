@@ -1,0 +1,126 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.invalid/schemas/opd-trajectory-v2.json",
+  "title": "On-policy distillation trajectory v2",
+  "$comment": "A runtime validator must additionally assert equal response-axis lengths for response_token_ids, masks, and token log-prob arrays after the declared causal shift/alignment rule.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "trajectory_id",
+    "prompt_id",
+    "status",
+    "student",
+    "teacher",
+    "tokens",
+    "logprobs",
+    "distillation",
+    "lineage"
+  ],
+  "properties": {
+    "schema_version": {"const": 2},
+    "trajectory_id": {"type": "string", "minLength": 1},
+    "prompt_id": {"type": "string", "minLength": 1},
+    "group_id": {"type": ["string", "null"]},
+    "status": {
+      "enum": ["ok", "truncated", "timeout", "generation_error", "teacher_error", "environment_error", "aborted"]
+    },
+    "student": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["checkpoint_hash", "policy_version", "tokenizer_hash", "template_hash", "rendered_input_ids_hash"],
+      "properties": {
+        "checkpoint_hash": {"type": "string"},
+        "policy_version": {"type": "string"},
+        "tokenizer_hash": {"type": "string"},
+        "template_hash": {"type": "string"},
+        "rendered_input_ids_hash": {"type": "string"}
+      }
+    },
+    "teacher": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["key", "checkpoint_hash", "tokenizer_hash", "template_hash", "serving_config_hash"],
+      "properties": {
+        "key": {"type": "string"},
+        "checkpoint_hash": {"type": "string"},
+        "tokenizer_hash": {"type": "string"},
+        "template_hash": {"type": "string"},
+        "serving_config_hash": {"type": "string"}
+      }
+    },
+    "tokens": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["prompt_input_ids", "response_token_ids", "response_mask", "distillation_mask", "tool_environment_mask"],
+      "properties": {
+        "prompt_input_ids": {"type": "array", "items": {"type": "integer", "minimum": 0}},
+        "response_token_ids": {"type": "array", "items": {"type": "integer", "minimum": 0}},
+        "response_mask": {"$ref": "#/$defs/binaryMask"},
+        "distillation_mask": {"$ref": "#/$defs/binaryMask"},
+        "tool_environment_mask": {"$ref": "#/$defs/binaryMask"},
+        "alignment_hash": {"type": "string"}
+      }
+    },
+    "logprobs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["student_old", "student_current", "teacher_sampled_token"],
+      "properties": {
+        "student_old": {"$ref": "#/$defs/nullableNumberArray"},
+        "student_current": {"$ref": "#/$defs/nullableNumberArray"},
+        "teacher_sampled_token": {"$ref": "#/$defs/nullableNumberArray"},
+        "teacher_topk_artifact_hash": {"type": ["string", "null"]}
+      }
+    },
+    "distillation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["objective", "direction", "temperature", "coefficient", "task_reward_coefficient", "policy_lag"],
+      "properties": {
+        "objective": {"type": "string"},
+        "direction": {"enum": ["forward_kl", "reverse_kl", "generalized_js", "sampled_token_advantage", "other"]},
+        "temperature": {"type": "number", "exclusiveMinimum": 0},
+        "coefficient": {"type": "number", "minimum": 0},
+        "task_reward_coefficient": {"type": "number", "minimum": 0},
+        "policy_lag": {"type": "integer", "minimum": 0, "maximum": 1},
+        "token_loss_artifact_hash": {"type": ["string", "null"]}
+      }
+    },
+    "environment": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "properties": {
+        "tool_schema_hash": {"type": ["string", "null"]},
+        "events_artifact_hash": {"type": ["string", "null"]},
+        "reward_components": {"type": "object"},
+        "final_status": {"type": ["string", "null"]}
+      }
+    },
+    "lineage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["policy_train_manifest_hash", "code_commit", "run_hash", "replay_key"],
+      "properties": {
+        "policy_train_manifest_hash": {"type": "string"},
+        "code_commit": {"type": "string"},
+        "run_hash": {"type": "string"},
+        "replay_key": {"type": "string"}
+      }
+    },
+    "runtime": {
+      "type": ["object", "null"],
+      "additionalProperties": true
+    }
+  },
+  "$defs": {
+    "binaryMask": {
+      "type": "array",
+      "items": {"type": "integer", "enum": [0, 1]}
+    },
+    "nullableNumberArray": {
+      "type": "array",
+      "items": {"type": ["number", "null"]}
+    }
+  }
+}

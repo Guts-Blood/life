@@ -1,0 +1,269 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="2480" viewBox="0 0 1800 2480" role="img" aria-labelledby="title desc">
+  <title id="title">Day 08 SFT data contract, chat template, and loss-token roadmap</title>
+  <desc id="desc">A Chinese learning roadmap from raw messages and schema validation through frozen chat-template rendering, tokenization, role-aware supervision labels, causal shift, mask separation, token-level audit, rejection gates, and Day 8 completion evidence.</desc>
+
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2563eb"/>
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#15803d"/>
+    </marker>
+    <style>
+      text { font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; fill: #172033; }
+      .title { font-size: 34px; font-weight: 700; }
+      .subtitle { font-size: 18px; fill: #526078; }
+      .section { font-size: 23px; font-weight: 700; }
+      .stage { font-size: 14px; font-weight: 700; letter-spacing: .5px; fill: #475569; }
+      .label { font-size: 17px; font-weight: 650; }
+      .body { font-size: 15px; }
+      .small { font-size: 13px; fill: #526078; }
+      .tiny { font-size: 12px; fill: #526078; }
+      .formula { font-family: "SFMono-Regular", Consolas, monospace; font-size: 14px; fill: #273449; }
+      .formula-small { font-family: "SFMono-Regular", Consolas, monospace; font-size: 12px; fill: #273449; }
+      .panel { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1.5; }
+      .hero { fill: #eef2ff; stroke: #6366f1; stroke-width: 1.8; }
+      .blue { fill: #dbeafe; stroke: #2563eb; stroke-width: 1.5; }
+      .cyan { fill: #cffafe; stroke: #0891b2; stroke-width: 1.5; }
+      .purple { fill: #f3e8ff; stroke: #9333ea; stroke-width: 1.5; }
+      .green { fill: #dcfce7; stroke: #16a34a; stroke-width: 1.5; }
+      .amber { fill: #fef3c7; stroke: #d97706; stroke-width: 1.5; }
+      .red { fill: #fee2e2; stroke: #dc2626; stroke-width: 1.5; }
+      .muted { fill: #f1f5f9; stroke: #94a3b8; stroke-width: 1.3; }
+      .good { fill: #f0fdf4; stroke: #16a34a; stroke-width: 1.5; }
+      .warning { fill: #fff7ed; stroke: #ea580c; stroke-width: 1.5; }
+      .loss-cell { fill: #dcfce7; stroke: #16a34a; stroke-width: 1.2; }
+      .masked-cell { fill: #f1f5f9; stroke: #94a3b8; stroke-width: 1.1; }
+      .line { fill: none; stroke: #475569; stroke-width: 2; marker-end: url(#arrow); }
+      .line-blue { fill: none; stroke: #2563eb; stroke-width: 2; marker-end: url(#arrow-blue); }
+      .line-green { fill: none; stroke: #15803d; stroke-width: 2; marker-end: url(#arrow-green); }
+      .dash { fill: none; stroke: #64748b; stroke-width: 1.6; stroke-dasharray: 7 5; marker-end: url(#arrow); }
+      .divider { stroke: #cbd5e1; stroke-width: 1.4; }
+      .grid { stroke: #cbd5e1; stroke-width: 1; }
+    </style>
+  </defs>
+
+  <rect width="1800" height="2480" fill="#f5f7fb"/>
+  <text x="50" y="58" class="title">Day 08 · SFT 数据契约、Chat Template 与 Loss Token Roadmap</text>
+  <text x="50" y="90" class="subtitle">目标：在训练前回答清楚——模型看到了什么、哪些 token 产生 loss、每个 target 由哪个 logit 预测。</text>
+
+  <!-- Gate -->
+  <rect x="40" y="118" width="1720" height="100" rx="18" class="hero"/>
+  <text x="70" y="154" class="section">一句话 Gate</text>
+  <text x="270" y="154" class="label">先冻结 raw → rendered → token → label 的数据契约，再允许训练开始。</text>
+  <text x="270" y="185" class="body">attention 决定“能看什么”；labels / supervised mask 决定“哪些位置直接算 CE”——二者相关，但不是一回事。</text>
+
+  <!-- Main pipeline -->
+  <rect x="40" y="242" width="1720" height="520" rx="18" class="panel"/>
+  <text x="70" y="282" class="section">1 · 学习主链路：一条 SFT sample 怎样变成有效监督</text>
+  <text x="70" y="309" class="small">每次变换都必须可审计、可复现；模板版本、特殊 token、截断顺序都属于数据契约。</text>
+
+  <text x="70" y="352" class="stage">01 · RAW MESSAGES</text>
+  <rect x="70" y="368" width="292" height="224" rx="15" class="blue"/>
+  <text x="94" y="404" class="label">稳定 schema</text>
+  <line x1="94" y1="422" x2="338" y2="422" class="divider"/>
+  <text x="94" y="453" class="formula">id + messages + metadata</text>
+  <text x="94" y="484" class="body">system? → user → assistant</text>
+  <text x="94" y="514" class="small">content 非空；最终必须是 assistant</text>
+  <text x="94" y="541" class="small">禁止模板控制 token 注入</text>
+  <text x="94" y="568" class="small">dataset 内 sample ID 唯一</text>
+
+  <path d="M 362 480 L 392 480" class="line-blue"/>
+
+  <text x="392" y="352" class="stage">02 · SCHEMA GATE</text>
+  <rect x="392" y="368" width="292" height="224" rx="15" class="cyan"/>
+  <text x="416" y="404" class="label">编码前拒绝坏样本</text>
+  <line x1="416" y1="422" x2="660" y2="422" class="divider"/>
+  <text x="416" y="453" class="body">role 顺序是否合法？</text>
+  <text x="416" y="484" class="body">assistant 是否存在且非空？</text>
+  <text x="416" y="515" class="body">metadata 是否为 object？</text>
+  <text x="416" y="546" class="body">ID 是否重复？</text>
+  <text x="416" y="575" class="small">失败 → schema reject，不进入模板</text>
+
+  <path d="M 684 480 L 714 480" class="line-blue"/>
+
+  <text x="714" y="352" class="stage">03 · RENDER + TOKENIZE</text>
+  <rect x="714" y="368" width="330" height="224" rx="15" class="purple"/>
+  <text x="738" y="404" class="label">冻结 Qwen3 ChatML</text>
+  <line x1="738" y1="422" x2="1020" y2="422" class="divider"/>
+  <text x="738" y="452" class="formula-small">Qwen/Qwen3-0.6B-Base</text>
+  <text x="738" y="480" class="body">无 system → 插入默认 system</text>
+  <text x="738" y="510" class="formula-small">add_generation_prompt = false</text>
+  <text x="738" y="538" class="formula-small">add_special_tokens = false</text>
+  <text x="738" y="568" class="small">固定 revision + template SHA-256</text>
+
+  <path d="M 1044 480 L 1074 480" class="line-blue"/>
+
+  <text x="1074" y="352" class="stage">04 · ROLE-AWARE LABELS</text>
+  <rect x="1074" y="368" width="300" height="224" rx="15" class="amber"/>
+  <text x="1098" y="404" class="label">构造监督边界</text>
+  <line x1="1098" y1="422" x2="1350" y2="422" class="divider"/>
+  <text x="1098" y="452" class="formula">assistant body → token ID</text>
+  <text x="1098" y="482" class="formula">assistant end  → 151645</text>
+  <text x="1098" y="512" class="formula">其余 / PAD     → -100</text>
+  <text x="1098" y="542" class="small">多轮：监督所有 assistant turns</text>
+  <text x="1098" y="570" class="small">右截断后重新做 encoded gate</text>
+
+  <path d="M 1374 480 L 1404 480" class="line-green"/>
+
+  <text x="1404" y="352" class="stage">05 · SHIFTED CE</text>
+  <rect x="1404" y="368" width="286" height="224" rx="15" class="green"/>
+  <text x="1428" y="404" class="label">一次 forward 算完</text>
+  <line x1="1428" y1="422" x2="1666" y2="422" class="divider"/>
+  <text x="1428" y="455" class="formula">logits[t] → labels[t+1]</text>
+  <text x="1428" y="487" class="formula">CE(ignore_index=-100)</text>
+  <text x="1428" y="521" class="body">所有有效 target 并行计 loss</text>
+  <text x="1428" y="551" class="small">不需要拆成无数条前缀样本</text>
+  <text x="1428" y="579" class="small">teacher forcing 提供真实前缀</text>
+
+  <rect x="70" y="626" width="1620" height="98" rx="14" class="muted"/>
+  <text x="94" y="660" class="label">Frozen contract</text>
+  <text x="254" y="660" class="formula-small">revision ddc928…e865 · template SHA 44d5f0…7fa5 · max_length 256 · right truncation / padding · packing off</text>
+  <text x="94" y="694" class="small">EOS / assistant end = &lt;|im_end|&gt; (151645)　·　PAD = &lt;|endoftext|&gt; (151643)　·　截断后的不完整 assistant 必须拒绝</text>
+
+  <!-- Mask separation -->
+  <rect x="40" y="786" width="1720" height="430" rx="18" class="panel"/>
+  <text x="70" y="826" class="section">2 · 三种 mask 分工：不要把“可见性”与“监督目标”混在一起</text>
+  <text x="70" y="853" class="small">实际实现可能把 causal mask 隐藏在模型内部，也可能不显式保存 supervised_mask；概念边界仍然必须清楚。</text>
+
+  <rect x="70" y="884" width="510" height="278" rx="15" class="blue"/>
+  <text x="96" y="920" class="label">Padding attention_mask</text>
+  <text x="96" y="950" class="body">决定序列中哪些输入 token 存在、可被读取</text>
+  <text x="96" y="985" class="formula">[1, 1, 1, 1, 1, 0]</text>
+  <text x="96" y="1019" class="small">1：真实 rendered token</text>
+  <text x="96" y="1047" class="small">0：PAD，不应成为上下文</text>
+  <line x1="96" y1="1070" x2="554" y2="1070" class="divider"/>
+  <text x="96" y="1100" class="body">它不会自动让 CE 忽略同位置 label</text>
+  <text x="96" y="1132" class="small">PAD label 仍必须显式写成 -100</text>
+
+  <rect x="645" y="884" width="510" height="278" rx="15" class="purple"/>
+  <text x="671" y="920" class="label">Causal attention mask</text>
+  <text x="671" y="950" class="body">决定位置 t 只能读取自己与过去，不能偷看未来</text>
+  <text x="671" y="986" class="formula">visible(t) = positions ≤ t</text>
+  <text x="671" y="1019" class="small">通常由 decoder 在 forward 内部构造</text>
+  <text x="671" y="1047" class="small">它不是训练得到的参数</text>
+  <line x1="671" y1="1070" x2="1129" y2="1070" class="divider"/>
+  <text x="671" y="1100" class="body">WQ / WK / WV 学的是如何注意</text>
+  <text x="671" y="1132" class="small">mask 只是硬规则：哪些连接被允许</text>
+
+  <rect x="1220" y="884" width="470" height="278" rx="15" class="amber"/>
+  <text x="1246" y="920" class="label">supervised / loss mask</text>
+  <text x="1246" y="950" class="body">决定哪些 target token 直接进入 loss</text>
+  <text x="1246" y="985" class="formula">[0, 0, 0, 1, 1, 0]</text>
+  <text x="1246" y="1019" class="small">常见实现：不单独传入模型</text>
+  <text x="1246" y="1047" class="small">而是转换为 labels：0 → -100</text>
+  <line x1="1246" y1="1070" x2="1664" y2="1070" class="divider"/>
+  <text x="1246" y="1100" class="body">prompt 仍在 context 中参与预测</text>
+  <text x="1246" y="1132" class="small">只是它自身不作为直接 CE target</text>
+
+  <!-- Boundary trace -->
+  <rect x="40" y="1240" width="1720" height="540" rx="18" class="panel"/>
+  <text x="70" y="1280" class="section">3 · Single-turn 边界审计：label 在位置 t，由 logits[t−1] 预测</text>
+  <text x="70" y="1307" class="small">样本：user「2 + 2 等于多少？」→ assistant「4」；完整输入 32 tokens，只有 2 个有效 assistant loss terms。</text>
+
+  <!-- Table header -->
+  <rect x="70" y="1336" width="1660" height="46" rx="8" class="muted"/>
+  <text x="92" y="1366" class="stage">POSITION</text>
+  <text x="224" y="1366" class="stage">TOKEN / ROLE</text>
+  <text x="584" y="1366" class="stage">ATTENTION</text>
+  <text x="796" y="1366" class="stage">SUPERVISED</text>
+  <text x="1032" y="1366" class="stage">LABEL</text>
+  <text x="1248" y="1366" class="stage">PREDICTED BY</text>
+  <text x="1512" y="1366" class="stage">DIRECT LOSS?</text>
+
+  <line x1="190" y1="1336" x2="190" y2="1669" class="grid"/>
+  <line x1="550" y1="1336" x2="550" y2="1669" class="grid"/>
+  <line x1="760" y1="1336" x2="760" y2="1669" class="grid"/>
+  <line x1="990" y1="1336" x2="990" y2="1669" class="grid"/>
+  <line x1="1200" y1="1336" x2="1200" y2="1669" class="grid"/>
+  <line x1="1470" y1="1336" x2="1470" y2="1669" class="grid"/>
+
+  <g class="body">
+    <rect x="70" y="1388" width="1660" height="38" rx="5" class="masked-cell"/>
+    <text x="102" y="1413">24</text><text x="224" y="1413">user &lt;|im_end|&gt;</text><text x="624" y="1413">1</text><text x="852" y="1413">0</text><text x="1046" y="1413" class="formula">-100</text><text x="1262" y="1413">—</text><text x="1555" y="1413">no</text>
+
+    <rect x="70" y="1432" width="1660" height="38" rx="5" class="masked-cell"/>
+    <text x="102" y="1457">26</text><text x="224" y="1457">assistant &lt;|im_start|&gt;</text><text x="624" y="1457">1</text><text x="852" y="1457">0</text><text x="1046" y="1457" class="formula">-100</text><text x="1262" y="1457">—</text><text x="1555" y="1457">no</text>
+
+    <rect x="70" y="1476" width="1660" height="38" rx="5" class="masked-cell"/>
+    <text x="102" y="1501">27</text><text x="224" y="1501">assistant role name</text><text x="624" y="1501">1</text><text x="852" y="1501">0</text><text x="1046" y="1501" class="formula">-100</text><text x="1262" y="1501">—</text><text x="1555" y="1501">no</text>
+
+    <rect x="70" y="1520" width="1660" height="38" rx="5" class="masked-cell"/>
+    <text x="102" y="1545">28</text><text x="224" y="1545">assistant header newline</text><text x="624" y="1545">1</text><text x="852" y="1545">0</text><text x="1046" y="1545" class="formula">-100</text><text x="1262" y="1545">predicts pos 29</text><text x="1515" y="1545">logit yes*</text>
+
+    <rect x="70" y="1564" width="1660" height="38" rx="5" class="loss-cell"/>
+    <text x="102" y="1589">29</text><text x="224" y="1589">assistant body: “4”</text><text x="624" y="1589">1</text><text x="852" y="1589">1</text><text x="1046" y="1589" class="formula">19</text><text x="1262" y="1589" class="formula">logits[28]</text><text x="1555" y="1589">yes</text>
+
+    <rect x="70" y="1608" width="1660" height="38" rx="5" class="loss-cell"/>
+    <text x="102" y="1633">30</text><text x="224" y="1633">assistant &lt;|im_end|&gt;</text><text x="624" y="1633">1</text><text x="852" y="1633">1</text><text x="1046" y="1633" class="formula">151645</text><text x="1262" y="1633" class="formula">logits[29]</text><text x="1555" y="1633">yes</text>
+
+    <rect x="70" y="1652" width="1660" height="38" rx="5" class="masked-cell"/>
+    <text x="102" y="1677">31</text><text x="224" y="1677">newline after message</text><text x="624" y="1677">1</text><text x="852" y="1677">0</text><text x="1046" y="1677" class="formula">-100</text><text x="1262" y="1677">—</text><text x="1555" y="1677">no</text>
+  </g>
+
+  <rect x="70" y="1710" width="1660" height="46" rx="10" class="good"/>
+  <text x="94" y="1739" class="body">关键：pos 28 的 label 是 -100，但 logits[28] 仍参与 loss，因为它预测 pos 29 的有效 label。“目标位置”与“产生该预测的 logit 位置”相差 1。</text>
+
+  <!-- Validation gates -->
+  <rect x="40" y="1804" width="1720" height="354" rx="18" class="panel"/>
+  <text x="70" y="1844" class="section">4 · 两阶段 Validator：先守 schema，再守编码后的监督完整性</text>
+  <text x="70" y="1871" class="small">“raw 看起来合法”不代表“截断后仍可训练”；两道 gate 的错误码要分开记录。</text>
+
+  <rect x="70" y="1902" width="510" height="205" rx="15" class="red"/>
+  <text x="96" y="1938" class="label">Schema reject · 8</text>
+  <line x1="96" y1="1956" x2="554" y2="1956" class="divider"/>
+  <text x="96" y="1986" class="body">重复 ID / 非法 role 顺序 / 重复 system</text>
+  <text x="96" y="2016" class="body">空 content / 缺失 assistant / 非法 metadata</text>
+  <text x="96" y="2046" class="body">模板控制标记注入</text>
+  <text x="96" y="2082" class="small">拒绝发生在 render / tokenize 之前</text>
+
+  <path d="M 580 2004 L 630 2004" class="line"/>
+
+  <rect x="630" y="1902" width="510" height="205" rx="15" class="warning"/>
+  <text x="656" y="1938" class="label">Encoded reject · 2</text>
+  <line x1="656" y1="1956" x2="1114" y2="1956" class="divider"/>
+  <text x="656" y="1986" class="body">右截断后零有效 labels</text>
+  <text x="656" y="2016" class="body">最终 assistant &lt;|im_end|&gt; 被截掉</text>
+  <text x="656" y="2046" class="body">不完整答案前缀不能冒充完整 target</text>
+  <text x="656" y="2082" class="small">input / attention / labels 同索引截断后再验</text>
+
+  <path d="M 1140 2004 L 1190 2004" class="line-green"/>
+
+  <rect x="1190" y="1902" width="500" height="205" rx="15" class="green"/>
+  <text x="1216" y="1938" class="label">Accept · 10</text>
+  <line x1="1216" y1="1956" x2="1664" y2="1956" class="divider"/>
+  <text x="1216" y="1986" class="body">schema、模板、长度和 EOS 全部通过</text>
+  <text x="1216" y="2016" class="body">有效 label 数 &gt; 0；PAD label = -100</text>
+  <text x="1216" y="2046" class="body">保存 token / role / label / shifted source 审计</text>
+  <text x="1216" y="2082" class="small">通过契约 ≠ 已验证真实数据来源质量</text>
+
+  <!-- Mental model and evidence -->
+  <rect x="40" y="2182" width="1120" height="250" rx="18" class="panel"/>
+  <text x="70" y="2222" class="section">5 · 最终心智模型：shift 一次，整条序列并行训练</text>
+  <rect x="70" y="2252" width="290" height="72" rx="12" class="blue"/>
+  <text x="94" y="2282" class="label">真实前缀 input_ids</text>
+  <text x="94" y="2308" class="small">teacher forcing · causal visibility</text>
+  <path d="M 360 2288 L 405 2288" class="line-blue"/>
+  <rect x="405" y="2252" width="285" height="72" rx="12" class="purple"/>
+  <text x="429" y="2282" class="label">一次 model forward</text>
+  <text x="429" y="2308" class="formula-small">logits [B, T, V]</text>
+  <path d="M 690 2288 L 735 2288" class="line-green"/>
+  <rect x="735" y="2252" width="385" height="72" rx="12" class="green"/>
+  <text x="759" y="2282" class="label">shift + 过滤 -100 + 聚合 CE</text>
+  <text x="759" y="2308" class="small">2 个有效 labels → 2 个 loss terms</text>
+  <text x="70" y="2367" class="body">训练时 attention pattern 会随 WQ/WK/WV 更新而改变；causal/padding mask 本身不是可学习参数。</text>
+  <text x="70" y="2397" class="small">若模型复述 system/user，先抽查 prompt label 是否误写为非 -100，再检查 generation prompt 与 stop token。</text>
+
+  <rect x="1180" y="2182" width="580" height="250" rx="18" class="hero"/>
+  <text x="1210" y="2222" class="section">Day 08 Evidence</text>
+  <text x="1210" y="2262" class="label">✓ 20 / 20 golden cases 命中预期</text>
+  <text x="1210" y="2296" class="label">✓ 4 unit tests passed</text>
+  <text x="1210" y="2330" class="label">✓ 5 条逐 token 人工审计</text>
+  <text x="1210" y="2364" class="label">✓ pinned tokenizer 离线重载通过</text>
+  <text x="1210" y="2398" class="small">CPU only · training / GPU not started</text>
+
+  <text x="50" y="2460" class="small">NEXT · Day 09：固定真实 SFT 数据的 source / license / revision / split / content hash，生成可重建 dataset manifest。</text>
+</svg>

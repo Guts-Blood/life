@@ -1,0 +1,79 @@
+{
+  "audit_sha256": "a01bfdb8de74f655fc279e8da7c1d0cea41ae9175ac013abb191d3c7549ca032",
+  "contract_summary": {
+    "ordered_pair_hashes_sha256": "6137fad69ca65d91aaad4386bd190a2b77c33e36083658d637bcb1cbcb06a2f0",
+    "pair_status_counts": {
+      "accepted": 200
+    },
+    "records": 200,
+    "split_counts": {
+      "dev": 17,
+      "heldout": 29,
+      "train": 154
+    }
+  },
+  "counts": {
+    "eligible_selections": 200,
+    "formal_pairs": 200,
+    "input_selections": 330,
+    "promoted_s1_on_policy_pairs": 200,
+    "review_presentations": 100,
+    "review_unique_pairs": 50,
+    "synthetic_pairs": 0
+  },
+  "dataset_role": "formal_s1_dpo_pairs_pending_human_blind_review",
+  "formal_dpo_ready": false,
+  "machine_gates": {
+    "blind_review_worksheet_generation": {
+      "human_verdicts_filled": 0,
+      "passed": true,
+      "presentations": 100,
+      "unique_pairs": 50
+    },
+    "cross_split_family_overlap": {
+      "family_dimensions": [
+        "problem",
+        "prompt",
+        "test",
+        "source"
+      ],
+      "observed_overlap": 0,
+      "passed": true
+    },
+    "formal_pair_count_200_to_500": {
+      "maximum": 500,
+      "minimum": 200,
+      "observed": 200,
+      "passed": true
+    },
+    "one_pair_per_family": {
+      "observed_unique_families": 200,
+      "passed": true
+    },
+    "promoted_s1_on_policy": {
+      "observed": 200,
+      "passed": true
+    },
+    "qwen35_processor_audit": {
+      "observed_pairs": 200,
+      "passed": true,
+      "processor_contract_sha256": "12af5b3df5597fc2de4e6e9eebc9abba2e0f14d27971f39dc7e4af83c66e1083"
+    },
+    "secure_e2b_two_fresh_runs_per_side": {
+      "observed_pairs": 200,
+      "passed": true
+    },
+    "synthetic_pairs": {
+      "fraction": 0.0,
+      "observed": 0,
+      "passed": true
+    }
+  },
+  "machine_ready": true,
+  "pending_blockers": [
+    "human_blind_review_pending"
+  ],
+  "schema_name": "day22.formal_s1_machine_gate_audit",
+  "schema_version": 1,
+  "status": "pass"
+}

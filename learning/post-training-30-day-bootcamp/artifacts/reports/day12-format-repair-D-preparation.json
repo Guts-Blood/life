@@ -1,0 +1,92 @@
+{
+  "comparison_boundary": "Run D is a post-hoc format-only recovery experiment. It preserves the C token ratios and training recipe but rematerializes finance examples because rewritten supervised lengths change.",
+  "config_file_sha256": "085ee5b92124ecf581e813fc3479067eaa87d86c063c38f28f8acd111913d2f6",
+  "config_path": "learning/post-training-30-day-bootcamp/artifacts/configs/day12-controlled-sft-D.yaml",
+  "distribution_by_skill": {
+    "code": {
+      "actual_ratio": "7/24",
+      "actual_ratio_decimal": 0.2916666666666667,
+      "input_tokens": 217529,
+      "occurrences": 538,
+      "raw_tokens": 206231,
+      "supervised_tokens": 72023,
+      "target_ratio": "7/24",
+      "unique_canonical_examples": 538
+    },
+    "finance": {
+      "actual_ratio": "1/8",
+      "actual_ratio_decimal": 0.125,
+      "input_tokens": 189150,
+      "occurrences": 879,
+      "raw_tokens": 170691,
+      "supervised_tokens": 30867,
+      "target_ratio": "1/8",
+      "unique_canonical_examples": 879
+    },
+    "general": {
+      "actual_ratio": "7/24",
+      "actual_ratio_decimal": 0.2916666666666667,
+      "input_tokens": 93176,
+      "occurrences": 241,
+      "raw_tokens": 88115,
+      "supervised_tokens": 72023,
+      "target_ratio": "7/24",
+      "unique_canonical_examples": 241
+    },
+    "math": {
+      "actual_ratio": "7/24",
+      "actual_ratio_decimal": 0.2916666666666667,
+      "input_tokens": 94655,
+      "occurrences": 71,
+      "raw_tokens": 93164,
+      "supervised_tokens": 72023,
+      "target_ratio": "7/24",
+      "unique_canonical_examples": 71
+    }
+  },
+  "first_gate": {
+    "action_if_failed": "Stop Run D; do not continue to 60_percent or 100_percent.",
+    "checkpoint": "25_percent",
+    "code_correct_minimum_out_of_28": 5,
+    "four_slice_total_minimum_out_of_112": 15,
+    "math_correct_minimum_out_of_28": 10
+  },
+  "manifest_file_sha256": "e7d7c522c240aa218d7a86e0466bf48dfd2f63473023d25e1e249fed168430ba",
+  "manifest_hash": "f76e6a9538f10b245a831d891899a1d825bf687d7e2eeb4bb949bbf83141b369",
+  "manifest_path": "learning/post-training-30-day-bootcamp/artifacts/data/day12-mix-D-format-repaired.json",
+  "maximum_input_tokens": 2021,
+  "parent_finance_occurrences": 991,
+  "plan_file_sha256": "cff734d4976c51bec7a65926898d085cc7c2e92ccd05311380fae2a0554ebf9e",
+  "plan_hash": "c3048344358f0132586146471f47a353f3176ce2c94eb4ee60bc0e6b4dc11e07",
+  "plan_path": "learning/post-training-30-day-bootcamp/artifacts/data/day12-format-repair-D-plan.json",
+  "repaired_finance_occurrences": 879,
+  "schedule_file_sha256": "0816700afbf45de0aaab1015dbf0f507eddc713f1af9c2cc99b9bfce755557e9",
+  "schedule_hash": "1bd1480b54557bfac82dc2a57aa85fa59125974de2a3ffbfb9c7ce8c15f81581",
+  "schedule_path": "learning/post-training-30-day-bootcamp/artifacts/data/day12-training-schedule-D.json",
+  "status": "day12_run_d_preparation_pass",
+  "summary_hash": "e2de21c89ea1fe1554463cfd42cf6df677fc6823a2fd1601a4a8a0d7351807d5",
+  "target_ratios": {
+    "code": "7/24",
+    "finance": "1/8",
+    "general": "7/24",
+    "math": "7/24"
+  },
+  "total_supervised_tokens": 246936,
+  "validation_checks": {
+    "canonical_ids_unique": true,
+    "finance_dsl_removed": true,
+    "finance_final_answer_present": true,
+    "finance_natural_reasoning_prefix": true,
+    "manifest_hash_valid": true,
+    "maximum_length_respected": true,
+    "no_truncation": true,
+    "nonfinance_selection_preserved": true,
+    "occurrence_ids_unique": true,
+    "planned_ids_cover_manifest": true,
+    "routing_suffixes_present": true,
+    "schedule_stage_subsets_preserved": true,
+    "schedule_total_exact": true,
+    "slice_ratios_exact": true,
+    "supervised_total_exact": true
+  }
+}

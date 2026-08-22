@@ -1,0 +1,103 @@
+{
+  "candidate": "main-s20260809-lr1e-4-final",
+  "conversion": {
+    "downstream_inference_template": "qwen3_5",
+    "implementation": "python -m swift.cli.export",
+    "lineage_verified_by": "strict_fresh_process_token_id_parity",
+    "merge_lora": true,
+    "model_type": "qwen3_5",
+    "ms_swift_commit": "565a1ad586a21d24b23931c52d2c62b49c39bee8",
+    "source_template": "day20_qwen3_5_target_v3",
+    "torch_dtype": "bfloat16"
+  },
+  "created_at_utc": "2026-08-13T08:55:53.593467+00:00",
+  "export_dir": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/exports/main-s20260809-lr1e-4-final-merged",
+  "files": {
+    "args.json": {
+      "bytes": 18601,
+      "sha256": "f4d27ae56c5ee62d34a2a609fc187a062add25868b90ad4257a67bcd9ee78d60"
+    },
+    "chat_template.jinja": {
+      "bytes": 7756,
+      "sha256": "a4aee8afcf2e0711942cf848899be66016f8d14a889ff9ede07bca099c28f715"
+    },
+    "config.json": {
+      "bytes": 2854,
+      "sha256": "d6b4ebb8f9dedae345917774f2fe9560a845d3f692930ca4b7019b895577dcf7"
+    },
+    "generation_config.json": {
+      "bytes": 138,
+      "sha256": "f7c35afc4eda09ee1a9cbe029b030dc9875ab3c201401c48044448e8153acea2"
+    },
+    "model-00001-of-00002.safetensors": {
+      "bytes": 4972947968,
+      "sha256": "14cceb382dd7e166ef36bf387f7dad77c2e22b3bd0a7d274e18b24ac8b8d935e"
+    },
+    "model-00002-of-00002.safetensors": {
+      "bytes": 4105672464,
+      "sha256": "0a36e6b47550320e295badda930a4cc92ed7a7af1f2b9d02d2f5a400f086ccb5"
+    },
+    "model.safetensors.index.json": {
+      "bytes": 66236,
+      "sha256": "df59e0e8f68ce1841a11ec0ba05e468a1413a7c5df5d1fa1e8b29a911a1b29d1"
+    },
+    "preprocessor_config.json": {
+      "bytes": 390,
+      "sha256": "27225450ac9c6529872ee1924fcb0962ff5634834f817040f444118116f4e516"
+    },
+    "processor_config.json": {
+      "bytes": 1192,
+      "sha256": "d601e2fe0de1bc11852de3aa843f01a1677ca84f4dc743916c9ce4b8d30fb384"
+    },
+    "tokenizer.json": {
+      "bytes": 19989325,
+      "sha256": "06b9509352d2af50381ab2247e083b80d32d5c0aba91c272ca9ff729b6a0e523"
+    },
+    "tokenizer_config.json": {
+      "bytes": 1167,
+      "sha256": "1c1b379d36cfe15f429377390bbd59f8668051231a5e1ffe0ea0ee32ca3f8937"
+    }
+  },
+  "files_sha256": "16bc212df51ecac9a5b3b34062e0ccc880c719d63248f04949be8636550e53be",
+  "hf_layout": {
+    "architectures": [
+      "Qwen3_5ForConditionalGeneration"
+    ],
+    "model_type": "qwen3_5",
+    "tokenizer_assets": [
+      "tokenizer.json"
+    ],
+    "weight_index": "model.safetensors.index.json",
+    "weight_shards": {
+      "model-00001-of-00002.safetensors": {
+        "bytes": 4972947968,
+        "header_bytes": 29304,
+        "tensor_bytes": 4972918656,
+        "tensor_names_sha256": "4fcd42e4d5dd188981e24a1ed47d57f1d86a072bd21669bbd2633497949b2ecc",
+        "tensors": 224
+      },
+      "model-00002-of-00002.safetensors": {
+        "bytes": 4105672464,
+        "header_bytes": 60040,
+        "tensor_bytes": 4105612416,
+        "tensor_names_sha256": "eb1abc38877ec1f853a48304e27fcd7e879ab42e56c36595761e540ad8e3870c",
+        "tensors": 499
+      }
+    }
+  },
+  "manifest_sha256": "660eed4af7f76796631561275f0190c402952520a8ccce358289e6269fb8f8d3",
+  "processor_assets_present": true,
+  "schema_name": "day21.qwen35_s1_merged_export_manifest",
+  "schema_version": 1,
+  "source": {
+    "adapter_sha256": "29dc1a7d676b7f2f88675521bc44cf81dd43b700423df3cf4adf8d6a1c4487c3",
+    "base_model_id": "Qwen/Qwen3.5-4B-Base",
+    "base_revision": "1001bb4d826a52d1f399e183466143f4da7b741b",
+    "base_snapshot_sha256": "a176a3c982da5480a0ca98280848474133d105d2e4ab45dc37ce2c68a7c2195b",
+    "checkpoint_integrity_sha256": "d0f72be9751628c9073cc8e4104f16d8620bd598dbb8a1e97f1df9bae51170a3",
+    "checkpoint_snapshot_sha256": "c169e0bb55b20951d27a889e4ef0deae3a01fe10acabee804b212d3d8170db0a",
+    "recovery_evidence_path": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/handoff/S1-CHECKPOINT-ARCHIVE-EVIDENCE.json",
+    "recovery_evidence_sha256": "c781ed2404f7ab8cbb10d51b1faf711358f60c552534038779e5ea528254f88e"
+  },
+  "status": "pass"
+}

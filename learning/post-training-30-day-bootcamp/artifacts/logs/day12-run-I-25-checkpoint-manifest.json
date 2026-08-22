@@ -1,0 +1,22 @@
+{
+  "created_at": "2026-08-06T14:15:55.721164+00:00",
+  "domain": "day12.full_training_checkpoint",
+  "files": {
+    "model/README.md": "7adbb1e5247dda97f7ba46b0d81b9c69439f236bea2b0b289433d5ec47b2f1c4",
+    "model/adapter_config.json": "4a353f62c7d6fabaee2079fef1ffde496fd725368343318e919b8446e7a20cf3",
+    "model/adapter_model.safetensors": "96a0ef8d6ad38d598123958fde6d34c3a7a252fd2bea6e57e631a2370f7da122",
+    "model/added_tokens.json": "58b54bbe36fc752f79a24a271ef66a0a0830054b4dfad94bde757d851968060b",
+    "model/chat_template.jinja": "44d5f08f3f72b837eaad09f13a54c1f9f4eb58d75240334548b7fd52a5437fa5",
+    "model/merges.txt": "8831e4f1a044471340f7c0a83d7bd71306a5b867e95fd870f74d0c5308a904d5",
+    "model/special_tokens_map.json": "76862e765266b85aa9459767e33cbaf13970f327a0e88d1c65846c2ddd3a1ecd",
+    "model/tokenizer.json": "9c5ae00e602b8860cbd784ba82a8aa14e8feecec692e7076590d014d7b7fdafa",
+    "model/tokenizer_config.json": "0a04a9d7d4a62b28482bdfe726c122756de85714fb64166ace92ae75b8f57614",
+    "model/vocab.json": "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910",
+    "optimizer.pt": "c103e3ca81531b901ce7fa38d737d5edaf525f3110f07d2846b797d620c9e2be",
+    "rng_state.pt": "a0a43d331f864bf42f2d514fac09c32108e4283573122d3234b5ef1f017b5686",
+    "scheduler_state.json": "bdfdd95e84c66af10d733f206df3d445573114a6e71d064e584f2734a0226300",
+    "training_state.json": "803ef98cb343398d9a8e8be45e403b30ea60f83c7ee5225cf04dce279806fb77"
+  },
+  "schema_version": 1,
+  "training_state_hash": "17ecced5d902c6dc0c1f403f272c60f8610f6ead74f03800698c65d8cba2f940"
+}

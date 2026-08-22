@@ -1,0 +1,34 @@
+{
+  "authorized_differences": {
+    "optimizer.learning_rate": {
+      "parent": 5e-05,
+      "rollout": 3e-05
+    },
+    "run.id": {
+      "parent": "I",
+      "rollout": "J"
+    }
+  },
+  "checkpoint_budgets": {
+    "100_percent": 246936,
+    "25_percent": 61734,
+    "60_percent": 148162
+  },
+  "config_hash": "c6b8dfe8e390ed1d8b6bf7f95326c8edf8fc3eb1f260f9b2d76e8fe6e7944484",
+  "first_gate": "25_percent",
+  "hypothesis": "Run I's math/code-focused mixture supplies the right tasks, but H's 5e-5 LoRA update magnitude still causes math forgetting; reducing only adapter learning rate to 3e-5 should move math from eight to at least ten while retaining at least five executable code solutions.",
+  "manifest_hash": "83712d7666962d336b7e8d9016543e1f26ca575a38249dc7ec98ec21e3793908",
+  "ordinal": 8,
+  "parent_run_id": "I",
+  "run_id": "J",
+  "schedule_file_sha256": "7146bbfedeffcd52a7815b525aec3cd4c8c6fbfad40f5f3df47f6efe94a3ce4c",
+  "schedule_hash": "dfcfeab6de696a4eac7e5e97909057f7c23b7d8fb76f7e554e545613a04a4563",
+  "schedule_path": "learning/post-training-30-day-bootcamp/artifacts/data/day12-training-schedule-J.json",
+  "status": "day12_run_j_preparation_pass",
+  "summary_hash": "decca52de24b04922a805346d349bb5ebc1799efea3925a39b76b13709dfac34",
+  "validation_checks": {
+    "manifest_reused_exactly": true,
+    "only_run_id_and_learning_rate_changed": true,
+    "schedule_total_exact": true
+  }
+}

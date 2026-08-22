@@ -1,0 +1,365 @@
+{
+  "schema_version": 1,
+  "plan_id": "av2-forward-test",
+  "title": "Agent V2 auto-skill pipeline",
+  "version": 1,
+  "status": "draft",
+  "created_at": "2026-07-16T00:00:00Z",
+  "updated_at": "2026-07-16T00:00:00Z",
+  "source_context": {
+    "path": "work-tracking/agent-v2/dashboard.md",
+    "source_updated_at": "2026-06-16",
+    "purpose": "Unapproved forward-test draft for AV2-W08, AV2-W13, and AV2-W14"
+  },
+  "max_parallelism": 3,
+  "priority_order": ["P0", "P1", "P2", "P3"],
+  "repos": {
+    "recent-master": {
+      "path": "/workspace/recent-master",
+      "snapshot_sha": "1111111111111111111111111111111111111111",
+      "dirty": false,
+      "changed_paths": []
+    },
+    "tab-web": {
+      "path": "/workspace/tab-web",
+      "snapshot_sha": "2222222222222222222222222222222222222222",
+      "dirty": false,
+      "changed_paths": []
+    }
+  },
+  "tasks": [
+    {
+      "id": "AV2-CONTRACT",
+      "title": "Approve auto-skill service contract",
+      "goal": "Freeze the cross-repo API, versioning, and rollback boundary before implementation fans out.",
+      "declared_priority": "P1",
+      "actor": "hybrid",
+      "delegation_confidence": "high",
+      "delegation_reasons": [
+        "Codex can draft the contract from repo evidence",
+        "A human must approve product and compatibility semantics"
+      ],
+      "repo": "recent-master",
+      "affected_repos": ["tab-web"],
+      "snapshot_sha": "1111111111111111111111111111111111111111",
+      "context_bundle": "auto-skill-contract",
+      "context_tags": ["AV2-W08", "service-api", "cross-repo"],
+      "mental_mode": "design",
+      "dependencies": [],
+      "conflicts_with": [],
+      "touch_scope": ["contract:auto-skill-v1"],
+      "shared_resources": [],
+      "acceptance_criteria": [
+        "API states, versioning, rollback, and error semantics are explicit",
+        "recent-master and tab-web responsibilities are unambiguous"
+      ],
+      "verification_commands": ["python3 -m json.tool contract/auto-skill-v1.json"],
+      "expected_evidence": ["Approved contract artifact", "Decision record"],
+      "review_gates": [
+        {
+          "id": "contract-decision",
+          "type": "decision_gate",
+          "stage": "pre_execution",
+          "blocking": true,
+          "milestone": "contract-approved",
+          "question": "Are the compatibility and rollback boundaries acceptable?",
+          "criteria": ["Old clients have a migration path", "Rollback is explicit"]
+        },
+        {
+          "id": "cross-repo-contract",
+          "type": "integration_gate",
+          "stage": "pre_integration",
+          "blocking": true,
+          "milestone": "contract-approved",
+          "question": "Do both repos implement the same approved contract?",
+          "criteria": ["Schema matches", "Error states match"]
+        }
+      ],
+      "handoff_contract": {
+        "inputs": ["AV2-W08 workstream context", "Current service and UI contracts"],
+        "outputs": ["Contract artifact", "Decision log", "Downstream constraints"],
+        "stop_conditions": ["Product semantics are ambiguous", "A required repo is unavailable"]
+      },
+      "risk": "medium",
+      "reversible": true,
+      "requires_external_authority": false,
+      "effort": 1
+    },
+    {
+      "id": "AV2-BACKEND",
+      "title": "Implement backend pipeline state machine",
+      "goal": "Implement the approved auto-skill service contract in recent-master.",
+      "declared_priority": "P0",
+      "actor": "codex",
+      "delegation_confidence": "high",
+      "delegation_reasons": ["The contract is explicit", "Unit and integration tests can verify behavior"],
+      "repo": "recent-master",
+      "affected_repos": [],
+      "snapshot_sha": "1111111111111111111111111111111111111111",
+      "context_bundle": "auto-skill-backend",
+      "context_tags": ["AV2-W08", "backend", "state-machine"],
+      "mental_mode": "implementation",
+      "dependencies": ["AV2-CONTRACT"],
+      "conflicts_with": ["AV2-SCHEMA-MIGRATION"],
+      "touch_scope": ["services/auto_skill/**", "contract:auto-skill-v1"],
+      "shared_resources": ["auto-skill-integration-env"],
+      "acceptance_criteria": ["All approved state transitions and rollback paths are implemented"],
+      "verification_commands": ["pytest tests/auto_skill -q"],
+      "expected_evidence": ["Commit SHA", "Passing backend tests"],
+      "review_gates": [
+        {
+          "id": "backend-integration",
+          "type": "integration_gate",
+          "stage": "pre_integration",
+          "blocking": true,
+          "milestone": "auto-skill-integration",
+          "question": "Does the backend diff satisfy the approved contract without regressions?",
+          "criteria": ["Tests pass", "Rollback path is covered"]
+        }
+      ],
+      "handoff_contract": {
+        "inputs": ["Approved auto-skill contract"],
+        "outputs": ["Backend commit", "Test evidence", "Residual risks"],
+        "stop_conditions": ["Contract ambiguity", "Baseline tests fail before changes"]
+      },
+      "risk": "medium",
+      "reversible": true,
+      "requires_external_authority": false,
+      "effort": 3
+    },
+    {
+      "id": "AV2-FRONTEND",
+      "title": "Implement auto-skill service UI states",
+      "goal": "Expose approved service states, failures, and rollback status in tab-web.",
+      "declared_priority": "P1",
+      "actor": "codex",
+      "delegation_confidence": "high",
+      "delegation_reasons": ["UI contract is explicit", "Component tests and smoke evidence are available"],
+      "repo": "tab-web",
+      "affected_repos": [],
+      "snapshot_sha": "2222222222222222222222222222222222222222",
+      "context_bundle": "auto-skill-frontend",
+      "context_tags": ["AV2-W08", "frontend", "service-status"],
+      "mental_mode": "implementation",
+      "dependencies": ["AV2-CONTRACT"],
+      "conflicts_with": [],
+      "touch_scope": ["src/auto-skill/**", "contract:auto-skill-v1"],
+      "shared_resources": [],
+      "acceptance_criteria": ["Every approved state has a clear user-visible representation"],
+      "verification_commands": ["pnpm test --filter auto-skill"],
+      "expected_evidence": ["Frontend commit", "Component tests", "Smoke screenshots"],
+      "review_gates": [
+        {
+          "id": "frontend-integration",
+          "type": "integration_gate",
+          "stage": "pre_integration",
+          "blocking": true,
+          "milestone": "auto-skill-integration",
+          "question": "Are UI states consistent with backend semantics and understandable to users?",
+          "criteria": ["State mapping matches", "Failure copy is actionable"]
+        }
+      ],
+      "handoff_contract": {
+        "inputs": ["Approved auto-skill contract"],
+        "outputs": ["Frontend commit", "Test and smoke evidence", "UX caveats"],
+        "stop_conditions": ["Backend state meaning is ambiguous", "Required UI harness is unavailable"]
+      },
+      "risk": "medium",
+      "reversible": true,
+      "requires_external_authority": false,
+      "effort": 2
+    },
+    {
+      "id": "AV2-BENCHMARK",
+      "title": "Connect benchmark taxonomy scenarios",
+      "goal": "Feed URL and task-category taxonomy into auto-skill verification scenarios.",
+      "declared_priority": "P1",
+      "actor": "codex",
+      "delegation_confidence": "medium",
+      "delegation_reasons": ["Data transformation is automatable", "Taxonomy quality needs milestone review"],
+      "repo": "recent-master",
+      "affected_repos": [],
+      "snapshot_sha": "1111111111111111111111111111111111111111",
+      "context_bundle": "benchmark-taxonomy",
+      "context_tags": ["AV2-W13", "benchmark", "taxonomy"],
+      "mental_mode": "implementation",
+      "dependencies": ["AV2-CONTRACT"],
+      "conflicts_with": [],
+      "touch_scope": ["benchmarks/auto_skill/**"],
+      "shared_resources": ["benchmark-eval-env"],
+      "acceptance_criteria": ["Taxonomy scenarios map to reproducible eval cases"],
+      "verification_commands": ["pytest tests/benchmarks/test_auto_skill_taxonomy.py -q"],
+      "expected_evidence": ["Scenario manifest", "Passing taxonomy tests"],
+      "review_gates": [
+        {
+          "id": "taxonomy-artifact",
+          "type": "artifact_gate",
+          "stage": "post_artifact",
+          "blocking": true,
+          "milestone": "auto-skill-integration",
+          "question": "Does the taxonomy cover valuable task families rather than frequency alone?",
+          "criteria": ["High-value cases are represented", "Coverage gaps are explicit"]
+        }
+      ],
+      "handoff_contract": {
+        "inputs": ["Benchmark taxonomy source", "Approved service scenarios"],
+        "outputs": ["Scenario manifest", "Eval evidence", "Coverage gaps"],
+        "stop_conditions": ["Taxonomy source has no owner", "Scenario schema is unresolved"]
+      },
+      "risk": "low",
+      "reversible": true,
+      "requires_external_authority": false,
+      "effort": 2
+    },
+    {
+      "id": "AV2-SCHEMA-MIGRATION",
+      "title": "Prepare service schema migration",
+      "goal": "Prepare the backward-compatible schema migration after the backend implementation stabilizes.",
+      "declared_priority": "P2",
+      "actor": "codex",
+      "delegation_confidence": "medium",
+      "delegation_reasons": ["Migration code is testable", "Shared schema edits must be serialized"],
+      "repo": "recent-master",
+      "affected_repos": [],
+      "snapshot_sha": "1111111111111111111111111111111111111111",
+      "context_bundle": "auto-skill-backend",
+      "context_tags": ["AV2-W08", "backend", "migration"],
+      "mental_mode": "implementation",
+      "dependencies": ["AV2-CONTRACT"],
+      "conflicts_with": ["AV2-BACKEND"],
+      "touch_scope": ["services/auto_skill/schema.py", "contract:auto-skill-v1"],
+      "shared_resources": ["auto-skill-integration-env"],
+      "acceptance_criteria": ["Migration preserves old data and supports rollback"],
+      "verification_commands": ["pytest tests/auto_skill/test_migration.py -q"],
+      "expected_evidence": ["Migration commit", "Forward and rollback test output"],
+      "review_gates": [
+        {
+          "id": "migration-integration",
+          "type": "integration_gate",
+          "stage": "pre_integration",
+          "blocking": true,
+          "milestone": "auto-skill-integration",
+          "question": "Is the migration and rollback evidence sufficient for integration?",
+          "criteria": ["Forward migration passes", "Rollback restores old state"]
+        }
+      ],
+      "handoff_contract": {
+        "inputs": ["Approved contract", "Stable backend state model"],
+        "outputs": ["Migration commit", "Rollback evidence", "Data risks"],
+        "stop_conditions": ["Schema changed upstream", "Rollback cannot be proven"]
+      },
+      "risk": "high",
+      "reversible": true,
+      "requires_external_authority": false,
+      "effort": 2
+    },
+    {
+      "id": "AV2-IMAGE-FILE-ID",
+      "title": "Define image file-id migration contract",
+      "goal": "Replace image_url references with a permission-aware file-id contract across recent-master and tab-web.",
+      "declared_priority": "P1",
+      "actor": "hybrid",
+      "delegation_confidence": "medium",
+      "delegation_reasons": [
+        "Codex can inspect both implementations and draft the migration",
+        "A human must approve compatibility, lifecycle, and UX boundaries"
+      ],
+      "repo": "recent-master",
+      "affected_repos": ["tab-web"],
+      "snapshot_sha": "1111111111111111111111111111111111111111",
+      "context_bundle": "image-artifact-contract",
+      "context_tags": ["AV2-W14", "image-generation", "file-id", "cross-repo"],
+      "mental_mode": "design",
+      "dependencies": [],
+      "conflicts_with": [],
+      "touch_scope": ["contract:image-file-reference"],
+      "shared_resources": [],
+      "acceptance_criteria": [
+        "File-id permissions, lifecycle, preview, reuse, and legacy compatibility are explicit",
+        "Both repos agree on success and failure states"
+      ],
+      "verification_commands": ["python3 -m json.tool contract/image-file-reference.json"],
+      "expected_evidence": ["Migration contract", "Compatibility matrix", "Decision record"],
+      "review_gates": [
+        {
+          "id": "file-id-decision",
+          "type": "decision_gate",
+          "stage": "pre_execution",
+          "blocking": true,
+          "milestone": "image-file-id-contract",
+          "question": "Approve the file-id lifecycle, permission, and legacy compatibility boundary?",
+          "criteria": ["Old image_url references have a migration path", "Permission failures are user-visible"]
+        },
+        {
+          "id": "file-id-integration",
+          "type": "integration_gate",
+          "stage": "pre_integration",
+          "blocking": true,
+          "milestone": "image-file-id-contract",
+          "question": "Do recent-master and tab-web implement one compatible file-id contract?",
+          "criteria": ["Schema and errors match", "Preview and reuse flows are covered"]
+        }
+      ],
+      "handoff_contract": {
+        "inputs": ["AV2-W14 workstream context", "Current image_url and artifact flows"],
+        "outputs": ["File-id contract", "Migration matrix", "Implementation split"],
+        "stop_conditions": ["Artifact ownership is unclear", "Permission model cannot be determined"]
+      },
+      "risk": "medium",
+      "reversible": true,
+      "requires_external_authority": false,
+      "effort": 2
+    },
+    {
+      "id": "AV2-RELEASE",
+      "title": "Authorize service rollout",
+      "goal": "Make the rollout and rollback decision after the integration checkpoint passes.",
+      "declared_priority": "P1",
+      "actor": "human",
+      "delegation_confidence": "high",
+      "delegation_reasons": ["Production authority and risk acceptance belong to the human owner"],
+      "repo": "recent-master",
+      "affected_repos": ["tab-web"],
+      "snapshot_sha": "1111111111111111111111111111111111111111",
+      "context_bundle": "auto-skill-release",
+      "context_tags": ["AV2-W08", "release", "production"],
+      "mental_mode": "review",
+      "dependencies": ["AV2-BACKEND", "AV2-FRONTEND", "AV2-BENCHMARK", "AV2-SCHEMA-MIGRATION"],
+      "conflicts_with": [],
+      "touch_scope": ["release:auto-skill-v1"],
+      "shared_resources": ["production-rollout"],
+      "acceptance_criteria": ["Rollout, observation, and rollback criteria are approved"],
+      "verification_commands": [],
+      "expected_evidence": ["Signed rollout decision", "Rollback checklist"],
+      "review_gates": [
+        {
+          "id": "release-authority",
+          "type": "release_gate",
+          "stage": "pre_release",
+          "blocking": true,
+          "milestone": "production-release",
+          "question": "Authorize rollout with the stated observation and rollback plan?",
+          "criteria": ["Integration evidence is complete", "Rollback owner is named"]
+        },
+        {
+          "id": "cross-repo-release",
+          "type": "integration_gate",
+          "stage": "pre_integration",
+          "blocking": true,
+          "milestone": "production-release",
+          "question": "Are both repos ready to release as one compatible unit?",
+          "criteria": ["Version pairing is explicit", "Independent rollback is understood"]
+        }
+      ],
+      "handoff_contract": {
+        "inputs": ["Integration review packet", "Rollout and rollback checklist"],
+        "outputs": ["Rollout decision", "Named owner", "Observation window"],
+        "stop_conditions": ["Evidence is incomplete", "Rollback owner is missing"]
+      },
+      "risk": "high",
+      "reversible": false,
+      "requires_external_authority": true,
+      "effort": 1
+    }
+  ]
+}

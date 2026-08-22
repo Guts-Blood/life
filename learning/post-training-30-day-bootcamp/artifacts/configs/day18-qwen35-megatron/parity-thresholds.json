@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "status": "preregistered_before_gpu_execution",
+  "conversion_text_logits": {
+    "mean_absolute_difference_on_loss_tokens_max": 0.1,
+    "max_absolute_difference_on_loss_tokens_max": 2.0,
+    "argmax_token_mismatches_on_loss_tokens_max": 1
+  },
+  "hf_reference_vs_c2_first_loss": {
+    "absolute_difference_max": 0.1
+  },
+  "hf_reference_vs_c1_mcore_loss": {
+    "absolute_difference_max": 0.1
+  },
+  "c2_dp2_vs_c3_tp2_first_loss": {
+    "absolute_difference_max": 0.1
+  },
+  "c4_export_reload": {
+    "mean_absolute_difference_on_loss_tokens_max": 0.1,
+    "max_absolute_difference_on_loss_tokens_max": 2.0,
+    "argmax_token_mismatches_on_loss_tokens_max": 1
+  },
+  "c5_tiny_overfit": {
+    "minimum_optimizer_steps": 50,
+    "maximum_optimizer_steps": 150,
+    "teacher_forced_token_accuracy_min": 0.95,
+    "minimum_relative_loss_reduction": 0.8,
+    "final_mean_loss_max": 1.0,
+    "evaluation_policy": "Evaluate the frozen two-row fixture before training and only after the final model-only checkpoint is exported and reloaded. The fixed 150-step run intentionally avoids periodic full-model checkpoints/exports to control disk and I/O cost."
+  },
+  "c5_export_reload": {
+    "mean_absolute_difference_on_loss_tokens_max": 0.1,
+    "max_absolute_difference_on_loss_tokens_max": 2.0,
+    "argmax_token_mismatches_on_loss_tokens_max": 1
+  },
+  "policy": "Do not relax a threshold after seeing a failing result; record compatibility_blocked_at_C1, C4, or C5 instead. C5 is a same-fixture learnability gate, not a generalization or exact-resume claim."
+}

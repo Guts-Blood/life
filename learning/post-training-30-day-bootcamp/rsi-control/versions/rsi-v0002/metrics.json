@@ -1,0 +1,95 @@
+{
+  "complete_evidence": true,
+  "confirmed_qualified": true,
+  "decision": "confirmed_qualified_promote_primary_checkpoint",
+  "observed": {
+    "assumption_outcomes": {
+      "A1": "supported: all four Stage-A checkpoints recovered 8/8 eligibility and Code E2B >=5",
+      "A2": "supported: t12000/t18000/t24000 retained non-Code 18/24",
+      "A3": "supported: live target attestation passed and training completed under the audited token-label contract"
+    },
+    "confirmation": {
+      "all_frozen_gates_pass": true,
+      "all_numeric_gates_pass": true,
+      "candidate": "main-s20260810-lr1e-4-final",
+      "checkpoint_label": "final",
+      "e2b_summary_content_sha256": "41dcc2ce3c2327d05263ef891e45a72b59c78c1b59f1632849dd30165e015a4e",
+      "e2b_summary_file_sha256": "b8d8c6599438e1f23c4e90de619ce831df9dea4ccfcead26ec0602dec4e1a323",
+      "evidence_gates_pass": true,
+      "final_promotion_file_sha256": "c5ce7f522706040ac1628659ccc1ee53c2ac61eb820861a092a5dcd7bf8049e4",
+      "gate_margins": {
+        "code_correct": 3,
+        "code_sandbox_execution_eligible": 2,
+        "finance_correct": 4,
+        "format_compliant": 22,
+        "general_correct": 16,
+        "infrastructure_failures": 0,
+        "math_correct": 4,
+        "total_correct": 8
+      },
+      "gate_values": {
+        "code_correct": 17,
+        "code_sandbox_execution_eligible": 28,
+        "finance_correct": 14,
+        "format_compliant": 112,
+        "general_correct": 21,
+        "infrastructure_failures": 0,
+        "math_correct": 21,
+        "total_correct": 73
+      },
+      "learning_rate": "1e-4",
+      "promotion_sha256": "de72a8f43da23e955e9525bccb365b49edcba7976018d6b58a9b34f903c2caa7",
+      "seed": 20260810,
+      "total_gate_deficit": 0,
+      "worst_gate_margin": 0
+    },
+    "eval_accesses": 10,
+    "gpu_hours": 1.840072835,
+    "primary": {
+      "all_frozen_gates_pass": true,
+      "all_numeric_gates_pass": true,
+      "candidate": "main-s20260809-lr1e-4-final",
+      "checkpoint_label": "final",
+      "evidence_gates_pass": true,
+      "gate_values": {
+        "code_correct": 20,
+        "code_sandbox_execution_eligible": 28,
+        "finance_correct": 19,
+        "format_compliant": 112,
+        "general_correct": 21,
+        "infrastructure_failures": 0,
+        "math_correct": 21,
+        "total_correct": 81
+      },
+      "learning_rate": "1e-4",
+      "seed": 20260809,
+      "selection_file_sha256": "4bffbf9d19f5318fafd07af72df0f218010ce41bf6f37f41883a15b44d419585",
+      "selection_sha256": "28ea80fe582c2ed8738ed471335794a9919bfa3ccbdb0e06a0fd52b3c9679b80",
+      "total_gate_deficit": 0,
+      "worst_gate_margin": 0
+    },
+    "total_gate_deficit": 0,
+    "worst_gate_margin": 0,
+    "cost_to_qualification_gpu_hours": 1.840072835
+  },
+  "predicted_outcome": {
+    "expected_best_probe_checkpoint": "t12000",
+    "expected_bottleneck_after_fix": "Code functional correctness if eligibility recovers; otherwise target-boundary assumption is falsified",
+    "expected_probe_gate_values": {
+      "code": "2-4",
+      "code_sandbox_execution_eligible": "7-8",
+      "finance": 6,
+      "general": 5,
+      "infrastructure_failures": 0,
+      "math": 7,
+      "total": "20-22"
+    },
+    "probe_strict_pass_probability": 0.65,
+    "qualification_probability": 0.3,
+    "qualification_probability_scope": "both frozen full112 primary and same-recipe independent confirmation"
+  },
+  "schema_name": "rsi.version_metrics",
+  "schema_version": 1,
+  "status": "complete_qualified",
+  "version_id": "rsi-v0002"
+}

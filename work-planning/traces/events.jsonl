@@ -1,0 +1,1 @@
+{"actor": "codex-coordinator", "data": {"warnings": ["repo 'recent-master' is dirty; dependent tasks cannot be auto-dispatched", "repo 'tab-web' is dirty; dependent tasks cannot be auto-dispatched"]}, "event_id": "22233683-cc9c-4496-bec4-7896fa2fdf6b", "event_type": "plan.created", "plan_id": "av2-forward-test", "plan_version": 1, "timestamp": "2026-07-16T07:52:06.212066Z"}

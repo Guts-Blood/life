@@ -1,0 +1,39 @@
+{
+  "authorized_differences": {
+    "optimizer.learning_rate": {
+      "parent": 1e-05,
+      "rollout": 5e-06
+    },
+    "run.id": {
+      "parent": "E",
+      "rollout": "F"
+    }
+  },
+  "checkpoint_budgets": {
+    "100_percent": 246936,
+    "25_percent": 61734,
+    "60_percent": 148162
+  },
+  "config_hash": "f950ea69dd350e10bf851eaac193fe2bf08fea47e049d14087a8cc76f390573d",
+  "first_gate": {
+    "checkpoint": "25_percent",
+    "code_correct_minimum_out_of_28": 5,
+    "four_slice_total_minimum_out_of_112": 15,
+    "math_correct_minimum_out_of_28": 10
+  },
+  "hypothesis": "The positive retention trend continues at lower update magnitude; 5e-6 should recover more Base math while retaining enough code gain to pass all gates.",
+  "manifest_hash": "f76e6a9538f10b245a831d891899a1d825bf687d7e2eeb4bb949bbf83141b369",
+  "ordinal": 4,
+  "parent_run_id": "E",
+  "run_id": "F",
+  "schedule_file_sha256": "d3726b033f6588ba27491d830880ce34e3594300328c7db0c3f5cdbfe16d0b3f",
+  "schedule_hash": "66fd47b3fa26764709d5549e83c8b82fae673c9f09cefd00c16a99d76080faf7",
+  "schedule_path": "learning/post-training-30-day-bootcamp/artifacts/data/day12-training-schedule-F.json",
+  "status": "day12_run_f_preparation_pass",
+  "summary_hash": "fca8948fcede0ab823e8a34fb5f72b536308fd532adb977ad704bfd5b4ad3591",
+  "validation_checks": {
+    "manifest_reused_exactly": true,
+    "only_run_id_and_learning_rate_changed": true,
+    "schedule_total_exact": true
+  }
+}

@@ -1,0 +1,391 @@
+{
+  "surface": "report",
+  "manifest": {
+    "version": 1,
+    "surface": "report",
+    "title": "Day20 Qwen3.5 4B LoRA Probe 技术分析报告",
+    "description": "基于哈希核验后的 canonical run，对 Base 与三档 LoRA probe 的固定诊断集结果、格式边界、训练故障和下一轮实验方案进行审计。",
+    "generatedAt": "2026-08-09T05:55:00Z",
+    "cards": [
+      {
+        "id": "promotion_card",
+        "description": "至少一个与 E2B 无关的硬门禁失败，因此当前没有可进入 main 的候选。",
+        "dataset": "headline_metrics",
+        "sourceId": "probe_metrics_source",
+        "metrics": [
+          {"label": "可晋级候选", "field": "promoted_candidates", "format": "number"}
+        ]
+      },
+      {
+        "id": "best_non_code_card",
+        "description": "固定 24 条非 Code 诊断题；1e-4 得分最高，但 Code 静态资格归零。",
+        "dataset": "headline_metrics",
+        "sourceId": "probe_metrics_source",
+        "metrics": [
+          {"label": "最高非 Code 正确数", "field": "best_non_code_correct", "format": "number"},
+          {"label": "Base 非 Code 正确数", "field": "base_non_code_correct", "format": "number"}
+        ]
+      },
+      {
+        "id": "e2b_card",
+        "description": "四个候选各 8 条 Code；本轮没有生成任何 E2B 沙箱结果。",
+        "dataset": "headline_metrics",
+        "sourceId": "probe_metrics_source",
+        "metrics": [
+          {"label": "E2B 已评分 Code", "field": "e2b_completed", "format": "number"},
+          {"label": "计划评分 Code", "field": "e2b_planned", "format": "number"}
+        ]
+      }
+    ],
+    "charts": [
+      {
+        "id": "non_code_slice_chart",
+        "title": "固定诊断集的非 Code 正确题数",
+        "subtitle": "每个候选在 General、Math、Finance 各 8 题；纵轴从 0 开始，满分为 8。",
+        "headerMarkdown": "1e-4 的总分最高，但提升主要来自 General；1e-5 与 3e-5 的 Math 都超过预注册容忍范围。",
+        "intent": "comparison",
+        "question": "Base 与三档 LoRA 学习率在三个非 Code 切片上各答对多少题？",
+        "rationale": "四个离散候选、三个同分母切片适合使用分组柱状图；它保留各 slice 的方向，避免总分掩盖 Math 回退。",
+        "comparisonContext": {
+          "baseline": "Base",
+          "denominator": "每个 slice 8 题",
+          "grain": "candidate × slice",
+          "normalization": "未归一化正确题数",
+          "semanticFamily": "diagnostic correctness",
+          "unit": "题"
+        },
+        "type": "bar",
+        "dataset": "slice_scores",
+        "sourceId": "probe_metrics_source",
+        "encodings": {
+          "x": {"field": "candidate_label", "type": "ordinal", "label": "候选"},
+          "y": {"field": "correct", "type": "quantitative", "label": "正确题数", "format": "number", "unit": "题"},
+          "color": {"field": "slice_label", "type": "nominal", "label": "切片"},
+          "tooltip": [
+            {"field": "slice_label", "type": "text", "label": "切片"},
+            {"field": "correct", "type": "quantitative", "label": "正确", "format": "number"},
+            {"field": "denominator", "type": "quantitative", "label": "总题数", "format": "number"}
+          ]
+        },
+        "valueFormat": "number",
+        "unit": "题",
+        "layout": "wide",
+        "palette": {"kind": "categorical", "name": "skill-slices"},
+        "legend": {"interactive": true, "position": "bottom", "sort": "spec", "title": "切片"},
+        "labels": {"values": "all"},
+        "referenceLines": [
+          {"axis": "y", "value": 8, "label": "满分 8", "color": "neutral", "lineStyle": "dashed"}
+        ]
+      }
+    ],
+    "tables": [
+      {
+        "id": "candidate_results_table",
+        "title": "四个候选的精确诊断结果",
+        "subtitle": "Code eligible 是静态 parser/compile 资格，不是 HumanEval 正确率。",
+        "dataset": "candidate_metrics",
+        "sourceId": "probe_metrics_source",
+        "density": "compact",
+        "defaultSort": {"field": "candidate_order", "direction": "asc"},
+        "columns": [
+          {"field": "candidate_order", "label": "顺序", "type": "number", "align": "right"},
+          {"field": "candidate_label", "label": "候选", "type": "text"},
+          {"field": "general_correct", "label": "General / 8", "type": "number", "align": "right"},
+          {"field": "math_correct", "label": "Math / 8", "type": "number", "align": "right"},
+          {"field": "finance_correct", "label": "Finance / 8", "type": "number", "align": "right"},
+          {"field": "non_code_correct", "label": "非 Code / 24", "type": "number", "align": "right"},
+          {"field": "code_eligible", "label": "Code eligible / 8", "type": "number", "align": "right"},
+          {"field": "format_compliant", "label": "格式合规 / 32", "type": "number", "align": "right"},
+          {"field": "gate_failures", "label": "与 E2B 无关的硬失败", "type": "text"}
+        ]
+      },
+      {
+        "id": "code_boundary_table",
+        "title": "Code 输出的首行缩进与静态资格",
+        "subtitle": "每个候选 8 条；repairable 仅表示添加首行四空格后 parser containment 与静态 compile 通过。",
+        "dataset": "code_boundary_candidates",
+        "sourceId": "code_boundary_source",
+        "density": "compact",
+        "defaultSort": {"field": "candidate_order", "direction": "asc"},
+        "columns": [
+          {"field": "candidate_order", "label": "顺序", "type": "number", "align": "right"},
+          {"field": "candidate_label", "label": "候选", "type": "text"},
+          {"field": "first_line_4_spaces", "label": "首行 4 空格", "type": "number", "align": "right"},
+          {"field": "first_line_0_spaces", "label": "首行 0 空格", "type": "number", "align": "right"},
+          {"field": "static_eligible", "label": "原始静态 eligible", "type": "number", "align": "right"},
+          {"field": "first_line_only_repairable", "label": "首行修复后静态通过", "type": "number", "align": "right"}
+        ]
+      },
+      {
+        "id": "target_indent_table",
+        "title": "Probe 训练集 Code target 的首行空格分布",
+        "subtitle": "84 条 continuation target；只有 38 条以严格四空格开始。",
+        "dataset": "target_indent_distribution",
+        "sourceId": "code_boundary_source",
+        "density": "compact",
+        "defaultSort": {"field": "leading_spaces", "direction": "asc"},
+        "columns": [
+          {"field": "leading_spaces", "label": "首行空格数", "type": "number", "align": "right"},
+          {"field": "target_count", "label": "样本数", "type": "number", "align": "right"},
+          {"field": "share", "label": "占比", "type": "percent", "format": "percent", "align": "right"}
+        ]
+      },
+      {
+        "id": "parser_impact_table",
+        "title": "Qwen3.5 v2 response adapter 对格式统计的影响",
+        "subtitle": "四组共 128 条均为 verified_reconstructed；非 Code 分数逐条不变，增量来自 Code response boundary 修复。",
+        "dataset": "parser_impact",
+        "sourceId": "probe_metrics_source",
+        "density": "compact",
+        "defaultSort": {"field": "candidate_order", "direction": "asc"},
+        "columns": [
+          {"field": "candidate_order", "label": "顺序", "type": "number", "align": "right"},
+          {"field": "candidate_label", "label": "候选", "type": "text"},
+          {"field": "raw_format", "label": "raw 格式 / 32", "type": "number", "align": "right"},
+          {"field": "v2_format", "label": "v2 格式 / 32", "type": "number", "align": "right"},
+          {"field": "format_delta", "label": "格式增量", "type": "number", "movement": true, "align": "right"},
+          {"field": "raw_code_format", "label": "raw Code / 8", "type": "number", "align": "right"},
+          {"field": "v2_code_format", "label": "v2 Code / 8", "type": "number", "align": "right"},
+          {"field": "non_code_score_changes", "label": "非 Code 分数变化条数", "type": "number", "align": "right"}
+        ]
+      },
+      {
+        "id": "engineering_table",
+        "title": "训练期间的工程故障、修复与验证",
+        "subtitle": "所有修复均未安装依赖；失败 attempts 保留在 canonical run 中。",
+        "dataset": "engineering_incidents",
+        "sourceId": "engineering_source",
+        "density": "comfortable",
+        "defaultSort": {"field": "stage", "direction": "asc"},
+        "columns": [
+          {"field": "stage", "label": "阶段", "type": "number", "align": "right"},
+          {"field": "incident", "label": "故障", "type": "text"},
+          {"field": "impact", "label": "影响", "type": "text"},
+          {"field": "fix", "label": "修复", "type": "text"},
+          {"field": "verification", "label": "验证", "type": "text"}
+        ]
+      },
+      {
+        "id": "run_provenance_table",
+        "title": "本地同步与完整性核验",
+        "subtitle": "使用 rsync checksum 模式，无 --delete；清单按相对路径逐文件比较。",
+        "dataset": "run_provenance",
+        "sourceId": "run_provenance_source",
+        "density": "compact",
+        "defaultSort": {"field": "artifact", "direction": "asc"},
+        "columns": [
+          {"field": "artifact", "label": "归档", "type": "text"},
+          {"field": "files", "label": "文件数", "type": "number", "align": "right"},
+          {"field": "bytes", "label": "文件字节", "type": "number", "format": "compact", "align": "right"},
+          {"field": "manifest_sha256", "label": "相对路径清单 SHA-256", "type": "text"},
+          {"field": "remote_local_comparison", "label": "远端↔本地", "type": "text"}
+        ]
+      }
+    ],
+    "sources": [
+      {"id": "probe_metrics_source", "label": "Verified probe metrics", "path": "evidence/probe_metrics.sql"},
+      {"id": "code_boundary_source", "label": "Code boundary diagnostics", "path": "evidence/code_boundary.sql"},
+      {"id": "engineering_source", "label": "Training incident evidence", "path": "evidence/engineering_incidents.sql"},
+      {"id": "run_provenance_source", "label": "Sync provenance", "path": "evidence/run_provenance.sql"}
+    ],
+    "blocks": [
+      {
+        "id": "title",
+        "type": "markdown",
+        "body": "# Day20 Qwen3.5 4B LoRA Probe 技术分析报告\n\n**Snapshot:** 2026-08-09 · **Run:** `day20-qwen35-lora-20260809T042005Z` · **状态:** 三档 probe 已完成，main 未启动"
+      },
+      {
+        "id": "technical_summary",
+        "type": "markdown",
+        "body": "## 结论：不要启动当前 main；保留 Base，修正 Code continuation 边界后重跑 probe\n\n1. **Full SFT 式的整体能力坍缩没有在这轮 LoRA 中重现。** 较高 LR 明显提升非 Code：3e-5 为 14/24，1e-4 为 16/24，均高于 Base 的 10/24；但 1e-5 只有 8/24。\n2. **没有一个候选满足预注册的必要门禁。** 1e-5 的 Math 比 Base 低 3 题；3e-5 低 2 题且 Code 静态 eligible 只有 6/8；1e-4 的 Code eligible 为 0/8。它们各自至少有一项不依赖 E2B 的硬失败，所以缺失沙箱分数不会改变“不进入 main”的决策。\n3. **1e-4 更像“内容变好、输出边界变坏”，而不是简单能力归零。** 10 条首行零缩进 Code 输出只添加四个 ASCII 空格后，parser containment 与静态 compile 全部恢复；但尚未跑 HumanEval tests，不能把 10/10 静态修复写成正确率。\n4. **Day19 的 Qwen3.5 response adapter 已经有效。** 它移除了统一的 non-thinking response prefix；128/128 条均有 token-backed reconstructed 证据，非 Code 分数没有被 parser 改写。当前剩余问题发生在 continuation 的首行缩进层。"
+      },
+      {"id": "headline_metrics", "type": "metric-strip", "cardIds": ["promotion_card", "best_non_code_card", "e2b_card"]},
+      {
+        "id": "non_code_section",
+        "type": "markdown",
+        "sourceId": "probe_metrics_source",
+        "body": "## 高 LR 改善 General，但低 LR 与中 LR 都牺牲了 Math\n\nBase 的强项是 Math（7/8），General 为 0/8。1e-4 把 General 提到 6/8，同时 Math 保持 6/8、Finance 为 4/8，因此非 Code 达到 16/24；3e-5 达到 14/24，但 Math 只有 5/8，超过允许的单题回退。1e-5 没有换来 General 增益，却把 Math 压到 4/8。\n\n**解释：** LoRA 确实能改变能力路由，而且方向受 LR 强烈影响。当前证据支持继续探索中高 LR，但必须先修 Code target 的边界一致性。"
+      },
+      {"id": "non_code_chart", "type": "chart", "chartId": "non_code_slice_chart", "layout": "wide"},
+      {"id": "candidate_results", "type": "table", "tableId": "candidate_results_table", "layout": "wide"},
+      {
+        "id": "code_boundary_section",
+        "type": "markdown",
+        "sourceId": "code_boundary_source",
+        "body": "## Code 的主要可见退化是首行缩进，而训练 target 本身没有统一 continuation 起点\n\nBase 与 1e-5 的 8 条 Code 输出都以四空格开始；3e-5 有 2 条以 byte 0 开始，1e-4 则 8/8 都丢失首行缩进。对这 10 条失败输出，仅在首行前加四空格、其余字节保持不变，现有 v3 classifier 都从 `IndentationError` 变为 contained + execution eligible，组合程序也都能静态 compile。\n\n训练侧存在一致的风险信号：84 条 Code continuation target 中，只有 38 条严格以四空格开始；其余分布在 0、1、2、3、8 空格。该相关性支持“数据边界不一致”假设，但因为没有随机化对照和 E2B 测试，不能宣称已经证明因果。"
+      },
+      {"id": "code_boundary_results", "type": "table", "tableId": "code_boundary_table"},
+      {"id": "target_indent_results", "type": "table", "tableId": "target_indent_table"},
+      {
+        "id": "parser_section",
+        "type": "markdown",
+        "sourceId": "probe_metrics_source",
+        "body": "## Qwen3.5 parser 修复改变了 Code 可执行面，但没有制造非 Code 得分\n\n旧 raw 路径把 response prefix 一起交给 frozen Code composer，四组 raw Code 格式都是 0/8。v2 以 generated-only token 证据重建边界后，Base、1e-5、3e-5 分别恢复到 8/8、8/8、6/8；1e-4 仍为 0/8，因为它的失败已经不是统一 prefix，而是模型正文首行不缩进。四组共 96 条非 Code 的 raw 与 v2 分数逐条一致。\n\n这说明两类问题必须分层处理：response adapter 负责模型边界；HumanEval task parser 负责 solution/completion；训练数据则必须让 continuation target 的 byte-0 契约一致。"
+      },
+      {"id": "parser_impact", "type": "table", "tableId": "parser_impact_table"},
+      {
+        "id": "scope_section",
+        "type": "markdown",
+        "body": "## 评测范围与指标定义\n\n- **诊断集：** 固定 32 条，General、Math、Finance、Code 各 8 条；不是完整 112 条最终 benchmark。\n- **非 Code 正确数：** frozen scorer 对 normalized output 的 0/1 得分之和，分母为 24。\n- **格式合规：** 非空且 task parser 成功；Code 还要求 candidate containment 与静态组合通过。\n- **Code sandbox execution eligible：** parser 接受且组合程序可静态编译，只表示“允许送入 E2B”，不表示答案正确。\n- **正式晋级：** 总分至少 Base + 2；Math、Finance、Code 各自最多比 Base 低 1；Code static eligible 至少 7/8；随后按总分、General、低 LR 排序。\n- **缺失项：** 本轮没有 E2B Code correctness，因此无法正式计算总分门槛和 Code 正确率回退；不过三档 LR 都已先触发其他必要条件失败。"
+      },
+      {
+        "id": "methodology_section",
+        "type": "markdown",
+        "body": "## 方法：双层哈希复核 + frozen parser 的静态反事实\n\n同步后重新读取四组 raw/v2 summary 与 32 行 predictions，复算 summary self-hash、prediction 文件 SHA-256、每行 self-hash、raw output hash、normalized output hash和 source lineage；再从每行 scorer/parser 字段独立聚合 slice 指标。\n\n首行缩进实验仅对 10 条 byte-0 零缩进 completion 在第一行前插入四个 ASCII 空格，然后重新调用同一 frozen classifier 并对 `raw_prompt + repaired candidate` 执行 Python `compile(..., 'exec')`。整个过程没有 `exec`、没有 import 候选、没有运行 tests，也没有向 E2B 发送代码。"
+      },
+      {
+        "id": "engineering_section",
+        "type": "markdown",
+        "sourceId": "engineering_source",
+        "body": "## 三档 probe 最终都训练完成；延迟主要来自工程合同，而不是 GPU 算力\n\n三档 LoRA 都完成 103 optimizer steps，并保存约 16k supervised-token 的 checkpoint。1e-5 在前四个 attempt 中依次暴露来源清单、训练参数合同、cuDNN 与 warmup gate 问题，最终 attempt-005 通过；随后 3e-5 与 1e-4 都在 attempt-001 通过。修复没有安装依赖，也没有覆盖失败证据。"
+      },
+      {"id": "engineering_results", "type": "table", "tableId": "engineering_table", "layout": "wide"},
+      {
+        "id": "limitations_section",
+        "type": "markdown",
+        "body": "## 限制：当前只能做方向判断，不能发布最终模型排名\n\n- 每个 skill 只有 8 条诊断题，单题即 12.5 个百分点；小样本排序可能不稳。\n- Code 没有 E2B correctness；静态 compile 无法发现逻辑错误、超时或 hidden-test 失败。\n- “补四空格”不是当前 frozen v2 协议的一部分，也没有作为评分补丁发布；若直接改 parser 会改变比较键，必须版本化并保留 raw/repaired 双证据。\n- 训练 target 缩进分布与高 LR 输出退化相容，但不是因果识别。还需要数据修复后的同集对照。\n- 没有生成 `PROBE-SELECTION.json`、main checkpoint 或最终 PASS/RESULTS；这不是证据缺失后的冒进，而是门禁按设计停止。"
+      },
+      {
+        "id": "provenance_section",
+        "type": "markdown",
+        "sourceId": "run_provenance_source",
+        "body": "## 工程与结果已完整同步到本地\n\ncanonical run 的 119 个文件和工程快照/来源合同的 18 个文件均按相对路径、字节数与 SHA-256 逐项核验，远端与本地清单完全一致。同步使用 checksum 模式且没有 `--delete`；本地工作副本的 16 个工程文件也与 AutoDL 快照一致。"
+      },
+      {"id": "provenance_results", "type": "table", "tableId": "run_provenance_table"},
+      {
+        "id": "next_steps_section",
+        "type": "markdown",
+        "body": "## 下一轮方案：先统一 Code target，再用新协议重跑 6e-5 / 8e-5 / 1e-4\n\n1. **数据 v2：** 对所有 Code continuation 从完整函数 AST 重新提取 body；先 dedent，再对每个非空行统一添加四空格；拒绝 fence、prose、顶层 `def`、模块逃逸和静态不可组合样本。随后用 pinned Qwen3.5 template 重新 token audit。\n2. **评测 v3：** 保留现有 raw 与 v2 sidecar；只对“completion + byte-0 非缩进 + `IndentationError` + 其余行已有函数体缩进 + 插入四空格后 containment/compile 均通过”的候选做一次精确修复。记录 operation、raw/repaired SHA 与新 comparison key，绝不静默覆盖。\n3. **学习率 probe：** 在同一 32 条 diagnostic 上比较 6e-5、8e-5、1e-4；1e-5 已表现为明显欠配，3e-5 有 General 增益但 Math 回退。高 LR 是否可用，要看数据修复后 Code eligibility 是否恢复且 Math 仍在 Base−1 以内。\n4. **恢复沙箱证据：** 轮换已暴露的旧 E2B key，重新建立 mode 0600 的 credential attestation 和 pinned E2B runtime；先跑 live smoke，再只执行通过静态门禁的候选。\n5. **晋级纪律：** 只有某个 probe 同时通过总分、三类回退、Code eligibility 和 E2B 无基础设施错误，才启动 256k main；否则继续使用 Base，不 merge。"
+      },
+      {
+        "id": "further_questions_section",
+        "type": "markdown",
+        "body": "## 仍需回答的问题\n\n- 首行修复后的 10 条 Code 在 E2B hidden tests 中实际能过多少？\n- 统一 Code target 后，1e-4 的非 Code 增益能否保留，还是会随输出风格一起变化？\n- 32 条 diagnostic 上的 LR 排序，在完整 112 条 benchmark 与第二随机种子上是否稳定？\n- Math 回退来自样本配比、短 probe 的路由偏移，还是学习率本身？需要保持数据不变的 LR 对照才能区分。"
+      }
+    ]
+  },
+  "snapshot": {
+    "version": 1,
+    "generatedAt": "2026-08-09T05:55:00Z",
+    "status": "ready",
+    "datasets": {
+      "headline_metrics": [
+        {"promoted_candidates": 0, "best_non_code_correct": 16, "base_non_code_correct": 10, "e2b_completed": 0, "e2b_planned": 32}
+      ],
+      "slice_scores": [
+        {"candidate_label":"Base","candidate_order":0,"slice_label":"General","correct":0,"denominator":8},
+        {"candidate_label":"Base","candidate_order":0,"slice_label":"Math","correct":7,"denominator":8},
+        {"candidate_label":"Base","candidate_order":0,"slice_label":"Finance","correct":3,"denominator":8},
+        {"candidate_label":"LoRA 1e-5","candidate_order":1,"slice_label":"General","correct":0,"denominator":8},
+        {"candidate_label":"LoRA 1e-5","candidate_order":1,"slice_label":"Math","correct":4,"denominator":8},
+        {"candidate_label":"LoRA 1e-5","candidate_order":1,"slice_label":"Finance","correct":4,"denominator":8},
+        {"candidate_label":"LoRA 3e-5","candidate_order":2,"slice_label":"General","correct":5,"denominator":8},
+        {"candidate_label":"LoRA 3e-5","candidate_order":2,"slice_label":"Math","correct":5,"denominator":8},
+        {"candidate_label":"LoRA 3e-5","candidate_order":2,"slice_label":"Finance","correct":4,"denominator":8},
+        {"candidate_label":"LoRA 1e-4","candidate_order":3,"slice_label":"General","correct":6,"denominator":8},
+        {"candidate_label":"LoRA 1e-4","candidate_order":3,"slice_label":"Math","correct":6,"denominator":8},
+        {"candidate_label":"LoRA 1e-4","candidate_order":3,"slice_label":"Finance","correct":4,"denominator":8}
+      ],
+      "candidate_metrics": [
+        {"candidate_order":0,"candidate_label":"Base","general_correct":0,"math_correct":7,"finance_correct":3,"non_code_correct":10,"code_eligible":8,"format_compliant":22,"gate_failures":"baseline"},
+        {"candidate_order":1,"candidate_label":"LoRA 1e-5","general_correct":0,"math_correct":4,"finance_correct":4,"non_code_correct":8,"code_eligible":8,"format_compliant":23,"gate_failures":"math_regression_gt_1"},
+        {"candidate_order":2,"candidate_label":"LoRA 3e-5","general_correct":5,"math_correct":5,"finance_correct":4,"non_code_correct":14,"code_eligible":6,"format_compliant":26,"gate_failures":"math_regression_gt_1; code_eligible_below_7"},
+        {"candidate_order":3,"candidate_label":"LoRA 1e-4","general_correct":6,"math_correct":6,"finance_correct":4,"non_code_correct":16,"code_eligible":0,"format_compliant":23,"gate_failures":"code_eligible_below_7"}
+      ],
+      "code_boundary_candidates": [
+        {"candidate_order":0,"candidate_label":"Base","first_line_4_spaces":8,"first_line_0_spaces":0,"static_eligible":8,"first_line_only_repairable":0},
+        {"candidate_order":1,"candidate_label":"LoRA 1e-5","first_line_4_spaces":8,"first_line_0_spaces":0,"static_eligible":8,"first_line_only_repairable":0},
+        {"candidate_order":2,"candidate_label":"LoRA 3e-5","first_line_4_spaces":6,"first_line_0_spaces":2,"static_eligible":6,"first_line_only_repairable":2},
+        {"candidate_order":3,"candidate_label":"LoRA 1e-4","first_line_4_spaces":0,"first_line_0_spaces":8,"static_eligible":0,"first_line_only_repairable":8}
+      ],
+      "target_indent_distribution": [
+        {"leading_spaces":0,"target_count":8,"share":0.0952380952},
+        {"leading_spaces":1,"target_count":4,"share":0.0476190476},
+        {"leading_spaces":2,"target_count":26,"share":0.3095238095},
+        {"leading_spaces":3,"target_count":2,"share":0.0238095238},
+        {"leading_spaces":4,"target_count":38,"share":0.4523809524},
+        {"leading_spaces":8,"target_count":6,"share":0.0714285714}
+      ],
+      "parser_impact": [
+        {"candidate_order":0,"candidate_label":"Base","raw_format":14,"v2_format":22,"format_delta":8,"raw_code_format":0,"v2_code_format":8,"non_code_score_changes":0},
+        {"candidate_order":1,"candidate_label":"LoRA 1e-5","raw_format":15,"v2_format":23,"format_delta":8,"raw_code_format":0,"v2_code_format":8,"non_code_score_changes":0},
+        {"candidate_order":2,"candidate_label":"LoRA 3e-5","raw_format":20,"v2_format":26,"format_delta":6,"raw_code_format":0,"v2_code_format":6,"non_code_score_changes":0},
+        {"candidate_order":3,"candidate_label":"LoRA 1e-4","raw_format":23,"v2_format":23,"format_delta":0,"raw_code_format":0,"v2_code_format":0,"non_code_score_changes":0}
+      ],
+      "engineering_incidents": [
+        {"stage":1,"incident":"来源清单路径漂移","impact":"canonical 发布后仍指向 staging，prepare fail closed；一次修复含字面量 \\n。","fix":"重绑 canonical 路径并重签清单。","verification":"source manifest content SHA-256 3971777b…68b。"},
+        {"stage":2,"incident":"训练参数语义错位","impact":"HF trainer 与 ms-swift 对 shuffle / gradient checkpointing 的状态口径不同。","fix":"核验最终数据管线与模型状态。","verification":"三组 probe 各完成 103 steps，summary status=pass。"},
+        {"stage":3,"incident":"cuDNN 动态库混用","impact":"系统 9.1.0 与 venv 9.10.2.21 混载，step 0 缺失 cudnnGetLibConfig。","fix":"fresh process 前置 venv cuDNN lib；不安装依赖。","verification":"8 个 cuDNN so 全来自 venv，BF16 与训练通过。"},
+        {"stage":4,"incident":"warmup 首步零更新误判","impact":"step 1 实际 LR=0，旧门禁将 update ratio 0 误判为训练失效。","fix":"step 1 非负、step 2–5 严格正更新。","verification":"1e-5 attempt-005、其余 attempt-001 通过。"}
+      ],
+      "run_provenance": [
+        {"artifact":"AutoDL project snapshot + source contract","files":18,"bytes":600236,"manifest_sha256":"5469b872f6dbdaf3bfe139c9323ecec707c62c532fa6abb62bc5a903b03c2a9c","remote_local_comparison":"IDENTICAL"},
+        {"artifact":"canonical Day20 run","files":119,"bytes":253175927,"manifest_sha256":"3b4575b11d4e964dd2d0ea839054a4b77eb26cc2a43596a3aa8457284538fb32","remote_local_comparison":"IDENTICAL"}
+      ]
+    }
+  },
+  "sources": [
+    {
+      "id": "probe_metrics_source",
+      "path": "evidence/probe_metrics.sql",
+      "query": {
+        "engine": "duckdb",
+        "language": "sql",
+        "id": "day20-probe-metrics-20260809",
+        "sql": "SELECT * FROM read_json_auto('evidence/probe_metrics.json', format='array') ORDER BY candidate_order;",
+        "description": "读取从四组已核验 v2 predictions 独立重算的候选指标与原始文件哈希。",
+        "executed_at": "2026-08-09T05:55:00Z",
+        "filters": ["canonical run only", "32 fixed diagnostic records per candidate", "8 records per slice"],
+        "metric_definitions": {
+          "non_code_correct": "General、Math、Finance frozen scorer 0/1 得分之和，分母 24。",
+          "code_sandbox_execution_eligible": "candidate parser eligible 且组合程序静态 compile 通过，分母 8；不是代码正确率。",
+          "format_compliant": "非空、task parser 成功；Code 还要求静态 execution eligibility，分母 32。"
+        }
+      }
+    },
+    {
+      "id": "code_boundary_source",
+      "path": "evidence/code_boundary.sql",
+      "query": {
+        "engine": "duckdb",
+        "language": "sql",
+        "id": "day20-code-boundary-20260809",
+        "sql": "SELECT * FROM read_json_auto('evidence/code_boundary.json', format='array') ORDER BY record_type, candidate_order NULLS LAST, leading_spaces NULLS LAST;",
+        "description": "读取 Code 输出首行缩进、静态修复结果与 probe 训练 target 缩进分布。",
+        "executed_at": "2026-08-09T05:55:00Z",
+        "filters": ["Code slice only", "no candidate execution", "first-line-only four-space counterfactual"]
+      }
+    },
+    {
+      "id": "engineering_source",
+      "path": "evidence/engineering_incidents.sql",
+      "query": {
+        "engine": "duckdb",
+        "language": "sql",
+        "id": "day20-engineering-incidents-20260809",
+        "sql": "SELECT * FROM read_json_auto('evidence/engineering_incidents.json', format='array') ORDER BY stage;",
+        "description": "读取 canonical run 日志与 evidence 中已复核的工程故障、修复和验证摘要。",
+        "executed_at": "2026-08-09T05:55:00Z",
+        "filters": ["canonical Day20 run", "failed attempts retained", "no dependency installs"]
+      }
+    },
+    {
+      "id": "run_provenance_source",
+      "path": "evidence/run_provenance.sql",
+      "query": {
+        "engine": "duckdb",
+        "language": "sql",
+        "id": "day20-sync-provenance-20260809",
+        "sql": "SELECT * FROM read_json_auto('evidence/run_provenance.json', format='array') ORDER BY artifact;",
+        "description": "读取本地归档的文件数、字节数、相对路径 SHA-256 清单和双端比较状态。",
+        "executed_at": "2026-08-09T05:55:00Z",
+        "filters": ["rsync checksum mode", "no delete", "relative-path manifests"]
+      }
+    }
+  ],
+  "package_info": {
+    "originUrl": "artifact://day20-qwen35-lora-probe-analysis-20260809",
+    "snapshotId": "day20-qwen35-lora-20260809T042005Z",
+    "controls": {"edit": false, "refresh": false, "share": false}
+  }
+}

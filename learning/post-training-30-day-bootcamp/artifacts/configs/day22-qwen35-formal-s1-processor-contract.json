@@ -1,0 +1,56 @@
+{
+  "contract_sha256": "12af5b3df5597fc2de4e6e9eebc9abba2e0f14d27971f39dc7e4af83c66e1083",
+  "day20_target_encoding_module_sha256": "a2ab893f6c52d0ce514ec442304f6d279e0c4313f7fff9c7cb3c90866695fc06",
+  "max_length": 2304,
+  "model_key": "Qwen/Qwen3.5-4B-Base",
+  "model_revision": "1001bb4d826a52d1f399e183466143f4da7b741b",
+  "processor_revision": "Qwen/Qwen3.5-4B-Base@1001bb4d826a52d1f399e183466143f4da7b741b",
+  "processor_sha256": "c282b8ca1bacf0627bfaad55ad64c65e8232afb7f0b435b20ff4bf1a0f81dbc6",
+  "runtime": {
+    "huggingface_hub": "1.27.0",
+    "ms_swift": "4.5.0.dev0",
+    "python": "3.11.15",
+    "transformers": "5.12.1"
+  },
+  "schema_name": "day22.qwen35_processor_contract",
+  "schema_version": 1,
+  "scope": "processor_tokenizer_template_only_no_model_weights",
+  "snapshot_files": {
+    "config.json": {
+      "sha256": "ddc63e1c717afa86c865bb5e01313d89d72bb53b97ad4a8a03ba8510c0621670",
+      "size_bytes": 3161
+    },
+    "merges.txt": {
+      "sha256": "a9d356d7bdf1ef4949e3e748e95b8e10ad9d4e2e838eddc38a0a7b6b94d1db8d",
+      "size_bytes": 3353259
+    },
+    "preprocessor_config.json": {
+      "sha256": "27225450ac9c6529872ee1924fcb0962ff5634834f817040f444118116f4e516",
+      "size_bytes": 390
+    },
+    "tokenizer.json": {
+      "sha256": "fe000e3ed39ed12b8d2481d527d44f93c65d37e87645d2dcc80d1bf9d50d2927",
+      "size_bytes": 12807196
+    },
+    "tokenizer_config.json": {
+      "sha256": "3891e840d7dc5fca0af33d3a25083a735e36fe06214e3f707024820cb6b9f89c",
+      "size_bytes": 16713
+    },
+    "video_preprocessor_config.json": {
+      "sha256": "d039cd7d88b3502a99edd455496b75b44ecf7dd3b3669748bafac37e6cecc085",
+      "size_bytes": 386
+    },
+    "vocab.json": {
+      "sha256": "ce99b4cb2983d118806ce0a8b777a35b093e2000a503ebde25853284c9dfa003",
+      "size_bytes": 6722759
+    }
+  },
+  "snapshot_path": "Qwen--Qwen3.5-4B-Base/1001bb4d826a52d1f399e183466143f4da7b741b",
+  "status": "frozen",
+  "template_alias": "day20_qwen3_5_target_v3",
+  "template_revision": "day20.qwen35_code_boundary_target_v3",
+  "template_sha256": "7f835342861cc9aabfd6299228033df80437b183227e04db311450437cd07ded",
+  "tokenizer_revision": "Qwen/Qwen3.5-4B-Base@1001bb4d826a52d1f399e183466143f4da7b741b",
+  "tokenizer_sha256": "4570b194bd50f1fe92788865224ce75518f64963ad699cb32148655bdd3eed4e",
+  "truncation_strategy": "raise"
+}

@@ -1,0 +1,21 @@
+{
+  "checkpoint_cursors": {
+    "100_percent": 1729,
+    "25_percent": 437,
+    "60_percent": 1051
+  },
+  "config_hash": "4e0654d9a702384b3f369c21f5eb4c8b6ea3ed95277f3cb2957b23296c5fb9dd",
+  "created_at": "2026-08-06T12:03:55.041104+00:00",
+  "free_disk_gib": 55.399993896484375,
+  "gpu": "NVIDIA GeForce RTX 4090",
+  "gpu_memory_gib": 23.5164794921875,
+  "maximum_input_tokens": 2021,
+  "mixture_manifest_hash": "f76e6a9538f10b245a831d891899a1d825bf687d7e2eeb4bb949bbf83141b369",
+  "python_version": "3.12.3",
+  "record_count": 1729,
+  "run_id": "D",
+  "schedule_hash": "1bd1480b54557bfac82dc2a57aa85fa59125974de2a3ffbfb9c7ce8c15f81581",
+  "status": "day12_preflight_pass",
+  "supervised_tokens": 246936,
+  "torch_version": "2.7.0+cu128"
+}

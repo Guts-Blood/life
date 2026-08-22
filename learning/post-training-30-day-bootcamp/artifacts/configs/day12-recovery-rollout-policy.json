@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "domain": "day12.recovery_rollout_policy",
+  "status": "active_frozen",
+  "maximum_recovery_rollouts": 10,
+  "rollout_ids": ["C", "D", "E", "F", "G", "H", "I", "J", "K", "L"],
+  "design_rule": "Change one primary causal variable per rollout and retain all other feasible invariants from the strongest prior rollout.",
+  "early_checkpoint": "25_percent",
+  "dev_acceptance_gate": {
+    "math_correct_minimum_out_of_28": 10,
+    "code_correct_minimum_out_of_28": 5,
+    "four_slice_total_minimum_out_of_112": 15,
+    "all_conditions_required": true
+  },
+  "promotion_rule": "The first checkpoint passing every dev gate is eligible for frozen-test confirmation. Frozen test remains unconsumed before that point.",
+  "failed_rollout_cleanup": {
+    "delete": ["full_state_checkpoint"],
+    "retain": [
+      "rollout_spec",
+      "resolved_config",
+      "data_manifest_and_schedule",
+      "preflight_and_training_summary",
+      "dev_predictions",
+      "e2b_code_results",
+      "eval_summary",
+      "outcome_report",
+      "bf16_inference_export_while_storage_allows"
+    ],
+    "recoverability": "A deleted full-state checkpoint can only be recovered by retraining."
+  },
+  "fixed_eval_protocol": {
+    "dev_examples": 112,
+    "examples_per_slice": 28,
+    "slices": ["general", "math", "code", "finance"],
+    "comparison_key": "sha256:fcae58c2fe207b28bd91037672b4282d23078ae94fcdb7b5152ec56d2a56cfbf",
+    "complete_comparison_key": "sha256:f33b389071b844f8c2db221c09e4e0f0a39970718e7d4ba76fa639b90f921f8e",
+    "code_backend": "e2b_firecracker"
+  },
+  "stopping_rule": "Stop when one rollout passes the acceptance gate or after rollout 10 completes; then write the final pipeline retrospective."
+}

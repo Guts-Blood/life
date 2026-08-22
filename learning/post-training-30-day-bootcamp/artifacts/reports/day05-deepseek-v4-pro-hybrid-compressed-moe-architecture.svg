@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="2400" height="4200" viewBox="0 0 2400 4200" role="img" aria-labelledby="title desc">
+  <title id="title">DeepSeek V4 Pro hybrid compressed attention, mHC, and DeepSeekMoE architecture</title>
+  <desc id="desc">A high-density Chinese architecture poster for DeepSeek V4 Pro. It traces the 61-layer CSA, HCA, and sliding-window schedule, manifold-constrained Hyper-Connections, DeepSeekMoE routing, tensor shapes for an 8192-token worked example, backward propagation, and a comparison with DeepSeek V4 Flash.</desc>
+  <defs>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2563eb"/></marker>
+    <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#dc2626"/></marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#16a34a"/></marker>
+    <marker id="arrow-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#d97706"/></marker>
+    <marker id="arrow-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#7c3aed"/></marker>
+    <style>
+      text { font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", "PingFang SC", sans-serif; fill:#172033; }
+      .title { font-size:39px; font-weight:780; }
+      .subtitle { font-size:19px; fill:#526078; }
+      .section { font-size:26px; font-weight:780; }
+      .subsection { font-size:21px; font-weight:740; }
+      .label { font-size:17px; font-weight:720; }
+      .body { font-size:15px; }
+      .small { font-size:13px; fill:#526078; }
+      .tiny { font-size:11px; fill:#64748b; }
+      .mono { font-family:"SFMono-Regular",Consolas,monospace; font-size:13px; fill:#273449; }
+      .mono-strong { font-family:"SFMono-Regular",Consolas,monospace; font-size:15px; font-weight:760; fill:#1e3a8a; }
+      .panel { fill:#ffffff; stroke:#cbd5e1; stroke-width:1.5; }
+      .hero { fill:#eff6ff; stroke:#2563eb; stroke-width:1.8; }
+      .csa-box { fill:#e0f2fe; stroke:#0284c7; stroke-width:1.6; }
+      .hca-box { fill:#ede9fe; stroke:#7c3aed; stroke-width:1.6; }
+      .swa-box { fill:#ecfdf5; stroke:#16a34a; stroke-width:1.6; }
+      .mhc-box { fill:#dcfce7; stroke:#16a34a; stroke-width:1.6; }
+      .moe-box { fill:#fff7ed; stroke:#f59e0b; stroke-width:1.5; }
+      .expert-box { fill:#f3e8ff; stroke:#9333ea; stroke-width:1.5; }
+      .router-box { fill:#fef3c7; stroke:#d97706; stroke-width:1.5; }
+      .backward-box { fill:#fee2e2; stroke:#dc2626; stroke-width:1.5; }
+      .state-box { fill:#ede9fe; stroke:#7c3aed; stroke-width:1.5; }
+      .neutral-box { fill:#f8fafc; stroke:#94a3b8; stroke-width:1.3; }
+      .warning-box { fill:#fff1f2; stroke:#e11d48; stroke-width:1.5; }
+      .fwd { fill:none; stroke:#2563eb; stroke-width:2.2; marker-end:url(#arrow-blue); }
+      .bwd { fill:none; stroke:#dc2626; stroke-width:2.2; marker-end:url(#arrow-red); }
+      .stable { fill:none; stroke:#16a34a; stroke-width:2.1; stroke-dasharray:8 5; marker-end:url(#arrow-green); }
+      .route { fill:none; stroke:#d97706; stroke-width:2.1; marker-end:url(#arrow-amber); }
+      .state { fill:none; stroke:#7c3aed; stroke-width:2; marker-end:url(#arrow-purple); }
+      .thin { fill:none; stroke:#94a3b8; stroke-width:1.4; }
+      .divider { stroke:#cbd5e1; stroke-width:1.2; }
+      .table-bg { fill:#ffffff; stroke:#cbd5e1; stroke-width:1.2; }
+      .table-head { fill:#e2e8f0; stroke:#94a3b8; stroke-width:1.1; }
+      .table-alt { fill:#f8fafc; }
+      .table-header { font-size:12px; font-weight:760; fill:#475569; }
+      .table-body { font-size:12px; }
+      .table-strong { font-size:12px; font-weight:720; }
+      .pill-blue { fill:#dbeafe; stroke:#2563eb; stroke-width:1.2; }
+      .pill-cyan { fill:#e0f2fe; stroke:#0284c7; stroke-width:1.2; }
+      .pill-green { fill:#dcfce7; stroke:#16a34a; stroke-width:1.2; }
+      .pill-purple { fill:#ede9fe; stroke:#7c3aed; stroke-width:1.2; }
+      .pill-amber { fill:#fef3c7; stroke:#d97706; stroke-width:1.2; }
+      .pill-red { fill:#fee2e2; stroke:#dc2626; stroke-width:1.2; }
+    </style>
+  </defs>
+
+  <rect width="2400" height="4200" fill="#f5f7fb"/>
+  <text x="55" y="62" class="title">DeepSeek-V4-Pro · CSA + HCA + mHC + DeepSeekMoE Anatomy</text>
+  <text x="55" y="99" class="subtitle">把百万 token 的成本拆开看：序列轴做 4× / 128× 压缩，深度轴交错注意力，残差轴扩成 4-stream 稳定混合。</text>
+
+  <rect x="45" y="126" width="2310" height="116" rx="18" class="hero"/>
+  <text x="75" y="164" class="subsection">官方配置快照</text>
+  <text x="315" y="164" class="label">DeepSeek-V4-Pro · decoder-only MoE · 1,048,576 context</text>
+  <text x="315" y="199" class="mono">L=61 · D=7168 · H=128 · head=512 · CSA m=4/top-k=1024 · HCA m'=128 · SWA=128 · E=384/top-6/shared-1</text>
+  <text x="2275" y="164" class="mono-strong" text-anchor="end">1.6T total</text>
+  <text x="2275" y="199" class="mono-strong" text-anchor="end">49B active/token</text>
+
+  <rect x="45" y="262" width="2310" height="56" rx="14" class="panel"/>
+  <rect x="74" y="278" width="22" height="22" rx="5" class="csa-box"/><text x="108" y="296" class="small">CSA · compressed sparse</text>
+  <rect x="360" y="278" width="22" height="22" rx="5" class="hca-box"/><text x="394" y="296" class="small">HCA · heavily compressed dense</text>
+  <rect x="735" y="278" width="22" height="22" rx="5" class="mhc-box"/><text x="769" y="296" class="small">mHC · 4-stream residual</text>
+  <rect x="1045" y="278" width="22" height="22" rx="5" class="router-box"/><text x="1079" y="296" class="small">MoE routing / dispatch</text>
+  <text x="1580" y="296" class="small">worked example：B=1 · T=8,192 · BF16 logical tensors；部署精度另注</text>
+
+  <!-- 1. Whole model -->
+  <rect x="45" y="338" width="2310" height="730" rx="20" class="panel"/>
+  <text x="75" y="383" class="section">1 · 整体模型：61 个 Transformer block，每层都由 mHC 包住 Attention 与 DeepSeekMoE</text>
+  <text x="75" y="413" class="small">公开 checkpoint 的 compress_ratios 给出精确节奏：L0–1 为 HCA，L2–59 交错 CSA/HCA，L60 为纯 SWA；MTP depth=1。</text>
+
+  <rect x="75" y="470" width="270" height="135" rx="14" class="state-box"/>
+  <text x="98" y="507" class="label">Token embedding</text>
+  <text x="98" y="542" class="mono"><tspan x="98" dy="0">V=129,280 · D=7,168</tspan><tspan x="98" dy="24">X₀ [8192,7168]</tspan><tspan x="98" dy="24">117.4 MB BF16</tspan></text>
+  <path d="M345 538 L400 538" class="fwd"/>
+
+  <rect x="400" y="455" width="1480" height="465" rx="18" class="neutral-box"/>
+  <text x="430" y="495" class="subsection">Hybrid compressed-attention backbone</text>
+  <text x="1840" y="495" class="mono-strong" text-anchor="end">61 × (mHC-Attn + mHC-MoE)</text>
+
+  <rect x="440" y="545" width="230" height="135" rx="14" class="hca-box"/>
+  <text x="555" y="580" class="label" text-anchor="middle">Layer 0</text>
+  <text x="555" y="615" class="subsection" text-anchor="middle">HCA · 128×</text>
+  <text x="555" y="646" class="small" text-anchor="middle">+ Hash-routed MoE</text>
+  <path d="M670 612 L710 612" class="fwd"/>
+  <rect x="710" y="545" width="230" height="135" rx="14" class="hca-box"/>
+  <text x="825" y="580" class="label" text-anchor="middle">Layer 1</text>
+  <text x="825" y="615" class="subsection" text-anchor="middle">HCA · 128×</text>
+  <text x="825" y="646" class="small" text-anchor="middle">+ Hash-routed MoE</text>
+  <path d="M940 612 L980 612" class="fwd"/>
+  <rect x="980" y="535" width="250" height="155" rx="14" class="csa-box"/>
+  <text x="1105" y="573" class="label" text-anchor="middle">Layer 2</text>
+  <text x="1105" y="610" class="subsection" text-anchor="middle">CSA · 4× + top-1024</text>
+  <text x="1105" y="642" class="small" text-anchor="middle">+ Hash-routed MoE</text>
+  <text x="1105" y="668" class="tiny" text-anchor="middle">last hash layer</text>
+  <path d="M1230 612 L1270 612" class="fwd"/>
+  <rect x="1270" y="545" width="230" height="135" rx="14" class="hca-box"/>
+  <text x="1385" y="580" class="label" text-anchor="middle">Layer 3</text>
+  <text x="1385" y="615" class="subsection" text-anchor="middle">HCA · 128×</text>
+  <text x="1385" y="646" class="small" text-anchor="middle">+ learned router</text>
+  <path d="M1500 612 L1540 612" class="fwd"/>
+  <rect x="1540" y="545" width="280" height="135" rx="14" class="neutral-box"/>
+  <text x="1680" y="580" class="label" text-anchor="middle">Layer 4 … 59</text>
+  <text x="1680" y="615" class="subsection" text-anchor="middle">CSA ↔ HCA</text>
+  <text x="1680" y="646" class="small" text-anchor="middle">even CSA · odd HCA</text>
+
+  <path d="M1680 680 L1680 735" class="fwd"/>
+  <rect x="1515" y="735" width="330" height="105" rx="14" class="swa-box"/>
+  <text x="1680" y="773" class="label" text-anchor="middle">Layer 60 · pure SWA</text>
+  <text x="1680" y="807" class="mono" text-anchor="middle">window=128 · no compressed branch</text>
+  <text x="450" y="750" class="body"><tspan x="450" dy="0">每个 attention 都有本地 SWA 支路；CSA/HCA 再拼接压缩 KV。</tspan><tspan x="450" dy="29">每个 block：Pre-mix → Attention → Post-mix → Residual-mix，</tspan><tspan x="450" dy="29">再对 DeepSeekMoE 重复一次 mHC 包装。</tspan></text>
+  <rect x="450" y="845" width="680" height="50" rx="12" class="mhc-box"/>
+  <text x="790" y="876" class="label" text-anchor="middle">mHC keeps the layer input/output at D=7168 while residual state width is 4×</text>
+
+  <path d="M1845 787 C1890 787 1890 690 1930 690" class="fwd"/>
+  <rect x="1930" y="500" width="370" height="345" rx="16" class="state-box"/>
+  <text x="1960" y="540" class="subsection">Output &amp; training heads</text>
+  <text x="1960" y="582" class="label">Main LM head</text>
+  <text x="1960" y="613" class="mono"><tspan x="1960" dy="0">RMSNorm → logits</tspan><tspan x="1960" dy="23">[T,129280] → causal CE</tspan></text>
+  <line x1="1960" y1="650" x2="2270" y2="650" class="divider"/>
+  <text x="1960" y="689" class="label">MTP module · depth 1</text>
+  <text x="1960" y="720" class="small"><tspan x="1960" dy="0">额外预测未来 token；训练时加 MTP loss，</tspan><tspan x="1960" dy="24">推理可用于 speculative decoding。</tspan></text>
+  <rect x="1960" y="770" width="310" height="48" rx="11" class="pill-blue"/>
+  <text x="2115" y="800" class="label" text-anchor="middle">Pro-Max = reasoning effort mode</text>
+  <text x="2115" y="870" class="small" text-anchor="middle">不是独立 backbone / 新参数规模</text>
+
+  <rect x="75" y="955" width="2225" height="82" rx="14" class="hero"/>
+  <text x="100" y="988" class="label">官方 1M 指标：</text>
+  <text x="275" y="988" class="body">V4-Pro 的 single-token inference FLOPs ≈ DeepSeek-V3.2 的 27%，KV cache ≈ 10%。</text>
+  <text x="100" y="1017" class="small">这是一项端到端公开测量，不等于简单把所有层都按 4× 或 128× 相除；SWA、indexer、层型交错和低精度都会共同影响结果。</text>
+
+  <!-- 2. Attention anatomy -->
+  <rect x="45" y="1098" width="2310" height="1120" rx="20" class="panel"/>
+  <text x="75" y="1143" class="section">2 · 序列 mixing：CSA 稀疏检索 4× 压缩块；HCA 对 128× 压缩块做 dense MQA</text>
+  <text x="75" y="1173" class="small">两者共享 low-rank query、single shared KV head、grouped output projection、partial RoPE、attention sink 与本地 SWA=128。</text>
+
+  <rect x="75" y="1215" width="1100" height="900" rx="18" class="csa-box"/>
+  <text x="105" y="1258" class="subsection">CSA · Compressed Sparse Attention</text>
+  <text x="1135" y="1258" class="mono-strong" text-anchor="end">compression=4 · index top-k=1024</text>
+  <rect x="105" y="1300" width="230" height="95" rx="13" class="state-box"/>
+  <text x="125" y="1332" class="label">Hidden states</text>
+  <text x="125" y="1363" class="mono">H [8192,7168]</text>
+  <path d="M335 1348 L380 1348" class="fwd"/>
+  <rect x="380" y="1285" width="330" height="135" rx="13" class="csa-box"/>
+  <text x="405" y="1320" class="label">Overlapped token compressor</text>
+  <text x="405" y="1353" class="mono"><tspan x="405" dy="0">each output mixes 2m tokens</tspan><tspan x="405" dy="23">stride m=4 → Cᶜ [2048,512]</tspan><tspan x="405" dy="23">compression weights + position bias</tspan></text>
+  <path d="M710 1353 L755 1353" class="fwd"/>
+  <rect x="755" y="1275" width="370" height="155" rx="13" class="router-box"/>
+  <text x="780" y="1310" class="label">Lightning indexer</text>
+  <text x="780" y="1343" class="mono"><tspan x="780" dy="0">64 index heads × 128 dims</tspan><tspan x="780" dy="23">FP4 index QK path in post-training</tspan><tspan x="780" dy="23">scores → causal top-1024 blocks</tspan><tspan x="780" dy="23">indices [8192,1024] = 33.6 MB int32</tspan></text>
+  <path d="M940 1430 L940 1480" class="route"/>
+  <rect x="230" y="1480" width="790" height="195" rx="15" class="csa-box"/>
+  <text x="260" y="1518" class="label">Shared-KV Multi-Query Attention</text>
+  <text x="260" y="1555" class="mono-strong">Q: 7168 → rank 1536 → 128 heads × 512</text>
+  <text x="260" y="1590" class="mono"><tspan x="260" dy="0">KV: 1 shared 512-d entry · last 64 dims use RoPE</tspan><tspan x="260" dy="24">K/V set = selected 1024 compressed entries + recent 128 raw entries</tspan><tspan x="260" dy="24">logical sparse scores [128,8192,1024] ≈ 2.15 GB BF16</tspan></text>
+  <path d="M625 1675 L625 1725" class="fwd"/>
+  <rect x="170" y="1725" width="910" height="150" rx="14" class="neutral-box"/>
+  <text x="200" y="1762" class="label">Grouped output projection</text>
+  <text x="200" y="1798" class="mono">128 heads ÷ 16 groups → each group to rank 1024 → concatenate → 7168</text>
+  <text x="200" y="1833" class="small">避免直接把 128×512 的大拼接向量一次性投影回 residual width。</text>
+  <rect x="170" y="1905" width="910" height="165" rx="14" class="state-box"/>
+  <text x="200" y="1943" class="label">At maximum context T=1,048,576</text>
+  <text x="200" y="1980" class="mono"><tspan x="200" dy="0">compressed entries = T/4 = 262,144</tspan><tspan x="200" dy="24">each query retrieves only 1,024 blocks + 128 local tokens</tspan><tspan x="200" dy="24">core token-to-block fan-in stays bounded after top-k</tspan></text>
+
+  <rect x="1205" y="1215" width="1120" height="900" rx="18" class="hca-box"/>
+  <text x="1235" y="1258" class="subsection">HCA · Heavily Compressed Attention</text>
+  <text x="2285" y="1258" class="mono-strong" text-anchor="end">compression=128 · dense over compressed stream</text>
+  <rect x="1235" y="1300" width="230" height="95" rx="13" class="state-box"/>
+  <text x="1255" y="1332" class="label">Hidden states</text>
+  <text x="1255" y="1363" class="mono">H [8192,7168]</text>
+  <path d="M1465 1348 L1510 1348" class="fwd"/>
+  <rect x="1510" y="1280" width="405" height="145" rx="13" class="hca-box"/>
+  <text x="1535" y="1315" class="label">Heavy token compressor</text>
+  <text x="1535" y="1348" class="mono"><tspan x="1535" dy="0">128 KV entries → weighted 1 entry</tspan><tspan x="1535" dy="24">Cʰ [64,512] at T=8192</tspan><tspan x="1535" dy="24">no overlap · no lightning indexer</tspan></text>
+  <path d="M1465 1348 C1490 1348 1490 1240 2112 1240 L2112 1280" class="fwd"/>
+  <rect x="1960" y="1280" width="305" height="145" rx="13" class="swa-box"/>
+  <text x="1985" y="1315" class="label">Local detail branch</text>
+  <text x="1985" y="1348" class="mono"><tspan x="1985" dy="0">recent raw KV = 128</tspan><tspan x="1985" dy="24">preserves causality + near tokens</tspan><tspan x="1985" dy="24">concatenate with compressed KV</tspan></text>
+  <path d="M1860 1425 L1860 1480" class="fwd"/>
+  <path d="M2112 1425 C2112 1455 2050 1455 2050 1480" class="fwd"/>
+  <rect x="1350" y="1480" width="820" height="195" rx="15" class="hca-box"/>
+  <text x="1380" y="1518" class="label">Dense shared-KV MQA over a tiny long-range stream</text>
+  <text x="1380" y="1555" class="mono-strong">Q: rank 1536 → 128 × 512 · KV: one shared 512-d head</text>
+  <text x="1380" y="1590" class="mono"><tspan x="1380" dy="0">attention set = all preceding HCA blocks + 128 local entries</tspan><tspan x="1380" dy="24">logical scores [128,8192,64] ≈ 134.2 MB BF16</tspan><tspan x="1380" dy="24">same grouped output: 16 groups × rank 1024 → 7168</tspan></text>
+  <path d="M1760 1675 L1760 1725" class="state"/>
+  <rect x="1320" y="1725" width="880" height="150" rx="14" class="state-box"/>
+  <text x="1350" y="1762" class="label">At maximum context T=1,048,576</text>
+  <text x="1350" y="1798" class="mono">compressed entries = T/128 = 8,192 · dense but 128× shorter</text>
+  <text x="1350" y="1833" class="small">HCA 保留完整 compressed-history coverage；它不是 top-k 稀疏，而是用更强压缩换 dense connectivity。</text>
+  <rect x="1280" y="1905" width="960" height="165" rx="14" class="neutral-box"/>
+  <text x="1310" y="1943" class="label">Shared low-level details</text>
+  <text x="1310" y="1980" class="body"><tspan x="1310" dy="0">Q/KV head-wise RMSNorm；KV 同时作为 key 与 value；last 64 dims partial RoPE。</tspan><tspan x="1310" dy="29">attention sink 允许某个 head 的总注意力质量小于 1，甚至接近 0。</tspan><tspan x="1310" dy="29">cache：RoPE dims BF16，其余 FP8；SWA 与未满压缩块的 tail state 单独管理。</tspan></text>
+
+  <!-- 3. mHC + MoE -->
+  <rect x="45" y="2248" width="2310" height="835" rx="20" class="panel"/>
+  <text x="75" y="2293" class="section">3 · 深度与通道 mixing：mHC 约束 4-stream residual；DeepSeekMoE 每 token 选 6 / 384</text>
+  <text x="75" y="2323" class="small">mHC 给网络一个额外的 residual-width 伸缩轴；MoE 给 FFN 一个大参数容量、低激活计算的伸缩轴。</text>
+
+  <rect x="75" y="2365" width="1085" height="620" rx="18" class="mhc-box"/>
+  <text x="105" y="2408" class="subsection">mHC · Manifold-Constrained Hyper-Connections</text>
+  <text x="1120" y="2408" class="mono-strong" text-anchor="end">n_hc=4 · Sinkhorn iterations=20</text>
+  <rect x="105" y="2450" width="270" height="130" rx="13" class="state-box"/>
+  <text x="130" y="2485" class="label">Residual state</text>
+  <text x="130" y="2518" class="mono"><tspan x="130" dy="0">Xˡ [8192,4,7168]</tspan><tspan x="130" dy="24">469.8 MB BF16 logical</tspan><tspan x="130" dy="24">implementation may recompute/fuse</tspan></text>
+  <path d="M375 2515 L430 2515" class="fwd"/>
+  <rect x="430" y="2440" width="300" height="150" rx="13" class="mhc-box"/>
+  <text x="455" y="2475" class="label">Pre-block mixing Aˡ</text>
+  <text x="455" y="2510" class="mono"><tspan x="455" dy="0">Aˡ = sigmoid(Ãˡ)</tspan><tspan x="455" dy="24">[1×4] · dynamic + static</tspan><tspan x="455" dy="24">AˡXˡ → actual layer input [7168]</tspan></text>
+  <path d="M730 2515 L780 2515" class="fwd"/>
+  <rect x="780" y="2440" width="325" height="150" rx="13" class="neutral-box"/>
+  <text x="805" y="2475" class="label">Fˡ : Attention or MoE</text>
+  <text x="805" y="2510" class="mono"><tspan x="805" dy="0">Fˡ(AˡXˡ) ∈ R⁷¹⁶⁸</tspan><tspan x="805" dy="24">inner layer width unchanged</tspan><tspan x="805" dy="24">same wrapper used twice / block</tspan></text>
+
+  <rect x="185" y="2645" width="805" height="155" rx="14" class="mhc-box"/>
+  <text x="215" y="2683" class="label">Residual update</text>
+  <text x="215" y="2725" class="mono-strong">Xˡ⁺¹ = BˡXˡ + CˡFˡ(AˡXˡ)</text>
+  <text x="215" y="2762" class="mono">Cˡ = 2·sigmoid(C̃ˡ) [4×1] · Bˡ = Sinkhorn(exp(B̃ˡ)) [4×4]</text>
+  <path d="M990 2722 C1060 2722 1060 2515 1105 2515" class="stable"/>
+  <rect x="145" y="2840" width="915" height="105" rx="13" class="neutral-box"/>
+  <text x="170" y="2874" class="label">为什么约束 Bˡ？</text>
+  <text x="170" y="2908" class="small"><tspan x="170" dy="0">Bˡ 位于 doubly-stochastic matrix 的 Birkhoff polytope；非负、行和列都为 1，spectral norm ≤ 1。</tspan><tspan x="170" dy="23">因此深层连乘保持 non-expansive，forward signal 与 backward gradient 更不易数值爆炸。</tspan></text>
+
+  <rect x="1190" y="2365" width="1135" height="620" rx="18" class="moe-box"/>
+  <text x="1220" y="2408" class="subsection">DeepSeekMoE · all 61 blocks</text>
+  <text x="2285" y="2408" class="mono-strong" text-anchor="end">384 routed + 1 shared · top-6</text>
+  <rect x="1220" y="2450" width="240" height="120" rx="13" class="state-box"/>
+  <text x="1245" y="2485" class="label">Normalized x</text>
+  <text x="1245" y="2518" class="mono"><tspan x="1245" dy="0">[8192,7168]</tspan><tspan x="1245" dy="24">117.4 MB BF16</tspan></text>
+  <path d="M1460 2510 L1510 2510" class="route"/>
+  <rect x="1510" y="2435" width="365" height="160" rx="14" class="router-box"/>
+  <text x="1535" y="2472" class="label">Router</text>
+  <text x="1535" y="2507" class="mono"><tspan x="1535" dy="0">scores [8192,384]</tspan><tspan x="1535" dy="24">sqrt(softplus) → bias → top-6</tspan><tspan x="1535" dy="24">renorm × route_scale 2.5</tspan><tspan x="1535" dy="24">49,152 assignments · avg 128/expert</tspan></text>
+  <path d="M1875 2515 L1925 2515" class="route"/>
+  <rect x="1925" y="2435" width="350" height="160" rx="14" class="expert-box"/>
+  <text x="1950" y="2472" class="label">Routed expert bank ×384</text>
+  <text x="1950" y="2507" class="mono"><tspan x="1950" dy="0">7168 → 3072 → 7168</tspan><tspan x="1950" dy="24">SwiGLU · 3 matrices</tspan><tspan x="1950" dy="24">≈66.06M params / expert</tspan><tspan x="1950" dy="24">≈25.37B routed params / layer</tspan></text>
+
+  <rect x="1280" y="2645" width="430" height="170" rx="14" class="router-box"/>
+  <text x="1305" y="2682" class="label">Layer 0–2 · Hash routing</text>
+  <text x="1305" y="2718" class="body"><tspan x="1305" dy="0">token ID → predefined expert IDs</tspan><tspan x="1305" dy="28">没有 dense FFN warm-up layers；</tspan><tspan x="1305" dy="28">仍然是 6 routed experts / token。</tspan></text>
+  <rect x="1740" y="2645" width="535" height="170" rx="14" class="expert-box"/>
+  <text x="1765" y="2682" class="label">Dispatch + shared path</text>
+  <text x="1765" y="2718" class="mono"><tspan x="1765" dy="0">logical dispatch [49152,7168] = 704.6 MB</tspan><tspan x="1765" dy="24">6 routed active ≈396.4M expert params/layer</tspan><tspan x="1765" dy="24">+ 1 shared expert ≈66.1M always active</tspan></text>
+  <rect x="1280" y="2850" width="995" height="95" rx="13" class="warning-box"/>
+  <text x="1305" y="2884" class="label">Precision / stability</text>
+  <text x="1305" y="2918" class="small">Instruct checkpoint：MoE expert weights FP4，多数其他参数 FP8；SwiGLU linear branch clamp [-10,10]，gate upper bound=10。</text>
+
+  <!-- 4. Backward and ledger -->
+  <rect x="45" y="3113" width="2310" height="900" rx="20" class="panel"/>
+  <text x="75" y="3158" class="section">4 · Forward / backward / state ledger：哪些东西随 T 增长，哪些东西只在训练时存在</text>
+  <text x="75" y="3188" class="small">下表是理解架构的 logical tensor 账本，不等同于某个具体 fused kernel 的峰值 HBM；checkpointing、EP、TP、CP 会改变实际驻留量。</text>
+
+  <rect x="75" y="3230" width="1380" height="505" rx="16" class="table-bg"/>
+  <rect x="75" y="3230" width="1380" height="52" rx="16" class="table-head"/>
+  <text x="100" y="3263" class="table-header">组件</text><text x="375" y="3263" class="table-header">Forward logical shape / size @ T=8192</text><text x="890" y="3263" class="table-header">Backward / lifetime</text><text x="1250" y="3263" class="table-header">随 T 的变化</text>
+  <rect x="75" y="3282" width="1380" height="72" class="table-alt"/>
+  <text x="100" y="3312" class="table-strong">Residual H</text><text x="375" y="3312" class="table-body">[8192,7168] · 117.4 MB BF16</text><text x="890" y="3312" class="table-body">checkpoint or recompute per layer</text><text x="1250" y="3312" class="table-body">O(T·D)</text>
+  <text x="100" y="3384" class="table-strong">mHC residual</text><text x="375" y="3384" class="table-body">[8192,4,7168] · 469.8 MB logical</text><text x="890" y="3384" class="table-body">A/B/C dynamic maps need gradients</text><text x="1250" y="3384" class="table-body">O(T·4D)</text>
+  <rect x="75" y="3426" width="1380" height="72" class="table-alt"/>
+  <text x="100" y="3456" class="table-strong">CSA selection</text><text x="375" y="3456" class="table-body">top-k IDs [8192,1024] · 33.6 MB int32</text><text x="890" y="3456" class="table-body">indexer score/top-k path; sparse core grads</text><text x="1250" y="3456" class="table-body">O(T·k)</text>
+  <text x="100" y="3528" class="table-strong">HCA scores</text><text x="375" y="3528" class="table-body">[128,8192,64] · 134.2 MB BF16 logical</text><text x="890" y="3528" class="table-body">softmax backward on compressed stream</text><text x="1250" y="3528" class="table-body">O(T²/128)</text>
+  <rect x="75" y="3570" width="1380" height="72" class="table-alt"/>
+  <text x="100" y="3600" class="table-strong">MoE routing</text><text x="375" y="3600" class="table-body">scores [8192,384] · 6.29 MB BF16</text><text x="890" y="3600" class="table-body">selected weights + expert grouped GEMMs</text><text x="1250" y="3600" class="table-body">O(T·E)</text>
+  <text x="100" y="3672" class="table-strong">MoE dispatch</text><text x="375" y="3672" class="table-body">[49152,7168] · 704.6 MB logical</text><text x="890" y="3672" class="table-body">all-to-all / fused grouped GEMM</text><text x="1250" y="3672" class="table-body">O(T·top-k·D)</text>
+
+  <rect x="1490" y="3230" width="835" height="505" rx="16" class="backward-box"/>
+  <text x="1520" y="3272" class="subsection">Backward path · reverse order</text>
+  <rect x="1520" y="3310" width="250" height="75" rx="12" class="pill-red"/><text x="1645" y="3342" class="label" text-anchor="middle">LM loss + MTP loss</text><text x="1645" y="3367" class="small" text-anchor="middle">main + next-token depth 1</text>
+  <path d="M1770 3348 L1810 3348" class="bwd"/>
+  <rect x="1810" y="3310" width="225" height="75" rx="12" class="pill-red"/><text x="1922" y="3342" class="label" text-anchor="middle">mHC post / residual</text><text x="1922" y="3367" class="small" text-anchor="middle">through Cˡ and Bˡ</text>
+  <path d="M2035 3348 L2075 3348" class="bwd"/>
+  <rect x="2075" y="3310" width="220" height="75" rx="12" class="pill-red"/><text x="2185" y="3342" class="label" text-anchor="middle">MoE experts</text><text x="2185" y="3367" class="small" text-anchor="middle">scatter / gather grads</text>
+  <path d="M2185 3385 C2185 3430 1645 3430 1645 3475" class="bwd"/>
+  <rect x="1520" y="3475" width="300" height="82" rx="12" class="pill-red"/><text x="1670" y="3508" class="label" text-anchor="middle">CSA/HCA core attention</text><text x="1670" y="3534" class="small" text-anchor="middle">Q, compressed KV, SWA, sinks</text>
+  <path d="M1820 3516 L1860 3516" class="bwd"/>
+  <rect x="1860" y="3475" width="250" height="82" rx="12" class="pill-red"/><text x="1985" y="3508" class="label" text-anchor="middle">Compressor / indexer</text><text x="1985" y="3534" class="small" text-anchor="middle">pool weights + top-k path</text>
+  <path d="M2110 3516 L2150 3516" class="bwd"/>
+  <rect x="2150" y="3475" width="145" height="82" rx="12" class="pill-red"/><text x="2222" y="3508" class="label" text-anchor="middle">mHC pre</text><text x="2222" y="3534" class="small" text-anchor="middle">through Aˡ</text>
+  <text x="1520" y="3610" class="body"><tspan x="1520" dy="0">训练时 expensive 的不是单一 T² 矩阵：</tspan><tspan x="1520" dy="29">• CSA 保存/重算 compressor 与 indexer，并对 sparse gather 做反向；</tspan><tspan x="1520" dy="29">• HCA 对 T/128 压缩序列做 dense attention backward；</tspan><tspan x="1520" dy="29">• mHC 的动态 A/B/C 与 20-step Sinkhorn 也进入梯度图；</tspan><tspan x="1520" dy="29">• MoE 把梯度稀疏送回 6 个 routed experts + shared expert。</tspan></text>
+
+  <rect x="75" y="3775" width="1080" height="190" rx="16" class="state-box"/>
+  <text x="105" y="3815" class="subsection">Decode-time persistent state</text>
+  <text x="105" y="3853" class="body"><tspan x="105" dy="0">SWA：每层只保留最近 128 个 raw KV；纯 BF16 logical 约 0.262 MB / layer。</tspan><tspan x="105" dy="29">CSA：每 4 tokens 一个 main KV + indexer KV；HCA：每 128 tokens 一个 KV。</tspan><tspan x="105" dy="29">未满压缩块的 hidden tail 进入 state cache；完整 compressed blocks 进入 paged KV cache。</tspan><tspan x="105" dy="29">官方 serving 还支持把 compressed KV 与 SWA checkpoint 写盘，复用 shared prefix。</tspan></text>
+
+  <rect x="1185" y="3775" width="1140" height="190" rx="16" class="neutral-box"/>
+  <text x="1215" y="3815" class="subsection">V4-Pro vs V4-Flash · same ideas, different scale</text>
+  <text x="1215" y="3853" class="mono"><tspan x="1215" dy="0">Pro   : 61L · D7168 · 1.6T / 49B active · 128 Q heads · CSA top-1024 · 384 experts</tspan><tspan x="1215" dy="28">Flash : 43L · D4096 · 284B / 13B active · 64 Q heads  · CSA top-512  · 256 experts</tspan></text>
+  <text x="1215" y="3935" class="small">共同点：1M context、mHC=4、Sinkhorn=20、CSA 4×、HCA 128×、SWA 128、top-6 routed + shared-1、MTP depth=1。</text>
+
+  <!-- Footer -->
+  <rect x="45" y="4043" width="2310" height="115" rx="18" class="hero"/>
+  <text x="75" y="4080" class="label">Reading rule</text>
+  <text x="220" y="4080" class="body">蓝线=forward · 红线=backward · 橙线=routing · 紫线=state/cache · 绿虚线=stability-constrained mixing</text>
+  <text x="75" y="4112" class="small">来源：DeepSeek-V4 technical report (arXiv:2606.19348)；DeepSeek-V4-Pro / Flash official model cards；官方 inference config.json 与 model.py。</text>
+  <text x="75" y="4139" class="tiny">参数与层型以 2026-08-19 可访问的官方 preview checkpoint 为准。张量大小使用 decimal MB/GB；“logical” 表示数学视图，实际 fused kernels 不一定物化完整张量。</text>
+</svg>

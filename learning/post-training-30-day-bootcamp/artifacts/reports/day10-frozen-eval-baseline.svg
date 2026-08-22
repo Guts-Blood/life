@@ -1,0 +1,349 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="4200" viewBox="0 0 1800 4200" role="img" aria-labelledby="title desc">
+  <title id="title">Day 10 Frozen Eval and Qwen3-0.6B Base Baseline</title>
+  <desc id="desc">A Chinese visual summary of the Day 10 frozen evaluation contract: 160 samples across four slices, 112 development predictions, 48 untouched frozen-test samples, deterministic generation, E2B HumanEval execution, four-slice results, evidence identities, and the remaining human-review and Day 12 gates.</desc>
+
+  <defs>
+    <linearGradient id="heroGradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#142d43"/>
+      <stop offset="1" stop-color="#24566b"/>
+    </linearGradient>
+    <linearGradient id="evidenceGradient" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#e8f6f2"/>
+      <stop offset="1" stop-color="#edf3fb"/>
+    </linearGradient>
+    <pattern id="sealedPattern" width="18" height="18" patternUnits="userSpaceOnUse" patternTransform="rotate(35)">
+      <rect width="18" height="18" fill="#e8eef2"/>
+      <rect width="5" height="18" fill="#d5e0e6"/>
+    </pattern>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="160%">
+      <feDropShadow dx="0" dy="9" stdDeviation="12" flood-color="#17354b" flood-opacity="0.11"/>
+    </filter>
+    <marker id="arrow" markerWidth="14" markerHeight="14" refX="11" refY="7" orient="auto" markerUnits="strokeWidth">
+      <path d="M1,1 L12,7 L1,13 Z" fill="#6a8392"/>
+    </marker>
+    <style>
+      text { font-family: Inter, "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif; fill: #183247; }
+      .title { font-size: 54px; font-weight: 760; fill: #ffffff; }
+      .subtitle { font-size: 23px; font-weight: 500; fill: #d6e8f0; }
+      .eyebrow { font-size: 18px; font-weight: 760; letter-spacing: 2.4px; fill: #8ed8cf; }
+      .section { font-size: 31px; font-weight: 760; }
+      .section-sub { font-size: 18px; fill: #607989; }
+      .card-title { font-size: 23px; font-weight: 740; }
+      .body { font-size: 19px; }
+      .small { font-size: 16px; fill: #607989; }
+      .tiny { font-size: 14px; fill: #6b8392; }
+      .metric { font-size: 40px; font-weight: 780; }
+      .metric-small { font-size: 28px; font-weight: 760; }
+      .metric-label { font-size: 15px; font-weight: 650; fill: #607989; }
+      .mono { font-family: "SFMono-Regular", Consolas, monospace; font-size: 15px; fill: #3f5d70; }
+      .step { font-size: 15px; font-weight: 760; letter-spacing: 1.2px; fill: #247f77; }
+      .bar-label { font-size: 16px; font-weight: 720; fill: #ffffff; }
+      .panel { fill: #ffffff; stroke: #d5e1e7; stroke-width: 1.5; }
+      .soft { fill: #f7fafb; stroke: #d5e1e7; stroke-width: 1.3; }
+      .divider { stroke: #d5e1e7; stroke-width: 1.5; }
+      .flow { fill: none; stroke: #6a8392; stroke-width: 4; marker-end: url(#arrow); }
+      .general { fill: #4a95c2; }
+      .math { fill: #8b63b8; }
+      .code { fill: #49a97e; }
+      .finance { fill: #d17843; }
+      .correct { fill: #2f9b78; }
+      .wrong { fill: #8068a3; }
+      .parse { fill: #d89b3c; }
+      .syntax { fill: #cf655e; }
+      .runtime { fill: #5b7fa5; }
+    </style>
+  </defs>
+
+  <rect width="1800" height="4200" fill="#f3f7f9"/>
+
+  <!-- Hero -->
+  <rect width="1800" height="310" fill="url(#heroGradient)"/>
+  <circle cx="1575" cy="5" r="220" fill="#53a6a2" opacity="0.13"/>
+  <circle cx="1705" cy="190" r="155" fill="#e2b56c" opacity="0.10"/>
+  <text x="90" y="72" class="eyebrow">POST-TRAINING BOOTCAMP · DAY 10 · FROZEN MEASUREMENT CONTRACT</text>
+  <text x="90" y="148" class="title">Frozen Eval 与 Base Baseline</text>
+  <text x="90" y="201" class="subtitle">不是“跑一次分数”，而是在 SFT 前冻结一把可重放、可审计、可纵向比较的尺子。</text>
+  <rect x="90" y="238" width="630" height="46" rx="23" fill="#3d887f"/>
+  <circle cx="119" cy="261" r="8" fill="#a7ebd4"/>
+  <text x="140" y="268" font-size="17" font-weight="720" style="fill:#ffffff">DEV AUTOMATED COMPLETE · HUMAN REVIEW PENDING</text>
+  <text x="1710" y="269" text-anchor="end" font-size="15" font-weight="650" style="fill:#d6e8f0">Frozen 2026-08-05</text>
+
+  <!-- Headline metrics -->
+  <g filter="url(#shadow)">
+    <rect x="70" y="350" width="1660" height="210" rx="28" class="panel"/>
+  </g>
+  <line x1="485" y1="390" x2="485" y2="520" class="divider"/>
+  <line x1="900" y1="390" x2="900" y2="520" class="divider"/>
+  <line x1="1315" y1="390" x2="1315" y2="520" class="divider"/>
+  <text x="278" y="430" text-anchor="middle" class="metric" style="fill:#356f91">160</text>
+  <text x="278" y="467" text-anchor="middle" class="metric-label">frozen eval samples</text>
+  <text x="278" y="505" text-anchor="middle" class="body">4 slices × 40</text>
+  <text x="692" y="430" text-anchor="middle" class="metric" style="fill:#2c8274">112</text>
+  <text x="692" y="467" text-anchor="middle" class="metric-label">dev predictions scored</text>
+  <text x="692" y="505" text-anchor="middle" class="body">4 slices × 28</text>
+  <text x="1108" y="430" text-anchor="middle" class="metric" style="fill:#6d8190">48</text>
+  <text x="1108" y="467" text-anchor="middle" class="metric-label">frozen_test untouched</text>
+  <text x="1108" y="505" text-anchor="middle" class="body">not generated · not viewed</text>
+  <text x="1522" y="430" text-anchor="middle" class="metric" style="fill:#9b6a31">13.39%</text>
+  <text x="1522" y="467" text-anchor="middle" class="metric-label">final four-slice macro</text>
+  <text x="1522" y="505" text-anchor="middle" class="body">15 correct / 112</text>
+
+  <!-- Section 1: Evidence flow -->
+  <text x="90" y="650" class="section">01 · 先冻结，再运行：完整证据链</text>
+  <text x="90" y="685" class="section-sub">每一步都产出可验证 identity；Base 分数不能反过来修改 manifest、prompt、scorer 或 checkpoint-selection rule。</text>
+  <g filter="url(#shadow)">
+    <rect x="70" y="725" width="1660" height="690" rx="28" class="panel"/>
+  </g>
+
+  <!-- Flow row 1 -->
+  <rect x="105" y="780" width="490" height="225" rx="22" fill="#f4f8fa" stroke="#cddde5" stroke-width="1.5"/>
+  <text x="140" y="825" class="step">STEP 1 · UPSTREAM LINEAGE</text>
+  <text x="140" y="868" class="card-title">Day 09 clean pool → eval candidates</text>
+  <text x="140" y="907" class="body">冻结来源、revision、train manifests 与 matcher。</text>
+  <text x="140" y="943" class="body">160 candidates；0 exact / 0 near overlap。</text>
+  <text x="140" y="979" class="small">边界：Gate C 仍是 user waiver，不是人工 QA passed。</text>
+
+  <path d="M595 892 L650 892" class="flow"/>
+
+  <rect x="655" y="780" width="490" height="225" rx="22" fill="#edf6fb" stroke="#bcd7e7" stroke-width="1.5"/>
+  <text x="690" y="825" class="step" style="fill:#397da6">STEP 2 · FREEZE THE SUITE</text>
+  <text x="690" y="868" class="card-title">4 slices × (28 dev + 12 frozen)</text>
+  <text x="690" y="907" class="body">固定 sample order、raw / rendered prompt、</text>
+  <text x="690" y="939" class="body">input IDs、split、slice 与逐样本 hash。</text>
+  <text x="690" y="979" class="mono">manifest semantic 70749bf9… · suite 41b08752…</text>
+
+  <path d="M1145 892 L1200 892" class="flow"/>
+
+  <rect x="1205" y="780" width="490" height="225" rx="22" fill="#f2eef8" stroke="#d5c7e5" stroke-width="1.5"/>
+  <text x="1240" y="825" class="step" style="fill:#79599b">STEP 3 · FREEZE MEASUREMENT</text>
+  <text x="1240" y="868" class="card-title">Model · render · generation · scorer</text>
+  <text x="1240" y="907" class="body">Qwen3-0.6B-Base pinned revision；greedy；</text>
+  <text x="1240" y="939" class="body">thinking off；四类 versioned extractor/scorer。</text>
+  <text x="1240" y="979" class="mono">protocol 4aa329a2… · scorer v3</text>
+
+  <!-- Snake down and row 2 -->
+  <path d="M1450 1005 L1450 1060" class="flow"/>
+
+  <rect x="1205" y="1065" width="490" height="250" rx="22" fill="#fff7ea" stroke="#e8d19f" stroke-width="1.5"/>
+  <text x="1240" y="1110" class="step" style="fill:#9a7228">STEP 4 · DRY RUN + REPEAT</text>
+  <text x="1240" y="1153" class="card-title">先证伪 scorer，再跑完整 baseline</text>
+  <text x="1240" y="1192" class="body">5-sample dry run 拒绝 v1/v2 两个抽取缺陷。</text>
+  <text x="1240" y="1226" class="body">10 + 10 repeat：IDs / raw output / score</text>
+  <text x="1240" y="1260" class="body">均为 0 mismatch。</text>
+  <text x="1240" y="1295" class="small">wall-clock 字段不同，不改变语义输出 identity。</text>
+
+  <path d="M1205 1190 L1150 1190" class="flow"/>
+
+  <rect x="655" y="1065" width="490" height="250" rx="22" fill="#edf7f3" stroke="#b9ddce" stroke-width="1.5"/>
+  <text x="690" y="1110" class="step">STEP 5 · GENERATE DEV ONLY</text>
+  <text x="690" y="1153" class="card-title">112 Base predictions</text>
+  <text x="690" y="1192" class="body">macOS CPU · BF16 · deterministic generation。</text>
+  <text x="690" y="1226" class="body">保存 raw output、token IDs、latency、parse 与 score。</text>
+  <text x="690" y="1260" class="mono">run 49408d40… · predictions 9760a4d2…</text>
+  <text x="690" y="1295" class="small">48 frozen_test 没有生成、查看或评分。</text>
+
+  <path d="M655 1190 L600 1190" class="flow"/>
+
+  <rect x="105" y="1065" width="490" height="250" rx="22" fill="url(#evidenceGradient)" stroke="#b7d5d4" stroke-width="1.5"/>
+  <text x="140" y="1110" class="step">STEP 6 · EXECUTE + ASSEMBLE</text>
+  <text x="140" y="1153" class="card-title">E2B code sidecar → final evidence</text>
+  <text x="140" y="1192" class="body">28 条 HumanEval 各自 fresh sandbox、禁公网；</text>
+  <text x="140" y="1226" class="body">合并四 slice、CI、failure taxonomy 与 review packet。</text>
+  <text x="140" y="1260" class="mono">complete key 850a6985… · sidecar d50be508…</text>
+  <text x="140" y="1295" class="small">0 infrastructure / null result；30 条人审仍 pending。</text>
+
+  <rect x="105" y="1340" width="1590" height="46" rx="14" fill="#173f54"/>
+  <text x="900" y="1370" text-anchor="middle" font-size="17" font-weight="680" style="fill:#ffffff">measurement contract → run evidence → sandbox sidecar → deterministic summary → human-review packet</text>
+
+  <!-- Section 2: Split boundary -->
+  <text x="90" y="1515" class="section">02 · 四个 slice 共用同一切分边界</text>
+  <text x="90" y="1550" class="section-sub">每个 slice 40 条：左侧 28 条 dev 可用于开发与 checkpoint selection；右侧 12 条 frozen_test 在选定 checkpoint 前保持封存。</text>
+  <g filter="url(#shadow)">
+    <rect x="70" y="1590" width="1660" height="510" rx="28" class="panel"/>
+  </g>
+
+  <text x="120" y="1650" class="metric-label">SLICE / SOURCE</text>
+  <text x="460" y="1650" class="metric-label">DEV · 28 · 70%</text>
+  <text x="1265" y="1650" class="metric-label">FROZEN_TEST · 12 · 30%</text>
+
+  <circle cx="145" cy="1715" r="10" class="general"/>
+  <text x="170" y="1722" class="body" font-weight="700">General · MMLU</text>
+  <rect x="440" y="1682" width="1150" height="62" rx="14" fill="#e7eef2"/>
+  <path d="M454 1682 H1245 V1744 H454 Q440 1744 440 1730 V1696 Q440 1682 454 1682 Z" class="general"/>
+  <path d="M1245 1682 H1576 Q1590 1682 1590 1696 V1730 Q1590 1744 1576 1744 H1245 Z" fill="url(#sealedPattern)"/>
+  <text x="843" y="1721" text-anchor="middle" class="bar-label">28 dev</text>
+  <text x="1418" y="1721" text-anchor="middle" font-size="16" font-weight="720" fill="#526b7b">12 sealed</text>
+
+  <circle cx="145" cy="1810" r="10" class="math"/>
+  <text x="170" y="1817" class="body" font-weight="700">Math · GSM8K</text>
+  <rect x="440" y="1777" width="1150" height="62" rx="14" fill="#e7eef2"/>
+  <path d="M454 1777 H1245 V1839 H454 Q440 1839 440 1825 V1791 Q440 1777 454 1777 Z" class="math"/>
+  <path d="M1245 1777 H1576 Q1590 1777 1590 1791 V1825 Q1590 1839 1576 1839 H1245 Z" fill="url(#sealedPattern)"/>
+  <text x="843" y="1816" text-anchor="middle" class="bar-label">28 dev</text>
+  <text x="1418" y="1816" text-anchor="middle" font-size="16" font-weight="720" fill="#526b7b">12 sealed</text>
+
+  <circle cx="145" cy="1905" r="10" class="code"/>
+  <text x="170" y="1912" class="body" font-weight="700">Code · HumanEval</text>
+  <rect x="440" y="1872" width="1150" height="62" rx="14" fill="#e7eef2"/>
+  <path d="M454 1872 H1245 V1934 H454 Q440 1934 440 1920 V1886 Q440 1872 454 1872 Z" class="code"/>
+  <path d="M1245 1872 H1576 Q1590 1872 1590 1886 V1920 Q1590 1934 1576 1934 H1245 Z" fill="url(#sealedPattern)"/>
+  <text x="843" y="1911" text-anchor="middle" class="bar-label">28 dev</text>
+  <text x="1418" y="1911" text-anchor="middle" font-size="16" font-weight="720" fill="#526b7b">12 sealed</text>
+
+  <circle cx="145" cy="2000" r="10" class="finance"/>
+  <text x="170" y="2007" class="body" font-weight="700">Finance · TAT-QA</text>
+  <rect x="440" y="1967" width="1150" height="62" rx="14" fill="#e7eef2"/>
+  <path d="M454 1967 H1245 V2029 H454 Q440 2029 440 2015 V1981 Q440 1967 454 1967 Z" class="finance"/>
+  <path d="M1245 1967 H1576 Q1590 1967 1590 1981 V2015 Q1590 2029 1576 2029 H1245 Z" fill="url(#sealedPattern)"/>
+  <text x="843" y="2006" text-anchor="middle" class="bar-label">28 dev</text>
+  <text x="1418" y="2006" text-anchor="middle" font-size="16" font-weight="720" fill="#526b7b">12 sealed</text>
+
+  <rect x="120" y="2050" width="1510" height="30" rx="15" fill="#eef3f6"/>
+  <text x="875" y="2072" text-anchor="middle" class="small">封存的含义：manifest identity/reference 已冻结，但模型输出从未被生成、查看、评分或用于人审。</text>
+
+  <!-- Section 3: Results -->
+  <text x="90" y="2200" class="section">03 · Base dev 结果：分数低，但诊断价值高</text>
+  <text x="90" y="2235" class="section-sub">Qwen3-0.6B-Base 是 non-instruction-tuned Base；chat-generation 纵向锚点不等于公平的横向能力 benchmark。</text>
+  <g filter="url(#shadow)">
+    <rect x="70" y="2275" width="1660" height="760" rx="28" class="panel"/>
+  </g>
+
+  <!-- Legend -->
+  <circle cx="135" cy="2340" r="9" class="correct"/><text x="154" y="2347" class="small">correct</text>
+  <circle cx="270" cy="2340" r="9" class="wrong"/><text x="289" y="2347" class="small">wrong answer</text>
+  <circle cx="455" cy="2340" r="9" class="parse"/><text x="474" y="2347" class="small">parse error</text>
+  <circle cx="620" cy="2340" r="9" class="syntax"/><text x="639" y="2347" class="small">syntax error</text>
+  <circle cx="790" cy="2340" r="9" class="runtime"/><text x="809" y="2347" class="small">runtime error</text>
+  <text x="1200" y="2347" text-anchor="end" class="small">每条 bar = 28 dev samples</text>
+
+  <!-- General result -->
+  <circle cx="135" cy="2435" r="10" class="general"/>
+  <text x="160" y="2428" class="card-title">General</text>
+  <text x="160" y="2456" class="small">MMLU exact option</text>
+  <rect x="390" y="2403" width="790" height="64" rx="14" fill="#e7eef2"/>
+  <path d="M404 2403 H446 V2467 H404 Q390 2467 390 2453 V2417 Q390 2403 404 2403 Z" class="correct"/>
+  <rect x="446" y="2403" width="254" height="64" class="wrong"/>
+  <path d="M700 2403 H1166 Q1180 2403 1180 2417 V2453 Q1180 2467 1166 2467 H700 Z" class="parse"/>
+  <text x="1210" y="2429" class="metric-small">2 / 28</text>
+  <text x="1210" y="2460" class="small">7.14% · 17 parse · 9 wrong</text>
+
+  <!-- Math result -->
+  <circle cx="135" cy="2560" r="10" class="math"/>
+  <text x="160" y="2553" class="card-title">Math</text>
+  <text x="160" y="2581" class="small">GSM8K numeric exact</text>
+  <rect x="390" y="2528" width="790" height="64" rx="14" fill="#e7eef2"/>
+  <path d="M404 2528 H729 V2592 H404 Q390 2592 390 2578 V2542 Q390 2528 404 2528 Z" class="correct"/>
+  <path d="M729 2528 H1166 Q1180 2528 1180 2542 V2578 Q1180 2592 1166 2592 H729 Z" class="wrong"/>
+  <text x="1210" y="2554" class="metric-small">12 / 28</text>
+  <text x="1210" y="2585" class="small">42.86% · 0 parse · 16 wrong</text>
+
+  <!-- Finance result -->
+  <circle cx="135" cy="2685" r="10" class="finance"/>
+  <text x="160" y="2678" class="card-title">Finance</text>
+  <text x="160" y="2706" class="small">TAT-QA normalized exact</text>
+  <rect x="390" y="2653" width="790" height="64" rx="14" fill="#e7eef2"/>
+  <path d="M404 2653 H418 V2717 H404 Q390 2717 390 2703 V2667 Q390 2653 404 2653 Z" class="correct"/>
+  <rect x="418" y="2653" width="310" height="64" class="wrong"/>
+  <path d="M728 2653 H1166 Q1180 2653 1180 2667 V2703 Q1180 2717 1166 2717 H728 Z" class="parse"/>
+  <text x="1210" y="2679" class="metric-small">1 / 28</text>
+  <text x="1210" y="2710" class="small">3.57% · 16 parse · 11 wrong</text>
+
+  <!-- Code result -->
+  <circle cx="135" cy="2810" r="10" class="code"/>
+  <text x="160" y="2803" class="card-title">Code</text>
+  <text x="160" y="2831" class="small">HumanEval pass@1 · E2B</text>
+  <rect x="390" y="2778" width="790" height="64" rx="14" fill="#e7eef2"/>
+  <path d="M404 2778 H1095 V2842 H404 Q390 2842 390 2828 V2792 Q390 2778 404 2778 Z" class="syntax"/>
+  <path d="M1095 2778 H1166 Q1180 2778 1180 2792 V2828 Q1180 2842 1166 2842 H1095 Z" class="runtime"/>
+  <text x="1210" y="2804" class="metric-small">0 / 28</text>
+  <text x="1210" y="2835" class="small">0% · 25 syntax · 3 runtime</text>
+
+  <!-- Result callouts -->
+  <rect x="110" y="2890" width="475" height="105" rx="20" fill="#edf7f3" stroke="#b9ddce"/>
+  <text x="145" y="2930" class="metric-small" style="fill:#2c8274">15 / 112 = 13.39%</text>
+  <text x="145" y="2966" class="small">equal-weight four-slice macro</text>
+
+  <rect x="615" y="2890" width="475" height="105" rx="20" fill="#fff7ea" stroke="#e8d19f"/>
+  <text x="650" y="2930" class="metric-small" style="fill:#9a7228">112 / 112 ceiling hits</text>
+  <text x="650" y="2966" class="small">Base 把 chat prompt 当续写；没有自然 EOS</text>
+
+  <rect x="1120" y="2890" width="500" height="105" rx="20" fill="#f3eef8" stroke="#d5c7e5"/>
+  <text x="1155" y="2930" class="metric-small" style="fill:#79599b">0 infrastructure failures</text>
+  <text x="1155" y="2966" class="small">28/28 score_status=ok；失败来自生成程序，不是 scorer</text>
+
+  <!-- Section 4: Identity -->
+  <text x="90" y="3130" class="section">04 · “可比较”需要锁住哪一层 identity？</text>
+  <text x="90" y="3165" class="section-sub">同一任务不自动等于同一测量；Day 12 的 Base / SFT-A / SFT-B 必须明确匹配生成侧与 code-sandbox 侧协议。</text>
+  <g filter="url(#shadow)">
+    <rect x="70" y="3205" width="1660" height="500" rx="28" class="panel"/>
+  </g>
+
+  <rect x="105" y="3260" width="365" height="190" rx="22" fill="#edf6fb" stroke="#bcd7e7"/>
+  <text x="140" y="3305" class="step" style="fill:#397da6">MEASUREMENT CONTRACT</text>
+  <text x="140" y="3347" class="card-title">Protocol hash</text>
+  <text x="140" y="3383" class="body">inputs · rendering · generation</text>
+  <text x="140" y="3413" class="body">scorers · aggregation</text>
+  <text x="140" y="3445" class="mono">4aa329a2…</text>
+
+  <path d="M470 3355 L510 3355" class="flow"/>
+
+  <rect x="515" y="3260" width="365" height="190" rx="22" fill="#edf7f3" stroke="#b9ddce"/>
+  <text x="550" y="3305" class="step">GENERATION COMPARISON</text>
+  <text x="550" y="3347" class="card-title">Comparison key</text>
+  <text x="550" y="3383" class="body">protocol + generation</text>
+  <text x="550" y="3413" class="body">execution environment</text>
+  <text x="550" y="3445" class="mono">b0ecfbf2…</text>
+
+  <path d="M880 3355 L920 3355" class="flow"/>
+
+  <rect x="925" y="3260" width="365" height="190" rx="22" fill="#fff7ea" stroke="#e8d19f"/>
+  <text x="960" y="3305" class="step" style="fill:#9a7228">FULL SCORE COMPARISON</text>
+  <text x="960" y="3347" class="card-title">Complete comparison key</text>
+  <text x="960" y="3383" class="body">generation key + code</text>
+  <text x="960" y="3413" class="body">execution protocol 9571c643…</text>
+  <text x="960" y="3445" class="mono">850a6985…</text>
+
+  <path d="M1290 3355 L1330 3355" class="flow"/>
+
+  <rect x="1335" y="3260" width="365" height="190" rx="22" fill="#f3eef8" stroke="#d5c7e5"/>
+  <text x="1370" y="3305" class="step" style="fill:#79599b">RUN IDENTITY</text>
+  <text x="1370" y="3347" class="card-title">Run hash</text>
+  <text x="1370" y="3383" class="body">measurement + execution</text>
+  <text x="1370" y="3413" class="body">+ model / checkpoint identity</text>
+  <text x="1370" y="3445" class="mono">Base 49408d40…</text>
+
+  <rect x="105" y="3500" width="780" height="145" rx="20" fill="#173f54"/>
+  <text x="145" y="3542" font-size="22" font-weight="750" style="fill:#ffffff">Day 12 直接相减的前提</text>
+  <text x="145" y="3580" font-size="18" style="fill:#d6e8f0">相同 suite、protocol、generation execution 与 code execution；</text>
+  <text x="145" y="3614" font-size="18" style="fill:#9ce8cf">也就是匹配 complete_comparison_key。</text>
+
+  <rect x="915" y="3500" width="785" height="145" rx="20" fill="#fff4e8" stroke="#e1b987"/>
+  <text x="955" y="3542" font-size="22" font-weight="750" style="fill:#9a5d27">如果 Day 12 改成 H100 / CUDA</text>
+  <text x="955" y="3580" class="body">generation execution protocol 已改变；必须在相同 GPU</text>
+  <text x="955" y="3614" class="body">协议下重跑 Base，不能把 CPU Base 与 GPU SFT 直接相减。</text>
+
+  <!-- Section 5: Gates -->
+  <text x="90" y="3795" class="section">05 · 已完成、仍封存、下一步判定</text>
+  <g filter="url(#shadow)">
+    <rect x="70" y="3840" width="1660" height="300" rx="28" class="panel"/>
+  </g>
+
+  <rect x="105" y="3880" width="760" height="145" rx="20" fill="#edf7f3" stroke="#b9ddce"/>
+  <text x="140" y="3922" class="card-title" style="fill:#277c63">完成 · automated evidence</text>
+  <text x="140" y="3960" class="body">✓ manifest / protocol / policy frozen　✓ 112 dev generated</text>
+  <text x="140" y="3995" class="body">✓ repeatability 0 mismatch　✓ E2B code sidecar　✓ reports rebuilt</text>
+
+  <rect x="935" y="3880" width="760" height="145" rx="20" fill="#fff7ea" stroke="#e8d19f"/>
+  <text x="970" y="3922" class="card-title" style="fill:#9a7228">保留 · human / confirmation gates</text>
+  <text x="970" y="3960" class="body">○ 30 条 dev 人工复核仍 pending　○ 48 frozen_test 继续封存</text>
+  <text x="970" y="3995" class="body">○ checkpoint 选定后一次性 confirmation　○ GPU 协议变化需重跑 Base</text>
+
+  <rect x="105" y="4050" width="1590" height="64" rx="16" fill="#f3eef8" stroke="#d5c7e5"/>
+  <text x="140" y="4090" font-size="18" font-weight="680" style="fill:#6f4d92">Day 12 preregistration：</text>
+  <text x="350" y="4090" font-size="18">code 是 target；相对 Base 至少 +3 correct cases 才算有意义；general / math / finance 任一退化超过 2 cases 则 checkpoint 不合格。</text>
+
+  <!-- Footer -->
+  <rect x="0" y="4160" width="1800" height="40" fill="#17354b"/>
+  <text x="70" y="4187" font-size="14" style="fill:#c7dce6">Sources · day10-eval-protocol.md · day10-base-baseline.md · day10-base-baseline-summary.json · E2B code sidecar</text>
+  <text x="1730" y="4187" text-anchor="end" font-size="14" font-weight="700" style="fill:#f4ca80">15 / 112 · code 0 / 28 · frozen_test 48 untouched</text>
+</svg>
