@@ -3,14 +3,19 @@ Jiawei Qian
 
 ## SUMMARY
 
-AI-Native Agent / LLM Systems Engineer focused on agentic browser and LLM systems. Currently the end-to-end owner of the core intelligence of an Agentic Browser, spanning benchmark design, browser-use / computer-use runtime, evaluation harness, trajectory-data flywheel, reusable agent skills, and next-generation "Browser x Agent" product definition. Led benchmark-driven iteration that ranked #1 (SOTA) on an internal browser-agent benchmark against Comet, Perplexity, and Atlas.
+LLM / Agent Systems Engineer currently building a financial-domain agent at Tencent CDG Finance. Previously served as the end-to-end owner of core agent intelligence for Meituan's Tabbit project, spanning benchmark design, browser-use / computer-use runtime, evaluation harness, trajectory-data flywheel, reusable agent skills, and next-generation "Browser x Agent" product definition.
 
 Specializes in turning ambiguous agentic product goals into measurable task suites, closed-loop evaluation systems, and architecture-backed reliability improvements across context, memory, tools, prompts, and skill injection. Work methodology combines control-theoretic agent-loop design with training-style capability iteration: benchmark score as objective, structured failure attribution as loss, and context / memory / skill / system prompt as the updatable parameter space.
 
 ## PROFESSIONAL EXPERIENCE
 
-### AI Agent Engineer, Meituan
-Dec 2025 - Present
+### Financial Agent Engineer, Tencent CDG Finance
+Aug 25, 2026 - Present
+
+- Building and iterating a financial-domain agent for financial use cases.
+
+### AI Agent Engineer, Meituan (Tabbit)
+Sep 2025 - Aug 25, 2026
 
 End-to-end owner of the Agentic Browser's core intelligence, accountable for agent quality, product capability definition, benchmark design, runtime architecture, the Agent Harness self-iteration pipeline, and the trajectory-data flywheel.
 
@@ -37,7 +42,7 @@ End-to-end owner of the Agentic Browser's core intelligence, accountable for age
 - Reframed capability iteration as a training process: treat benchmark scores as the objective, structured auto-analysis outputs as the loss, and context structure, memory organization, agent skills, and system prompts as the updatable "parameter space" over which a higher-order agent applies gradient-like iterative updates.
 
 ### Software Engineer, Microsoft
-May 2024 - Present
+May 2024 - Aug 2025
 
 #### Agent Workflow, Code Generation & Memory Optimization
 - Advanced the transition of analytics and development workflows from manual execution to AI-native pipelines powered by agents, code generation, and validation, reducing human operations through task decomposition, automated checks, and iterative retry loops.

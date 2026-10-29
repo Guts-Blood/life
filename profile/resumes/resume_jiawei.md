@@ -1,9 +1,13 @@
 钱家伟
 +86 18983425855	jiaweiqian0@gmail.com	Shanghai, China
-AI Agent Systems Engineer，当前作为 AI Browser 核心智能体验端到端 owner，负责 Agent Harness 自迭代系统、深度场景定义、核心 case 设计与下一代产品智能能力演进。主导 Tabbit 相关 Agent 效果迭代与 benchmark / case 体系建设，支撑公开口径中核心能力评分从约 50 提升至约 90。工作方法论以控制论视角拆解 Agent Loop（plant / controller / observer / feedback），并以训练范式重构效果迭代——把 benchmark score 视作 objective，把归因信号视作 loss，把 context / memory / skill / system prompt 视作可更新参数空间，在其上施加"gradient-like"的迭代更新。兼具 Agent runtime 架构、工具链设计、产品能力定义、auto-skill pipeline 与 agentic post-training / training flywheel 落地经验。
+LLM / Agent Systems Engineer，现于腾讯 CDG 金融从事金融 Agent 研发。此前在美团 Tabbit 项目担任 AI Browser 核心智能体验端到端 owner，负责 Agent Harness 自迭代系统、benchmark / case 体系、Agent runtime 与训练数据飞轮，主导 Agent 效果迭代，支撑公开口径中核心能力评分从约 50 提升至约 90。兼具模型训练、Agent 系统架构、自动评测与迭代、产品能力定义经验。
 PROFESSIONAL EXPERIENCE
-AI Agent Engineer, Meituan
-Dec 2025 – Present
+Financial Agent Engineer, Tencent CDG 金融
+Aug 25, 2026 – Present
+• 参与金融 Agent 的研发与迭代，面向金融业务场景建设大模型与 Agent 能力。
+
+AI Agent Engineer, Meituan (Tabbit)
+Sep 2025 – Aug 25, 2026
 作为 AI Browser 核心智能体验的端到端 owner，同时负责 Agent 效果迭代、深度场景定义、核心 case 设计与下一代产品智能能力演进——向下负责 Agent Harness 自迭代系统（auto-evaluation → auto-analysis → auto-iteration 全链路）、Agent runtime 架构、auto-skill pipeline 与 training flywheel，向上定义"Browser × Agent"的产品形态、能力边界与体验基线，覆盖 browser-use / computer-use 场景。主导 Tabbit 相关 benchmark、核心 case 与迭代闭环建设，支撑核心能力评分从约 50 提升至约 90。
 Product & Experience Ownership（AI Browser 核心智能体验）
 •	作为 AI Browser 核心智能体验端到端 owner，统一拉通 Agent 效果、产品形态与能力演进三条线：对外定义下一代"Browser × Agent"的用户交互范式、深度场景边界与体验基线，对内将产品目标拆解为可被迭代系统消费的 benchmark、case 集合与归因信号，并以 Tabbit 50→90 的公开结果作为阶段性验证。
@@ -27,7 +31,7 @@ Training Flywheel
 • 探索基于真实专家轨迹与蒸馏轨迹的 SFT 数据飞轮，构建轻量模型在垂直任务中的替代方案，验证 7B / 8B / 30B 模型在部分高频场景下对高成本模型调用的替代潜力，以优化 token cost 与端到端时延。
 
 Software Engineer, Microsoft
-May 2024 – Present
+May 2024 – Aug 2025
 负责 Agent 驱动的数据分析系统、LLM evaluation pipeline 与大规模数据基础设施建设，持续覆盖 agent workflow、代码生成、memory/context optimization 以及 cost/performance optimization。
 Agent Workflow, Code Generation & Memory Optimization
 •	推动分析与研发流程从人工执行转向 Agent + code generation + validation 驱动的 AI-native workflow，通过任务拆解、自动验证与迭代重试减少人工操作并提升交付效率。
@@ -62,9 +66,9 @@ Python, Golang, SQL
 AI-native Engineering:
 Problem scoping & prioritization, AI task decomposition, human-in-the-loop workflow redesign, Cursor, Codex
 LLM / Agent:
-Agent harness self-iteration pipeline, auto-evaluation / auto-analysis / auto-iteration, auto-skill generation / upload / convergence loop, scenario clustering over user queries and trajectories, agentic post-training, tool calling SFT, BUA trajectory data, Qwen3-VL-8B-Instruct, UI-TARS-1.5-7B, control-theoretic agent loop design (plant / controller / observer / feedback), training-style iteration (benchmark→loss→gradient over context / memory / skill / system prompt), browser-use / computer-use agents, ReAct, context engineering, tool orchestration, system prompt engineering, skill injection & design, LangGraph, RAG, prompt engineering
+Financial-domain LLMs, RSI, model–harness co-optimization, Agent harness self-iteration pipeline, auto-evaluation / auto-analysis / auto-iteration, auto-skill generation / upload / convergence loop, scenario clustering over user queries and trajectories, agentic post-training, tool calling SFT, BUA trajectory data, Qwen3-VL-8B-Instruct, UI-TARS-1.5-7B, control-theoretic agent loop design (plant / controller / observer / feedback), training-style iteration (benchmark→loss→gradient over context / memory / skill / system prompt), browser-use / computer-use agents, ReAct, context engineering, tool orchestration, system prompt engineering, skill injection & design, LangGraph, RAG, prompt engineering
 Training / Modeling:
-SFT, agent trajectory construction, VLM / GUI agent post-training, Transformers, GRU, CNN, model compression, offline evaluation, approximation optimization
+LLM post-training, SFT, agent trajectory construction, VLM / GUI agent post-training, Transformers, GRU, CNN, model compression, offline evaluation, approximation optimization
 Data / Infrastructure:
 Spark, ClickHouse, Azure ML, MySQL, Kafka, CI/CD, RESTful APIs
 Language:
