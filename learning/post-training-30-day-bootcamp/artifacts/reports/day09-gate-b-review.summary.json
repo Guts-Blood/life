@@ -1,0 +1,18 @@
+{
+  "confirmed_contamination_removals": 0,
+  "confirmed_near_removals": 0,
+  "confirmed_removed_sample_ids": [],
+  "decision_counts": {
+    "keep_both": 812
+  },
+  "ledger_sha256": "3335a8d85ecdf4fd8d53646c53743ef67f7c48daa472888be1c54f1dcab8e0f0",
+  "manual_keep_both_pairs": 20,
+  "policy_keep_both_pairs": 792,
+  "scope_note": "Twenty stratified pairs were manually reviewed by the user. Remaining within-source Step 7 candidates are retained under the frozen candidate-is-not-removal policy; they are not relabeled as exact duplicates. Step 9 produced no train/eval candidates.",
+  "status": "complete_for_clean_pool",
+  "step7_summary_sha256": "e7ffb19a1047a372a5dce2a5153d8221513bd5f37a181205391d38b2688a1a75",
+  "step9_summary_sha256": "31f8cfc55454380700457132320ace6c98195d0246f84469f7d0ec944bbcd80a",
+  "train_eval_candidate_count": 0,
+  "uncertain_count": 0,
+  "unique_near_pairs": 812
+}

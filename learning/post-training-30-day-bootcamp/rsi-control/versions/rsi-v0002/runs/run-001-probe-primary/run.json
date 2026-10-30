@@ -1,0 +1,32 @@
+{
+  "attempts": [
+    "attempt-001"
+  ],
+  "checkpoint_labels": [
+    "t6000",
+    "t12000",
+    "t18000",
+    "t24000"
+  ],
+  "condition": "zero-GPU target-encoding and E2B preflight pass",
+  "learning_rate_policy": {
+    "bracket": [
+      "3e-5",
+      "6e-5",
+      "8e-5"
+    ],
+    "bracket_only_on": "near_miss",
+    "stage_a": "1e-4"
+  },
+  "phase": "probe",
+  "remote_run_root": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z",
+  "run_contract_path": "run-contract.json",
+  "run_contract_sha256": "c1298e655bb4e9157c8fafcd6798ffb0c2b80502dc98800fbd648eba08b826f5",
+  "run_id": "run-001-probe-primary",
+  "schema_name": "rsi.run",
+  "schema_version": 1,
+  "scope": "probe32",
+  "seed": 20260809,
+  "status": "infrastructure_failed_replaced",
+  "version_id": "rsi-v0002"
+}

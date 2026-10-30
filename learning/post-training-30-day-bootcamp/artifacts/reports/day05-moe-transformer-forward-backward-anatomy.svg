@@ -1,0 +1,534 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="2400" height="4200" viewBox="0 0 2400 4200" role="img" aria-labelledby="title desc">
+  <title id="title">Day 05 MoE Transformer anatomy with matrix shapes, temporary tensors, forward and backward propagation</title>
+  <desc id="desc">A high-density Chinese poster that expands one Qwen3-30B-A3B decoder layer, labels all major attention, router and expert matrices, quantifies logical temporary tensors for B=1 and T=8192, and traces forward, backward, activation checkpointing and optimizer-state lifecycles.</desc>
+  <defs>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2563eb"/></marker>
+    <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#dc2626"/></marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#16a34a"/></marker>
+    <marker id="arrow-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#d97706"/></marker>
+    <style>
+      text { font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", "PingFang SC", sans-serif; fill:#172033; }
+      .title { font-size:38px; font-weight:760; }
+      .subtitle { font-size:19px; fill:#526078; }
+      .section { font-size:25px; font-weight:760; }
+      .subsection { font-size:20px; font-weight:730; }
+      .label { font-size:17px; font-weight:700; }
+      .body { font-size:15px; }
+      .small { font-size:13px; fill:#526078; }
+      .tiny { font-size:11px; fill:#64748b; }
+      .mono { font-family:"SFMono-Regular",Consolas,monospace; font-size:13px; fill:#273449; }
+      .mono-strong { font-family:"SFMono-Regular",Consolas,monospace; font-size:15px; font-weight:750; fill:#1e3a8a; }
+      .panel { fill:#ffffff; stroke:#cbd5e1; stroke-width:1.5; }
+      .hero { fill:#eef2ff; stroke:#6366f1; stroke-width:1.8; }
+      .forward-box { fill:#dbeafe; stroke:#2563eb; stroke-width:1.5; }
+      .attention-box { fill:#eff6ff; stroke:#60a5fa; stroke-width:1.5; }
+      .moe-box { fill:#fff7ed; stroke:#f59e0b; stroke-width:1.5; }
+      .expert-box { fill:#f3e8ff; stroke:#9333ea; stroke-width:1.4; }
+      .router-box { fill:#fef3c7; stroke:#d97706; stroke-width:1.5; }
+      .backward-box { fill:#fee2e2; stroke:#dc2626; stroke-width:1.5; }
+      .saved-box { fill:#dcfce7; stroke:#16a34a; stroke-width:1.5; }
+      .state-box { fill:#ede9fe; stroke:#7c3aed; stroke-width:1.5; }
+      .neutral-box { fill:#f8fafc; stroke:#94a3b8; stroke-width:1.3; }
+      .inactive-box { fill:#f1f5f9; stroke:#cbd5e1; stroke-width:1.1; }
+      .warning-box { fill:#fff1f2; stroke:#e11d48; stroke-width:1.5; }
+      .fwd { fill:none; stroke:#2563eb; stroke-width:2.2; marker-end:url(#arrow-blue); }
+      .bwd { fill:none; stroke:#dc2626; stroke-width:2.2; marker-end:url(#arrow-red); }
+      .residual { fill:none; stroke:#16a34a; stroke-width:2; stroke-dasharray:7 5; marker-end:url(#arrow-green); }
+      .route { fill:none; stroke:#d97706; stroke-width:2; marker-end:url(#arrow-amber); }
+      .thin { fill:none; stroke:#94a3b8; stroke-width:1.4; }
+      .divider { stroke:#cbd5e1; stroke-width:1.2; }
+      .grid { stroke:#cbd5e1; stroke-width:1; }
+      .table-bg { fill:#ffffff; stroke:#cbd5e1; stroke-width:1.2; }
+      .table-head { fill:#e2e8f0; stroke:#94a3b8; stroke-width:1.1; }
+      .table-alt { fill:#f8fafc; }
+      .table-header { font-size:12px; font-weight:750; fill:#475569; letter-spacing:.2px; }
+      .table-body { font-size:12px; }
+      .table-strong { font-size:12px; font-weight:700; }
+      .pill-blue { fill:#dbeafe; stroke:#2563eb; stroke-width:1.2; }
+      .pill-red { fill:#fee2e2; stroke:#dc2626; stroke-width:1.2; }
+      .pill-green { fill:#dcfce7; stroke:#16a34a; stroke-width:1.2; }
+      .pill-purple { fill:#ede9fe; stroke:#7c3aed; stroke-width:1.2; }
+      .pill-amber { fill:#fef3c7; stroke:#d97706; stroke-width:1.2; }
+    </style>
+  </defs>
+
+  <rect width="2400" height="4200" fill="#f5f7fb"/>
+  <text x="55" y="62" class="title" text-anchor="start">Day 05 · MoE Transformer Anatomy：矩阵、临时张量与 Forward / Backward</text>
+  <text x="55" y="98" class="subtitle" text-anchor="start">把一整个训练 step 压进一张图：模型结构、单层矩阵账本、logical activation、反向公式与 tensor lifetime。</text>
+
+  <rect x="45" y="125" width="2310" height="112" rx="18" class="hero"/>
+  <text x="75" y="163" class="subsection" text-anchor="start">固定 worked example</text>
+  <text x="330" y="163" class="label" text-anchor="start">Qwen3-30B-A3B · decoder-only causal MoE · 每个 layer 都是 dense GQA + sparse MoE</text>
+  <text x="330" y="196" class="mono" text-anchor="start">B=1 · T=N=8,192 · BF16=2 B/elem · L=48 · D=2,048 · Hq/Hkv=32/4 · d=128 · E=128 · top-k=8 · F=768 · V=151,936</text>
+  <text x="2215" y="163" class="mono-strong" text-anchor="end">30.532B total</text>
+  <text x="2215" y="196" class="mono-strong" text-anchor="end">3.353B active/token</text>
+
+  <rect x="45" y="257" width="2310" height="55" rx="14" class="panel"/>
+  <rect x="75" y="273" width="22" height="22" rx="5" class="forward-box"/><text x="108" y="291" class="small" text-anchor="start">Forward activation</text>
+  <rect x="315" y="273" width="22" height="22" rx="5" class="backward-box"/><text x="348" y="291" class="small" text-anchor="start">Backward gradient</text>
+  <rect x="555" y="273" width="22" height="22" rx="5" class="state-box"/><text x="588" y="291" class="small" text-anchor="start">Persistent weights/state</text>
+  <rect x="835" y="273" width="22" height="22" rx="5" class="router-box"/><text x="868" y="291" class="small" text-anchor="start">Routing / temporary</text>
+  <rect x="1095" y="273" width="22" height="22" rx="5" class="saved-box"/><text x="1128" y="291" class="small" text-anchor="start">Saved checkpoint</text>
+  <text x="1510" y="291" class="small" text-anchor="start">蓝线向前 · 红线向后 · 绿虚线为 residual · 橙线为 token routing</text>
+
+  <rect x="45" y="332" width="2310" height="1990" rx="20" class="panel"/>
+  <text x="75" y="376" class="section" text-anchor="start">1 · 整体模型 + 展开一个 decoder layer：同一 residual stream 上的两次子层更新</text>
+  <text x="75" y="406" class="small" text-anchor="start">左：48 层全模型 forward　·　中：Layer ℓ 的 attention/MoE 细节　·　右：loss 开始的 reverse-mode backward</text>
+
+  <!-- Whole-model forward rail -->
+  <text x="82" y="455" class="label" text-anchor="start">MODEL FORWARD</text>
+  <rect x="72" y="485" width="280" height="92" rx="13" class="forward-box"/>
+<text x="92" y="517" class="label" text-anchor="start">Token IDs</text>
+<text x="92" y="547" class="mono" text-anchor="start"><tspan x="92" dy="0">input_ids [1,8192]</tspan><tspan x="92" dy="22">int64 · 65.5 KB</tspan></text>
+  <path d="M212 577 L212 615" class="fwd"/>
+  <rect x="72" y="615" width="280" height="104" rx="13" class="state-box"/>
+<text x="92" y="647" class="label" text-anchor="start">Embedding lookup</text>
+<text x="92" y="677" class="mono" text-anchor="start"><tspan x="92" dy="0">Wemb [151936,2048]</tspan><tspan x="92" dy="21">311.165M · BF16 622.3 MB</tspan><tspan x="92" dy="21">X₀ [8192,2048] · 33.6 MB</tspan></text>
+  <path d="M212 719 L212 760" class="fwd"/>
+  <rect x="72" y="760" width="280" height="950" rx="18" class="attention-box"/>
+  <text x="212" y="806" class="subsection" text-anchor="middle">Decoder blocks × 48</text>
+  <text x="212" y="840" class="small" text-anchor="middle">每层独立 router</text>
+  <text x="212" y="870" class="label" text-anchor="middle">dense GQA</text>
+  <text x="212" y="900" class="section" text-anchor="middle">+</text>
+  <text x="212" y="932" class="label" text-anchor="middle">sparse MoE</text>
+  <text x="212" y="972" class="mono-strong" text-anchor="middle">Xℓ → Xℓ₊₁</text>
+  <text x="212" y="1020" class="small" text-anchor="middle">Layer 0</text>
+  <text x="212" y="1070" class="section" text-anchor="middle">⋮</text>
+  <text x="212" y="1125" class="label" text-anchor="middle">Layer ℓ · expanded →</text>
+  <path d="M352 1120 L405 1120" class="fwd"/>
+  <text x="212" y="1190" class="section" text-anchor="middle">⋮</text>
+  <text x="212" y="1245" class="small" text-anchor="middle">Layer 47</text>
+  <line x1="102" y1="1310" x2="322" y2="1310" class="divider"/>
+  <text x="98" y="1350" class="small" text-anchor="start"><tspan x="98" dy="0">每个 token 在每一层</tspan><tspan x="98" dy="25">重新 top-8 / 128；</tspan><tspan x="98" dy="25">batch 内通常会触及</tspan><tspan x="98" dy="25">远多于 8 个 experts。</tspan></text>
+  <text x="98" y="1480" class="small" text-anchor="start"><tspan x="98" dy="0">MoE 只稀疏 expert compute；</tspan><tspan x="98" dy="25">attention 仍对所有 token dense。</tspan><tspan x="98" dy="25">所有 expert weights 仍是</tspan><tspan x="98" dy="25">persistent trainable state。</tspan></text>
+  <path d="M212 1710 L212 1750" class="fwd"/>
+  <rect x="72" y="1750" width="280" height="84" rx="13" class="forward-box"/>
+<text x="92" y="1782" class="label" text-anchor="start">Final RMSNorm</text>
+<text x="92" y="1812" class="mono" text-anchor="start"><tspan x="92" dy="0">Hfinal [8192,2048] · 33.6 MB</tspan></text>
+  <path d="M212 1834 L212 1870" class="fwd"/>
+  <rect x="72" y="1870" width="280" height="108" rx="13" class="state-box"/>
+<text x="92" y="1902" class="label" text-anchor="start">Untied LM head</text>
+<text x="92" y="1932" class="mono" text-anchor="start"><tspan x="92" dy="0">Wlm [2048,151936]</tspan><tspan x="92" dy="21">311.165M · BF16 622.3 MB</tspan><tspan x="92" dy="21">Z [8192,151936] · 2.489 GB</tspan></text>
+  <path d="M212 1978 L212 2018" class="fwd"/>
+  <rect x="72" y="2018" width="280" height="116" rx="13" class="forward-box"/>
+<text x="92" y="2050" class="label" text-anchor="start">Shifted masked CE</text>
+<text x="92" y="2080" class="small" text-anchor="start"><tspan x="92" dy="0">Z[:,:-1,:] ↔ labels[:,1:]</tspan><tspan x="92" dy="22">valid labels only · loss scalar</tspan><tspan x="92" dy="22">fused/chunked CE can avoid full dZ</tspan></text>
+
+  <!-- Expanded layer -->
+  <rect x="405" y="455" width="1520" height="1790" rx="20" class="neutral-box"/>
+  <text x="440" y="500" class="section" text-anchor="start">Layer ℓ · Pre-Norm GQA Attention</text>
+  <text x="1885" y="500" class="mono-strong" text-anchor="end">Xℓ [N,D] · 33.6 MB</text>
+
+  <rect x="440" y="535" width="185" height="88" rx="13" class="saved-box"/>
+<text x="460" y="567" class="label" text-anchor="start">Xℓ</text>
+<text x="460" y="597" class="mono" text-anchor="start"><tspan x="460" dy="0">[8192,2048]</tspan><tspan x="460" dy="21">save or recompute</tspan></text>
+  <path d="M625 579 L660 579" class="fwd"/>
+  <rect x="660" y="535" width="190" height="88" rx="13" class="forward-box"/>
+<text x="680" y="567" class="label" text-anchor="start">RMSNorm</text>
+<text x="680" y="597" class="mono" text-anchor="start"><tspan x="680" dy="0">γattn [2048]</tspan><tspan x="680" dy="21">X̂ [N,D]</tspan></text>
+  <path d="M850 579 L885 579" class="fwd"/>
+
+  <rect x="885" y="520" width="265" height="96" rx="13" class="attention-box"/>
+<text x="905" y="552" class="label" text-anchor="start">Q projection</text>
+<text x="905" y="582" class="mono" text-anchor="start"><tspan x="905" dy="0">WQ [2048,4096]</tspan><tspan x="905" dy="22">Q [N,4096] · 67.1 MB</tspan></text>
+  <rect x="885" y="632" width="265" height="96" rx="13" class="attention-box"/>
+<text x="905" y="664" class="label" text-anchor="start">K projection</text>
+<text x="905" y="694" class="mono" text-anchor="start"><tspan x="905" dy="0">WK [2048,512]</tspan><tspan x="905" dy="22">K [N,512] · 8.4 MB</tspan></text>
+  <rect x="885" y="744" width="265" height="96" rx="13" class="attention-box"/>
+<text x="905" y="776" class="label" text-anchor="start">V projection</text>
+<text x="905" y="806" class="mono" text-anchor="start"><tspan x="905" dy="0">WV [2048,512]</tspan><tspan x="905" dy="22">V [N,512] · 8.4 MB</tspan></text>
+  <path d="M850 579 C865 579 865 568 885 568" class="fwd"/>
+  <path d="M850 579 C865 579 865 680 885 680" class="fwd"/>
+  <path d="M850 579 C865 579 865 792 885 792" class="fwd"/>
+
+  <rect x="1185" y="535" width="220" height="190" rx="13" class="attention-box"/>
+<text x="1205" y="567" class="label" text-anchor="start">Q/K Norm + RoPE</text>
+<text x="1205" y="597" class="mono" text-anchor="start"><tspan x="1205" dy="0">Q → [1,32,T,128]</tspan><tspan x="1205" dy="25">K → [1,4,T,128]</tspan><tspan x="1205" dy="25">GQA group = 8 Q / KV</tspan><tspan x="1205" dy="25">causal positions + mask</tspan></text>
+  <path d="M1150 568 L1185 580" class="fwd"/>
+  <path d="M1150 680 L1185 650" class="fwd"/>
+  <path d="M1405 630 L1440 630" class="fwd"/>
+  <path d="M1150 792 C1320 792 1330 710 1440 710" class="fwd"/>
+
+  <rect x="1440" y="535" width="260" height="225" rx="13" class="attention-box"/>
+<text x="1460" y="567" class="label" text-anchor="start">Scaled causal GQA</text>
+<text x="1460" y="597" class="mono" text-anchor="start"><tspan x="1460" dy="0">S = QKᵀ/√128 + mask</tspan><tspan x="1460" dy="27">S [1,32,T,T] logical</tspan><tspan x="1460" dy="27">naive BF16 = 4.295 GB</tspan><tspan x="1460" dy="27">A = softmax(S)</tspan><tspan x="1460" dy="27">C = A·V → [N,4096]</tspan><tspan x="1460" dy="27">QKᵀ + AV = 1.100 TFLOPs</tspan></text>
+  <path d="M1700 648 L1735 648" class="fwd"/>
+  <rect x="1735" y="590" width="155" height="116" rx="13" class="attention-box"/>
+<text x="1749" y="622" class="label" text-anchor="start">O projection</text>
+<text x="1749" y="652" class="mono" text-anchor="start"><tspan x="1749" dy="0">WO [4096,2048]</tspan><tspan x="1749" dy="22">O [N,D]</tspan><tspan x="1749" dy="22">33.6 MB</tspan></text>
+  <path d="M1890 648 L1910 648" class="fwd"/>
+  <circle cx="1910" cy="648" r="16" fill="#dcfce7" stroke="#16a34a" stroke-width="1.7"/>
+  <text x="1910" y="655" class="label" text-anchor="middle">+</text>
+  <path d="M532 535 C532 475 1910 475 1910 630" class="residual"/>
+
+  <rect x="455" y="846" width="1440" height="220" rx="10" class="table-bg"/>
+<rect x="455" y="846" width="1440" height="48" rx="10" class="table-head"/>
+<text x="469" y="877" class="table-header" text-anchor="start">Projection</text>
+<line x1="685" y1="846" x2="685" y2="1066" class="grid"/>
+<text x="699" y="877" class="table-header" text-anchor="start">Weight matrix</text>
+<line x1="985" y1="846" x2="985" y2="1066" class="grid"/>
+<text x="999" y="877" class="table-header" text-anchor="start">Parameters</text>
+<line x1="1205" y1="846" x2="1205" y2="1066" class="grid"/>
+<text x="1219" y="877" class="table-header" text-anchor="start">BF16 weight</text>
+<line x1="1415" y1="846" x2="1415" y2="1066" class="grid"/>
+<text x="1429" y="877" class="table-header" text-anchor="start">Forward output</text>
+<line x1="455" y1="894" x2="1895" y2="894" class="grid"/>
+<text x="469" y="923" class="table-strong" text-anchor="start">Q</text>
+<text x="699" y="923" class="table-body" text-anchor="start">[2048, 4096]</text>
+<text x="999" y="923" class="table-body" text-anchor="start">8.389M</text>
+<text x="1219" y="923" class="table-body" text-anchor="start">16.8 MB</text>
+<text x="1429" y="923" class="table-body" text-anchor="start">[1,32,8192,128] · 67.1 MB</text>
+<rect x="455" y="937" width="1440" height="43" class="table-alt"/>
+<line x1="455" y1="937" x2="1895" y2="937" class="grid"/>
+<text x="469" y="966" class="table-strong" text-anchor="start">K</text>
+<text x="699" y="966" class="table-body" text-anchor="start">[2048, 512]</text>
+<text x="999" y="966" class="table-body" text-anchor="start">1.049M</text>
+<text x="1219" y="966" class="table-body" text-anchor="start">2.1 MB</text>
+<text x="1429" y="966" class="table-body" text-anchor="start">[1,4,8192,128] · 8.4 MB</text>
+<line x1="455" y1="980" x2="1895" y2="980" class="grid"/>
+<text x="469" y="1009" class="table-strong" text-anchor="start">V</text>
+<text x="699" y="1009" class="table-body" text-anchor="start">[2048, 512]</text>
+<text x="999" y="1009" class="table-body" text-anchor="start">1.049M</text>
+<text x="1219" y="1009" class="table-body" text-anchor="start">2.1 MB</text>
+<text x="1429" y="1009" class="table-body" text-anchor="start">[1,4,8192,128] · 8.4 MB</text>
+<rect x="455" y="1023" width="1440" height="43" class="table-alt"/>
+<line x1="455" y1="1023" x2="1895" y2="1023" class="grid"/>
+<text x="469" y="1052" class="table-strong" text-anchor="start">O</text>
+<text x="699" y="1052" class="table-body" text-anchor="start">[4096, 2048]</text>
+<text x="999" y="1052" class="table-body" text-anchor="start">8.389M</text>
+<text x="1219" y="1052" class="table-body" text-anchor="start">16.8 MB</text>
+<text x="1429" y="1052" class="table-body" text-anchor="start">[1,8192,2048] · 33.6 MB</text>
+  <text x="455" y="1090" class="label" text-anchor="start">Backward inside attention</text>
+  <text x="675" y="1090" class="mono" text-anchor="start">dWO=CᵀdO · dC=dO·WOᵀ → dV,dA → softmax backward → dQ,dK → dWQ/dWK/dWV + dX̂</text>
+  <text x="455" y="1118" class="label" text-anchor="start">FlashAttention backward</text>
+  <text x="675" y="1118" class="small" text-anchor="start">通常分块重算 score/probability；logical [T,T] 存在于数学，不代表完整 tensor 常驻 HBM。</text>
+
+  <line x1="430" y1="1145" x2="1900" y2="1145" class="divider"/>
+  <text x="440" y="1185" class="section" text-anchor="start">Layer ℓ · Pre-Norm Sparse MoE</text>
+  <text x="1885" y="1185" class="mono-strong" text-anchor="end">Xattn [N,D] · residual after attention</text>
+
+  <rect x="440" y="1225" width="180" height="86" rx="13" class="saved-box"/>
+<text x="460" y="1257" class="label" text-anchor="start">Xattn</text>
+<text x="460" y="1287" class="mono" text-anchor="start"><tspan x="460" dy="0">[8192,2048]</tspan><tspan x="460" dy="21">33.6 MB</tspan></text>
+  <path d="M620 1268 L655 1268" class="fwd"/>
+  <rect x="655" y="1225" width="185" height="86" rx="13" class="forward-box"/>
+<text x="675" y="1257" class="label" text-anchor="start">RMSNorm</text>
+<text x="675" y="1287" class="mono" text-anchor="start"><tspan x="675" dy="0">γmoe [2048]</tspan><tspan x="675" dy="21">X̃ [N,D]</tspan></text>
+  <path d="M840 1268 L875 1268" class="fwd"/>
+  <rect x="875" y="1210" width="225" height="116" rx="13" class="router-box"/>
+<text x="895" y="1242" class="label" text-anchor="start">Router</text>
+<text x="895" y="1272" class="mono" text-anchor="start"><tspan x="895" dy="0">Wr [2048,128]</tspan><tspan x="895" dy="22">R [8192,128]</tspan><tspan x="895" dy="22">2.1 MB BF16 / 4.2 FP32</tspan></text>
+  <path d="M1100 1268 L1130 1268" class="route"/>
+  <rect x="1130" y="1210" width="215" height="116" rx="13" class="router-box"/>
+<text x="1150" y="1242" class="label" text-anchor="start">softmax + top-k</text>
+<text x="1150" y="1272" class="mono" text-anchor="start"><tspan x="1150" dy="0">idx [8192,8] int64</tspan><tspan x="1150" dy="22">weight [8192,8] FP32</tspan><tspan x="1150" dy="22">65,536 assignments</tspan></text>
+  <path d="M1345 1268 L1375 1268" class="route"/>
+  <rect x="1375" y="1210" width="225" height="116" rx="13" class="router-box"/>
+<text x="1395" y="1242" class="label" text-anchor="start">Dispatch / permute</text>
+<text x="1395" y="1272" class="mono" text-anchor="start"><tspan x="1395" dy="0">Xd [65536,2048]</tspan><tspan x="1395" dy="22">268.4 MB logical</tspan><tspan x="1395" dy="22">avg 512 assigns/expert</tspan></text>
+  <path d="M1600 1268 L1630 1268" class="route"/>
+
+  <rect x="1630" y="1205" width="255" height="410" rx="16" class="expert-box"/>
+  <text x="1757" y="1240" class="label" text-anchor="middle">Grouped expert GEMMs</text>
+  <text x="1757" y="1268" class="small" text-anchor="middle">8 selected / token</text>
+  <rect x="1650" y="1290" width="100" height="52" rx="8" class="expert-box"/><text x="1700" y="1321" class="label" text-anchor="middle">E₁</text>
+  <rect x="1765" y="1290" width="100" height="52" rx="8" class="expert-box"/><text x="1815" y="1321" class="label" text-anchor="middle">E₂</text>
+  <rect x="1650" y="1355" width="100" height="52" rx="8" class="expert-box"/><text x="1700" y="1386" class="label" text-anchor="middle">…</text>
+  <rect x="1765" y="1355" width="100" height="52" rx="8" class="expert-box"/><text x="1815" y="1386" class="label" text-anchor="middle">E₈</text>
+  <text x="1650" y="1442" class="small" text-anchor="start">each expert:</text>
+  <text x="1650" y="1468" class="mono" text-anchor="start">Wgate [2048,768]</text>
+  <text x="1650" y="1492" class="mono" text-anchor="start">Wup   [2048,768]</text>
+  <text x="1650" y="1516" class="mono" text-anchor="start">Wdown [768,2048]</text>
+  <text x="1650" y="1546" class="mono" text-anchor="start">4.719M params · 9.44 MB</text>
+  <text x="1650" y="1574" class="mono" text-anchor="start">all 128 = 1.208 GB/layer</text>
+
+  <path d="M1757 1615 L1757 1650" class="route"/>
+  <rect x="1510" y="1650" width="375" height="106" rx="13" class="router-box"/>
+<text x="1530" y="1682" class="label" text-anchor="start">Weighted combine + inverse dispatch</text>
+<text x="1530" y="1712" class="mono" text-anchor="start"><tspan x="1530" dy="0">Yd [65536,2048] · 268.4 MB</tspan><tspan x="1530" dy="22">Y [8192,2048] · 33.6 MB</tspan><tspan x="1530" dy="22">top-k weights sum selected expert outputs</tspan></text>
+  <path d="M1510 1703 L1475 1703" class="fwd"/>
+  <circle cx="1457" cy="1703" r="16" fill="#dcfce7" stroke="#16a34a" stroke-width="1.7"/>
+  <text x="1457" y="1710" class="label" text-anchor="middle">+</text>
+  <path d="M440 1268 C410 1268 410 1703 1439 1703" class="residual"/>
+  <path d="M1457 1719 L1457 1760" class="fwd"/>
+  <rect x="1290" y="1760" width="335" height="82" rx="13" class="saved-box"/>
+<text x="1310" y="1792" class="label" text-anchor="start">Xℓ₊₁</text>
+<text x="1310" y="1822" class="mono" text-anchor="start"><tspan x="1310" dy="0">[8192,2048] · 33.6 MB</tspan><tspan x="1310" dy="22">next layer checkpoint candidate</tspan></text>
+
+  <rect x="440" y="1360" width="1130" height="270" rx="14" class="moe-box"/>
+  <text x="465" y="1395" class="label" text-anchor="start">MoE forward temporaries · A=N×top-k=65,536 routed assignments</text>
+  <text x="465" y="1430" class="mono" text-anchor="start">gate = Xd·Wgate</text><text x="820" y="1430" class="mono" text-anchor="start">[A,768] · 100.7 MB</text>
+  <text x="465" y="1462" class="mono" text-anchor="start">up   = Xd·Wup</text><text x="820" y="1462" class="mono" text-anchor="start">[A,768] · 100.7 MB</text>
+  <text x="465" y="1494" class="mono" text-anchor="start">hidden = SiLU(gate) ⊙ up</text><text x="820" y="1494" class="mono" text-anchor="start">[A,768] · 100.7 MB</text>
+  <text x="465" y="1526" class="mono" text-anchor="start">Yd = hidden·Wdown</text><text x="820" y="1526" class="mono" text-anchor="start">[A,2048] · 268.4 MB</text>
+  <text x="465" y="1570" class="small" text-anchor="start">Fused grouped GEMM / permutation kernels may overwrite or tile these buffers; listed sizes are logical, not additive peak.</text>
+  <text x="465" y="1600" class="small" text-anchor="start">Expert load is data-dependent: 512 assignments/expert is an average, not a capacity guarantee.</text>
+
+  <rect x="440" y="1875" width="1445" height="205" rx="14" class="backward-box"/>
+  <text x="465" y="1910" class="label" text-anchor="start">MoE backward · only selected routes carry activation gradient; top-k index is discrete</text>
+  <text x="465" y="1944" class="mono" text-anchor="start">1  combine backward → dYd [A,D]；inverse permutation returns/sums expert-path dX</text>
+  <text x="465" y="1976" class="mono" text-anchor="start">2  dWdown = hiddenᵀ·dYd；dhidden = dYd·Wdownᵀ</text>
+  <text x="465" y="2008" class="mono" text-anchor="start">3  dgate = dhidden⊙up⊙SiLU′(gate)；dup = dhidden⊙SiLU(gate)</text>
+  <text x="465" y="2040" class="mono" text-anchor="start">4  dWgate=Xᵀ·dgate；dWup=Xᵀ·dup；dXd sums gate/up paths</text>
+  <text x="1200" y="1944" class="mono" text-anchor="start">5  router weights receive gradient through weighted combine</text>
+  <text x="1200" y="1976" class="mono" text-anchor="start">6  dWr = X̃ᵀ·dR；router dX adds to expert dX</text>
+  <text x="1200" y="2008" class="mono" text-anchor="start">7  residual gradient bypass + sublayer gradient are added</text>
+  <text x="1200" y="2040" class="mono" text-anchor="start">8  unselected expert path has no activation gradient for this token</text>
+
+  <rect x="440" y="2105" width="1445" height="105" rx="14" class="state-box"/>
+  <text x="465" y="2140" class="label" text-anchor="start">Per-layer accounting</text>
+  <text x="675" y="2140" class="mono" text-anchor="start">623.121M total params · 1.246 GB BF16 weights · attention 18.874M · router 0.262M · experts 603.980M</text>
+  <text x="465" y="2174" class="label" text-anchor="start">Per-token active</text>
+  <text x="675" y="2174" class="mono" text-anchor="start">56.890M params/layer = dense attention + router + 8 experts；capacity/state 仍按所有 128 experts。</text>
+
+  <!-- Backward rail -->
+  <text x="1980" y="455" class="label" text-anchor="start">REVERSE-MODE BACKWARD</text>
+  <rect x="1975" y="2018" width="330" height="116" rx="13" class="backward-box"/>
+<text x="1995" y="2050" class="label" text-anchor="start">① CE backward</text>
+<text x="1995" y="2080" class="mono" text-anchor="start"><tspan x="1995" dy="0">dZ = softmax(Z) - onehot(y)</tspan><tspan x="1995" dy="22">mask / n_valid scaling</tspan><tspan x="1995" dy="22">dZ logical [8192,151936]</tspan></text>
+  <path d="M2140 2018 L2140 1980" class="bwd"/>
+  <rect x="1975" y="1860" width="330" height="118" rx="13" class="backward-box"/>
+<text x="1995" y="1892" class="label" text-anchor="start">② LM head backward</text>
+<text x="1995" y="1922" class="mono" text-anchor="start"><tspan x="1995" dy="0">dWlm = Hᵀ·dZ</tspan><tspan x="1995" dy="22">dH = dZ·Wlmᵀ</tspan><tspan x="1995" dy="22">grad Wlm mirrors 622.3 MB</tspan></text>
+  <path d="M2140 1860 L2140 1818" class="bwd"/>
+  <rect x="1975" y="1660" width="330" height="158" rx="13" class="backward-box"/>
+<text x="1995" y="1692" class="label" text-anchor="start">③ Layers 47 → 0</text>
+<text x="1995" y="1722" class="small" text-anchor="start"><tspan x="1995" dy="0">MoE backward first</tspan><tspan x="1995" dy="23">then attention backward</tspan><tspan x="1995" dy="23">residual gradients add</tspan><tspan x="1995" dy="23">checkpointed layer: recompute</tspan><tspan x="1995" dy="23">internal forward, then free</tspan></text>
+  <path d="M2140 1660 L2140 1410" class="bwd"/>
+  <rect x="1975" y="1218" width="330" height="192" rx="13" class="backward-box"/>
+<text x="1995" y="1250" class="label" text-anchor="start">Layer ℓ gradient outputs</text>
+<text x="1995" y="1280" class="mono" text-anchor="start"><tspan x="1995" dy="0">dWQ,dWK,dWV,dWO</tspan><tspan x="1995" dy="24">dWr</tspan><tspan x="1995" dy="24">dWgate/up/down for experts</tspan><tspan x="1995" dy="24">dγ norms</tspan><tspan x="1995" dy="24">dXℓ continues to layer ℓ-1</tspan></text>
+  <path d="M1975 1314 L1925 1314" class="bwd"/>
+  <path d="M2140 1218 L2140 930" class="bwd"/>
+  <rect x="1975" y="760" width="330" height="170" rx="13" class="backward-box"/>
+<text x="1995" y="792" class="label" text-anchor="start">④ Gradient accumulation</text>
+<text x="1995" y="822" class="small" text-anchor="start"><tspan x="1995" dy="0">parameter.grad += microstep</tspan><tspan x="1995" dy="24">DP/FSDP/EP sync location</tspan><tspan x="1995" dy="24">unscale → clip</tspan><tspan x="1995" dy="24">parameters still unchanged</tspan></text>
+  <path d="M2140 760 L2140 720" class="bwd"/>
+  <rect x="1975" y="565" width="330" height="155" rx="13" class="state-box"/>
+<text x="1995" y="597" class="label" text-anchor="start">⑤ optimizer.step()</text>
+<text x="1995" y="627" class="mono" text-anchor="start"><tspan x="1995" dy="0">θ ← update(θ,g,m,v)</tspan><tspan x="1995" dy="23">Adam m/v persist</tspan><tspan x="1995" dy="23">scheduler.step · zero_grad</tspan><tspan x="1995" dy="23">only here parameters change</tspan></text>
+  <path d="M1975 642 C1945 642 1945 2190 1885 2190" class="bwd"/>
+
+  <text x="75" y="2290" class="label" text-anchor="start">Main-body rule：forward 决定需要哪些 intermediates；backward 决定保存、重算和通信什么；optimizer.step 才改变 persistent parameters。</text>
+
+  <rect x="45" y="2345" width="2310" height="675" rx="20" class="panel"/>
+  <text x="75" y="2390" class="section" text-anchor="start">2 · 每层矩阵与临时张量总账：参数 shape ≠ activation shape ≠ gradient shape</text>
+  <rect x="80" y="2415" width="1080" height="471" rx="10" class="table-bg"/>
+<rect x="80" y="2415" width="1080" height="48" rx="10" class="table-head"/>
+<text x="94" y="2446" class="table-header" text-anchor="start">Per decoder layer</text>
+<line x1="330" y1="2415" x2="330" y2="2886" class="grid"/>
+<text x="344" y="2446" class="table-header" text-anchor="start">Shape / count</text>
+<line x1="650" y1="2415" x2="650" y2="2886" class="grid"/>
+<text x="664" y="2446" class="table-header" text-anchor="start">Params</text>
+<line x1="860" y1="2415" x2="860" y2="2886" class="grid"/>
+<text x="874" y="2446" class="table-header" text-anchor="start">BF16</text>
+<line x1="1030" y1="2415" x2="1030" y2="2886" class="grid"/>
+<text x="1044" y="2446" class="table-header" text-anchor="start">Backward gradient</text>
+<line x1="80" y1="2463" x2="1160" y2="2463" class="grid"/>
+<text x="94" y="2492" class="table-strong" text-anchor="start">RMSNorm ×2 + Q/K norm</text>
+<text x="344" y="2492" class="table-body" text-anchor="start">2×[2048] + 2×[128]</text>
+<text x="664" y="2492" class="table-body" text-anchor="start">4,352</text>
+<text x="874" y="2492" class="table-body" text-anchor="start">8.7 KB</text>
+<text x="1044" y="2492" class="table-body" text-anchor="start">same shape</text>
+<rect x="80" y="2510" width="1080" height="47" class="table-alt"/>
+<line x1="80" y1="2510" x2="1160" y2="2510" class="grid"/>
+<text x="94" y="2539" class="table-strong" text-anchor="start">WQ</text>
+<text x="344" y="2539" class="table-body" text-anchor="start">[2048,4096]</text>
+<text x="664" y="2539" class="table-body" text-anchor="start">8.389M</text>
+<text x="874" y="2539" class="table-body" text-anchor="start">16.8 MB</text>
+<text x="1044" y="2539" class="table-body" text-anchor="start">dWQ</text>
+<line x1="80" y1="2557" x2="1160" y2="2557" class="grid"/>
+<text x="94" y="2586" class="table-strong" text-anchor="start">WK / WV</text>
+<text x="344" y="2586" class="table-body" text-anchor="start">2 × [2048,512]</text>
+<text x="664" y="2586" class="table-body" text-anchor="start">2.097M</text>
+<text x="874" y="2586" class="table-body" text-anchor="start">4.2 MB</text>
+<text x="1044" y="2586" class="table-body" text-anchor="start">dWK / dWV</text>
+<rect x="80" y="2604" width="1080" height="47" class="table-alt"/>
+<line x1="80" y1="2604" x2="1160" y2="2604" class="grid"/>
+<text x="94" y="2633" class="table-strong" text-anchor="start">WO</text>
+<text x="344" y="2633" class="table-body" text-anchor="start">[4096,2048]</text>
+<text x="664" y="2633" class="table-body" text-anchor="start">8.389M</text>
+<text x="874" y="2633" class="table-body" text-anchor="start">16.8 MB</text>
+<text x="1044" y="2633" class="table-body" text-anchor="start">dWO</text>
+<line x1="80" y1="2651" x2="1160" y2="2651" class="grid"/>
+<text x="94" y="2680" class="table-strong" text-anchor="start">Router</text>
+<text x="344" y="2680" class="table-body" text-anchor="start">[2048,128]</text>
+<text x="664" y="2680" class="table-body" text-anchor="start">0.262M</text>
+<text x="874" y="2680" class="table-body" text-anchor="start">0.52 MB</text>
+<text x="1044" y="2680" class="table-body" text-anchor="start">dWrouter</text>
+<rect x="80" y="2698" width="1080" height="47" class="table-alt"/>
+<line x1="80" y1="2698" x2="1160" y2="2698" class="grid"/>
+<text x="94" y="2727" class="table-strong" text-anchor="start">One expert</text>
+<text x="344" y="2727" class="table-body" text-anchor="start">3 matrices · 2048↔768</text>
+<text x="664" y="2727" class="table-body" text-anchor="start">4.719M</text>
+<text x="874" y="2727" class="table-body" text-anchor="start">9.44 MB</text>
+<text x="1044" y="2727" class="table-body" text-anchor="start">3 dW</text>
+<line x1="80" y1="2745" x2="1160" y2="2745" class="grid"/>
+<text x="94" y="2774" class="table-strong" text-anchor="start">All 128 experts</text>
+<text x="344" y="2774" class="table-body" text-anchor="start">128 × one expert</text>
+<text x="664" y="2774" class="table-body" text-anchor="start">603.980M</text>
+<text x="874" y="2774" class="table-body" text-anchor="start">1.208 GB</text>
+<text x="1044" y="2774" class="table-body" text-anchor="start">all trainable</text>
+<rect x="80" y="2792" width="1080" height="47" class="table-alt"/>
+<line x1="80" y1="2792" x2="1160" y2="2792" class="grid"/>
+<text x="94" y="2821" class="table-strong" text-anchor="start">Full layer total</text>
+<text x="344" y="2821" class="table-body" text-anchor="start">attention + router + experts</text>
+<text x="664" y="2821" class="table-body" text-anchor="start">623.121M</text>
+<text x="874" y="2821" class="table-body" text-anchor="start">1.246 GB</text>
+<text x="1044" y="2821" class="table-body" text-anchor="start">same count</text>
+<line x1="80" y1="2839" x2="1160" y2="2839" class="grid"/>
+<text x="94" y="2868" class="table-strong" text-anchor="start">Active / token / layer</text>
+<text x="344" y="2868" class="table-body" text-anchor="start">attention + router + 8 experts</text>
+<text x="664" y="2868" class="table-body" text-anchor="start">56.890M</text>
+<text x="874" y="2868" class="table-body" text-anchor="start">113.8 MB</text>
+<text x="1044" y="2868" class="table-body" text-anchor="start">route-dependent</text>
+  <rect x="1220" y="2415" width="1100" height="471" rx="10" class="table-bg"/>
+<rect x="1220" y="2415" width="1100" height="48" rx="10" class="table-head"/>
+<text x="1234" y="2446" class="table-header" text-anchor="start">Logical tensor · B=1,T=8192</text>
+<line x1="1550" y1="2415" x2="1550" y2="2886" class="grid"/>
+<text x="1564" y="2446" class="table-header" text-anchor="start">Shape</text>
+<line x1="1880" y1="2415" x2="1880" y2="2886" class="grid"/>
+<text x="1894" y="2446" class="table-header" text-anchor="start">Storage</text>
+<line x1="2070" y1="2415" x2="2070" y2="2886" class="grid"/>
+<text x="2084" y="2446" class="table-header" text-anchor="start">Lifetime / note</text>
+<line x1="1220" y1="2463" x2="2320" y2="2463" class="grid"/>
+<text x="1234" y="2492" class="table-strong" text-anchor="start">Residual / layer input</text>
+<text x="1564" y="2492" class="table-body" text-anchor="start">[8192,2048]</text>
+<text x="1894" y="2492" class="table-body" text-anchor="start">33.6 MB</text>
+<text x="2084" y="2492" class="table-body" text-anchor="start">checkpoint candidate</text>
+<rect x="1220" y="2510" width="1100" height="47" class="table-alt"/>
+<line x1="1220" y1="2510" x2="2320" y2="2510" class="grid"/>
+<text x="1234" y="2539" class="table-strong" text-anchor="start">Q / K / V</text>
+<text x="1564" y="2539" class="table-body" text-anchor="start">[8192,4096/512/512]</text>
+<text x="1894" y="2539" class="table-body" text-anchor="start">67.1+8.4+8.4</text>
+<text x="2084" y="2539" class="table-body" text-anchor="start">saved or recompute</text>
+<line x1="1220" y1="2557" x2="2320" y2="2557" class="grid"/>
+<text x="1234" y="2586" class="table-strong" text-anchor="start">Naive attention score</text>
+<text x="1564" y="2586" class="table-body" text-anchor="start">[1,32,8192,8192]</text>
+<text x="1894" y="2586" class="table-body" text-anchor="start">4.295 GB</text>
+<text x="2084" y="2586" class="table-body" text-anchor="start">FlashAttn avoids full</text>
+<rect x="1220" y="2604" width="1100" height="47" class="table-alt"/>
+<line x1="1220" y1="2604" x2="2320" y2="2604" class="grid"/>
+<text x="1234" y="2633" class="table-strong" text-anchor="start">Router logits</text>
+<text x="1564" y="2633" class="table-body" text-anchor="start">[8192,128]</text>
+<text x="1894" y="2633" class="table-body" text-anchor="start">2.1 / 4.2 MB</text>
+<text x="2084" y="2633" class="table-body" text-anchor="start">BF16 / FP32</text>
+<line x1="1220" y1="2651" x2="2320" y2="2651" class="grid"/>
+<text x="1234" y="2680" class="table-strong" text-anchor="start">Top-k index + weight</text>
+<text x="1564" y="2680" class="table-body" text-anchor="start">[8192,8]</text>
+<text x="1894" y="2680" class="table-body" text-anchor="start">0.52+0.26 MB</text>
+<text x="2084" y="2680" class="table-body" text-anchor="start">int64 + FP32</text>
+<rect x="1220" y="2698" width="1100" height="47" class="table-alt"/>
+<line x1="1220" y1="2698" x2="2320" y2="2698" class="grid"/>
+<text x="1234" y="2727" class="table-strong" text-anchor="start">Dispatched tokens</text>
+<text x="1564" y="2727" class="table-body" text-anchor="start">[65536,2048]</text>
+<text x="1894" y="2727" class="table-body" text-anchor="start">268.4 MB</text>
+<text x="2084" y="2727" class="table-body" text-anchor="start">load-dependent</text>
+<line x1="1220" y1="2745" x2="2320" y2="2745" class="grid"/>
+<text x="1234" y="2774" class="table-strong" text-anchor="start">Gate / Up / Hidden</text>
+<text x="1564" y="2774" class="table-body" text-anchor="start">3 × [65536,768]</text>
+<text x="1894" y="2774" class="table-body" text-anchor="start">3 × 100.7 MB</text>
+<text x="2084" y="2774" class="table-body" text-anchor="start">often fused/recomputed</text>
+<rect x="1220" y="2792" width="1100" height="47" class="table-alt"/>
+<line x1="1220" y1="2792" x2="2320" y2="2792" class="grid"/>
+<text x="1234" y="2821" class="table-strong" text-anchor="start">Expert output</text>
+<text x="1564" y="2821" class="table-body" text-anchor="start">[65536,2048]</text>
+<text x="1894" y="2821" class="table-body" text-anchor="start">268.4 MB</text>
+<text x="2084" y="2821" class="table-body" text-anchor="start">inverse dispatch</text>
+<line x1="1220" y1="2839" x2="2320" y2="2839" class="grid"/>
+<text x="1234" y="2868" class="table-strong" text-anchor="start">LM logits</text>
+<text x="1564" y="2868" class="table-body" text-anchor="start">[8192,151936]</text>
+<text x="1894" y="2868" class="table-body" text-anchor="start">2.489 GB</text>
+<text x="2084" y="2868" class="table-body" text-anchor="start">fused/chunked CE helps</text>
+  <text x="80" y="2915" class="small" text-anchor="start">Weight/parameter gradient 的元素数相同，但 dtype、sharding 和是否 materialize 由训练策略决定。</text>
+  <text x="1220" y="2915" class="small" text-anchor="start">所有大小均为 decimal MB/GB；logical tensors 不能直接相加为 peak memory。</text>
+  <rect x="80" y="2945" width="2240" height="48" rx="11" class="warning-box"/>
+  <text x="100" y="2976" class="small" text-anchor="start">最容易犯的错：把 naive attention score、dispatch、gate/up/hidden、logits 全部相加；真实 peak 取决于 fusion、tiling、recompute、parallel local shape 与 lifetime overlap。</text>
+
+  <rect x="45" y="3050" width="2310" height="575" rx="20" class="panel"/>
+  <text x="75" y="3095" class="section" text-anchor="start">3 · Tensor lifetime：为什么 activation checkpointing 用计算换显存</text>
+  <text x="75" y="3125" class="small" text-anchor="start">时间从左到右；绿色长期保存 layer boundary，橙色内部临时只在本层 forward/backward 短暂存在，红色 gradient 在反向逐层产生。</text>
+
+  <text x="85" y="3190" class="label" text-anchor="start">FORWARD</text>
+  <path d="M195 3182 L1690 3182" class="fwd"/>
+  <text x="1710" y="3190" class="label" text-anchor="start">LOSS</text>
+  <path d="M1810 3182 L2290 3182" class="bwd"/>
+  <text x="2290" y="3190" class="label" text-anchor="end">BACKWARD</text>
+
+  <line x1="195" y1="3245" x2="2290" y2="3245" class="thin"/>
+  <text x="85" y="3260" class="label" text-anchor="start">Weights</text>
+  <rect x="195" y="3225" width="2095" height="40" rx="8" class="state-box"/>
+  <text x="1245" y="3252" class="small" text-anchor="middle">persistent across forward + backward + optimizer</text>
+
+  <text x="85" y="3330" class="label" text-anchor="start">Boundary</text>
+  <rect x="195" y="3295" width="205" height="46" rx="8" class="saved-box"/><text x="297" y="3325" class="mono" text-anchor="middle">X0</text>
+<rect x="440" y="3295" width="205" height="46" rx="8" class="saved-box"/><text x="542" y="3325" class="mono" text-anchor="middle">X9</text>
+<rect x="685" y="3295" width="205" height="46" rx="8" class="saved-box"/><text x="787" y="3325" class="mono" text-anchor="middle">X18</text>
+<rect x="930" y="3295" width="205" height="46" rx="8" class="saved-box"/><text x="1032" y="3325" class="mono" text-anchor="middle">X27</text>
+<rect x="1175" y="3295" width="205" height="46" rx="8" class="saved-box"/><text x="1277" y="3325" class="mono" text-anchor="middle">X36</text>
+<rect x="1420" y="3295" width="205" height="46" rx="8" class="saved-box"/><text x="1522" y="3325" class="mono" text-anchor="middle">X48</text>
+  <text x="1700" y="3325" class="mono" text-anchor="start">48 × [8192,2048] = 1.611 GB BF16</text>
+
+  <text x="85" y="3400" class="label" text-anchor="start">Internals</text>
+  <rect x="195" y="3365" width="235" height="46" rx="8" class="router-box"/>
+  <rect x="455" y="3365" width="235" height="46" rx="8" class="router-box"/>
+  <rect x="715" y="3365" width="235" height="46" rx="8" class="router-box"/>
+  <text x="310" y="3395" class="small" text-anchor="middle">Q/K/V · score tiles</text>
+  <text x="572" y="3395" class="small" text-anchor="middle">dispatch · gate/up</text>
+  <text x="832" y="3395" class="small" text-anchor="middle">logits / CE temp</text>
+  <text x="1020" y="3395" class="small" text-anchor="start">freed after forward when checkpointed</text>
+  <rect x="1800" y="3365" width="235" height="46" rx="8" class="router-box"/>
+  <rect x="2055" y="3365" width="235" height="46" rx="8" class="router-box"/>
+  <text x="1917" y="3395" class="small" text-anchor="middle">recompute layer ℓ</text>
+  <text x="2172" y="3395" class="small" text-anchor="middle">then free again</text>
+
+  <text x="85" y="3470" class="label" text-anchor="start">Gradients</text>
+  <rect x="1680" y="3435" width="610" height="46" rx="8" class="backward-box"/>
+  <text x="1985" y="3465" class="small" text-anchor="middle">dactivation + parameter.grad produced right → left</text>
+
+  <rect x="75" y="3520" width="720" height="75" rx="12" class="saved-box"/>
+  <text x="100" y="3551" class="label" text-anchor="start">Checkpointed</text>
+  <text x="260" y="3551" class="small" text-anchor="start">save Xℓ；backward 重新执行本层 forward</text>
+  <text x="260" y="3578" class="small" text-anchor="start">降低 saved activations，增加 recompute FLOPs。</text>
+  <rect x="835" y="3520" width="720" height="75" rx="12" class="router-box"/>
+  <text x="860" y="3551" class="label" text-anchor="start">Transient</text>
+  <text x="990" y="3551" class="small" text-anchor="start">FlashAttention tiles、grouped GEMM workspace、A2A buffers</text>
+  <text x="990" y="3578" class="small" text-anchor="start">可能主导瞬时 peak，但不该跨 48 层长期保存。</text>
+  <rect x="1595" y="3520" width="725" height="75" rx="12" class="state-box"/>
+  <text x="1620" y="3551" class="label" text-anchor="start">Persistent</text>
+  <text x="1760" y="3551" class="small" text-anchor="start">weights + grads + optimizer m/v + scheduler/RNG/state</text>
+  <text x="1760" y="3578" class="small" text-anchor="start">MoE full-SFT 仍按 30.5B total，而非 3.3B active。</text>
+
+  <rect x="45" y="3655" width="2310" height="485" rx="20" class="panel"/>
+  <text x="75" y="3700" class="section" text-anchor="start">4 · 计算与反向的统一读法：每个矩阵乘法都同时产生 dX 与 dW</text>
+
+  <rect x="75" y="3740" width="720" height="190" rx="14" class="attention-box"/>
+  <text x="100" y="3776" class="subsection" text-anchor="start">通用 Linear：Y = XW</text>
+  <text x="100" y="3812" class="mono" text-anchor="start">forward     Y = XW        ≈ 2NDF FLOPs</text>
+  <text x="100" y="3844" class="mono" text-anchor="start">backward dX = dY·Wᵀ      ≈ 2NDF FLOPs</text>
+  <text x="100" y="3876" class="mono" text-anchor="start">backward dW = Xᵀ·dY      ≈ 2NDF FLOPs</text>
+  <text x="100" y="3910" class="mono-strong" text-anchor="start">training matmul ≈ 3× forward = 6NDF</text>
+
+  <rect x="835" y="3740" width="720" height="190" rx="14" class="moe-box"/>
+  <text x="860" y="3776" class="subsection" text-anchor="start">本例单层 logical matmul</text>
+  <text x="860" y="3812" class="mono" text-anchor="start">attention projections = 0.309 TFLOPs</text>
+  <text x="860" y="3844" class="mono" text-anchor="start">QKᵀ + AV (full matrix) = 1.100 TFLOPs</text>
+  <text x="860" y="3876" class="mono" text-anchor="start">router + top-8 experts = 0.623 TFLOPs</text>
+  <text x="860" y="3910" class="mono-strong" text-anchor="start">layer forward ≈ 2.032T；train matmul ≈ 6.095T</text>
+
+  <rect x="1595" y="3740" width="725" height="190" rx="14" class="backward-box"/>
+  <text x="1620" y="3776" class="subsection" text-anchor="start">Backward 的执行顺序</text>
+  <text x="1620" y="3812" class="mono" text-anchor="start">loss → LM head → Layer 47 … Layer 0 → embedding</text>
+  <text x="1620" y="3844" class="small" text-anchor="start">每个 residual add：上游 gradient 分流，再在输入处相加</text>
+  <text x="1620" y="3876" class="small" text-anchor="start">每个 checkpointed layer：先 recompute，再 local backward</text>
+  <text x="1620" y="3910" class="small" text-anchor="start">grad sync/accumulation 后 optimizer.step 才更新 θ,m,v</text>
+
+  <rect x="75" y="3960" width="2245" height="135" rx="14" class="warning-box"/>
+  <text x="100" y="3996" class="subsection" text-anchor="start">证据边界 / 不可直接推断</text>
+  <text x="100" y="4030" class="small" text-anchor="start">• FLOPs 为 logical dense-matmul accounting；causal kernel、fusion、recompute、padding 与 load imbalance 会改变实际工作。</text>
+  <text x="100" y="4058" class="small" text-anchor="start">• 每卡 local tensor 还受 TP/EP/DP/SP、capacity factor 与 AllToAll layout 影响；此图不是单卡 peak-memory estimator。</text>
+  <text x="100" y="4086" class="small" text-anchor="start">• 训练时没有 persistent inference KV cache，但 Q/K/V forward activations 仍可能保存或在 backward 重算。</text>
+
+  <text x="55" y="4170" class="tiny" text-anchor="start">Sources · local Day 02 accounting/quiz · training-memory visual guide · Day 05 lifecycle roadmap · Qwen3-30B-A3B config snapshot</text>
+</svg>

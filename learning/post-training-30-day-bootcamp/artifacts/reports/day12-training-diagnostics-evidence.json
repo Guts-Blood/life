@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "domain": "day12.training_diagnostics_evidence",
+  "generated_date": "2026-08-06",
+  "scope": "Controlled Day 12 pilot: Qwen3-0.6B-Base, one seed, two SFT mixtures, three supervised-token checkpoints, 28 dev cases per slice.",
+  "training_objective": {
+    "objective": "assistant-token cross-entropy on the scheduled SFT mixture",
+    "full_parameter_training": true,
+    "learning_rate": 0.00002,
+    "schedule": "linear warmup through 12,347 supervised tokens, then constant",
+    "warmup_fraction_of_total_budget": 0.05,
+    "maximum_gradient_norm": 1.0,
+    "observed_gradient_clip_rate": {
+      "A": 1.0,
+      "B": 1.0
+    }
+  },
+  "training_loss": {
+    "definition": "sum(loss over supervised tokens) / supervised tokens",
+    "A": {
+      "first_50_optimizer_steps": 0.8570383128,
+      "last_50_optimizer_steps": 0.5833760751,
+      "stage_weighted_loss": {
+        "25_percent": 0.7169928815,
+        "60_percent_increment": 0.6863064029,
+        "100_percent_increment": 0.6548191115
+      }
+    },
+    "B": {
+      "first_50_optimizer_steps": 0.7220750114,
+      "last_50_optimizer_steps": 0.5117843251,
+      "stage_weighted_loss": {
+        "25_percent": 0.5968174624,
+        "60_percent_increment": 0.5272886211,
+        "100_percent_increment": 0.5549476082
+      }
+    }
+  },
+  "mixture_structure": {
+    "A": {
+      "supervised_token_share": {
+        "general": 0.25,
+        "math": 0.25,
+        "code": 0.25,
+        "finance": 0.25
+      },
+      "unique_occurrences": {
+        "general": 207,
+        "math": 65,
+        "code": 460,
+        "finance": 1998,
+        "total": 2730
+      },
+      "occurrence_share": {
+        "general": 0.0758,
+        "math": 0.0238,
+        "code": 0.1685,
+        "finance": 0.7319
+      }
+    },
+    "B": {
+      "supervised_token_share": {
+        "general": 0.125,
+        "math": 0.125,
+        "code": 0.5,
+        "finance": 0.25
+      },
+      "unique_occurrences": {
+        "general": 105,
+        "math": 32,
+        "code": 943,
+        "finance": 1998,
+        "total": 3078
+      },
+      "occurrence_share": {
+        "general": 0.0341,
+        "math": 0.0104,
+        "code": 0.3064,
+        "finance": 0.6491
+      }
+    },
+    "format_observation": "Finance targets repeatedly begin with 'Calculation:' and end with 'Final answer:'. Math targets use longer heterogeneous step-by-step prose. Equal token shares therefore do not imply equal behavioral or format influence."
+  },
+  "dev_results": [
+    {"model": "Base", "budget_percent": 0, "run": "Base", "general_correct": 2, "math_correct": 12, "code_correct": 0, "finance_correct": 1, "total_correct": 15, "output_tokens": 43904, "eligible": true},
+    {"model": "A-25", "budget_percent": 25, "run": "A", "general_correct": 1, "math_correct": 0, "code_correct": 7, "finance_correct": 1, "total_correct": 9, "output_tokens": 3994, "eligible": false},
+    {"model": "A-60", "budget_percent": 60, "run": "A", "general_correct": 0, "math_correct": 4, "code_correct": 5, "finance_correct": 1, "total_correct": 10, "output_tokens": 8313, "eligible": false},
+    {"model": "A-100", "budget_percent": 100, "run": "A", "general_correct": 1, "math_correct": 2, "code_correct": 3, "finance_correct": 1, "total_correct": 7, "output_tokens": 5129, "eligible": false},
+    {"model": "B-25", "budget_percent": 25, "run": "B", "general_correct": 3, "math_correct": 1, "code_correct": 9, "finance_correct": 0, "total_correct": 13, "output_tokens": 4946, "eligible": false},
+    {"model": "B-60", "budget_percent": 60, "run": "B", "general_correct": 0, "math_correct": 0, "code_correct": 4, "finance_correct": 0, "total_correct": 4, "output_tokens": 3968, "eligible": false},
+    {"model": "B-100", "budget_percent": 100, "run": "B", "general_correct": 0, "math_correct": 0, "code_correct": 5, "finance_correct": 0, "total_correct": 5, "output_tokens": 5851, "eligible": false}
+  ],
+  "generation_behavior": {
+    "base_math": {
+      "mean_output_tokens": 512.0,
+      "median_output_tokens": 512.0,
+      "eos_rate": 0.0,
+      "max_new_tokens_rate": 1.0
+    },
+    "A_60_math": {
+      "mean_output_tokens": 70.8,
+      "median_output_tokens": 32.0,
+      "eos_rate": 0.964,
+      "max_new_tokens_rate": 0.036
+    },
+    "B_25_math": {
+      "mean_output_tokens": 43.4,
+      "median_output_tokens": 23.5,
+      "eos_rate": 0.964,
+      "max_new_tokens_rate": 0.036
+    },
+    "paired_example": {
+      "sample_id": "eval:math:gsm8k:test:0127",
+      "reference": 120,
+      "base": "Long two-step reasoning: Amy has 70, then Lily plus Amy equals 120; parsed answer 120.",
+      "all_sft_checkpoints": "Emitted the finance-style 'Calculation:' template and stopped after computing only 50 + 20 = 70 (A-25 emitted a placeholder); all were wrong."
+    }
+  },
+  "diagnosis": [
+    {
+      "finding": "Training-objective improvement and downstream-task improvement diverged.",
+      "confidence": "high",
+      "basis": "First-to-last-window SFT loss fell materially in both runs while every checkpoint lost 8-12 of Base's 12 math cases."
+    },
+    {
+      "finding": "The dominant failure mode is distribution/format overfitting plus capability interference, not an absence of learning.",
+      "confidence": "high",
+      "basis": "GSM8K outputs adopted the short FinQA program template and prematurely committed to one-step arithmetic; code improved early while math collapsed."
+    },
+    {
+      "finding": "Longer full-parameter training at a constant peak learning rate continued to move the small model away from its Base behavior.",
+      "confidence": "medium",
+      "basis": "After 5% token warmup, 95% of tokens used a constant 2e-5 rate and every observed optimizer step was gradient-clipped; no decay or replay anchor protected Base capabilities."
+    },
+    {
+      "finding": "The exact checkpoint-to-checkpoint oscillations are not precisely estimable from this pilot.",
+      "confidence": "high",
+      "basis": "Each slice has only 28 cases and one seed, so movements of a few cases can be sampling noise even though the universal math regression is too large and consistent to dismiss."
+    }
+  ]
+}

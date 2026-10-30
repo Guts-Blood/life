@@ -1,0 +1,595 @@
+{
+  "assignment": "day09-data-quality-mixture-lineage",
+  "status": "day09_complete_with_gate_c_waiver",
+  "preregistered_date": "2026-08-04",
+  "intended_use": "personal research and education only",
+  "candidate_samples_per_slice": 2000,
+  "sources": [
+    {
+      "slice": "general",
+      "source_id": "allenai/tulu-3-sft-personas-instruction-following",
+      "source_type": "huggingface_dataset",
+      "revision": "fe0c7d350c9b4542b8d829a6f1daa1c259f0ba0e",
+      "split": "train",
+      "adapter": "tulu_messages_v1",
+      "subskill": "constraint_following",
+      "parent_id_field": "id",
+      "license": "ODC-BY-1.0",
+      "license_note": "Dataset card license metadata; synthetic model outputs are present. Not a commercial compliance review.",
+      "allow_patterns": [
+        "README.md",
+        "data/train-*.parquet"
+      ]
+    },
+    {
+      "slice": "math",
+      "source_id": "allenai/tulu-3-sft-personas-math",
+      "source_type": "huggingface_dataset",
+      "revision": "46add032f5203fd96efbd54d074198981ed57d25",
+      "split": "train",
+      "adapter": "tulu_messages_v1",
+      "subskill": "mathematical_reasoning",
+      "parent_id_field": "id",
+      "license": "ODC-BY-1.0",
+      "license_note": "Dataset card license metadata; synthetic model outputs are present. Not a commercial compliance review.",
+      "allow_patterns": [
+        "README.md",
+        "data/train-*.parquet"
+      ]
+    },
+    {
+      "slice": "code",
+      "source_id": "allenai/tulu-3-sft-personas-code",
+      "source_type": "huggingface_dataset",
+      "revision": "1412abe88dd2976af977260788e033013449f7b2",
+      "split": "train",
+      "adapter": "tulu_messages_v1",
+      "subskill": "code_generation",
+      "parent_id_field": "id",
+      "license": "ODC-BY-1.0",
+      "license_note": "Dataset card license metadata; synthetic model outputs are present. Not a commercial compliance review.",
+      "allow_patterns": [
+        "README.md",
+        "data/train-*.parquet"
+      ]
+    },
+    {
+      "slice": "finance",
+      "source_id": "bevaya/FinQA",
+      "source_type": "huggingface_dataset",
+      "revision": "3d6a736bc67e06bc15fbf3618d88204a57c5b25e",
+      "split": "train",
+      "adapter": "finqa_gold_evidence_v1",
+      "subskill": "financial_numerical_reasoning",
+      "parent_id_field": "id",
+      "license": "MIT annotations; CDLA-Permissive-1.0 underlying FinTabNet tables",
+      "license_note": "Full-fidelity Hugging Face repackaging of canonical FinQA. The canonical GitHub repository is MIT, while ibm-research/finqa declares CC-BY-4.0; retain this metadata conflict in lineage and limit use to this research assignment.",
+      "upstream": {
+        "source_id": "https://github.com/czyssrs/FinQA",
+        "revision": "0f16e2867befa6840783e58be38c9efb9229d742"
+      },
+      "allow_patterns": [
+        "README.md",
+        "data/train-*.parquet",
+        "data/validation-*.parquet",
+        "data/test-*.parquet"
+      ]
+    }
+  ],
+  "selection": {
+    "method": "sort ascending by sha256(source_id + NUL + revision + NUL + parent_id)",
+    "seed": null,
+    "tie_breaker": "parent_id ascending"
+  },
+  "amendments": [
+    {
+      "version": 2,
+      "date": "2026-08-04",
+      "field": "preprocessing.max_length",
+      "previous_value": 256,
+      "new_value": 1024,
+      "trigger": "Step 3 v1 at max_length=256 accepted 0/2000 math candidates and only 2780/8000 candidates overall",
+      "approved_by": "user",
+      "scope": "Day 09 Step 3 onward; tokenizer revision, chat template, right truncation, assistant-only loss mask, padding, and packing policies remain unchanged"
+    },
+    {
+      "version": 3,
+      "date": "2026-08-04",
+      "field": "preprocessing.max_length",
+      "previous_value": 1024,
+      "new_value": 2048,
+      "trigger": "Step 3 v2 at max_length=1024 rejected 1619/2000 math candidates while the other slices accepted at least 97.15%",
+      "approved_by": "user",
+      "scope": "Day 09 Step 3 onward; tokenizer revision, chat template, right truncation, assistant-only loss mask, padding, and packing policies remain unchanged"
+    }
+  ],
+  "preprocessing": {
+    "contract_version": "day08_v1_with_day09_length_amendment_v3",
+    "contract": "../artifacts/data/day08-sft-data-contract.md",
+    "model_id": "Qwen/Qwen3-0.6B-Base",
+    "model_revision": "ddc928429ed09d9ad603fd762053d0434c15e865",
+    "transformers_version": "4.57.3",
+    "chat_template_sha256": "44d5f08f3f72b837eaad09f13a54c1f9f4eb58d75240334548b7fd52a5437fa5",
+    "tokenizer_config_sha256": "7d0fc4691628c9f6b0c77f8138a80517896a307e074dd5ac87e279ea85515774",
+    "max_length": 2048,
+    "truncation": "right",
+    "padding": "right",
+    "packing": false,
+    "loss_mask": "all assistant bodies plus each assistant <|im_end|>",
+    "reject_incomplete_final_assistant": true,
+    "reject_zero_supervision": true
+  },
+  "identity": {
+    "canonical_sample_id": "slice + ':' + parent_id",
+    "content_hash": "sha256 of UTF-8 canonical JSON messages with sorted object keys and compact separators"
+  },
+  "token_count_definitions": {
+    "raw_token_count": "sum of each raw message content tokenized separately with the frozen tokenizer and add_special_tokens=false; no role headers or chat template",
+    "rendered_token_count": "full chat-template token count before truncation",
+    "input_token_count": "model input token count after right truncation and before padding",
+    "supervised_token_count": "post-truncation labels whose value is not -100"
+  },
+  "quality_audit": {
+    "version": "day09_pre_filter_audit_v1",
+    "cohort": "Step 3 accepted records before quality filtering, exact dedup, near-duplicate decisions, and decontamination",
+    "length_field": "input_token_count",
+    "length_buckets": [
+      {
+        "name": "1-256",
+        "minimum": 1,
+        "maximum": 256
+      },
+      {
+        "name": "257-512",
+        "minimum": 257,
+        "maximum": 512
+      },
+      {
+        "name": "513-1024",
+        "minimum": 513,
+        "maximum": 1024
+      },
+      {
+        "name": "1025-2048",
+        "minimum": 1025,
+        "maximum": 2048
+      }
+    ],
+    "difficulty_proxy": {
+      "name": "supervised_response_length_v1",
+      "field": "supervised_token_count",
+      "buckets": [
+        {
+          "name": "low_1_64",
+          "minimum": 1,
+          "maximum": 64
+        },
+        {
+          "name": "medium_65_256",
+          "minimum": 65,
+          "maximum": 256
+        },
+        {
+          "name": "high_257_plus",
+          "minimum": 257,
+          "maximum": null
+        }
+      ],
+      "caveat": "Response length is a workload proxy, not a correctness or semantic-difficulty label."
+    },
+    "refusal_heuristic": {
+      "name": "assistant_phrase_match_v1",
+      "phrases": [
+        "i cannot assist",
+        "i can't assist",
+        "i cannot help",
+        "i can't help",
+        "i am unable to",
+        "i'm unable to",
+        "i cannot comply",
+        "i can't comply",
+        "i must refuse",
+        "sorry, but i cannot",
+        "sorry, but i can't",
+        "as an ai, i cannot"
+      ],
+      "caveat": "This is a deterministic risk hint and may contain false positives or miss paraphrased refusals."
+    },
+    "template_cluster": {
+      "name": "normalized_prompt_prefix_v1",
+      "prefix_token_count": 16,
+      "minimum_cluster_size": 5,
+      "normalization": [
+        "Unicode NFKC",
+        "lowercase",
+        "replace URLs with <url>",
+        "replace numeric spans with <num>",
+        "retain lexical tokens only"
+      ],
+      "caveat": "Prefix clusters are candidate-generation hints, not duplicate or quality-removal decisions."
+    },
+    "source_provenance": {
+      "general": "declared_synthetic",
+      "math": "declared_synthetic",
+      "code": "declared_synthetic",
+      "finance": "annotated_benchmark_not_declared_synthetic"
+    },
+    "percentile_method": "nearest-rank"
+  },
+  "normalization": {
+    "name": "exact_normalization_v1",
+    "steps": [
+      "Unicode NFKC",
+      "lowercase",
+      "collapse consecutive whitespace",
+      "strip leading and trailing whitespace",
+      "keep punctuation"
+    ]
+  },
+  "exact_dedup": {
+    "version": "day09_exact_dedup_v1",
+    "input_cohort": "Step 5 downstream-eligible filtered pool",
+    "match_fields": [
+      "normalized_prompt",
+      "normalized_answer",
+      "normalized_complete_record"
+    ],
+    "terminal_match_field": "normalized_complete_record",
+    "complete_record_serialization": "canonical JSON array of [role, normalized content] pairs",
+    "survivor_rule": [
+      "manual Gate A accept first",
+      "slice priority: finance, general, math, code",
+      "lowest canonical sample_id"
+    ],
+    "slice_priority": [
+      "finance",
+      "general",
+      "math",
+      "code"
+    ],
+    "prompt_answer_only_policy": "risk evidence only; no automatic deletion"
+  },
+  "near_duplicate": {
+    "candidate_version": "day09_near_candidates_v1",
+    "matcher": "rapidfuzz.fuzz.ratio",
+    "version": "3.14.3",
+    "threshold": 90.0,
+    "fields": [
+      "normalized_prompt",
+      "normalized_answer",
+      "normalized_complete_record"
+    ],
+    "minimum_characters": 80,
+    "pair_scope": "all unordered pairs within and across training sources",
+    "batch_size": 64,
+    "workers": -1,
+    "score_decimals": 6,
+    "policy": "candidate generation only; no automatic deletion"
+  },
+  "near_review_calibration": {
+    "version": "day09_near_review_calibration_v1",
+    "total_pairs": 20,
+    "selection_method": "within each ordered stratum, sort unique pairs by sha256(version + NUL + stratum name + NUL + candidate_id); exclude pairs already selected by an earlier stratum",
+    "review_package": "../artifacts/reports/day09-step7-near-review.jsonl",
+    "review_result_values": [
+      "keep_both",
+      "remove_train_A",
+      "remove_train_B",
+      "not_duplicate",
+      "uncertain"
+    ],
+    "gate_b_decision": {
+      "date": "2026-08-05",
+      "reviewer": "user",
+      "reviewed_pairs": 20,
+      "result": "20 keep_both, 0 removal, 0 uncertain",
+      "confirmation": "User reviewed the stratified package and concluded the pairs should be kept because they are parameterized or paraphrased task variants.",
+      "remaining_candidate_policy": "Candidate status alone is non-terminal. Retain unreviewed within-source non-exact-complete-record pairs unless a future confirmed decision identifies a removal."
+    },
+    "strata": [
+      {
+        "name": "code_answer_exact",
+        "skill": "code",
+        "matched_field": "normalized_answer",
+        "minimum_score": 100.0,
+        "maximum_score": 100.0,
+        "quota": 3
+      },
+      {
+        "name": "code_answer_95_100",
+        "skill": "code",
+        "matched_field": "normalized_answer",
+        "minimum_score": 95.0,
+        "maximum_score_exclusive": 100.0,
+        "quota": 3
+      },
+      {
+        "name": "code_answer_90_95",
+        "skill": "code",
+        "matched_field": "normalized_answer",
+        "minimum_score": 90.0,
+        "maximum_score_exclusive": 95.0,
+        "quota": 3
+      },
+      {
+        "name": "code_prompt_90_95",
+        "skill": "code",
+        "matched_field": "normalized_prompt",
+        "minimum_score": 90.0,
+        "maximum_score_exclusive": 95.0,
+        "quota": 1
+      },
+      {
+        "name": "finance_complete_95_100",
+        "skill": "finance",
+        "matched_field": "normalized_complete_record",
+        "minimum_score": 95.0,
+        "maximum_score_exclusive": 100.0,
+        "quota": 2
+      },
+      {
+        "name": "finance_complete_90_95",
+        "skill": "finance",
+        "matched_field": "normalized_complete_record",
+        "minimum_score": 90.0,
+        "maximum_score_exclusive": 95.0,
+        "quota": 2
+      },
+      {
+        "name": "finance_prompt_95_100",
+        "skill": "finance",
+        "matched_field": "normalized_prompt",
+        "minimum_score": 95.0,
+        "maximum_score_exclusive": 100.0,
+        "quota": 2
+      },
+      {
+        "name": "finance_prompt_90_95",
+        "skill": "finance",
+        "matched_field": "normalized_prompt",
+        "minimum_score": 90.0,
+        "maximum_score_exclusive": 95.0,
+        "quota": 2
+      },
+      {
+        "name": "finance_answer_95_100",
+        "skill": "finance",
+        "matched_field": "normalized_answer",
+        "minimum_score": 95.0,
+        "maximum_score_exclusive": 100.0,
+        "quota": 1
+      },
+      {
+        "name": "finance_answer_90_95",
+        "skill": "finance",
+        "matched_field": "normalized_answer",
+        "minimum_score": 90.0,
+        "maximum_score_exclusive": 95.0,
+        "quota": 1
+      }
+    ]
+  },
+  "eval_candidates": {
+    "version": "day09_eval_candidates_v1",
+    "samples_per_slice": 40,
+    "selection_method": "sort ascending by sha256(version + NUL + source + NUL + revision + NUL + split + NUL + parent_id), then parent_id",
+    "candidate_policy": "content and IDs fixed on Day 09; decoder, scorer, baselines, and final protocol remain unfrozen until Day 10",
+    "sources": [
+      {
+        "slice": "general",
+        "source": "cais/mmlu",
+        "upstream_source": "hendrycks/test",
+        "upstream_revision": "4450500f923c49f1fb1dd3d99108a0bd9717b660",
+        "revision": "c30699e8356da336a370243923dbaf21066bb9fe",
+        "split": "test",
+        "adapter": "mmlu_multiple_choice_v1",
+        "subjects": [
+          "global_facts",
+          "high_school_us_history",
+          "philosophy",
+          "professional_psychology"
+        ],
+        "samples_per_subject": 10,
+        "license": "MIT",
+        "license_note": "The official MMLU repository is MIT. Data bytes are fetched from the pinned cais/mmlu Hugging Face mirror because the official repository links to an external tar; file hashes are recorded."
+      },
+      {
+        "slice": "math",
+        "source": "openai/grade-school-math",
+        "revision": "3101c7d5072418e28b9008a6636bde82a006892c",
+        "split": "test",
+        "adapter": "gsm8k_jsonl_v1",
+        "license": "MIT",
+        "license_note": "Repository LICENSE at the pinned revision."
+      },
+      {
+        "slice": "code",
+        "source": "openai/human-eval",
+        "revision": "6d43fb980f9fee3c892a914eda09951f772ad10d",
+        "split": "test",
+        "adapter": "human_eval_jsonl_v1",
+        "license": "MIT",
+        "license_note": "Repository LICENSE at the pinned revision; generated code must not be executed outside a sandbox."
+      },
+      {
+        "slice": "finance",
+        "source": "NExTplusplus/TAT-QA",
+        "revision": "870accc41953dcde885aabeb963d94aabdc0fbc3",
+        "split": "dev",
+        "adapter": "tatqa_hybrid_context_v1",
+        "license": "CC-BY-4.0 dataset; MIT code",
+        "license_note": "Dataset license is declared in the pinned README; repository code LICENSE is MIT."
+      }
+    ]
+  },
+  "decontamination": {
+    "version": "day09_train_eval_overlap_v1",
+    "train_cohort": "Step 6 exact-deduped pool before any Gate B contamination decisions",
+    "eval_cohort": "Step 8 eval candidate pool",
+    "normalization": "exact_normalization_v1",
+    "matcher": "rapidfuzz.fuzz.ratio",
+    "matcher_version": "3.14.3",
+    "score_decimals": 6,
+    "batch_size": 512,
+    "workers": -1,
+    "near_excludes_exact": true,
+    "policy": "candidate generation only; no automatic train or eval deletion",
+    "gate_b_decision": {
+      "date": "2026-08-05",
+      "candidate_count": 0,
+      "confirmed_contamination": 0,
+      "result": "No train/eval candidates required a human removal decision under the frozen Step 9 matcher configuration."
+    },
+    "boundaries": [
+      {
+        "name": "train_prompt_vs_eval_prompt",
+        "matched_field": "prompt",
+        "train_field": "prompt",
+        "eval_field": "prompt",
+        "near_threshold": 90.0,
+        "near_minimum_characters": 40
+      },
+      {
+        "name": "train_answer_vs_eval_reference",
+        "matched_field": "answer_reference",
+        "train_field": "answer",
+        "eval_field": "reference",
+        "near_threshold": 90.0,
+        "near_minimum_characters": 40
+      },
+      {
+        "name": "train_complete_record_vs_eval_record",
+        "matched_field": "complete_record",
+        "train_field": "complete_record",
+        "eval_field": "complete_record",
+        "near_threshold": 90.0,
+        "near_minimum_characters": 80
+      }
+    ]
+  },
+  "clean_pool": {
+    "version": "day09_clean_parent_pool_v1",
+    "created_at": "2026-08-05T14:01:52+08:00",
+    "input_cohort": "Step 6 exact-deduped pool",
+    "stable_record_order": "sample_id ascending",
+    "clean_pool_hash_definition": "sha256 of canonical JSON array of records sorted by sample_id",
+    "manifest_hash_definition": "sha256 of canonical JSON object containing header without manifest_hash and records sorted by sample_id",
+    "manifest_path": "../artifacts/data/day09-dataset-manifest.json",
+    "gate_b_ledger_path": "../artifacts/reports/day09-gate-b-review.jsonl",
+    "rebuild_evidence_path": "../artifacts/reports/day09-manifest-rebuild-evidence.jsonl",
+    "rebuild_sample_count": 5,
+    "policy": "Apply only confirmed removals; similarity candidates without a confirmed removal remain in the clean parent pool."
+  },
+  "token_budget": {
+    "version": "day09_common_supervised_token_budget_v1",
+    "unit": "post-template/post-mask/post-truncation supervised tokens",
+    "objective": "maximum common total exactly achievable by both mixtures with whole examples and no replacement; allow replacement only if no positive exact solution exists",
+    "ratio_tolerance_absolute": 0.0,
+    "total_token_tolerance_absolute": 0,
+    "primary_sampling_mode": "without_replacement",
+    "fallback_sampling_mode": "with_replacement",
+    "maximum_occurrences_primary": 1,
+    "base_budget_denominator": 8,
+    "stable_candidate_order": "sha256(version + NUL + mix + NUL + slice + NUL + sample_id), then sample_id",
+    "subset_solver": "integer bitset reachability with deterministic reverse reconstruction",
+    "budget_plan_path": "tmp/day09-work/step11-token-budget/token-budget-plan.json"
+  },
+  "mixtures": {
+    "unit": "post-template/post-mask/post-truncation supervised tokens",
+    "target_slice": "code",
+    "occurrence_order_seed": 20260804,
+    "mix_A_balanced": {
+      "general": "1/4",
+      "math": "1/4",
+      "code": "1/4",
+      "finance": "1/4"
+    },
+    "mix_B_targeted": {
+      "general": "1/8",
+      "math": "1/8",
+      "code": "1/2",
+      "finance": "1/4"
+    }
+  },
+  "mixture_materialization": {
+    "version": "day09_mix_manifest_v1",
+    "source_plan_path": "tmp/day09-work/step11-token-budget/token-budget-plan.json",
+    "mix_A_output_path": "learning/post-training-30-day-bootcamp/artifacts/data/day09-mix-A-balanced.json",
+    "mix_B_output_path": "learning/post-training-30-day-bootcamp/artifacts/data/day09-mix-B-targeted.json",
+    "occurrence_order": "sort ascending by sha256(str(occurrence_order_seed) + NUL + mix_name + NUL + canonical_sample_id + NUL + occurrence_index), then occurrence_id",
+    "canonical_identity_policy": "preserve sample_id as canonical_sample_id and store occurrence_id separately"
+  },
+  "manual_review": {
+    "gate_a_version": "day09_gate_a_v1",
+    "samples_per_source": 10,
+    "total_samples": 40,
+    "selection_method": [
+      "include the lowest stable hash refusal-hint sample when available",
+      "include the lowest stable hash repeated-prefix-cluster sample when available",
+      "include the longest supervised-response sample",
+      "include the shortest supervised-response sample",
+      "fill remaining slots by sha256(gate_a_version + NUL + sample_id)"
+    ],
+    "review_result_values": [
+      "accept",
+      "reject",
+      "uncertain"
+    ],
+    "review_package": "../artifacts/reports/day09-gate-a-review.jsonl",
+    "gate_a_decision": {
+      "date": "2026-08-05",
+      "reviewer": "user",
+      "result": "40 accept, 0 reject, 0 uncertain",
+      "confirmation": "User manually reviewed the Gate A package and confirmed the quality is acceptable."
+    },
+    "final_occurrences_per_mix": 30
+  },
+  "gate_c": {
+    "status": "waived_by_user",
+    "decision_date": "2026-08-05",
+    "required_occurrences_per_mix": 30,
+    "reviewed_occurrences_mix_A": 0,
+    "reviewed_occurrences_mix_B": 0,
+    "decision_basis": "User explicitly requested that Gate C be skipped and Day 09 be completed.",
+    "claim_boundary": "Gate C was waived, not passed; no final occurrence-level human quality evidence was collected.",
+    "downstream_training_eligible_under_waiver": true
+  },
+  "quality_filter": {
+    "version": "day09_quality_filter_v1",
+    "input_cohort": "Step 3 accepted records",
+    "ordered_filters": [
+      {
+        "name": "step3_contract_rejection_v3",
+        "scope": "original candidate pool",
+        "action": "exclude before Step 5 accepted-pool baseline"
+      },
+      {
+        "name": "confirmed_manual_quality_v1",
+        "scope": "Gate A and any approved expanded review decisions",
+        "action": "exclude only review_result=reject"
+      },
+      {
+        "name": "deterministic_guardrails_v1",
+        "scope": "Step 3 accepted records",
+        "action": "exclude records with a proven invariant violation",
+        "rules": [
+          "missing_required_lineage",
+          "sample_id_parent_mismatch",
+          "content_hash_mismatch",
+          "empty_prompt",
+          "empty_answer",
+          "non_positive_supervision",
+          "input_length_out_of_range"
+        ]
+      }
+    ],
+    "risk_hints_not_filters": [
+      "refusal_phrase_match",
+      "repeated_prefix_cluster",
+      "declared_synthetic",
+      "response_length_difficulty_proxy"
+    ],
+    "filter_decision_order": "contract -> confirmed manual quality -> deterministic guardrails",
+    "downstream_eligibility_requires": "Gate A complete or a documented expanded-review conclusion"
+  }
+}

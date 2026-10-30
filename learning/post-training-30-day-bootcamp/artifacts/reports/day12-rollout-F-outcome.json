@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "domain": "day12.recovery_rollout_outcome",
+  "ordinal": 4,
+  "run_id": "F",
+  "status": "failed_all_gates",
+  "hypothesis": "Halving learning rate from 1e-5 to 5e-6 on the repaired Run D data will continue the retention trend and recover Base math while retaining code gains.",
+  "primary_change": {"path": "optimizer.learning_rate", "parent": 0.00001, "rollout": 0.000005},
+  "fixed_parent": "Run E format-repaired data and every non-LR training/eval invariant",
+  "scores": {
+    "E_25_percent": {"general": 4, "math": 4, "code": 9, "finance": 2, "total": 19},
+    "F_25_percent": {"general": 9, "math": 3, "code": 0, "finance": 0, "total": 12},
+    "F_minus_E": {"general": 5, "math": -1, "code": -9, "finance": -2, "total": -7},
+    "base": {"general": 2, "math": 12, "code": 0, "finance": 1, "total": 15}
+  },
+  "gate": {
+    "math": {"actual": 3, "minimum": 10, "passed": false},
+    "code": {"actual": 0, "minimum": 5, "passed": false},
+    "total": {"actual": 12, "minimum": 15, "passed": false},
+    "accepted": false
+  },
+  "diagnostics": {
+    "general_parse_errors": 7,
+    "math_parse_errors": 0,
+    "math_ceiling_hits": 28,
+    "code_ceiling_hits": 28,
+    "finance_parse_errors": 13,
+    "finance_ceiling_hits": 28,
+    "all_slice_ceiling_hits": 112,
+    "output_tokens": 43904,
+    "generation_latency_seconds": 1049.476718,
+    "comparison": {
+      "base_output_tokens": 43904,
+      "base_ceiling_hits": 112,
+      "E_output_tokens": 7609,
+      "E_ceiling_hits": 20
+    }
+  },
+  "training": {
+    "checkpoint": "25_percent",
+    "supervised_tokens": 61734,
+    "optimizer_steps": 110,
+    "checkpoint_manifest_sha256": "b7861ab2c44d7b57c7463008a99cb038483168b3549d74171e66b08aa4355ec7",
+    "inference_export_manifest_sha256": "f7940e80154bd56f8d6f206ece4fd7b27a67da4006de575120f3d56beac05761",
+    "summary_path": "artifacts/logs/day12-run-F-25-training-summary.json",
+    "summary_file_sha256": "d831cc3a1cd0949de2d6834e7a384e1ceaff798b2b98a2d881ca805ab5816336",
+    "preflight_path": "artifacts/logs/day12-preflight-F.json",
+    "preflight_file_sha256": "e3919078a3984b8e3f0269d1f2804eec44a63c51025fec65a7b134625f0a52bd"
+  },
+  "eval": {
+    "summary_hash": "sha256:ac466668ebf00a61af5e75bb12a40cce0b4813f66439338105032dc9add6787b",
+    "predictions": {"path": "artifacts/eval/F-25_percent-dev-predictions.jsonl", "records": 112, "file_sha256": "f9e3172b1c4a040606cec5502404ec24d329f7defafcd15bd7c465a692e22b48"},
+    "code_results": {"path": "artifacts/eval/F-25_percent-dev-code-e2b.jsonl", "records": 28, "file_sha256": "5f54f9065c9c5a576017c2dd48d60ba9d607c9c653c4ccc6a66a4faff51c1c9f"},
+    "summary": {"path": "artifacts/eval/F-25_percent-dev-summary.json", "file_sha256": "19a7ecf85886a172c3ffb3ba8014aa8f01752d85ef0cadbc9b4006a41900b482"}
+  },
+  "interpretation": {
+    "hypothesis_result": "Rejected. The E-to-F learning-rate reduction did not continue the retention trend.",
+    "supported": "At 5e-6 the model returned to Base-like non-terminating continuation behavior: every one of 112 examples hit the frozen generation ceiling and total output tokens exactly matched Base.",
+    "remaining_failure": "Base-like length did not imply Base capability. Math fell from E's 4 to 3 instead of returning toward Base's 12, while E's nine code passes collapsed to zero.",
+    "next_rollout": "Do not reduce LR again. Change the update parameterization to a parameter-efficient adapter so the Base weights remain frozen while the repaired data teaches task routing and code behavior."
+  },
+  "frozen_test_consumed": false
+}

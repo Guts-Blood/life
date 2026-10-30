@@ -1,0 +1,32 @@
+{
+  "checkpoint_cursors": {
+    "100_percent": 1281,
+    "25_percent": 315,
+    "60_percent": 772
+  },
+  "config_hash": "a67b6b80c9e1d55123e80cdb6ae0502cf0f93a5dbbe19331b5b1e44818e13d65",
+  "created_at": "2026-08-06T15:43:22.301252+00:00",
+  "free_disk_gib": 51.14002227783203,
+  "gpu": "NVIDIA GeForce RTX 4090",
+  "gpu_memory_gib": 23.5164794921875,
+  "maximum_input_tokens": 2017,
+  "mixture_manifest_hash": "83712d7666962d336b7e8d9016543e1f26ca575a38249dc7ec98ec21e3793908",
+  "parameterization": {
+    "alpha": 32,
+    "bias": "none",
+    "dropout": 0.0,
+    "peft_version": "0.17.1",
+    "rank": 32,
+    "target_modules": "all-linear",
+    "task_type": "CAUSAL_LM",
+    "type": "lora"
+  },
+  "peft_version": "0.17.1",
+  "python_version": "3.12.3",
+  "record_count": 1281,
+  "run_id": "L",
+  "schedule_hash": "5e8180f0dea83acc9943fddc538242467918e868425164cfb8cded1dcf1381c5",
+  "status": "day12_preflight_pass",
+  "supervised_tokens": 246936,
+  "torch_version": "2.7.0+cu128"
+}

@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "domain": "day12.mix_c_recovery_outcome",
+  "status": "stopped_at_25_percent_gate_failed",
+  "evaluated_date": "2026-08-06",
+  "comparison_boundary": "Run C is a post-hoc recovery experiment and does not alter the preregistered Day 12 A/B conclusion.",
+  "intervention": {
+    "name": "mix_C_finance_reduced",
+    "base_model": "Qwen/Qwen3-0.6B-Base",
+    "total_supervised_tokens_planned": 246936,
+    "target_ratios": {
+      "general": "7/24",
+      "math": "7/24",
+      "code": "7/24",
+      "finance": "1/8"
+    },
+    "change_from_mix_A": "Finance supervised-token share was halved from 25% to 12.5%; the released share was divided equally across general, math, and code.",
+    "first_checkpoint_supervised_tokens": 61734
+  },
+  "training": {
+    "status": "day12_stage_complete",
+    "checkpoint": "25_percent",
+    "optimizer_steps": 113,
+    "schedule_cursor": 450,
+    "maximum_cuda_memory_gib": 13.46748399734497,
+    "checkpoint_manifest_sha256": "c36c6028598920d6f47ae50b2ee72fba9b51b63b6ec4ff7ab1a91d9ccb07089a",
+    "inference_export_manifest_sha256": "aa8feefa5f075955c1b1b024158f5bbc23ced65e81cc5194439e98d4300d2fe8",
+    "local_summary_path": "artifacts/logs/day12-run-C-25-training-summary.json",
+    "local_summary_file_sha256": "3c5afbf9a6a67a82c094eb87ad3f9f55698487c0fc2a860edcff574a73f95062"
+  },
+  "eval": {
+    "status": "complete_code_sandbox_scored",
+    "comparison_key": "sha256:fcae58c2fe207b28bd91037672b4282d23078ae94fcdb7b5152ec56d2a56cfbf",
+    "complete_comparison_key": "sha256:f33b389071b844f8c2db221c09e4e0f0a39970718e7d4ba76fa639b90f921f8e",
+    "summary_hash": "sha256:3c9c9e6a27bc0e8472bb63c7652c8332ee218e629c52d008426536478fb2876c",
+    "predictions": {
+      "path": "artifacts/eval/C-25_percent-dev-predictions.jsonl",
+      "records": 112,
+      "file_sha256": "826672e6b97135271b2429c6bcdd7a8e12c95ed9ff10fc6882139fb01aaad2c0"
+    },
+    "code_results": {
+      "path": "artifacts/eval/C-25_percent-dev-code-e2b.jsonl",
+      "records": 28,
+      "file_sha256": "bbc1dad57c731d1f79e5954b6212589133e0871e86f3ffdb0b8bbea58938df95"
+    },
+    "summary": {
+      "path": "artifacts/eval/C-25_percent-dev-summary.json",
+      "file_sha256": "0eab39dc40d09fe2c76b9e9be1961dd8439a381ee0c97c15eda002fe92da2023"
+    }
+  },
+  "scores": {
+    "base": {
+      "general": 2,
+      "math": 12,
+      "code": 0,
+      "finance": 1,
+      "four_slice_total": 15
+    },
+    "C_25_percent": {
+      "general": 0,
+      "math": 1,
+      "code": 3,
+      "finance": 1,
+      "four_slice_total": 5
+    },
+    "C_minus_base": {
+      "general": -2,
+      "math": -11,
+      "code": 3,
+      "finance": 0,
+      "four_slice_total": -10
+    }
+  },
+  "continuation_gate": {
+    "math": {
+      "actual": 1,
+      "minimum": 10,
+      "passed": false
+    },
+    "code": {
+      "actual": 3,
+      "minimum": 5,
+      "passed": false
+    },
+    "four_slice_total": {
+      "actual": 5,
+      "minimum": 15,
+      "passed": false
+    },
+    "decision": "Stop Run C; do not train 60_percent or 100_percent."
+  },
+  "interpretation": {
+    "supported": "Halving the finance supervised-token share alone did not recover Base math/general capability under the existing full-parameter, constant-peak-LR SFT recipe.",
+    "not_supported": "This post-hoc pilot does not prove that finance data is harmless or identify one universal failure cause.",
+    "diagnostic_signal": "Code remained above Base by 3 cases, while math fell by 11 and general fell by 2. The dominant failure is still cross-capability retention/format interference rather than insufficient training duration.",
+    "next_experiment": "Do not repeat the same recipe with more tokens. Repair task routing/output formats first, then test a lower or decayed learning rate with an early checkpoint; alternatively establish an instruction-tuned baseline for a performance-first path."
+  },
+  "storage": {
+    "autodl_data_disk_available_after_run_gib_approximately": 43,
+    "run_C_checkpoint_usage_gib_approximately": 6.7,
+    "C_25_percent_inference_export_usage_gib_approximately": 1.5,
+    "deleted": false,
+    "reason": "The data disk still has sufficient free space, so A/B/C checkpoints and all reports were retained."
+  },
+  "frozen_test": {
+    "consumed": false,
+    "reason": "No checkpoint passed the dev promotion gate."
+  }
+}

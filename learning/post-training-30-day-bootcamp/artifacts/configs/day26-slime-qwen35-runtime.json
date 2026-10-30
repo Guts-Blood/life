@@ -1,0 +1,210 @@
+{
+  "schema_name": "day26.slime_qwen35_runtime",
+  "schema_version": 1,
+  "prepared_at": "2026-08-17",
+  "status": "slime_qwen35_compatibility_blocked",
+  "decision": "slime_qwen35_compatibility_blocked",
+  "release": {
+    "repository": "https://github.com/THUDM/slime",
+    "tag": "v0.3.1",
+    "commit": "a6272da0d4f3d0a08520c99a2f3b4f6c887960dc",
+    "rolling_main_allowed": false
+  },
+  "container": {
+    "image": "slimerl/slime:nightly-dev-20260804a",
+    "digest": "sha256:2feaad36b157ee1f790f139aeb6d2669a466b914f28426f468df70b2324807a7",
+    "config_digest": "sha256:420e89724ba199e5c48c70214d956afb7e98af9b92a21af625462e7ecdce04e2",
+    "platform": "linux/amd64",
+    "compressed_size_bytes": 21115937644,
+    "created": "2026-08-05T12:13:55.118211141+08:00",
+    "cuda": "12.9.1",
+    "nccl": "2.27.3",
+    "sglang": {
+      "version": "0.5.15.post1",
+      "commit": "0b3bb0cbe31873994c9f989fddfe2f87ca839fdd"
+    },
+    "megatron_commit": "1dcf0dafa884ad52ffb243625717a3471643e087",
+    "transformer_engine": "2.16.1",
+    "flash_linear_attention": "0.4.2",
+    "runtime_inventory_status": "fail_runtime_identity_drift",
+    "observed": {
+      "image_digest": null,
+      "image_digest_verification": "unprovable_from_container",
+      "cuda_toolkit": "12.4",
+      "nccl_active_environment": "2.21.5",
+      "torch_active_environment": "2.5.1+cu124",
+      "missing_active_packages": [
+        "transformers",
+        "ray",
+        "sglang",
+        "flash-linear-attention",
+        "flashqla",
+        "megatron-core",
+        "e2b"
+      ],
+      "slime_checkout": "missing:/root/slime",
+      "megatron_checkout": "missing:/root/Megatron-LM"
+    }
+  },
+  "policy_parent": {
+    "role": "S1",
+    "checkpoint_id": "qwen35-4b-s1-main-s20260809-lr1e-4-final",
+    "downstream_key": "s1:qwen35-4b:c169e0bb55b20951d27a889e4ef0deae3a01fe10acabee804b212d3d8170db0a",
+    "base_model": "Qwen/Qwen3.5-4B-Base",
+    "base_revision": "1001bb4d826a52d1f399e183466143f4da7b741b",
+    "architecture": "Qwen3_5ForConditionalGeneration",
+    "processor": "Qwen3VLProcessor",
+    "modality": "text_only",
+    "remote_merged_export_path": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/exports/main-s20260809-lr1e-4-final-merged",
+    "merged_export_artifact_sha256": "16bc212df51ecac9a5b3b34062e0ccc880c719d63248f04949be8636550e53be",
+    "merged_export_manifest_sha256": "660eed4af7f76796631561275f0190c402952520a8ccce358289e6269fb8f8d3",
+    "promotion_manifest_sha256": "64e6a6bd61951d1f10eb4def520273cb056625c1b041b68ba861c6d1e15d7a6c",
+    "slime_load_mode": "merged_full_hf_to_megatron_torch_dist",
+    "adapter_load_mode": "forbidden_upstream_slime_v0.3.1_has_no_documented_peft_lora_learner_path"
+  },
+  "model_codepath": {
+    "model_args": "scripts/models/qwen3.5-4B.sh",
+    "model_spec": "slime_plugins/models/qwen3_5.py:get_qwen3_5_spec",
+    "gdn": "slime_plugins/models/qwen3_5.py:Qwen3_5GatedDeltaNet",
+    "hf_to_megatron": "slime/backends/megatron_utils/hf_to_megatron/qwen3_5.py:qwen3_5_hf_tensor",
+    "megatron_to_hf": "slime/backends/megatron_utils/megatron_to_hf/qwen3_5.py:convert_qwen3_5_to_hf",
+    "data_source": "slime/rollout/data_source.py:RolloutDataSourceWithBuffer",
+    "rollout": "slime/rollout/sglang_rollout.py:generate_rollout_async",
+    "sample_to_train": "slime/ray/rollout.py:RolloutManager._convert_samples_to_train_data",
+    "train": "slime/ray/actor_group.py:RayTrainGroup.async_train",
+    "weight_sync": "slime/ray/actor_group.py:RayTrainGroup.update_weights"
+  },
+  "frozen_input": {
+    "path": "artifacts/data/day26-slime-qwen35-runtime-prompts.jsonl",
+    "sha256": "93fbe3201ef3b1ba656dd3e131afa74e28f21160a645876879242809a5a9da12",
+    "prompts": 2,
+    "group_size": 4,
+    "trajectories_per_rollout": 8,
+    "prompt_token_cap": 512,
+    "completion_token_cap": 512,
+    "apply_chat_template_kwargs": {
+      "enable_thinking": false
+    }
+  },
+  "reward_contract": {
+    "custom_rm_path": "day26_slime_reward.reward_func",
+    "requires_group_rm": true,
+    "policy": "tests_only",
+    "sandbox": "Day 24 E2B Firecracker contract",
+    "infra_retry": 1,
+    "persistent_infra_semantics": "abort_group_without_scalar",
+    "adapter_path": "day-26-slime-codepath-prep/day26_slime_reward.py",
+    "adapter_sha256": "d659ad44505e56b50a59e4d1ee86877918dfea3ba6d54748adf97be1cecf7613",
+    "unit_tests": "4/4 pass"
+  },
+  "topology": {
+    "status": "fail_physical_gpu_count_drift_and_ray_unavailable",
+    "gpu_count": 1,
+    "required_memory_class": "approximately 98 GiB",
+    "reference_hardware": "NVIDIA RTX PRO 6000 Blackwell Server Edition 97887 MiB",
+    "placement": "colocate",
+    "actor_num_nodes": 1,
+    "actor_num_gpus_per_node": 1,
+    "rollout_num_gpus": 1,
+    "rollout_num_gpus_per_engine": 1,
+    "tensor_model_parallel_size": 1,
+    "pipeline_model_parallel_size": 1,
+    "context_parallel_size": 1,
+    "gdn_backend": "fla",
+    "sglang_mem_fraction_static_initial": 0.25,
+    "max_tokens_per_gpu_initial": 1024,
+    "free_memory_fraction_gate": 0.15,
+    "max_gpu_gate_minutes": 60,
+    "scale_up_authorized": false,
+    "observed_physical_gpu_count": 2,
+    "observed_gpu_name": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+    "observed_memory_mib_per_gpu": 97887,
+    "cuda_visible_devices": "0",
+    "torch_visible_gpu_count": 1,
+    "ray_visible_gpu_count": null
+  },
+  "training_contract": {
+    "advantage_estimator": "grpo",
+    "reference_model": false,
+    "kl_coefficient": 0.0,
+    "optimizer": "adam",
+    "learning_rate": 1e-7,
+    "global_batch_size": 8,
+    "rollout_batch_size": 2,
+    "n_samples_per_prompt": 4,
+    "recompute_granularity": "full",
+    "loss_mask_type": "qwen3_5",
+    "update_weight_mode": "full",
+    "update_weight_transport": "nccl",
+    "formal_rl_authorized": false
+  },
+  "gates": {
+    "pre_gpu_release_and_source_audit": "pass",
+    "pre_gpu_model_processor_conversion_codepath": "pass_static",
+    "pre_gpu_reward_schema_adapter": "pass_4_of_4",
+    "S0_container_import_config": "fail",
+    "S1_conversion_load": "not_run_due_to_s0_fail",
+    "S2_rollout_only": "not_run_due_to_s0_fail",
+    "S3_reward_schema_replay": "not_run_due_to_s0_fail",
+    "S4_train_only_controlled_step": "not_run_due_to_s0_fail",
+    "S5_full_weight_sync_next_version": "not_run_due_to_s0_fail"
+  },
+  "runtime_execution": {
+    "run_id": "day26-slime-qwen35-20260817T141117Z",
+    "executed_at_utc": "2026-08-17T14:15:56Z",
+    "ssh_target": "autodl-36153",
+    "hostname": "autodl-container-6acf40b03d-62d686fe",
+    "blocked_at": "S0_container_import_config",
+    "remote_run_root": "/root/autodl-tmp/runs/day26-slime-qwen35-20260817T141117Z",
+    "local_mirror": "tmp/day26-slime-qwen35-20260817T141117Z",
+    "s1_merged_export_identity": "pass_11_files_9098708091_bytes",
+    "s1_merged_export_files_sha256": "16bc212df51ecac9a5b3b34062e0ccc880c719d63248f04949be8636550e53be",
+    "model_conversion_performed": false,
+    "model_load_performed": false,
+    "rollout_performed": false,
+    "live_reward_performed": false,
+    "optimizer_step_performed": false,
+    "weight_sync_performed": false,
+    "credentials_accessed": false,
+    "terminal_blocker_codes": [
+      "physical_gpu_count_drift",
+      "exact_image_digest_unprovable",
+      "cuda_toolkit_drift",
+      "nccl_version_drift",
+      "required_runtime_packages_missing",
+      "slime_checkout_missing",
+      "megatron_checkout_missing",
+      "ray_placement_unverifiable"
+    ]
+  },
+  "evidence": {
+    "static_audit": {
+      "path": "artifacts/eval/day26-slime-v031-static-audit.json",
+      "sha256": "222f8ac1614c36309c7baca4d1d5404b8f8703f40de33f1f7d4596ad55ad9c8e",
+      "status": "pass"
+    },
+    "day21_promotion_manifest_file_sha256": "40c76f690dcb73805250e0036f8e124ef07b8d2d32b1723637656ae4304d94f8",
+    "day21_downstream_key_file_sha256": "979e599aa6c9c05bec9a14144b6ebae689dbdf8315a9112caaec09b5469bd545",
+    "day24_schema_file_sha256": "78281bbce8d9b6c5bdedb6deb68f3bef638751c73c26391c8931f08d3f104fef",
+    "day25_gpu_report_file_sha256": "46b98833a73ce31e1840be00e8a106cc4406208cb95613466dcd0b40b7d46247",
+    "runtime_s0_decision": {
+      "path": "tmp/day26-slime-qwen35-20260817T141117Z/decision/s0-decision.json",
+      "sha256": "cb20804fa756d580e10fd6753981801659a2d25bd443b803768af450d429d8b3"
+    },
+    "runtime_file_manifest": {
+      "path": "tmp/day26-slime-qwen35-20260817T141117Z/manifests/final-file-sha256.txt",
+      "sha256": "d0f1787c88493b31ec17189f327faf81b31bbc17f03037de38c6ce88e58cfad9",
+      "verified_files": 90
+    },
+    "day29_go_no_go": {
+      "path": "artifacts/eval/day26-slime-qwen35-day29-go-no-go.json",
+      "source_run_path": "tmp/day26-slime-qwen35-20260817T141117Z/decision/day29-go-no-go.json",
+      "source_run_sha256": "81235967bd5340a6bf50fe194e25454baab9a619d0c219392ac2fc180db52115"
+    }
+  },
+  "allowed_terminal_decisions": [
+    "go_day29",
+    "slime_qwen35_compatibility_blocked"
+  ],
+  "claim_boundary": "S0 failed on the supplied runtime, so S1-S5 were not run. The terminal decision applies to this fixed Day 26 boundary and does not claim that the unavailable pinned image itself was tested."
+}

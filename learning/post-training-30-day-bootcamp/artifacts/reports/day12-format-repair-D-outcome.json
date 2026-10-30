@@ -1,0 +1,155 @@
+{
+  "schema_version": 1,
+  "domain": "day12.format_repair_D_outcome",
+  "status": "stopped_at_25_percent_gate_failed",
+  "evaluated_date": "2026-08-06",
+  "comparison_boundary": "Run D is a post-hoc format-only recovery experiment. It preserves Run C token ratios and training hyperparameters while repairing task routing and FinQA response format.",
+  "intervention": {
+    "run_id": "D",
+    "mix_name": "mix_D_format_repaired",
+    "total_supervised_tokens_planned": 246936,
+    "target_ratios": {
+      "general": "7/24",
+      "math": "7/24",
+      "code": "7/24",
+      "finance": "1/8"
+    },
+    "nonfinance_canonical_samples_preserved": true,
+    "finance_parent_occurrences": 991,
+    "finance_repaired_occurrences": 879,
+    "finance_change": "Replaced the global Calculation: operation(...) DSL with natural-language arithmetic steps ending in Final answer:, then rematerialized an exact 30,867-token finance subset without replacement.",
+    "routing_change": "Added skill-appropriate natural-language constraints to the first user message without supervising the routing text."
+  },
+  "training": {
+    "status": "day12_stage_complete",
+    "checkpoint": "25_percent",
+    "supervised_tokens": 61734,
+    "optimizer_steps": 110,
+    "schedule_cursor": 437,
+    "maximum_cuda_memory_gib": 13.483318328857422,
+    "checkpoint_manifest_sha256": "3aedea17ff104bc159e4e9df6fa603a989cce883dededd160a3941aea6ed0dc6",
+    "inference_export_manifest_sha256": "f06e570588492204cdbd41df27f9fb5c13307f7fe76111909e01279c2d62ebbf",
+    "local_summary_path": "artifacts/logs/day12-run-D-25-training-summary.json",
+    "local_summary_file_sha256": "6d760d7c3a929edd07869f12a90b24e736a367152e4ee50bad1a44f9c1aed363",
+    "preflight_path": "artifacts/logs/day12-preflight-D.json",
+    "preflight_file_sha256": "6cdaf064995bfe286b6c5567f755dd685981cca58db7e8fad33f6d93a8154d71"
+  },
+  "eval": {
+    "status": "complete_code_sandbox_scored",
+    "comparison_key": "sha256:fcae58c2fe207b28bd91037672b4282d23078ae94fcdb7b5152ec56d2a56cfbf",
+    "complete_comparison_key": "sha256:f33b389071b844f8c2db221c09e4e0f0a39970718e7d4ba76fa639b90f921f8e",
+    "summary_hash": "sha256:17cf8ff00e594e4c957a4b2f0e74588d2472d0131a6e59e3c599d768eadcd8d0",
+    "predictions": {
+      "path": "artifacts/eval/D-25_percent-dev-predictions.jsonl",
+      "records": 112,
+      "file_sha256": "e98698a611e9f22e161807b0312a07700fbac4403dc8748e768085e9907b5920"
+    },
+    "code_results": {
+      "path": "artifacts/eval/D-25_percent-dev-code-e2b.jsonl",
+      "records": 28,
+      "file_sha256": "68ad0551f1bd60ccb910effc1f67c1dea6ab9eb77fb17bd253998dbea7806a6c"
+    },
+    "summary": {
+      "path": "artifacts/eval/D-25_percent-dev-summary.json",
+      "file_sha256": "a9a6348368396e8ed23d3c5c559e185e8dc1d08380a2d83c2d8327d9c78cde48"
+    }
+  },
+  "scores": {
+    "base": {
+      "general": 2,
+      "math": 12,
+      "code": 0,
+      "finance": 1,
+      "four_slice_total": 15
+    },
+    "C_25_percent": {
+      "general": 0,
+      "math": 1,
+      "code": 3,
+      "finance": 1,
+      "four_slice_total": 5
+    },
+    "D_25_percent": {
+      "general": 3,
+      "math": 2,
+      "code": 5,
+      "finance": 2,
+      "four_slice_total": 12
+    },
+    "D_minus_C": {
+      "general": 3,
+      "math": 1,
+      "code": 2,
+      "finance": 1,
+      "four_slice_total": 7
+    },
+    "D_minus_base": {
+      "general": 1,
+      "math": -10,
+      "code": 5,
+      "finance": 1,
+      "four_slice_total": -3
+    }
+  },
+  "format_diagnostics": {
+    "general_parse_errors": {
+      "C_25_percent": 26,
+      "D_25_percent": 17,
+      "change": -9
+    },
+    "math_ceiling_hits": {
+      "C_25_percent": 10,
+      "D_25_percent": 0,
+      "change": -10
+    },
+    "finance_ceiling_hits": {
+      "C_25_percent": 8,
+      "D_25_percent": 4,
+      "change": -4
+    },
+    "finance_parse_errors": {
+      "C_25_percent": 3,
+      "D_25_percent": 2,
+      "change": -1
+    }
+  },
+  "continuation_gate": {
+    "math": {
+      "actual": 2,
+      "minimum": 10,
+      "passed": false
+    },
+    "code": {
+      "actual": 5,
+      "minimum": 5,
+      "passed": true
+    },
+    "four_slice_total": {
+      "actual": 12,
+      "minimum": 15,
+      "passed": false
+    },
+    "decision": "Stop Run D; do not train 60_percent or 100_percent."
+  },
+  "interpretation": {
+    "supported": "Format repair materially improved the same-ratio recovery run: total score rose from 5 to 12, general parsing improved, math stopped hitting the generation ceiling, and code reached the minimum gate.",
+    "remaining_failure": "Math capability retention remains the dominant blocker. D still loses 10 of 12 Base math cases and remains 3 total cases below Base.",
+    "not_supported": "The pilot does not show that format repair alone makes full-parameter constant-peak-LR SFT eligible, nor that more training with the same optimizer would recover math.",
+    "next_experiment": "Keep the repaired Run D data fixed and test one retention-focused optimizer change at a time, starting with a lower or decayed learning rate and an earlier checkpoint."
+  },
+  "storage": {
+    "deleted_full_checkpoints": [
+      "/root/autodl-tmp/runs/day12-20260806/run-C/checkpoints/checkpoint-25_percent",
+      "/root/autodl-tmp/runs/day12-20260806/run-B/checkpoints/checkpoint-60_percent"
+    ],
+    "deleted_checkpoint_recovery": "The deleted full-state checkpoints can only be recovered by retraining. Their BF16 exports, eval results, traces, summaries and reports were preserved.",
+    "run_D_checkpoint_retained": true,
+    "autodl_data_disk_available_after_run_gb_approximately": 48,
+    "run_D_checkpoint_usage_gib_approximately": 6.7,
+    "D_25_percent_inference_export_usage_gib_approximately": 1.5
+  },
+  "frozen_test": {
+    "consumed": false,
+    "reason": "D-25% did not pass all dev promotion gates."
+  }
+}

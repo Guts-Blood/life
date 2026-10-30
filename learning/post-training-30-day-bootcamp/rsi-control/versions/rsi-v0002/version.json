@@ -1,0 +1,87 @@
+{
+  "schema_name": "rsi.version",
+  "schema_version": 1,
+  "version_id": "rsi-v0002",
+  "goal_id": "goal-0001",
+  "title": "Balanced Code target-boundary supervision",
+  "status": "complete_qualified",
+  "kind": "causal_intervention",
+  "parent": "rsi-v0001",
+  "context": [
+    "rsi-v0001 completed four Probe checkpoints with complete raw, normalized, E2B, checkpoint, selection, and cost evidence but produced no candidate.",
+    "Base scored total 15 with Code 3 and eligibility 7/8; t12000 through t24000 scored total 18 but Code 0 and eligibility 0/8.",
+    "The source target is correct for all 105 Probe Code rows, but the pinned native training template retained the required leading four spaces in zero of 105 nonmasked label sequences.",
+    "The causal mechanism is assistant strip followed by ignore-empty-think masking; t18000 and t24000 Code outputs are byte-identical, so more tokens or an LR sweep under the same target encoding is not justified.",
+    "This version changes only the Code target representation and the necessary loss mask exchange. Evaluation, inference template, data cases, sample order, token budgets, LoRA recipe, scorer, E2B, selectors, and gates remain frozen."
+  ],
+  "intervention": {
+    "primary_lever": "model.target.representation",
+    "changed_levers": [
+      "model.target.representation",
+      "model.target.masking"
+    ],
+    "causal_attribution": true,
+    "dependent_lever_reason": "Preserving the indentation token in the rendered sequence has no effect unless that token is also removed from the ignore-empty-think -100 mask. The exchanged suffix newline is structural, not canonical target content, and keeps every row's supervised-token count unchanged."
+  },
+  "assumptions": [
+    {
+      "id": "A1",
+      "statement": "The missing supervised four-space boundary token is the dominant cause of the rsi-v0001 Code collapse.",
+      "prediction": "At least one complete Stage-A checkpoint reaches Code eligibility >=7/8 and Code E2B >=2 while total >=17, Math >=6, Finance >=3, and infrastructure failures =0.",
+      "falsifier": "All complete Stage-A checkpoints remain below 7/8 eligibility, or eligibility recovers but every checkpoint remains below Code E2B 2 / the frozen strict Probe gate."
+    },
+    {
+      "id": "A2",
+      "statement": "A balanced label exchange preserves v0001's learned non-Code improvements because all Non-Code input IDs and labels and all per-row supervised-token counts are unchanged.",
+      "prediction": "At least one Stage-A checkpoint retains non-Code >=17/24 while satisfying A1; the likely t12000 range is General 5, Math 7, Finance 6, Code 2-4, eligibility 7-8, total 20-22.",
+      "falsifier": "The GPU preflight finds any Non-Code token-array drift or any row token-count drift, or every Code-eligible checkpoint has non-Code <17/24."
+    },
+    {
+      "id": "A3",
+      "statement": "The full token-label equivalence gate isolates the target-boundary lever before GPU execution.",
+      "prediction": "Probe and Main preserve every sample/order/token-budget invariant; every Code label begins with its canonical four spaces; Swift cannot launch without a self-hashed passing audit.",
+      "falsifier": "Any preparation, live-template, manifest, config, audit, or E2B identity fails after Swift has started."
+    }
+  ],
+  "plan": {
+    "runner": "day-20-qwen35-balanced-lora-sft/run_day20_v3_autodl.sh",
+    "commands": [
+      "init",
+      "prepare",
+      "preflight",
+      "probe-funnel",
+      "main",
+      "confirm",
+      "finalize"
+    ],
+    "frozen_recipe": {
+      "learning_rate": "1e-4",
+      "primary_seed": 20260809,
+      "confirmation_seed": 20260810,
+      "lora_rank": 8,
+      "lora_alpha": 16,
+      "lora_dropout": 0.05,
+      "probe_supervised_tokens": 24000,
+      "main_supervised_tokens": 320000
+    },
+    "budget": {
+      "materialization_gpu_hours": 0.0,
+      "probe_stage_a_gpu_hours_cap": 0.2,
+      "probe_eval_accesses_cap_including_base": 5,
+      "version_gpu_hours_cap": 2.5
+    },
+    "stop_on": [
+      "target_encoding_preflight_failure_before_gpu",
+      "stage_a_all_gross_fail_no_lr_bracket",
+      "no_main_full112_pass",
+      "confirmation_failure",
+      "version_gpu_hours_cap"
+    ]
+  },
+  "runs": [
+    "run-001-probe-primary",
+    "run-002-main-primary",
+    "run-003-main-confirmation",
+    "run-004-probe-primary-remediated"
+  ]
+}

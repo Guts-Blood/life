@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "domain": "day12.recovery_mix_spec",
+  "run_id": "C",
+  "mix_name": "mix_C_finance_reduced",
+  "manifest_name": "day12-mix-C-finance-reduced",
+  "selection_version": "day12_finance_reduced_exact_budget_v1",
+  "parent_manifest_path": "learning/post-training-30-day-bootcamp/artifacts/data/day09-dataset-manifest.json",
+  "total_supervised_tokens": 246936,
+  "target_ratios": {
+    "general": "7/24",
+    "math": "7/24",
+    "code": "7/24",
+    "finance": "1/8"
+  },
+  "hypothesis": "Halving the finance supervised-token share while distributing the released budget equally across general, math, and code will reduce FinQA answer-format interference and retain the early code gain with materially less math regression.",
+  "comparison_boundary": "Run C is a post-hoc recovery experiment. It does not alter the preregistered Day 12 A/B conclusion and must be reported separately.",
+  "first_gate": {
+    "checkpoint": "25_percent",
+    "math_correct_minimum_out_of_28": 10,
+    "code_correct_minimum_out_of_28": 5,
+    "four_slice_total_minimum_out_of_112": 15,
+    "action_if_failed": "Stop Run C; do not continue to 60_percent or 100_percent."
+  }
+}

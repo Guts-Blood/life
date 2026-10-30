@@ -1,0 +1,12 @@
+[
+  {"record_type":"candidate","candidate_label":"Base","candidate_order":0,"first_line_0_spaces":0,"first_line_4_spaces":8,"code_records":8,"static_eligible":8,"first_line_only_repairable":0},
+  {"record_type":"candidate","candidate_label":"LoRA 1e-5","candidate_order":1,"first_line_0_spaces":0,"first_line_4_spaces":8,"code_records":8,"static_eligible":8,"first_line_only_repairable":0},
+  {"record_type":"candidate","candidate_label":"LoRA 3e-5","candidate_order":2,"first_line_0_spaces":2,"first_line_4_spaces":6,"code_records":8,"static_eligible":6,"first_line_only_repairable":2},
+  {"record_type":"candidate","candidate_label":"LoRA 1e-4","candidate_order":3,"first_line_0_spaces":8,"first_line_4_spaces":0,"code_records":8,"static_eligible":0,"first_line_only_repairable":8},
+  {"record_type":"training_target","leading_spaces":0,"target_count":8,"target_total":84},
+  {"record_type":"training_target","leading_spaces":1,"target_count":4,"target_total":84},
+  {"record_type":"training_target","leading_spaces":2,"target_count":26,"target_total":84},
+  {"record_type":"training_target","leading_spaces":3,"target_count":2,"target_total":84},
+  {"record_type":"training_target","leading_spaces":4,"target_count":38,"target_total":84},
+  {"record_type":"training_target","leading_spaces":8,"target_count":6,"target_total":84}
+]

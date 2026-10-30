@@ -23,14 +23,25 @@ but they are not the final goal. They are one part of the broader life system.
 
 ## Core Areas
 
-- `profile/`: stable and seasonal personal context
+- `profile/`: stable and seasonal personal context, plus current resume sources and exports
+- `learning/`: study notes, bootcamps, and durable research deliverables
 - `assumptions/`: ideas waiting to be tested
 - `experiments/`: concrete verification plans
 - `evidence/`: observations, logs, and source material
 - `principles/`: ideas that have earned enough support to guide decisions
 - `reviews/`: periodic reflection and system maintenance
 - `templates/`: reusable note templates
-- `skill/`: workflow instructions for collaborating with Codex on this system
+- `skills/`: versioned Codex skills for the life system, task context, and work planning
+- `work-planning/`: canonical machine-readable plan state and append-only event traces
+- `work-tracking/`: human-maintained workstreams, execution logs, and historical context
+
+The three repository skills are:
+
+- `skills/life-system/`: maintain the assumption-to-principle workflow
+- `skills/agent-task-context/`: map knowns, gaps, silent context, and blind spots before complex work
+- `skills/plan-and-track-work/`: build and replay dependency-aware work plans
+
+Final deliverables live with the domain that owns them, such as `profile/resumes/` and `learning/research/`. Generated previews, local planner configuration, external source checkouts, and other disposable files stay outside version control.
 
 ## Recommended Flow
 
@@ -48,10 +59,10 @@ but they are not the final goal. They are one part of the broader life system.
 - experiments: `E-YYYYMMDD-short-title.md`
 - evidence: `EV-YYYYMMDD-short-title.md`
 - principles: `P-YYYYMMDD-short-title.md`
+- work tracking: `work-tracking/<area>/<dashboard-or-workstream>.md`
 
 ## First Files To Fill In
 
 - `profile/user-profile.md`
 - `profile/current-season.md`
 - `assumptions/inbox/`
-

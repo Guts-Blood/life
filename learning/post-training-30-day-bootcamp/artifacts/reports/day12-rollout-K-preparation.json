@@ -1,0 +1,60 @@
+{
+  "authorized_differences": {
+    "adapter.target_modules": {
+      "parent": "all-linear",
+      "rollout": [
+        "q_proj",
+        "k_proj",
+        "v_proj",
+        "o_proj",
+        "gate_proj",
+        "up_proj",
+        "down_proj",
+        "lm_head"
+      ]
+    },
+    "run.id": {
+      "parent": "J",
+      "rollout": "K"
+    }
+  },
+  "checkpoint_budgets": {
+    "100_percent": 246936,
+    "25_percent": 61734,
+    "60_percent": 148162
+  },
+  "config_hash": "f4f06589718ab5a0fd1378e031ecbaf6244c7d03b19a130dcc57608af1f7db21",
+  "first_gate": "25_percent",
+  "hypothesis": "J's decoder-only all-linear LoRA does not directly adapt the tied output projection; adding lm_head to otherwise identical rank-16 LoRA coverage will improve executable code and termination behavior without giving up J's math-retention gain.",
+  "manifest_hash": "83712d7666962d336b7e8d9016543e1f26ca575a38249dc7ec98ec21e3793908",
+  "ordinal": 9,
+  "parent_run_id": "J",
+  "primary_change": {
+    "parent_value": "all-linear",
+    "path": "adapter.target_modules",
+    "rollout_value": [
+      "q_proj",
+      "k_proj",
+      "v_proj",
+      "o_proj",
+      "gate_proj",
+      "up_proj",
+      "down_proj",
+      "lm_head"
+    ]
+  },
+  "run_id": "K",
+  "schedule_file_sha256": "ebb7b98b8791e6a061d76e08870c64a3c28e67cefcf7d0600bde0c538d4a17f3",
+  "schedule_hash": "a9913e05677f778c7c6c531bf19c008bc17fbef2cb24f28fc59b8f9827ca159b",
+  "schedule_path": "learning/post-training-30-day-bootcamp/artifacts/data/day12-training-schedule-K.json",
+  "status": "day12_run_k_preparation_pass",
+  "summary_hash": "2b4d0157ea963bbf6c0d5c3b3f78c25a3d695fda7d55b0a0bad4fd3fafba523c",
+  "validation_checks": {
+    "adapter_shape_reused_exactly": true,
+    "manifest_reused_exactly": true,
+    "occurrence_order_reused_exactly": true,
+    "only_identity_and_target_modules_changed": true,
+    "optimizer_reused_exactly": true,
+    "schedule_total_exact": true
+  }
+}

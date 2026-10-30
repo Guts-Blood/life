@@ -1,0 +1,21 @@
+{
+  "schema_name": "rsi.full112_sandbox_verification",
+  "schema_version": 1,
+  "version_id": "rsi-v0002",
+  "run_id": "run-003-main-confirmation",
+  "attempt_id": "attempt-001",
+  "candidate": "main-s20260810-lr1e-4-final",
+  "scope": "full112",
+  "status": "pass",
+  "promotion_eligible": true,
+  "files": {
+    "results_file_sha256": "ec6d1a45fb99e01746582be25835d63978d227f83d85ee91ce8ddae4264b4bff",
+    "results_content_sha256": "ee89c0c1fa17e4efd3c9bfc7d7fa9c2adc8b9f6ec1903c1ff9a6102fcb8330e6",
+    "summary_file_sha256": "b8d8c6599438e1f23c4e90de619ce831df9dea4ccfcead26ec0602dec4e1a323",
+    "summary_content_sha256": "41dcc2ce3c2327d05263ef891e45a72b59c78c1b59f1632849dd30165e015a4e"
+  },
+  "e2b_run_sha256": "f541a2d958490dba63b8bc446ac027f3b4db94c0cdef5b4916b63e40674ef0a6",
+  "metrics": {"eligible": 28, "passed": 17, "failed": 11, "infrastructure_failures": 0},
+  "outcomes": {"passed": 17, "failed": 11},
+  "cost": {"gpu_hours": 0.0, "eval_accesses": 0, "measurement_method": "e2b_remote_sandbox_no_local_gpu"}
+}

@@ -1,0 +1,97 @@
+{
+  "archive_checkpoint": "/root/autodl-tmp/s1-checkpoints/qwen35-4b-s1-main-s20260809-lr1e-4-final/checkpoint-1904",
+  "candidate": "main-s20260809-lr1e-4-final",
+  "checkpoint": {
+    "adapter_sha256": "29dc1a7d676b7f2f88675521bc44cf81dd43b700423df3cf4adf8d6a1c4487c3",
+    "cumulative_supervised_tokens": 320000,
+    "files": {
+      "README.md": {
+        "bytes": 5312,
+        "sha256": "90e3386dcfae4cc102c3a9dc9d8e7e5ff92b62bcdb7da83bf537bb1dc8f1092c"
+      },
+      "adapter_config.json": {
+        "bytes": 1265,
+        "sha256": "224162ba15f896c8eab7af668954b769cc7886a9e771a53f4448f4fbd8a5e819"
+      },
+      "adapter_model.safetensors": {
+        "bytes": 65003848,
+        "sha256": "29dc1a7d676b7f2f88675521bc44cf81dd43b700423df3cf4adf8d6a1c4487c3"
+      },
+      "additional_config.json": {
+        "bytes": 67,
+        "sha256": "c7799462ebedae6557ffad31566029e2d2f958b7b40e46e972cf901bcaf45733"
+      },
+      "args.json": {
+        "bytes": 18601,
+        "sha256": "f4d27ae56c5ee62d34a2a609fc187a062add25868b90ad4257a67bcd9ee78d60"
+      },
+      "day20-v2-checkpoint-integrity.json": {
+        "bytes": 2659,
+        "sha256": "f7880e6f65664b96a1a579fc3c8599e44eff385683c1af08fe7c965f060d3e58"
+      },
+      "optimizer.pt": {
+        "bytes": 130277427,
+        "sha256": "87f7d528d624702ef9186ae87bc9bf65e48c53cd840fef76464b979c248d14bf"
+      },
+      "rng_state.pth": {
+        "bytes": 14709,
+        "sha256": "1d384733850dd06842e80a7355dfe01df0005d59e17e40b38f42bd3d2830c76c"
+      },
+      "scheduler.pt": {
+        "bytes": 1465,
+        "sha256": "f513d129de4b423fd7f42403795e694c64bcc1d6f175be9318e926e0e985282f"
+      },
+      "trainer_state.json": {
+        "bytes": 427141,
+        "sha256": "d354f7e43c8f86515a2b938a110b760dc8d11f0ecf118ff9dd76bbff8d82a907"
+      },
+      "training_args.bin": {
+        "bytes": 6865,
+        "sha256": "fe4a312dc12a1af3d9e5f1dfb4c4be33811e890fd4aacbed5baf629eebb99456"
+      }
+    },
+    "global_step": 1904,
+    "integrity_file_sha256": "f7880e6f65664b96a1a579fc3c8599e44eff385683c1af08fe7c965f060d3e58",
+    "integrity_sha256": "d0f72be9751628c9073cc8e4104f16d8620bd598dbb8a1e97f1df9bae51170a3",
+    "resumable": true,
+    "snapshot_sha256": "c169e0bb55b20951d27a889e4ef0deae3a01fe10acabee804b212d3d8170db0a"
+  },
+  "collector": {
+    "counts": {
+      "checkpoint": 10,
+      "final_promotion": 1,
+      "normalized_evaluation": 10,
+      "primary_selection": 1,
+      "probe_selection": 2,
+      "raw_evaluation": 10,
+      "sandbox": 10
+    },
+    "inventory_sha256": "9d6a78e9954e37e74fae9698ad6729dc253cb3c8156f3008d86ad24ed7ccab5b",
+    "items": 44,
+    "status": "pass"
+  },
+  "copy_verification": "byte_manifest_exact",
+  "created_at_utc": "2026-08-13T08:54:02.045892+00:00",
+  "evidence_sha256": "c781ed2404f7ab8cbb10d51b1faf711358f60c552534038779e5ea528254f88e",
+  "final_promotion": {
+    "content_sha256": "de72a8f43da23e955e9525bccb365b49edcba7976018d6b58a9b34f903c2caa7",
+    "file_sha256": "c5ce7f522706040ac1628659ccc1ee53c2ac61eb820861a092a5dcd7bf8049e4",
+    "path": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/FINAL-PROMOTION.json"
+  },
+  "host": "autodl-container-6acf40b03d-62d686fe",
+  "schema_name": "day21.qwen35_s1_checkpoint_archive_evidence",
+  "schema_version": 1,
+  "source_checkpoint": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/adapters/main/s20260809/lr1e-4/attempt-001/checkpoint-1904",
+  "source_run_root": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z",
+  "status": "pass",
+  "target_envelope": {
+    "content_sha256": "4497af38b3daed474b2d9884e7651205985fa3cd31d4d2409d629bbafdecaf7c",
+    "file_sha256": "481017dc8e40016522be3bb98803401111f7094d63ccf0b340c80b8cfb69c4ed",
+    "path": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/evidence/main/s20260809/lr1e-4/attempt-001/checkpoint-envelopes/main-s20260809-lr1e-4-final.target-envelope-v3.json"
+  },
+  "training_summary": {
+    "content_sha256": "cd56a594ea04f3c5dd43644a66fe875e2dc4f86b12b13eec321d293aa8fb9cfb",
+    "file_sha256": "fc5dc58a4df06ffa3b46a773f1f69e4b8a149ce2d77f7ab0096e42a44b3ae4cf",
+    "path": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/evidence/main/s20260809/lr1e-4/attempt-001/training-summary.json"
+  }
+}

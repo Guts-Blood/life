@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "domain": "day12.recovery_rollout_outcome",
+  "ordinal": 9,
+  "run_id": "K",
+  "status": "failed_all_gates",
+  "hypothesis": "J's decoder-only all-linear LoRA does not directly adapt the tied output projection; adding lm_head to otherwise identical rank-16 LoRA coverage will improve executable code and termination behavior without giving up J's math-retention gain.",
+  "primary_change": {
+    "path": "adapter.target_modules",
+    "parent": "all-linear",
+    "rollout": ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj", "lm_head"]
+  },
+  "fixed_parent": "Run J 3e-5 LR, exact manifest/order, rank/alpha, Base revision and every non-target-module invariant",
+  "scores": {
+    "J_25_percent": {"general": 2, "math": 9, "code": 1, "finance": 0, "total": 12},
+    "K_25_percent": {"general": 2, "math": 9, "code": 0, "finance": 0, "total": 11},
+    "K_minus_J": {"general": 0, "math": 0, "code": -1, "finance": 0, "total": -1},
+    "base": {"general": 2, "math": 12, "code": 0, "finance": 1, "total": 15}
+  },
+  "gate": {
+    "math": {"actual": 9, "minimum": 10, "passed": false},
+    "code": {"actual": 0, "minimum": 5, "passed": false},
+    "total": {"actual": 11, "minimum": 15, "passed": false},
+    "accepted": false
+  },
+  "diagnostics": {
+    "general_parse_errors": 17,
+    "math_parse_errors": 0,
+    "math_ceiling_hits": 28,
+    "code_ceiling_hits": 28,
+    "finance_parse_errors": 17,
+    "finance_ceiling_hits": 28,
+    "all_slice_ceiling_hits": 112,
+    "output_tokens": 43904,
+    "generation_latency_seconds": 1148.022269,
+    "parameter_counts": {"total": 608589824, "trainable": 12539904, "frozen": 596049920},
+    "maximum_cuda_memory_gib": 6.805515289306641,
+    "merged_export": {"model_class": "Qwen3ForCausalLM", "parameters": 596049920, "lora_keys": 0, "dtype": "bfloat16", "weights_tied": true}
+  },
+  "training": {
+    "checkpoint": "25_percent",
+    "supervised_tokens": 61734,
+    "optimizer_steps": 79,
+    "checkpoint_manifest_sha256": "91f655acc9adf7214b5fb778ff3cdc0df868973e4eacca091f6018ae63f6bb5a",
+    "inference_export_manifest_sha256": "0ef73e7744a65365244fbb05cb4d13fcb6fd53e83838d90b0fdc31d41765a35d",
+    "summary_path": "artifacts/logs/day12-run-K-25-training-summary.json",
+    "summary_file_sha256": "2add5ccf708ea0f959946ec8b7623d1a0309c5f95d0dc6f82f19a2bedc6b8bfb",
+    "preflight_path": "artifacts/logs/day12-preflight-K.json",
+    "preflight_file_sha256": "361ff6e8bd4959b1e71473d2a993a92a386c8d5c656536acfc9494de241ce040",
+    "step_trace_path": "artifacts/logs/day12-run-K-step-trace.jsonl",
+    "step_trace_file_sha256": "5d7d43226632062280436cbca7511bf2713534b6875bf87bb0c9acd95f8ad165"
+  },
+  "eval": {
+    "summary_hash": "sha256:ee832732706a995c6e9b66fcf629b7ec06e91168ec2562874a45d8298747cf27",
+    "predictions": {"path": "artifacts/eval/K-25_percent-dev-predictions.jsonl", "records": 112, "file_sha256": "e1869a96cdf5add55c798df1280a49f3dcf8475ec1704740e7de9f8b1ca5ecbb"},
+    "code_results": {"path": "artifacts/eval/K-25_percent-dev-code-e2b.jsonl", "records": 28, "file_sha256": "c80cdc959e30bb02c953477f4299cae48302160d805407759ba2ab46b11fb3e8"},
+    "summary": {"path": "artifacts/eval/K-25_percent-dev-summary.json", "file_sha256": "f940f58f103b7fbefac66e0030f90739739c9141112db66e49d7a2e7d7c5643c"}
+  },
+  "interpretation": {
+    "rejected": "Direct lm_head LoRA changed neither math nor termination, reduced code from one to zero and left all 112 samples at the generation ceiling.",
+    "engineering_result": "PEFT tied-weight training, safe merge, standalone BF16 cold load and long-form generation all worked; the failure is quality, not artifact integrity.",
+    "remaining_failure": "The output projection is not the main bottleneck. The best LoRA code frontier remains I at math eight/code three under rank-16, alpha-32 and 5e-5 LR.",
+    "next_rollout": "Return to I and change only adapter rank from 16 to 32 while keeping alpha 32, lowering alpha/r from two to one as capacity doubles."
+  },
+  "storage": {
+    "full_checkpoint_deleted": true,
+    "bf16_export_deleted": true,
+    "recoverability": "Retraining and BF16 export only"
+  },
+  "frozen_test_consumed": false
+}

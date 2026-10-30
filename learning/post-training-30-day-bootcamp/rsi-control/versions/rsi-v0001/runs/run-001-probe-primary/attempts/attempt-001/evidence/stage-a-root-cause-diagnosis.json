@@ -1,0 +1,475 @@
+{
+  "actual_training_label_audit": {
+    "audit_runtime": "remote_live_pinned_ms_swift_processor_only",
+    "classification": "target_label_boundary_drift_confirmed",
+    "code_records": 105,
+    "data_targets_start_exact_four_spaces": 105,
+    "decoded_nonmasked_labels_start_exact_four_spaces": 0,
+    "empty_think_prefix_present_before_mask": 105,
+    "per_record_audit_sha256": "431a6c2e5bec8b968e32f739d961b89c2ada1435f674d21bb866baa040c9a285",
+    "prepared_payloads_start_exact_four_spaces": 0,
+    "stored_input_identity_matches": 105,
+    "stored_label_identity_matches": 105,
+    "stored_supervised_token_count_matches": 105,
+    "template_settings": {
+      "add_non_thinking_prefix": true,
+      "enable_thinking": false,
+      "loss_scale": "default+ignore_empty_think",
+      "max_length": 2304,
+      "model_type": "qwen3_5",
+      "packing": false,
+      "padding_free": false,
+      "template": "qwen3_5",
+      "truncation_strategy": "raise"
+    },
+    "training_config": {
+      "bytes": 2448,
+      "content_sha256": "02badee38e12381331ad523be2eef21870212d7a36edf9cb8e60a764af0db5f4",
+      "file_sha256": "3f71a299fb9c88c4d3e15b2d54fa2bfd2ba8f35c8bc6def89dd1b547ed9831c1",
+      "path": "/root/autodl-tmp/runs/day20-v2-qwen35-lora-20260812T092806Z/configs/probe-s20260809-lr1e-4.json"
+    }
+  },
+  "assumption_outcomes": {
+    "A1": {
+      "observed": "Maximum was 3/8 at t6000; t12000/t18000/t24000 were 0/8.",
+      "outcome": "falsified",
+      "prediction": "At least one Probe checkpoint has Code eligibility >=7/8."
+    },
+    "A2": {
+      "observed": "All four checkpoints were gross_fail with the same leading-indentation signature; no strict pass, and t18000=t24000 plateau.",
+      "outcome": "falsified",
+      "prediction": "A Probe strict pass exists or total gate deficit improves materially."
+    },
+    "A3": {
+      "live_smoke": {
+        "candidate_code_executed": false,
+        "runtime_attested": true,
+        "sandbox_created": true,
+        "sandbox_killed": true
+      },
+      "observed": "Live E2B preflight passed before the training log birth time; all verified probe sandbox infrastructure_failures were zero.",
+      "outcome": "supported",
+      "prediction": "No training starts without a matching live attestation.",
+      "preflight": {
+        "bytes": 1783,
+        "content_sha256": "912fcf64c4e97f62397a730ff76d2c7891eeeef426377879822f7d65b33bc9c8",
+        "file_sha256": "95ceea9c29375801c6ed4fd3c5657f836ce5c4610cacbc4dfd352d581a25a974",
+        "path": "/root/autodl-tmp/runs/day20-v2-qwen35-lora-20260812T092806Z/evidence/E2B-PREFLIGHT.json"
+      },
+      "preflight_mtime": "2026-08-12T09:33:38.108093682Z",
+      "preflight_status": "pass",
+      "training_log_birth": "2026-08-12T10:00:24.725763727Z"
+    }
+  },
+  "attempt_id": "attempt-001",
+  "base_comparison": {
+    "base_metrics": {
+      "code": 3,
+      "code_sandbox_execution_eligible": 7,
+      "finance": 4,
+      "general": 1,
+      "infrastructure_failures": 0,
+      "math": 7,
+      "total": 15
+    },
+    "best_total": 18,
+    "best_total_checkpoint": "t12000",
+    "best_total_delta": 3,
+    "code_eligibility_base": 7,
+    "code_eligibility_late": 0,
+    "code_eligibility_max_lora": 3
+  },
+  "code_error_signatures": [
+    {
+      "candidate": "probe-s20260809-lr1e-4-t6000",
+      "checkpoint": "t6000",
+      "error_messages": {
+        "raw code continuation must begin at byte 0 with exactly four spaces": 5
+      },
+      "execution_eligible": 3,
+      "ordered_contract_signature_sha256": "ed184f34185f9c99e098eda3b45fe11397950333970de8f61c753524199d6837",
+      "ordered_outputs_sha256": "a97943500e0c94a1b211a2e7eed3649539633dd00687742ff280c0ed2537a2f8",
+      "outputs_start_exact_four_spaces": 3,
+      "raw_artifact": {
+        "bytes": 208862,
+        "file_sha256": "762d95aa75c7beb3d8dbe126ad4fc0548abaa54154d4541668694ab65a1e8aba",
+        "path": "/root/autodl-tmp/runs/day20-v2-qwen35-lora-20260812T092806Z/eval/probe-s20260809-lr1e-4-t6000-probe32-raw-predictions-v2.jsonl"
+      },
+      "records": 8,
+      "strict_continuation_invalid": 5
+    },
+    {
+      "candidate": "probe-s20260809-lr1e-4-t12000",
+      "checkpoint": "t12000",
+      "error_messages": {
+        "raw code continuation must begin at byte 0 with exactly four spaces": 8
+      },
+      "execution_eligible": 0,
+      "ordered_contract_signature_sha256": "6883cfbd0adb8852329e8612fb37747af2ad3979608aacf602200eef7d50e8b7",
+      "ordered_outputs_sha256": "13bbbcb38c5d4d65614e6dbd8fb041992e15b48f06f56b3da960ebf59a1b279d",
+      "outputs_start_exact_four_spaces": 0,
+      "raw_artifact": {
+        "bytes": 208674,
+        "file_sha256": "5bb2af2abb3bc7f45f654cd4568449fd6cd41b80f926ec6095c5cd555de1dc36",
+        "path": "/root/autodl-tmp/runs/day20-v2-qwen35-lora-20260812T092806Z/eval/probe-s20260809-lr1e-4-t12000-probe32-raw-predictions-v2.jsonl"
+      },
+      "records": 8,
+      "strict_continuation_invalid": 8
+    },
+    {
+      "candidate": "probe-s20260809-lr1e-4-t18000",
+      "checkpoint": "t18000",
+      "error_messages": {
+        "raw code continuation must begin at byte 0 with exactly four spaces": 8
+      },
+      "execution_eligible": 0,
+      "ordered_contract_signature_sha256": "6883cfbd0adb8852329e8612fb37747af2ad3979608aacf602200eef7d50e8b7",
+      "ordered_outputs_sha256": "b642d437a6f063f6e47127fa9cdacecd20d2b0d860afbc101545098c43443408",
+      "outputs_start_exact_four_spaces": 0,
+      "raw_artifact": {
+        "bytes": 208531,
+        "file_sha256": "a8b32092df8b0db559700c0c7e0b4ddff1ea2839583ba924ccd8769dec577c00",
+        "path": "/root/autodl-tmp/runs/day20-v2-qwen35-lora-20260812T092806Z/eval/probe-s20260809-lr1e-4-t18000-probe32-raw-predictions-v2.jsonl"
+      },
+      "records": 8,
+      "strict_continuation_invalid": 8
+    },
+    {
+      "candidate": "probe-s20260809-lr1e-4-t24000",
+      "checkpoint": "t24000",
+      "error_messages": {
+        "raw code continuation must begin at byte 0 with exactly four spaces": 8
+      },
+      "execution_eligible": 0,
+      "ordered_contract_signature_sha256": "6883cfbd0adb8852329e8612fb37747af2ad3979608aacf602200eef7d50e8b7",
+      "ordered_outputs_sha256": "b642d437a6f063f6e47127fa9cdacecd20d2b0d860afbc101545098c43443408",
+      "outputs_start_exact_four_spaces": 0,
+      "raw_artifact": {
+        "bytes": 207453,
+        "file_sha256": "51bbc62c7ed9cc12c824c97118d7fe7f646c3f5915fc7d6236fd0707656b308d",
+        "path": "/root/autodl-tmp/runs/day20-v2-qwen35-lora-20260812T092806Z/eval/probe-s20260809-lr1e-4-t24000-probe32-raw-predictions-v2.jsonl"
+      },
+      "records": 8,
+      "strict_continuation_invalid": 8
+    }
+  ],
+  "data_target_audit": {
+    "assistant_targets_start_exact_four_spaces": 105,
+    "code_records": 105,
+    "dataset": {
+      "bytes": 4428055,
+      "file_sha256": "338343120fe4e87b886af43641645d4cc7dbde98a15d772820c6ca91771b52ec",
+      "path": "/root/autodl-tmp/runs/day20-v2-qwen35-lora-20260812T092806Z/data/probe-v2.jsonl"
+    },
+    "dataset_declared_file_sha256": "338343120fe4e87b886af43641645d4cc7dbde98a15d772820c6ca91771b52ec",
+    "ordered_sample_ids_sha256": "e9ef95ae8841ab68717963e11e97d9366498dbdcf8bc0fc930e0449c61992497",
+    "ordered_target_sha256": "dec2bb3c52afd17836802c2c3aecf249f59d79f73c7bf63c8bcb64007acf9dd5",
+    "target_format_code_continuation": 105
+  },
+  "diagnosis_sha256": "c816ff51eca41f119493288c96e7b20c1b8513988ed9e1df4db7e4ec555da468",
+  "evidence_status": "complete_verified_diagnosis",
+  "infrastructure_failures": 0,
+  "model_failure": true,
+  "pinned_ms_swift": {
+    "commit": "565a1ad586a21d24b23931c52d2c62b49c39bee8",
+    "mechanism_chain": [
+      "Qwen3_5Template assistant content.strip() removes leading four spaces.",
+      "default+ignore_empty_think masks the empty think prefix.",
+      "The first positive-loss label token is therefore the stripped Code payload, while non-response tokens are -100.",
+      "The persisted qwen35 label hashes match this live behavior for 105/105 Code rows."
+    ],
+    "root": "/root/autodl-tmp/ms-swift",
+    "source_files": {
+      "default_response_loss_mask": {
+        "bytes": 10748,
+        "decisive_lines": [
+          121,
+          130
+        ],
+        "file_sha256": "a03a7015a563b3295849b4458ae7d6091f7ddba9c24bebf697388649a1e4e28f",
+        "mechanism": "default loss scale assigns positive weight to assistant RESPONSE/SUFFIX and zero to other contexts.",
+        "mechanism_lines": [
+          88,
+          131
+        ],
+        "path": "/root/autodl-tmp/ms-swift/swift/loss_scale/base.py"
+      },
+      "ignore_empty_think_class": {
+        "bytes": 198,
+        "file_sha256": "5e319a3eae46372a5bcb06e294cd76f39e0106c585c49c1631c7bddc8c1e4cee",
+        "mechanism": "IgnoreEmptyThinkLossScale binds the mask configuration.",
+        "mechanism_lines": [
+          5,
+          6
+        ],
+        "path": "/root/autodl-tmp/ms-swift/swift/loss_scale/other.py"
+      },
+      "ignore_empty_think_mask": {
+        "bytes": 332,
+        "file_sha256": "da0cf49a93cd5adc18c16c2d86179d8685472943fae405d156e58b17729a9857",
+        "mechanism": "The empty think prefix regex has weight 0.0, so active labels begin at the already-stripped assistant payload.",
+        "path": "/root/autodl-tmp/ms-swift/swift/loss_scale/config/ignore_empty_think.json"
+      },
+      "qwen3_5_assistant_trim": {
+        "bytes": 76766,
+        "class_line": 598,
+        "decisive_lines": [
+          624,
+          633
+        ],
+        "file_sha256": "d4a35ced472f7b10eb254cc334ec21db44f0793a750b68d5edeab105c7db15c3",
+        "mechanism": "Qwen3_5Template calls content.strip() for every assistant string before encoding, removing the Code target leading indentation.",
+        "mechanism_lines": [
+          608,
+          634
+        ],
+        "path": "/root/autodl-tmp/ms-swift/swift/template/templates/qwen.py"
+      },
+      "template_prepare_order_and_label_mask": {
+        "bytes": 107643,
+        "file_sha256": "cc1629c8a84b764b530895692e4e04322aa6732281be229efce9e98752e113cc",
+        "label_mask_lines": [
+          1090,
+          1114
+        ],
+        "mechanism": "Template preprocessing runs before encoding; positive loss-scale contexts copy token IDs into labels and zero-scale contexts become -100.",
+        "path": "/root/autodl-tmp/ms-swift/swift/template/base.py",
+        "prepare_order_lines": [
+          1486,
+          1504
+        ]
+      }
+    },
+    "worktree_clean": true
+  },
+  "recommended_v0002": {
+    "causal_primary_lever_count": 1,
+    "dependent_verification_lever": {
+      "change": "Before GPU training, live-encode every Code row with the actual Trainer template and require 105/105 data targets and 105/105 decoded nonmasked labels to begin with exactly four spaces, with stored render/label hashes regenerated and verified.",
+      "depends_on": "training.template.preserve_code_leading_whitespace",
+      "id": "preflight.actual_label_boundary_gate",
+      "kind": "non_causal_fail_closed_guard",
+      "pass_condition": "data=105/105 and actual_labels=105/105 exact-four-space; otherwise zero GPU training"
+    },
+    "primary_lever": {
+      "change": "Bind a Day20-specific Qwen3.5 training template that preserves assistant leading whitespace (no assistant lstrip/strip before response tokenization; trailing normalization may remain).",
+      "expected_mechanism": "The first nonmasked Code payload labels preserve the exact four-space continuation boundary.",
+      "frozen_across_v0001_v0002": [
+        "probe dataset and ordering",
+        "domain mixture",
+        "seed",
+        "learning rate",
+        "checkpoint token targets",
+        "LoRA topology",
+        "eval cases",
+        "frozen scorer",
+        "promotion gates"
+      ],
+      "id": "training.template.preserve_code_leading_whitespace"
+    },
+    "stage_a_prediction": "At least one checkpoint restores Code execution eligibility to >=7/8 without changing frozen evaluation semantics."
+  },
+  "retry_ordinal": 2,
+  "root_cause_layer": {
+    "causal_chain": [
+      "Dataset target contract is correct for 105/105 Code rows.",
+      "Pinned template strips leading assistant whitespace before tokenization.",
+      "Live nonmasked labels retain zero of 105 required four-space prefixes.",
+      "LoRA Code eligibility falls from Base 7/8 to 3/8 at t6000 and 0/8 from t12000 onward.",
+      "t18000 and t24000 have identical Code outputs and identical score signatures."
+    ],
+    "confidence": "causally_confirmed",
+    "excluded_layers": [
+      "frozen_eval_cases",
+      "frozen_scorer",
+      "promotion_gates",
+      "source_data_target_representation",
+      "E2B_infrastructure"
+    ],
+    "primary": "training_template_label_construction",
+    "subsystem": "ms-swift Qwen3_5Template assistant normalization before loss masking"
+  },
+  "run_id": "run-001-probe-primary",
+  "schema_name": "rsi.v0001_stage_a_root_cause_diagnosis",
+  "schema_version": 1,
+  "selection": {
+    "artifacts": [
+      {
+        "bytes": 10989,
+        "content_sha256": "5fdd36eb38271b458d78612b637ee26ca3e7168b84777df0178c46b4f24da519",
+        "file_sha256": "077e69d7fbfa4ed867812fd7e12c4a9119feba5c032a4cd178f54c8332660fa2",
+        "path": "/root/autodl-tmp/runs/day20-v2-qwen35-lora-20260812T092806Z/PROBE-SELECTION-STAGE-A.json"
+      },
+      {
+        "bytes": 10989,
+        "content_sha256": "5fdd36eb38271b458d78612b637ee26ca3e7168b84777df0178c46b4f24da519",
+        "file_sha256": "077e69d7fbfa4ed867812fd7e12c4a9119feba5c032a4cd178f54c8332660fa2",
+        "path": "/root/autodl-tmp/runs/day20-v2-qwen35-lora-20260812T092806Z/PROBE-SELECTION.json"
+      }
+    ],
+    "bracket_completed": false,
+    "classification": "stop_no_passing_probe",
+    "comparison_keys": {
+      "complete": "c591ce058e67432c56927cf8859225ed5f16e14cf5c524cfb2fd62d1c350f81f",
+      "e2b": "7418fa476b1ee771a895310b3b57686f8a94bc805bc6f0f56441f24d7baeea55",
+      "normalized": "13424c59998948ed8a3addc2ddecdbb4315df00f3a5d7170fc85eeacf2ff505a"
+    },
+    "selected_candidate": null,
+    "selection_sha256": "5fdd36eb38271b458d78612b637ee26ca3e7168b84777df0178c46b4f24da519",
+    "status": "stop_no_passing_probe",
+    "verified_inventory": {
+      "counts": {
+        "checkpoint": 4,
+        "normalized_evaluation": 5,
+        "probe_selection": 2,
+        "raw_evaluation": 5,
+        "sandbox": 5
+      },
+      "file_sha256": "b59f56dcfa4f1c5347d1ca371e3c1b7fff97e4c8b400fbe2efbea3de15e951e2",
+      "inventory_sha256": "6941a1d653efc1c1dd172382acbd562fad945200c83dec69cfaa5d066fbcb1a2",
+      "path": "/root/autodl-tmp/post-training-30-day-bootcamp/rsi-control/versions/rsi-v0001/runs/run-001-probe-primary/attempts/attempt-001/evidence/stage-a-full-inventory.json",
+      "status": "pass"
+    }
+  },
+  "t18000_t24000_plateau": {
+    "all_raw_outputs_equal_records": 27,
+    "all_records": 32,
+    "classification_equal": true,
+    "code_raw_outputs_equal_records": 8,
+    "code_records": 8,
+    "differing_output_sample_ids": [
+      "eval:math:gsm8k:test:0028",
+      "eval:math:gsm8k:test:0056",
+      "eval:math:gsm8k:test:0369",
+      "eval:general:mmlu:global_facts:test:0044",
+      "eval:math:gsm8k:test:0583"
+    ],
+    "metrics_equal": true,
+    "score_signature_equal": true,
+    "score_signature_sha256": "fd0085efedf40c3272235297ad0c069371496e438526ba9964362a9b3279819a",
+    "strict_failures_equal": true
+  },
+  "trajectory": {
+    "base": {
+      "candidate": "base-probe",
+      "metrics": {
+        "code": 3,
+        "code_sandbox_execution_eligible": 7,
+        "finance": 4,
+        "general": 1,
+        "infrastructure_failures": 0,
+        "math": 7,
+        "total": 15
+      }
+    },
+    "checkpoints": [
+      {
+        "candidate": "probe-s20260809-lr1e-4-t6000",
+        "checkpoint": "t6000",
+        "classification": "gross_fail",
+        "delta_vs_base": {
+          "code": -2,
+          "code_sandbox_execution_eligible": -4,
+          "finance": 0,
+          "general": 4,
+          "math": -2,
+          "total": 0
+        },
+        "metrics": {
+          "code": 1,
+          "code_sandbox_execution_eligible": 3,
+          "finance": 4,
+          "general": 5,
+          "infrastructure_failures": 0,
+          "math": 5,
+          "total": 15
+        },
+        "strict_failures": [
+          "total_below_base_plus_2",
+          "math_regression_gt_1",
+          "code_regression_gt_1",
+          "code_sandbox_execution_eligible_below_7"
+        ]
+      },
+      {
+        "candidate": "probe-s20260809-lr1e-4-t12000",
+        "checkpoint": "t12000",
+        "classification": "gross_fail",
+        "delta_vs_base": {
+          "code": -3,
+          "code_sandbox_execution_eligible": -7,
+          "finance": 2,
+          "general": 4,
+          "math": 0,
+          "total": 3
+        },
+        "metrics": {
+          "code": 0,
+          "code_sandbox_execution_eligible": 0,
+          "finance": 6,
+          "general": 5,
+          "infrastructure_failures": 0,
+          "math": 7,
+          "total": 18
+        },
+        "strict_failures": [
+          "code_regression_gt_1",
+          "code_sandbox_execution_eligible_below_7"
+        ]
+      },
+      {
+        "candidate": "probe-s20260809-lr1e-4-t18000",
+        "checkpoint": "t18000",
+        "classification": "gross_fail",
+        "delta_vs_base": {
+          "code": -3,
+          "code_sandbox_execution_eligible": -7,
+          "finance": 2,
+          "general": 4,
+          "math": 0,
+          "total": 3
+        },
+        "metrics": {
+          "code": 0,
+          "code_sandbox_execution_eligible": 0,
+          "finance": 6,
+          "general": 5,
+          "infrastructure_failures": 0,
+          "math": 7,
+          "total": 18
+        },
+        "strict_failures": [
+          "code_regression_gt_1",
+          "code_sandbox_execution_eligible_below_7"
+        ]
+      },
+      {
+        "candidate": "probe-s20260809-lr1e-4-t24000",
+        "checkpoint": "t24000",
+        "classification": "gross_fail",
+        "delta_vs_base": {
+          "code": -3,
+          "code_sandbox_execution_eligible": -7,
+          "finance": 2,
+          "general": 4,
+          "math": 0,
+          "total": 3
+        },
+        "metrics": {
+          "code": 0,
+          "code_sandbox_execution_eligible": 0,
+          "finance": 6,
+          "general": 5,
+          "infrastructure_failures": 0,
+          "math": 7,
+          "total": 18
+        },
+        "strict_failures": [
+          "code_regression_gt_1",
+          "code_sandbox_execution_eligible_below_7"
+        ]
+      }
+    ]
+  },
+  "version_id": "rsi-v0001"
+}

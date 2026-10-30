@@ -1,0 +1,207 @@
+{
+  "header": {
+    "chat_template_sha256": "44d5f08f3f72b837eaad09f13a54c1f9f4eb58d75240334548b7fd52a5437fa5",
+    "claim_boundary": "A pipeline-correctness memorization set. It does not establish generalization, dataset quality, or recipe quality. Day 09 Gate C was waived, not passed.",
+    "created_date": "2026-08-05",
+    "dataset_file_sha256": "269ed7693b4a08eb7a56a75c4742b78453e127ac3e678ae6bf56370d50666ea9",
+    "domain": "day11.tiny_overfit_manifest",
+    "lineage": {
+      "day08_file_sha256": "f4f03eff496dc9ef49e1a329caa63eb575ae06c830135ab46401bdadaef26d29",
+      "day09_assignment_file_sha256": "51b82d02462336236a533997719fb81346a032b5937cd5ae66e35a3d2036ffac",
+      "day09_claim_boundary": "Gate C was waived, not passed; no final occurrence-level human quality evidence was collected.",
+      "day09_clean_pool_hash": "ab7dee175c140ef5fa5bf8e0f9197046d166f4e0eef98af5ec14ba543e2eb073",
+      "day09_file_sha256": "97661d5482256dbaa3f33a96b32703fcdbc1f1aaa5084b64e4baba80b8f984bb",
+      "day09_gate_c_status": "waived_by_user",
+      "day09_manifest_hash": "95ce7aeb02efc4dbce50786c51c0e87db27dde4e7f9778e2a6927c5dd991c27f"
+    },
+    "loss_mask": "all assistant bodies plus each assistant <|im_end|>; shifted causal targets",
+    "manifest_hash": "sha256:235065781947cbfde6a06ddf560011cb9915af92e2dde8e6d6a45eb269ad708a",
+    "max_length": 1024,
+    "model_files": {
+      "config.json": "504a6b58c4271583724e66584b6b7698aea18450209df6b2f7582df0e89cee59",
+      "generation_config.json": "8c970692323e3ea0e9b8b0a4dca79388d31226e41f83c9fd6014804280ebf6e8",
+      "model.safetensors": "cd2a512003e2f9f3cd3c32a9c3573f820bb28c940f73c57b1ddaa983d9223eba",
+      "tokenizer.json": "c0382117ea329cdf097041132f6d735924b697924d6f6fc3945713e96ce87539",
+      "tokenizer_config.json": "7d0fc4691628c9f6b0c77f8138a80517896a307e074dd5ac87e279ea85515774",
+      "vocab.json": "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910"
+    },
+    "model_id": "Qwen/Qwen3-0.6B-Base",
+    "model_revision": "ddc928429ed09d9ad603fd762053d0434c15e865",
+    "record_count": 18,
+    "schema_version": 1,
+    "selection_policy": {
+      "day08": "all 10 expected_stage=accept handwritten golden cases",
+      "day09": "8 explicit IDs reviewed for answer correctness; 2 per general/code/finance/math",
+      "review_date": "2026-08-05",
+      "reviewer": "Codex"
+    },
+    "status": "frozen_for_day11_execution",
+    "tokenizer_class": "Qwen2TokenizerFast",
+    "total_encoded_tokens": 2194,
+    "total_supervised_tokens": 904
+  },
+  "records": [
+    {
+      "encoded_tokens": 32,
+      "id": "day08:single-turn",
+      "origin": "day08_template_golden_case",
+      "record_hash": "sha256:26087e054e3d8194483e4dbe8f29b7a93dbaf158c20fec4d3c505d8a55ef4816",
+      "skill": "golden_contract",
+      "supervised_tokens": 2,
+      "truncated": false
+    },
+    {
+      "encoded_tokens": 53,
+      "id": "day08:multi-turn",
+      "origin": "day08_template_golden_case",
+      "record_hash": "sha256:eae30a622f5dec2bf57b99a56d1d28ceed1d6f3b5706d20c09e482afc6c00b18",
+      "skill": "golden_contract",
+      "supervised_tokens": 10,
+      "truncated": false
+    },
+    {
+      "encoded_tokens": 49,
+      "id": "day08:with-system",
+      "origin": "day08_template_golden_case",
+      "record_hash": "sha256:436a27fe0b34d7ba6776425264fbcd7743b7e2bdba44075407a988a61e3296ef",
+      "skill": "golden_contract",
+      "supervised_tokens": 23,
+      "truncated": false
+    },
+    {
+      "encoded_tokens": 35,
+      "id": "day08:emoji-unicode",
+      "origin": "day08_template_golden_case",
+      "record_hash": "sha256:632151f71c229015b1ec56dd1a4d5fe9261e29de0a48ae47d977b02e6523e3a0",
+      "skill": "golden_contract",
+      "supervised_tokens": 8,
+      "truncated": false
+    },
+    {
+      "encoded_tokens": 44,
+      "id": "day08:multiline-code",
+      "origin": "day08_template_golden_case",
+      "record_hash": "sha256:6d510aa130b0afb2b7d3770b7e36450f77465fbe4f6c4258495552822e4b5add",
+      "skill": "golden_contract",
+      "supervised_tokens": 17,
+      "truncated": false
+    },
+    {
+      "encoded_tokens": 43,
+      "id": "day08:multiline-answer",
+      "origin": "day08_template_golden_case",
+      "record_hash": "sha256:fcdb58895aaf1d287817423c724b614ba9c7bd93ab8ef748193bb9f195ad8bec",
+      "skill": "golden_contract",
+      "supervised_tokens": 18,
+      "truncated": false
+    },
+    {
+      "encoded_tokens": 43,
+      "id": "day08:punctuation",
+      "origin": "day08_template_golden_case",
+      "record_hash": "sha256:5828ea0a79e84de8e6b0acde3562a06acdaa226efafeb681a1bde1d6dfd2dd64",
+      "skill": "golden_contract",
+      "supervised_tokens": 11,
+      "truncated": false
+    },
+    {
+      "encoded_tokens": 47,
+      "id": "day08:long-prompt-short-answer",
+      "origin": "day08_template_golden_case",
+      "record_hash": "sha256:38b6029e5d68965752ce8e1dcd599b5ea3696ffb4d51b143f076b90376f658c2",
+      "skill": "golden_contract",
+      "supervised_tokens": 3,
+      "truncated": false
+    },
+    {
+      "encoded_tokens": 71,
+      "id": "day08:long-answer-fits",
+      "origin": "day08_template_golden_case",
+      "record_hash": "sha256:b8d28afdc7ae0b17a3a3814fb33b5e4ae8df65700cdf85e8e00a62a2fb0d1d04",
+      "skill": "golden_contract",
+      "supervised_tokens": 40,
+      "truncated": false
+    },
+    {
+      "encoded_tokens": 32,
+      "id": "day08:trimmed-nonempty-assistant",
+      "origin": "day08_template_golden_case",
+      "record_hash": "sha256:f2aae8ee61465bb5f618429615a462cbc850316fe949c1df10a42ca8567c6aed",
+      "skill": "golden_contract",
+      "supervised_tokens": 6,
+      "truncated": false
+    },
+    {
+      "encoded_tokens": 54,
+      "id": "general:personas_IF_2vrdloiscoo2gpir02aj5nrj",
+      "origin": "day09_clean_pool_reviewed_subset",
+      "record_hash": "sha256:9112228ada3bf4d3bb34b0190187c26f1d333f842a7796f6c319dbdac4673a73",
+      "skill": "general",
+      "supervised_tokens": 8,
+      "truncated": false
+    },
+    {
+      "encoded_tokens": 93,
+      "id": "general:personas_IF_w2wu9i0s32hxesdafbk3kddp",
+      "origin": "day09_clean_pool_reviewed_subset",
+      "record_hash": "sha256:1e0069293bb41443a73440f14df5bf9cc2623648e3f2ae772696e4c3f5ffd934",
+      "skill": "general",
+      "supervised_tokens": 8,
+      "truncated": false
+    },
+    {
+      "encoded_tokens": 184,
+      "id": "code:personas_code_8ggy5ckja3p5ery5tv9c9qwl",
+      "origin": "day09_clean_pool_reviewed_subset",
+      "record_hash": "sha256:02a3ba21d8cf544f272741ba3a2daea61cd2d6f19169196a9a71dde78c35c75a",
+      "skill": "code",
+      "supervised_tokens": 14,
+      "truncated": false
+    },
+    {
+      "encoded_tokens": 137,
+      "id": "code:personas_code_3e9973s4899ziqz37veadliq",
+      "origin": "day09_clean_pool_reviewed_subset",
+      "record_hash": "sha256:816609dac64425e5e90d14ed46d5185c5f2b0c51fff36fcae5b11ac9e8ddaf20",
+      "skill": "code",
+      "supervised_tokens": 19,
+      "truncated": false
+    },
+    {
+      "encoded_tokens": 104,
+      "id": "finance:ADBE/2009/page_81.pdf-2",
+      "origin": "day09_clean_pool_reviewed_subset",
+      "record_hash": "sha256:615a58121d1d52c934b2146679fd4ccc417debe42ac7028c136b0b649813a72d",
+      "skill": "finance",
+      "supervised_tokens": 15,
+      "truncated": false
+    },
+    {
+      "encoded_tokens": 105,
+      "id": "finance:ADBE/2018/page_66.pdf-4",
+      "origin": "day09_clean_pool_reviewed_subset",
+      "record_hash": "sha256:e3200cda7cb21971312f9519a1981a7372a0c51298bb624472df9307630ba904",
+      "skill": "finance",
+      "supervised_tokens": 16,
+      "truncated": false
+    },
+    {
+      "encoded_tokens": 541,
+      "id": "math:personas_math_c4tl5ey1hrcqijnuyr8t5a2e",
+      "origin": "day09_clean_pool_reviewed_subset",
+      "record_hash": "sha256:1d09793483429a4cf877d41d04d43ea683cfa7b82f2944e03e1cd36baf6dc64f",
+      "skill": "math",
+      "supervised_tokens": 337,
+      "truncated": false
+    },
+    {
+      "encoded_tokens": 527,
+      "id": "math:personas_math_am1x9qgi41gpfq9afvoq9f16",
+      "origin": "day09_clean_pool_reviewed_subset",
+      "record_hash": "sha256:d86d5ea542528971c4a3aa56831afd8ded93cf43dddc7cd86c50b654085b221e",
+      "skill": "math",
+      "supervised_tokens": 349,
+      "truncated": false
+    }
+  ]
+}

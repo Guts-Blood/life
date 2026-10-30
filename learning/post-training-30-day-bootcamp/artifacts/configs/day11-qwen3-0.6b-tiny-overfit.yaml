@@ -1,0 +1,59 @@
+schema_version: 1
+experiment: day11-qwen3-0.6b-tiny-overfit
+seed: 20260806
+
+model:
+  id: Qwen/Qwen3-0.6B-Base
+  revision: ddc928429ed09d9ad603fd762053d0434c15e865
+  parameter_dtype: float32
+  compute_dtype: bfloat16
+  loss_compute_dtype: float32
+  attention_implementation: eager
+
+data:
+  path: artifacts/data/day11-tiny-overfit.jsonl
+  manifest_path: artifacts/data/day11-tiny-overfit-manifest.json
+  max_length: 1024
+  padding: right
+  packing: false
+  loss_mask: all_assistant_turns_plus_im_end
+  truncation: reject_if_final_assistant_boundary_removed
+
+optimizer:
+  name: AdamW
+  learning_rate: 0.0001
+  betas: [0.9, 0.95]
+  epsilon: 1.0e-8
+  weight_decay: 0.0
+  max_grad_norm: 1.0
+
+scheduler:
+  name: linear_warmup_then_constant
+  warmup_steps: 5
+
+training:
+  micro_batch_size: 1
+  gradient_accumulation_steps: 4
+  max_optimizer_steps: 150
+  early_checkpoint_step: 25
+  evaluation_interval_steps: 10
+  early_stop_min_steps: 50
+  teacher_forced_accuracy_threshold: 0.95
+  generation_max_new_tokens: 384
+  checksum_first_steps: 3
+  deterministic_algorithms: true
+
+resume_probe:
+  total_optimizer_steps: 6
+  interruption_step: 3
+  checksum_through_step: 6
+
+hardware:
+  required_cuda: true
+  required_bf16: true
+  minimum_gpu_memory_gib: 20
+  recommended_gpu: NVIDIA RTX 4090 24GB
+
+storage:
+  minimum_free_gib: 35
+  default_run_root: /root/autodl-tmp/runs/day11-qwen3-0.6b-tiny-overfit

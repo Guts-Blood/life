@@ -1,0 +1,32 @@
+{
+  "attempts": [
+    "attempt-001"
+  ],
+  "checkpoint_labels": [
+    "t6000",
+    "t12000",
+    "t18000",
+    "t24000"
+  ],
+  "condition": "corrected v3 callback argument projection; model, data, training recipe, evaluation, scorer, gates, and target-encoding lever unchanged",
+  "learning_rate_policy": {
+    "bracket": [
+      "3e-5",
+      "6e-5",
+      "8e-5"
+    ],
+    "bracket_only_on": "near_miss",
+    "stage_a": "1e-4"
+  },
+  "phase": "probe",
+  "remote_run_root": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z",
+  "run_contract_path": "run-contract.json",
+  "run_contract_sha256": "ea10e0490ee8a1e5d126cf7c6de35ea601626109708f628757c41d5c7d328228",
+  "run_id": "run-004-probe-primary-remediated",
+  "schema_name": "rsi.run",
+  "schema_version": 1,
+  "scope": "probe32",
+  "seed": 20260809,
+  "status": "succeeded_probe_selected",
+  "version_id": "rsi-v0002"
+}

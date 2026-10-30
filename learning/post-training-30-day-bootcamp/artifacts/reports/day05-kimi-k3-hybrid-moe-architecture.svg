@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="2400" height="4200" viewBox="0 0 2400 4200" role="img" aria-labelledby="title desc">
+  <title id="title">Kimi K3 hybrid attention, Attention Residuals, and Stable LatentMoE architecture</title>
+  <desc id="desc">A high-density Chinese architecture poster for Kimi K3. It traces native multimodal input, the 69 KDA plus 24 Gated MLA schedule, Block Attention Residuals, Stable LatentMoE routing, tensor shapes for an 8192-token worked example, backward propagation, and long-context state lifetimes.</desc>
+  <defs>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2563eb"/></marker>
+    <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#dc2626"/></marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#16a34a"/></marker>
+    <marker id="arrow-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#d97706"/></marker>
+    <marker id="arrow-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#7c3aed"/></marker>
+    <style>
+      text { font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", "PingFang SC", sans-serif; fill:#172033; }
+      .title { font-size:39px; font-weight:780; }
+      .subtitle { font-size:19px; fill:#526078; }
+      .section { font-size:26px; font-weight:780; }
+      .subsection { font-size:21px; font-weight:740; }
+      .label { font-size:17px; font-weight:720; }
+      .body { font-size:15px; }
+      .small { font-size:13px; fill:#526078; }
+      .tiny { font-size:11px; fill:#64748b; }
+      .mono { font-family:"SFMono-Regular",Consolas,monospace; font-size:13px; fill:#273449; }
+      .mono-strong { font-family:"SFMono-Regular",Consolas,monospace; font-size:15px; font-weight:760; fill:#1e3a8a; }
+      .panel { fill:#ffffff; stroke:#cbd5e1; stroke-width:1.5; }
+      .hero { fill:#eef2ff; stroke:#6366f1; stroke-width:1.8; }
+      .kda-box { fill:#e0f2fe; stroke:#0284c7; stroke-width:1.6; }
+      .mla-box { fill:#dbeafe; stroke:#2563eb; stroke-width:1.6; }
+      .attnres-box { fill:#dcfce7; stroke:#16a34a; stroke-width:1.6; }
+      .moe-box { fill:#fff7ed; stroke:#f59e0b; stroke-width:1.5; }
+      .expert-box { fill:#f3e8ff; stroke:#9333ea; stroke-width:1.5; }
+      .router-box { fill:#fef3c7; stroke:#d97706; stroke-width:1.5; }
+      .backward-box { fill:#fee2e2; stroke:#dc2626; stroke-width:1.5; }
+      .state-box { fill:#ede9fe; stroke:#7c3aed; stroke-width:1.5; }
+      .neutral-box { fill:#f8fafc; stroke:#94a3b8; stroke-width:1.3; }
+      .vision-box { fill:#ecfeff; stroke:#0891b2; stroke-width:1.5; }
+      .warning-box { fill:#fff1f2; stroke:#e11d48; stroke-width:1.5; }
+      .fwd { fill:none; stroke:#2563eb; stroke-width:2.2; marker-end:url(#arrow-blue); }
+      .bwd { fill:none; stroke:#dc2626; stroke-width:2.2; marker-end:url(#arrow-red); }
+      .depth { fill:none; stroke:#16a34a; stroke-width:2.1; stroke-dasharray:8 5; marker-end:url(#arrow-green); }
+      .route { fill:none; stroke:#d97706; stroke-width:2.1; marker-end:url(#arrow-amber); }
+      .state { fill:none; stroke:#7c3aed; stroke-width:2; marker-end:url(#arrow-purple); }
+      .thin { fill:none; stroke:#94a3b8; stroke-width:1.4; }
+      .divider { stroke:#cbd5e1; stroke-width:1.2; }
+      .grid { stroke:#cbd5e1; stroke-width:1; }
+      .table-bg { fill:#ffffff; stroke:#cbd5e1; stroke-width:1.2; }
+      .table-head { fill:#e2e8f0; stroke:#94a3b8; stroke-width:1.1; }
+      .table-alt { fill:#f8fafc; }
+      .table-header { font-size:12px; font-weight:760; fill:#475569; }
+      .table-body { font-size:12px; }
+      .table-strong { font-size:12px; font-weight:720; }
+      .pill-blue { fill:#dbeafe; stroke:#2563eb; stroke-width:1.2; }
+      .pill-cyan { fill:#e0f2fe; stroke:#0284c7; stroke-width:1.2; }
+      .pill-green { fill:#dcfce7; stroke:#16a34a; stroke-width:1.2; }
+      .pill-purple { fill:#ede9fe; stroke:#7c3aed; stroke-width:1.2; }
+      .pill-amber { fill:#fef3c7; stroke:#d97706; stroke-width:1.2; }
+      .pill-red { fill:#fee2e2; stroke:#dc2626; stroke-width:1.2; }
+    </style>
+  </defs>
+
+  <rect width="2400" height="4200" fill="#f5f7fb"/>
+  <text x="55" y="62" class="title">Kimi K3 · Hybrid Attention + AttnRes + Stable LatentMoE Anatomy</text>
+  <text x="55" y="99" class="subtitle">从序列、深度、通道三个方向拆开：KDA / Gated MLA 混合注意力，Block Attention Residuals，896 选 16 的 latent expert routing。</text>
+
+  <rect x="45" y="126" width="2310" height="116" rx="18" class="hero"/>
+  <text x="75" y="164" class="subsection">官方配置快照</text>
+  <text x="315" y="164" class="label">Kimi K3 · native multimodal decoder-only MoE · 1M context</text>
+  <text x="315" y="199" class="mono">L=93 · D=7168 · 69 KDA + 24 Gated MLA · H=96 · E=896 · top-k=16 · shared=2 · latent=3584 · expert F=3072</text>
+  <text x="2275" y="164" class="mono-strong" text-anchor="end">2.8T total</text>
+  <text x="2275" y="199" class="mono-strong" text-anchor="end">104B active/token</text>
+
+  <rect x="45" y="262" width="2310" height="56" rx="14" class="panel"/>
+  <rect x="74" y="278" width="22" height="22" rx="5" class="kda-box"/><text x="108" y="296" class="small">KDA linear attention</text>
+  <rect x="315" y="278" width="22" height="22" rx="5" class="mla-box"/><text x="349" y="296" class="small">Gated MLA global attention</text>
+  <rect x="640" y="278" width="22" height="22" rx="5" class="attnres-box"/><text x="674" y="296" class="small">Depth mixing / AttnRes</text>
+  <rect x="920" y="278" width="22" height="22" rx="5" class="expert-box"/><text x="954" y="296" class="small">Experts / persistent weights</text>
+  <rect x="1235" y="278" width="22" height="22" rx="5" class="router-box"/><text x="1269" y="296" class="small">Routing / dispatch</text>
+  <text x="1580" y="296" class="small">worked example：B=1 · T=8,192 · BF16；max context 另行标注</text>
+
+  <!-- 1. Whole model -->
+  <rect x="45" y="338" width="2310" height="750" rx="20" class="panel"/>
+  <text x="75" y="383" class="section">1 · 整体模型：视觉与文本先对齐到同一 residual width，再进入 93 层混合主干</text>
+  <text x="75" y="413" class="small">核心节奏：(KDA → MoE) ×3，再 (Gated MLA → MoE) ×1；重复 23 次后，以额外 Gated MLA 收尾。</text>
+
+  <rect x="72" y="465" width="280" height="130" rx="14" class="vision-box"/>
+  <text x="92" y="500" class="label">Image / video patches</text>
+  <text x="92" y="531" class="mono"><tspan x="92" dy="0">MoonViT-V2 · 401M</tspan><tspan x="92" dy="23">27 layers · width 1024</tspan><tspan x="92" dy="23">project → 7168</tspan></text>
+  <rect x="72" y="635" width="280" height="116" rx="14" class="state-box"/>
+  <text x="92" y="670" class="label">Text embedding</text>
+  <text x="92" y="701" class="mono"><tspan x="92" dy="0">V=163,840 · D=7,168</tspan><tspan x="92" dy="23">X₀ [8192,7168]</tspan><tspan x="92" dy="23">BF16 · 117.4 MB</tspan></text>
+  <path d="M352 530 C390 530 390 592 430 592" class="fwd"/>
+  <path d="M352 693 C390 693 390 620 430 620" class="fwd"/>
+  <rect x="430" y="500" width="270" height="200" rx="16" class="neutral-box"/>
+  <text x="565" y="540" class="subsection" text-anchor="middle">Unified token stream</text>
+  <text x="455" y="580" class="small"><tspan x="455" dy="0">视觉 token 与文本 token</tspan><tspan x="455" dy="25">共享 7168-d embedding space</tspan><tspan x="455" dy="25">causal mask + modality positions</tspan><tspan x="455" dy="25">→ Block AttnRes source b₀</tspan></text>
+  <path d="M700 600 L750 600" class="fwd"/>
+
+  <rect x="750" y="455" width="1055" height="455" rx="18" class="neutral-box"/>
+  <text x="780" y="495" class="subsection">Hybrid backbone schedule · 93 attention + channel-mixing pairs</text>
+  <text x="1765" y="495" class="mono-strong" text-anchor="end">69 KDA · 24 Gated MLA</text>
+  <rect x="790" y="540" width="205" height="145" rx="14" class="kda-box"/>
+  <text x="892" y="577" class="label" text-anchor="middle">Layer 4n+1</text>
+  <text x="892" y="610" class="subsection" text-anchor="middle">KDA</text>
+  <text x="892" y="642" class="small" text-anchor="middle">+ Stable LatentMoE</text>
+  <path d="M995 612 L1030 612" class="fwd"/>
+  <rect x="1030" y="540" width="205" height="145" rx="14" class="kda-box"/>
+  <text x="1132" y="577" class="label" text-anchor="middle">Layer 4n+2</text>
+  <text x="1132" y="610" class="subsection" text-anchor="middle">KDA</text>
+  <text x="1132" y="642" class="small" text-anchor="middle">+ Stable LatentMoE</text>
+  <path d="M1235 612 L1270 612" class="fwd"/>
+  <rect x="1270" y="540" width="205" height="145" rx="14" class="kda-box"/>
+  <text x="1372" y="577" class="label" text-anchor="middle">Layer 4n+3</text>
+  <text x="1372" y="610" class="subsection" text-anchor="middle">KDA</text>
+  <text x="1372" y="642" class="small" text-anchor="middle">+ Stable LatentMoE</text>
+  <path d="M1475 612 L1510 612" class="fwd"/>
+  <rect x="1510" y="530" width="245" height="165" rx="14" class="mla-box"/>
+  <text x="1632" y="568" class="label" text-anchor="middle">Layer 4n+4</text>
+  <text x="1632" y="603" class="subsection" text-anchor="middle">Gated MLA</text>
+  <text x="1632" y="635" class="small" text-anchor="middle">global token mixing</text>
+  <text x="1632" y="662" class="small" text-anchor="middle">+ Stable LatentMoE</text>
+  <path d="M1755 612 C1790 612 1790 730 1270 730" class="fwd"/>
+  <text x="1270" y="768" class="label" text-anchor="middle">×23 hybrid groups = 92 layers</text>
+  <rect x="1120" y="790" width="310" height="82" rx="13" class="mla-box"/>
+  <text x="1275" y="823" class="label" text-anchor="middle">Layer 93 · final Gated MLA</text>
+  <text x="1275" y="850" class="small" text-anchor="middle">保证主干最后一次 mixing 为 global attention</text>
+
+  <path d="M1805 680 L1850 680" class="fwd"/>
+  <rect x="1850" y="510" width="455" height="335" rx="16" class="attnres-box"/>
+  <text x="1880" y="552" class="subsection">Block Attention Residuals</text>
+  <text x="1880" y="590" class="body"><tspan x="1880" dy="0">93 层分为 8 个 layer blocks：</tspan><tspan x="1880" dy="26">7 × 12 layers + final 9 layers</tspan></text>
+  <rect x="1880" y="650" width="88" height="58" rx="9" class="state-box"/><text x="1924" y="685" class="label" text-anchor="middle">b₀</text>
+  <rect x="1990" y="650" width="88" height="58" rx="9" class="attnres-box"/><text x="2034" y="685" class="label" text-anchor="middle">b₁</text>
+  <rect x="2100" y="650" width="88" height="58" rx="9" class="attnres-box"/><text x="2144" y="685" class="label" text-anchor="middle">…</text>
+  <rect x="2210" y="650" width="70" height="58" rx="9" class="attnres-box"/><text x="2245" y="685" class="label" text-anchor="middle">b₈</text>
+  <path d="M1880 730 C1990 770 2150 770 2280 730" class="depth"/>
+  <text x="1880" y="790" class="small"><tspan x="1880" dy="0">每个 module 用 learnable pseudo-query w</tspan><tspan x="1880" dy="23">对 embedding / 历史 block summary 做 softmax；</tspan><tspan x="1880" dy="23">块内保留 partial sum，跨块选择性取回信息。</tspan></text>
+  <path d="M1275 872 L1275 955" class="fwd"/>
+  <rect x="1030" y="955" width="490" height="88" rx="14" class="state-box"/>
+  <text x="1055" y="988" class="label">Final RMSNorm + untied LM head</text>
+  <text x="1055" y="1018" class="mono">H [T,7168] → logits [T,163840] → shifted causal CE</text>
+
+  <!-- 2. Attention anatomy -->
+  <rect x="45" y="1118" width="2310" height="1030" rx="20" class="panel"/>
+  <text x="75" y="1163" class="section">2 · 序列 mixing：KDA 用固定 recurrent state；周期性 Gated MLA 恢复全局 softmax 交互</text>
+  <text x="75" y="1193" class="small">下面展开同一个 normalized input X̂ [8192,7168]。KDA 与 MLA 是两种 layer type，不在同一层并行。</text>
+
+  <rect x="75" y="1235" width="1100" height="815" rx="18" class="kda-box"/>
+  <text x="105" y="1278" class="subsection">Kimi Delta Attention · 69 layers</text>
+  <text x="1135" y="1278" class="mono-strong" text-anchor="end">state / head = 128 × 128</text>
+  <rect x="105" y="1320" width="210" height="95" rx="13" class="state-box"/>
+  <text x="125" y="1352" class="label">Pre-Norm input</text>
+  <text x="125" y="1382" class="mono"><tspan x="125" dy="0">X̂ [8192,7168]</tspan><tspan x="125" dy="22">117.4 MB BF16</tspan></text>
+  <path d="M315 1368 L350 1368" class="fwd"/>
+  <rect x="350" y="1310" width="300" height="125" rx="13" class="kda-box"/>
+  <text x="370" y="1342" class="label">Q / K / V branches</text>
+  <text x="370" y="1372" class="mono"><tspan x="370" dy="0">Linear → ShortConv(k=4)</tspan><tspan x="370" dy="22">Swish；Q/K 再做 L2Norm</tspan><tspan x="370" dy="22">96 heads · dₖ=dᵥ=128</tspan></text>
+  <path d="M650 1368 L685 1368" class="fwd"/>
+  <rect x="685" y="1300" width="340" height="145" rx="13" class="router-box"/>
+  <text x="705" y="1332" class="label">Write / forget controls</text>
+  <text x="705" y="1362" class="mono"><tspan x="705" dy="0">βₜ = sigmoid(Wβ xₜ)</tspan><tspan x="705" dy="22">αₜ = channel-wise retention</tspan><tspan x="705" dy="22">output gate full-rank；decay lower-bounded</tspan><tspan x="705" dy="22">chunkwise parallel during training</tspan></text>
+  <path d="M855 1445 L855 1490" class="fwd"/>
+  <rect x="235" y="1490" width="760" height="175" rx="15" class="state-box"/>
+  <text x="265" y="1528" class="label">Per-head recurrent update</text>
+  <text x="265" y="1570" class="mono-strong">Sₜ = (I − βₜkₜkₜᵀ) Diag(αₜ) Sₜ₋₁ + βₜkₜvₜᵀ</text>
+  <text x="265" y="1612" class="mono-strong">õₜ = Sₜᵀqₜ　→ output gate → Wₒ → [T,7168]</text>
+  <text x="265" y="1643" class="small">decay old channels → delta-corrective write → read fixed matrix state；decode cost 不随已读 token 数线性增长。</text>
+  <path d="M235 1575 C170 1575 170 1730 255 1730" class="state"/>
+  <rect x="255" y="1695" width="720" height="105" rx="13" class="neutral-box"/>
+  <text x="280" y="1728" class="label">State footprint · independent of context length T</text>
+  <text x="280" y="1760" class="mono">96 × 128 × 128 = 1,572,864 elems / KDA layer</text>
+  <text x="280" y="1785" class="small">≈ 3.15 MB BF16 或 6.29 MB FP32；69 层约 217 MB / 434 MB（仅 recurrent states）。</text>
+  <rect x="105" y="1835" width="970" height="170" rx="14" class="neutral-box"/>
+  <text x="130" y="1870" class="label">Training view · recurrent across chunks, parallel inside each chunk</text>
+  <text x="130" y="1905" class="mono"><tspan x="130" dy="0">O[chunk] = (Γ ⊙ Q) S_in + Tril[(Q⊙Γ)(K/Γ)ᵀ] Ṽ</tspan><tspan x="130" dy="26">　　　　　　 inter-chunk　　　　　 intra-chunk causal mixing</tspan></text>
+  <text x="130" y="1972" class="small">反向不是普通 softmax backward：需要 reverse scan / chunkwise recompute，对 α、β、Q/K/V 与 state transition 求梯度。</text>
+
+  <rect x="1205" y="1235" width="1120" height="815" rx="18" class="mla-box"/>
+  <text x="1235" y="1278" class="subsection">Gated Multi-head Latent Attention · 24 layers</text>
+  <text x="2285" y="1278" class="mono-strong" text-anchor="end">global attention every 4th layer + final</text>
+  <rect x="1235" y="1320" width="220" height="105" rx="13" class="state-box"/>
+  <text x="1255" y="1352" class="label">X̂ [T,7168]</text>
+  <text x="1255" y="1382" class="mono"><tspan x="1255" dy="0">RMSNorm</tspan><tspan x="1255" dy="22">BF16 activation</tspan></text>
+  <path d="M1455 1372 L1490 1372" class="fwd"/>
+  <rect x="1490" y="1305" width="300" height="145" rx="13" class="mla-box"/>
+  <text x="1510" y="1337" class="label">Q low-rank path</text>
+  <text x="1510" y="1367" class="mono"><tspan x="1510" dy="0">7168 → rank 1536</tspan><tspan x="1510" dy="22">→ 96 × (128 noPE + 64 RoPE)</tspan><tspan x="1510" dy="22">Q [T,96,192]</tspan></text>
+  <path d="M1455 1372 C1470 1372 1470 1545 1490 1545" class="fwd"/>
+  <rect x="1490" y="1475" width="300" height="145" rx="13" class="mla-box"/>
+  <text x="1510" y="1507" class="label">KV latent path</text>
+  <text x="1510" y="1537" class="mono"><tspan x="1510" dy="0">7168 → cᴷⱽ rank 512</tspan><tspan x="1510" dy="22">+ decoupled Kᴿ [64]</tspan><tspan x="1510" dy="22">V head dim = 128</tspan></text>
+  <path d="M1790 1372 C1820 1372 1820 1450 1855 1450" class="fwd"/>
+  <path d="M1790 1545 C1820 1545 1820 1500 1855 1500" class="fwd"/>
+  <rect x="1855" y="1340" width="395" height="235" rx="14" class="mla-box"/>
+  <text x="1878" y="1374" class="label">Causal global softmax</text>
+  <text x="1878" y="1408" class="mono"><tspan x="1878" dy="0">S = QKᵀ / √192 + mask</tspan><tspan x="1878" dy="24">S logical [96,T,T]</tspan><tspan x="1878" dy="24">A = softmax(S)；C=A·V</tspan><tspan x="1878" dy="24">per-head output gate g(x)</tspan><tspan x="1878" dy="24">concat → Wₒ → [T,7168]</tspan></text>
+  <text x="1878" y="1548" class="small">FlashAttention 分块执行，logical [T,T] 不等于完整 tensor 常驻 HBM。</text>
+  <path d="M2050 1575 L2050 1625" class="state"/>
+  <rect x="1340" y="1625" width="865" height="145" rx="14" class="state-box"/>
+  <text x="1365" y="1660" class="label">Compressed MLA cache</text>
+  <text x="1365" y="1693" class="mono">per token / layer：512 latent + 64 decoupled RoPE = 576 scalars</text>
+  <text x="1365" y="1725" class="small">T=8,192：9.44 MB BF16 / layer；T=1,048,576：1.208 GB / layer；24 层约 29.0 GB。</text>
+  <rect x="1260" y="1810" width="990" height="195" rx="14" class="neutral-box"/>
+  <text x="1285" y="1847" class="label">为什么 hybrid，而不是全 KDA 或全 softmax？</text>
+  <text x="1285" y="1882" class="body"><tspan x="1285" dy="0">KDA：固定 state，适合长序列与 decode；通过 delta write 减少简单线性注意力的记忆涂抹。</tspan><tspan x="1285" dy="29">Gated MLA：周期性做全局内容寻址，保留高容量 token-to-token interaction；latent cache 控制 KV 体积。</tspan><tspan x="1285" dy="29">3:1 混合：把昂贵全局注意力稀疏放在深度轴上，而不是在每层都支付 O(T²) logical work。</tspan></text>
+
+  <!-- 3. Latent MoE -->
+  <rect x="45" y="2178" width="2310" height="765" rx="20" class="panel"/>
+  <text x="75" y="2223" class="section">3 · 通道 mixing：Stable LatentMoE 把 7168-d residual 与 3584-d routed expert space 解耦</text>
+  <text x="75" y="2253" class="small">92 个 MoE layers；首层为 dense FFN。每个 token 同时走 2 个 full-width shared experts 与 16 个 routed experts。</text>
+
+  <rect x="75" y="2295" width="235" height="105" rx="13" class="state-box"/>
+  <text x="95" y="2328" class="label">Normalized x</text>
+  <text x="95" y="2358" class="mono"><tspan x="95" dy="0">[8192,7168]</tspan><tspan x="95" dy="22">117.4 MB BF16</tspan></text>
+  <path d="M310 2348 C345 2348 345 2350 380 2350" class="fwd"/>
+  <path d="M310 2348 C345 2348 345 2580 380 2580" class="fwd"/>
+
+  <rect x="380" y="2290" width="410" height="175" rx="15" class="expert-box"/>
+  <text x="405" y="2328" class="subsection">Shared path ×2</text>
+  <text x="405" y="2363" class="mono"><tspan x="405" dy="0">Esharedⱼ : R⁷¹⁶⁸ → R⁷¹⁶⁸</tspan><tspan x="405" dy="24">full-width SiTU-GLU experts</tspan><tspan x="405" dy="24">common transformation · always active</tspan></text>
+  <path d="M790 2378 C1060 2378 1060 2720 1825 2720" class="fwd"/>
+
+  <rect x="380" y="2490" width="280" height="175" rx="15" class="state-box"/>
+  <text x="405" y="2528" class="label">Latent down-projection</text>
+  <text x="405" y="2563" class="mono"><tspan x="405" dy="0">W↓ [7168,3584]</tspan><tspan x="405" dy="24">z [8192,3584]</tspan><tspan x="405" dy="24">58.7 MB BF16</tspan><tspan x="405" dy="24">25.69M params</tspan></text>
+  <path d="M660 2578 L700 2578" class="route"/>
+  <rect x="700" y="2480" width="290" height="195" rx="15" class="router-box"/>
+  <text x="725" y="2518" class="label">Router + Quantile Balancing</text>
+  <text x="725" y="2553" class="mono"><tspan x="725" dy="0">scores [8192,896]</tspan><tspan x="725" dy="24">sigmoid → top-16 → renorm</tspan><tspan x="725" dy="24">131,072 assignments</tspan><tspan x="725" dy="24">QB updates load-balance bias</tspan></text>
+  <path d="M990 2578 L1030 2578" class="route"/>
+  <rect x="1030" y="2470" width="360" height="215" rx="15" class="router-box"/>
+  <text x="1055" y="2508" class="label">Dispatch / grouped GEMMs</text>
+  <text x="1055" y="2543" class="mono"><tspan x="1055" dy="0">Zdispatch [131072,3584]</tspan><tspan x="1055" dy="24">939.5 MB logical BF16</tspan><tspan x="1055" dy="24">896 experts；16 selected/token</tspan><tspan x="1055" dy="24">avg 146 assignments/expert</tspan></text>
+  <path d="M1390 2578 L1430 2578" class="route"/>
+  <rect x="1430" y="2390" width="395" height="365" rx="16" class="expert-box"/>
+  <text x="1455" y="2430" class="subsection">Routed expert bank</text>
+  <text x="1785" y="2430" class="mono-strong" text-anchor="end">896 ×</text>
+  <rect x="1460" y="2460" width="94" height="52" rx="8" class="expert-box"/><text x="1507" y="2492" class="label" text-anchor="middle">E₁</text>
+  <rect x="1570" y="2460" width="94" height="52" rx="8" class="expert-box"/><text x="1617" y="2492" class="label" text-anchor="middle">E₂</text>
+  <rect x="1680" y="2460" width="110" height="52" rx="8" class="expert-box"/><text x="1735" y="2492" class="label" text-anchor="middle">… E₈₉₆</text>
+  <text x="1460" y="2550" class="mono"><tspan x="1460" dy="0">Wgate [3584,3072]</tspan><tspan x="1460" dy="24">Wup   [3584,3072]</tspan><tspan x="1460" dy="24">Wdown [3072,3584]</tspan></text>
+  <text x="1460" y="2642" class="small"><tspan x="1460" dy="0">SiTU-GLU：soft-cap gate/up branches</tspan><tspan x="1460" dy="24">≈33.03M params / routed expert</tspan><tspan x="1460" dy="24">≈29.59B routed params / MoE layer</tspan></text>
+  <path d="M1628 2755 L1628 2790" class="route"/>
+  <rect x="1430" y="2790" width="395" height="105" rx="14" class="state-box"/>
+  <text x="1455" y="2823" class="label">Weighted aggregate + RMSNorm</text>
+  <text x="1455" y="2853" class="mono"><tspan x="1455" dy="0">u=Σ pᵢEᵢ(z) [8192,3584]</tspan><tspan x="1455" dy="22">RMSNorm(u) stabilizes routed scale</tspan></text>
+  <path d="M1825 2842 L1870 2842" class="fwd"/>
+  <rect x="1870" y="2780" width="250" height="125" rx="14" class="state-box"/>
+  <text x="1895" y="2813" class="label">Latent up-projection</text>
+  <text x="1895" y="2845" class="mono"><tspan x="1895" dy="0">W↑ [3584,7168]</tspan><tspan x="1895" dy="22">→ [8192,7168]</tspan><tspan x="1895" dy="22">25.69M params</tspan></text>
+  <path d="M2120 2842 L2160 2842" class="fwd"/>
+  <circle cx="2182" cy="2842" r="20" fill="#dcfce7" stroke="#16a34a" stroke-width="1.8"/><text x="2182" y="2849" class="label" text-anchor="middle">+</text>
+  <path d="M1825 2720 C2040 2720 2070 2822 2162 2822" class="fwd"/>
+  <text x="2215" y="2835" class="small"><tspan x="2215" dy="0">shared</tspan><tspan x="2215" dy="20">+</tspan><tspan x="2215" dy="20">routed</tspan></text>
+
+  <!-- 4. Backward and lifetime -->
+  <rect x="45" y="2973" width="2310" height="790" rx="20" class="panel"/>
+  <text x="75" y="3018" class="section">4 · Backward / activation checkpointing / state lifetime：三类“记忆”不要混为一谈</text>
+  <text x="75" y="3048" class="small">红线是 reverse-mode gradient；紫线是跨 token 的 recurrent/cache state；绿线是跨 depth 的 AttnRes source。</text>
+
+  <rect x="75" y="3090" width="700" height="360" rx="17" class="backward-box"/>
+  <text x="105" y="3132" class="subsection">Gradient graph</text>
+  <rect x="115" y="3170" width="180" height="72" rx="12" class="pill-red"/><text x="205" y="3202" class="label" text-anchor="middle">dLoss / dlogits</text><text x="205" y="3226" class="tiny" text-anchor="middle">LM head backward</text>
+  <path d="M295 3206 L345 3206" class="bwd"/>
+  <rect x="345" y="3170" width="180" height="72" rx="12" class="pill-red"/><text x="435" y="3202" class="label" text-anchor="middle">dX₉₃</text><text x="435" y="3226" class="tiny" text-anchor="middle">reverse layers</text>
+  <path d="M525 3206 L575 3206" class="bwd"/>
+  <rect x="575" y="3170" width="160" height="72" rx="12" class="pill-red"/><text x="655" y="3202" class="label" text-anchor="middle">dX₀</text><text x="655" y="3226" class="tiny" text-anchor="middle">embedding / vision</text>
+  <text x="115" y="3280" class="body"><tspan x="115" dy="0">MLA：FlashAttention backward 分块重算 score/prob；</tspan><tspan x="115" dy="28">KDA：reverse chunk / scan，对 recurrent state transition 求导；</tspan><tspan x="115" dy="28">MoE：inverse dispatch，只对 token 选中的 16 个 routed experts 产生样本梯度；</tspan><tspan x="115" dy="28">AttnRes：梯度按 depth-attention 权重流向 embedding 与历史 block summaries。</tspan></text>
+  <text x="115" y="3398" class="small"><tspan x="115" dy="0">所有 2.8T trainable weights 仍需 persistent storage；“104B active”描述单 token compute path，</tspan><tspan x="115" dy="22">不是模型可以只装载 104B weights。</tspan></text>
+
+  <rect x="810" y="3090" width="730" height="605" rx="17" class="neutral-box"/>
+  <text x="840" y="3132" class="subsection">Tensor lifetime · worked example T=8192</text>
+  <rect x="845" y="3170" width="660" height="95" rx="13" class="pill-blue"/>
+  <text x="870" y="3202" class="label">Layer activations</text>
+  <text x="870" y="3232" class="small">X / norm outputs / QKV / expert intermediates；checkpoint 时只存边界，backward 内重算。</text>
+  <rect x="845" y="3285" width="660" height="105" rx="13" class="pill-purple"/>
+  <text x="870" y="3317" class="label">Sequence state / cache</text>
+  <text x="870" y="3347" class="small"><tspan x="870" dy="0">KDA recurrent state：O(H·dₖ·dᵥ)，与 T 无关；</tspan><tspan x="870" dy="22">MLA KV latent：O(T·576)，只存在于 24 个 global layers。</tspan></text>
+  <rect x="845" y="3410" width="660" height="105" rx="13" class="pill-green"/>
+  <text x="870" y="3442" class="label">Depth state / AttnRes</text>
+  <text x="870" y="3472" class="small"><tspan x="870" dy="0">embedding + 8 block summaries；training logical footprint</tspan><tspan x="870" dy="22">9 × 8192 × 7168 × 2 B ≈ 1.057 GB（未计 recompute/分片）。</tspan></text>
+  <rect x="845" y="3535" width="660" height="125" rx="13" class="pill-amber"/>
+  <text x="870" y="3567" class="label">Routing temporaries</text>
+  <text x="870" y="3597" class="small"><tspan x="870" dy="0">scores/top-k/indices/permutation buffers + latent dispatch；</tspan><tspan x="870" dy="22">Zdispatch logical 939.5 MB，optimized kernels 会分 expert / 分 token tile，</tspan><tspan x="870" dy="22">不要求一次物化完整矩阵。</tspan></text>
+
+  <rect x="1575" y="3090" width="750" height="605" rx="17" class="neutral-box"/>
+  <text x="1605" y="3132" class="subsection">Architecture ledger</text>
+  <rect x="1605" y="3165" width="690" height="48" rx="9" class="table-head"/>
+  <text x="1620" y="3195" class="table-header">Component</text><text x="1880" y="3195" class="table-header">Scaling axis</text><text x="2080" y="3195" class="table-header">Main trade-off</text>
+  <line x1="1860" y1="3165" x2="1860" y2="3570" class="grid"/><line x1="2060" y1="3165" x2="2060" y2="3570" class="grid"/>
+  <rect x="1605" y="3213" width="690" height="70" class="table-alt"/><text x="1620" y="3243" class="table-strong">KDA ×69</text><text x="1880" y="3243" class="table-body">sequence</text><text x="2080" y="3243" class="table-body">fixed state / linear decode</text><text x="2080" y="3267" class="tiny">complex recurrent backward</text>
+  <text x="1620" y="3315" class="table-strong">Gated MLA ×24</text><text x="1880" y="3315" class="table-body">sequence</text><text x="2080" y="3315" class="table-body">global retrieval</text><text x="2080" y="3339" class="tiny">periodic O(T²) logical work</text>
+  <rect x="1605" y="3353" width="690" height="70" class="table-alt"/><text x="1620" y="3383" class="table-strong">Block AttnRes</text><text x="1880" y="3383" class="table-body">depth</text><text x="2080" y="3383" class="table-body">selective history</text><text x="2080" y="3407" class="tiny">O(Nd) block summaries</text>
+  <text x="1620" y="3455" class="table-strong">LatentMoE 16/896</text><text x="1880" y="3455" class="table-body">channel</text><text x="2080" y="3455" class="table-body">huge expert capacity</text><text x="2080" y="3479" class="tiny">routing + EP communication</text>
+  <rect x="1605" y="3493" width="690" height="77" class="table-alt"/><text x="1620" y="3523" class="table-strong">MoonViT-V2</text><text x="1880" y="3523" class="table-body">modality</text><text x="2080" y="3523" class="table-body">native visual tokens</text><text x="2080" y="3547" class="tiny">401M encoder + projector</text>
+  <text x="1605" y="3615" class="small"><tspan x="1605" dy="0">关键判断：K3 不是“Qwen MoE 放大版”。</tspan><tspan x="1605" dy="24">它同时重写了 token mixing、depth residual 与 expert width。</tspan><tspan x="1605" dy="24">因此缓存、checkpoint、并行策略都要按三条轴分别设计。</tspan></text>
+
+  <!-- 5. Notes and sources -->
+  <rect x="45" y="3793" width="2310" height="347" rx="20" class="panel"/>
+  <text x="75" y="3838" class="section">5 · 阅读边界与来源</text>
+  <rect x="75" y="3870" width="1080" height="220" rx="15" class="warning-box"/>
+  <text x="105" y="3907" class="label">口径说明</text>
+  <text x="105" y="3942" class="body"><tspan x="105" dy="0">• 图中张量显存为 logical BF16 decimal MB/GB；真实 kernel 可能使用 FP32 accumulator、MXFP8 activation、分块、重算与分片。</tspan><tspan x="105" dy="29">• MXFP4 weights / MXFP8 activations 是官方发布的 quantization-aware deployment 口径，不等于所有训练张量均为该精度。</tspan><tspan x="105" dy="29">• 参数矩阵账本按公开 config / report 推导；bias、norm、router correction、embedding/head 等小项未逐一计入。</tspan><tspan x="105" dy="29">• “video”能力来自官方报告；公开模型卡的 modality summary 主要列 Text / Image，本文不推断未公开预处理细节。</tspan></text>
+  <rect x="1185" y="3870" width="1140" height="220" rx="15" class="neutral-box"/>
+  <text x="1215" y="3907" class="label">Primary sources · checked 2026-08-19</text>
+  <text x="1215" y="3942" class="small"><tspan x="1215" dy="0">1. Moonshot AI, “Kimi K3: Open Frontier Intelligence” technical report</tspan><tspan x="1245" dy="23">github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf</tspan><tspan x="1215" dy="30">2. Official Kimi K3 model card / README</tspan><tspan x="1245" dy="23">github.com/MoonshotAI/Kimi-K3</tspan><tspan x="1215" dy="30">3. Official Hugging Face config</tspan><tspan x="1245" dy="23">huggingface.co/moonshotai/Kimi-K3/blob/main/config.json</tspan></text>
+  <text x="2325" y="4120" class="tiny" text-anchor="end">Day 05 companion poster · generated from public architecture metadata · 2026-08-19</text>
+</svg>

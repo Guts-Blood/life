@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "domain": "day12.recovery_final_summary",
+  "status": "complete_maximum_rollouts_no_acceptance",
+  "rollouts_completed": 10,
+  "rollout_ids": ["C", "D", "E", "F", "G", "H", "I", "J", "K", "L"],
+  "accepted_rollout": null,
+  "frozen_test_consumed": false,
+  "acceptance_gate": {"math_minimum": 10, "code_minimum": 5, "total_minimum": 15, "all_required": true},
+  "scores": {
+    "Base": {"general": 2, "math": 12, "code": 0, "finance": 1, "total": 15},
+    "C": {"general": 0, "math": 1, "code": 3, "finance": 1, "total": 5},
+    "D": {"general": 3, "math": 2, "code": 5, "finance": 2, "total": 12},
+    "E": {"general": 4, "math": 4, "code": 9, "finance": 2, "total": 19},
+    "F": {"general": 9, "math": 3, "code": 0, "finance": 0, "total": 12},
+    "G": {"general": 2, "math": 12, "code": 0, "finance": 0, "total": 14},
+    "H": {"general": 8, "math": 8, "code": 3, "finance": 0, "total": 19},
+    "I": {"general": 5, "math": 8, "code": 3, "finance": 0, "total": 16},
+    "J": {"general": 2, "math": 9, "code": 1, "finance": 0, "total": 12},
+    "K": {"general": 2, "math": 9, "code": 0, "finance": 0, "total": 11},
+    "L": {"general": 4, "math": 8, "code": 1, "finance": 0, "total": 13}
+  },
+  "single_model_findings": {
+    "best_code": {"model": "E", "code": 9, "math": 4, "total": 19},
+    "best_math": {"model": "Base", "math": 12, "code": 0, "total": 15},
+    "best_lora_balance": {"models": ["H", "I"], "math": 8, "code": 3},
+    "pareto_frontier": ["Base", "H", "I", "E"]
+  },
+  "post_hoc_modular_diagnostic": {
+    "eligible_for_day12_acceptance": false,
+    "reason": "routing policy was not preregistered and was suggested by the same dev outcomes",
+    "policy": {"math": "Base", "general": "E", "code": "E", "finance": "E"},
+    "arithmetic_dev_upper_bound": {"general": 4, "math": 12, "code": 9, "finance": 2, "total": 27},
+    "retained_export": "/root/autodl-tmp/runs/day12-20260806/inference-exports/E-25_percent"
+  },
+  "next_phase_priorities": [
+    "Preregister and evaluate a deterministic Base-plus-E task router on a fresh holdout.",
+    "Add Base KL or replay retention to E-like full-parameter code-capable SFT.",
+    "Make EOS/termination an explicit training variable and guardrail metric.",
+    "Prefer task-specific adapters or routed experts over one conflicting mixed adapter."
+  ],
+  "evidence": {
+    "policy": "artifacts/configs/day12-recovery-rollout-policy.json",
+    "trace": "artifacts/reports/day12-recovery-rollout-trace.json",
+    "retrospective": "artifacts/reports/day12-recovery-final-retrospective.md",
+    "outcome_pattern": "artifacts/reports/day12-rollout-{C-L}-outcome.json"
+  }
+}

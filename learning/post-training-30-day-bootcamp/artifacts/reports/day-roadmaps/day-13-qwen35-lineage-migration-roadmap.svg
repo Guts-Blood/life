@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="2840" viewBox="0 0 1800 2840" role="img" aria-labelledby="title desc">
+  <title id="title">Day 13 · Qwen3 v1 → Qwen3.5 v2：Lineage 迁移边界</title>
+  <desc id="desc">A Chinese roadmap explaining the immutable Qwen3 v1 history, the new Qwen3.5 v2 lineage, which methods may cross the lineage boundary, which model-specific artifacts must be rebuilt, and why only a promoted S1 may parent DPO or GRPO.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+    <style>
+      text { font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", "PingFang SC", sans-serif; fill: #172033; }
+      .title { font-size: 34px; font-weight: 750; }
+      .subtitle { font-size: 18px; fill: #526078; }
+      .section { font-size: 23px; font-weight: 750; }
+      .stage { font-size: 13px; font-weight: 750; letter-spacing: .45px; fill: #475569; }
+      .label { font-size: 18px; font-weight: 700; }
+      .body { font-size: 15px; }
+      .body-strong { font-size: 15px; font-weight: 700; }
+      .small { font-size: 14px; fill: #475569; }
+      .tiny { font-size: 12px; fill: #526078; }
+      .source { font-size: 11px; fill: #64748b; }
+      .metric-value { font-family: "SFMono-Regular", Consolas, monospace; font-size: 27px; font-weight: 750; fill: #1e3a8a; }
+      .number { font-size: 13px; font-weight: 800; fill: #ffffff; }
+      .panel { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1.5; }
+      .hero { fill: #eef2ff; stroke: #6366f1; stroke-width: 1.8; }
+      .blue { fill: #dbeafe; stroke: #2563eb; stroke-width: 1.5; }
+      .cyan { fill: #cffafe; stroke: #0891b2; stroke-width: 1.5; }
+      .purple { fill: #f3e8ff; stroke: #9333ea; stroke-width: 1.5; }
+      .green { fill: #dcfce7; stroke: #16a34a; stroke-width: 1.5; }
+      .amber { fill: #fef3c7; stroke: #d97706; stroke-width: 1.5; }
+      .teal { fill: #ccfbf1; stroke: #0f766e; stroke-width: 1.5; }
+      .indigo { fill: #e0e7ff; stroke: #4f46e5; stroke-width: 1.5; }
+      .red { fill: #fee2e2; stroke: #dc2626; stroke-width: 1.5; }
+      .blue-soft { fill: #eff6ff; stroke: #93c5fd; stroke-width: 1.3; }
+      .purple-soft { fill: #faf5ff; stroke: #d8b4fe; stroke-width: 1.3; }
+      .green-soft { fill: #f0fdf4; stroke: #86efac; stroke-width: 1.3; }
+      .amber-soft { fill: #fffbeb; stroke: #fcd34d; stroke-width: 1.3; }
+      .cyan-soft { fill: #ecfeff; stroke: #67e8f9; stroke-width: 1.3; }
+      .slate-soft { fill: #f8fafc; stroke: #cbd5e1; stroke-width: 1.3; }
+      .number-dot { fill: #475569; }
+      .metric { fill: #f8fafc; stroke: #94a3b8; stroke-width: 1.4; }
+      .table-bg { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1.3; }
+      .table-head { fill: #e2e8f0; stroke: #94a3b8; stroke-width: 1.2; }
+      .table-alt { fill: #f8fafc; }
+      .status-good { fill: #dcfce7; stroke: #16a34a; stroke-width: 1.4; }
+      .status-warn { fill: #fef3c7; stroke: #d97706; stroke-width: 1.4; }
+      .status-stop { fill: #fee2e2; stroke: #dc2626; stroke-width: 1.4; }
+      .status-info { fill: #dbeafe; stroke: #2563eb; stroke-width: 1.4; }
+      .status-slate { fill: #f1f5f9; stroke: #64748b; stroke-width: 1.4; }
+      .decision { fill: #eef2ff; stroke: #6366f1; stroke-width: 1.7; }
+      .boundary { fill: #fff7ed; stroke: #ea580c; stroke-width: 1.7; }
+      .divider { stroke: #cbd5e1; stroke-width: 1.2; }
+      .grid { stroke: #cbd5e1; stroke-width: 1; }
+      .line { fill: none; stroke: #475569; stroke-width: 2; marker-end: url(#arrow); }
+      .line-dash { fill: none; stroke: #64748b; stroke-width: 1.8; stroke-dasharray: 7 5; marker-end: url(#arrow); }
+    </style>
+  </defs>
+
+  <rect width="1800" height="2840" fill="#f5f7fb"/>
+  <text x="50" y="62" class="title">Day 13 · Qwen3 v1 → Qwen3.5 v2：Lineage 迁移边界</text>
+  <text x="50" y="95" class="subtitle">方法可以复用，模型绑定的证据必须重建；迁移不是把旧 runner 里的 model ID 替换掉。</text>
+  <rect x="1190" y="108" width="570" height="38" rx="19" class="status-info"/>
+  <text x="1475" y="133" class="stage" text-anchor="middle">ROADMAP RECONSTRUCTED · MIGRATION BOUNDARY VERIFIED</text>
+
+  <rect x="40" y="165" width="1720" height="112" rx="18" class="hero"/>
+  <text x="70" y="203" class="section">一句话 Gate</text>
+  <text x="270" y="203" class="label" text-anchor="start"><tspan x="270" dy="0">v1 与 v2 没有权重连续性；未经重新 render、tokenize、baseline 与训练验收，v1 artifact 不得跨 lineage 使用。</tspan><tspan x="270" dy="31">能带走的是 raw IDs、provenance、审计方法与 scorer 语义；tokens、predictions、checkpoint 与能力结论必须留在原 lineage。</tspan></text>
+
+  <rect x="40" y="310" width="1720" height="650" rx="18" class="panel"/>
+  <text x="70" y="352" class="section">1 · Roadmap：从输入边界到可交付结论</text>
+  <text x="70" y="382" class="small">每一步都回答“对象是什么、证据在哪里、失败时停在哪一层”；编号代表依赖顺序。</text>
+  <text x="70" y="391" class="stage">01 · FREEZE V1</text>
+<rect x="70" y="405" width="360" height="210" rx="16" class="blue"/>
+<text x="94" y="445" class="label" text-anchor="start"><tspan x="94" dy="0">封存旧证据</tspan></text>
+<line x1="94" y1="463" x2="406" y2="463" class="divider"/>
+<text x="94" y="497" class="small" text-anchor="start"><tspan x="94" dy="0">Day 01–12 作为 immutable history</tspan><tspan x="94" dy="28">Qwen3-0.6B 不再是权重父节点</tspan><tspan x="94" dy="28">保留合法负结果，不回写</tspan></text>
+<text x="480" y="391" class="stage">02 · OPEN V2</text>
+<rect x="480" y="405" width="360" height="210" rx="16" class="cyan"/>
+<text x="504" y="445" class="label" text-anchor="start"><tspan x="504" dy="0">新建独立 lineage</tspan></text>
+<line x1="504" y1="463" x2="816" y2="463" class="divider"/>
+<text x="504" y="497" class="small" text-anchor="start"><tspan x="504" dy="0">qwen35-4b-day13-plus-v2</tspan><tspan x="504" dy="28">S0 = exact Qwen3.5-4B Base</tspan><tspan x="504" dy="28">run 必须声明 parent 与 lineage_id</tspan></text>
+<text x="890" y="391" class="stage">03 · RESOLVE MODEL</text>
+<rect x="890" y="405" width="360" height="210" rx="16" class="purple"/>
+<text x="914" y="445" class="label" text-anchor="start"><tspan x="914" dy="0">重读模型边界</tspan></text>
+<line x1="914" y1="463" x2="1226" y2="463" class="divider"/>
+<text x="914" y="497" class="small" text-anchor="start"><tspan x="914" dy="0">ConditionalGeneration + AutoProcessor</tspan><tspan x="914" dy="28">GDN / MTP + vision components</tspan><tspan x="914" dy="28">不是旧 CausalLM 的 drop-in replacement</tspan></text>
+<text x="1300" y="391" class="stage">04 · REBUILD CONTRACT</text>
+<rect x="1300" y="405" width="360" height="210" rx="16" class="green"/>
+<text x="1324" y="445" class="label" text-anchor="start"><tspan x="1324" dy="0">重建监督契约</tspan></text>
+<line x1="1324" y1="463" x2="1636" y2="463" class="divider"/>
+<text x="1324" y="497" class="small" text-anchor="start"><tspan x="1324" dy="0">template / thinking / special tokens</tspan><tspan x="1324" dy="28">assistant spans / causal shift / truncation</tspan><tspan x="1324" dy="28">text-only 时仍审计 ViT / aligner</tspan></text>
+<text x="280" y="676" class="stage">05 · REBUILD DATA</text>
+<rect x="280" y="690" width="360" height="210" rx="16" class="amber"/>
+<text x="304" y="730" class="label" text-anchor="start"><tspan x="304" dy="0">重新分词与计量</tspan></text>
+<line x1="304" y1="748" x2="616" y2="748" class="divider"/>
+<text x="304" y="782" class="small" text-anchor="start"><tspan x="304" dy="0">raw IDs 可重新审核</tspan><tspan x="304" dy="28">token budget / mixture 全部重算</tspan><tspan x="304" dy="28">旧 rendered text 与 label spans 禁用</tspan></text>
+<text x="720" y="676" class="stage">06 · REBUILD EVAL</text>
+<rect x="720" y="690" width="360" height="210" rx="16" class="teal"/>
+<text x="744" y="730" class="label" text-anchor="start"><tspan x="744" dy="0">重新建立比较尺</tspan></text>
+<line x1="744" y1="748" x2="1056" y2="748" class="divider"/>
+<text x="744" y="782" class="small" text-anchor="start"><tspan x="744" dy="0">先跑 v2 Base baseline</tspan><tspan x="744" dy="28">冻结 prompt / decoder / scorer identity</tspan><tspan x="744" dy="28">new selection + confirmation contract</tspan></text>
+<text x="1160" y="676" class="stage">07 · PROMOTE THEN BRANCH</text>
+<rect x="1160" y="690" width="360" height="210" rx="16" class="indigo"/>
+<text x="1184" y="730" class="label" text-anchor="start"><tspan x="1184" dy="0">只从 S1 分叉</tspan></text>
+<line x1="1184" y1="748" x2="1496" y2="748" class="divider"/>
+<text x="1184" y="782" class="small" text-anchor="start"><tspan x="1184" dy="0">受控 SFT candidate → promotion</tspan><tspan x="1184" dy="28">S1 需 immutable downstream identity</tspan><tspan x="1184" dy="28">DPO / GRPO 共享正式 parent</tspan></text>
+  <path d="M 430 510 L 470 510" class="line"/>
+<path d="M 840 510 L 880 510" class="line"/>
+<path d="M 1250 510 L 1290 510" class="line"/>
+<path d="M 1660 615 C 1660 650 1520 650 1520 680" class="line-dash"/>
+<path d="M 640 795 L 710 795" class="line"/>
+<path d="M 1080 795 L 1150 795" class="line"/>
+
+  <rect x="40" y="990" width="1720" height="590" rx="18" class="panel"/>
+  <text x="70" y="1033" class="section">2 · 真正学到的知识：可迁移的判断框架</text>
+  <rect x="70" y="1075" width="530" height="205" rx="16" class="blue-soft"/>
+<circle cx="106" cy="1114" r="18" class="number-dot"/>
+<text x="106" y="1120" class="number" text-anchor="middle">1</text>
+<text x="136" y="1120" class="label" text-anchor="start"><tspan x="136" dy="0">方法与 artifact 分离</tspan></text>
+<text x="96" y="1161" class="small" text-anchor="start"><tspan x="96" dy="0">清洗、去污染、逐样本审计可以复用；</tspan><tspan x="96" dy="27">model-specific bytes 与 hashes 不能复用。</tspan></text>
+<rect x="635" y="1075" width="530" height="205" rx="16" class="purple-soft"/>
+<circle cx="671" cy="1114" r="18" class="number-dot"/>
+<text x="671" y="1120" class="number" text-anchor="middle">2</text>
+<text x="701" y="1120" class="label" text-anchor="start"><tspan x="701" dy="0">Base 不等于 aligned policy</tspan></text>
+<text x="661" y="1161" class="small" text-anchor="start"><tspan x="661" dy="0">S0 只提供预训练起点；没有通过 promotion</tspan><tspan x="661" dy="27">的 checkpoint 不能冒充 S1。</tspan></text>
+<rect x="1200" y="1075" width="530" height="205" rx="16" class="green-soft"/>
+<circle cx="1236" cy="1114" r="18" class="number-dot"/>
+<text x="1236" y="1120" class="number" text-anchor="middle">3</text>
+<text x="1266" y="1120" class="label" text-anchor="start"><tspan x="1266" dy="0">Text-only 仍有多模态边界</tspan></text>
+<text x="1226" y="1161" class="small" text-anchor="start"><tspan x="1226" dy="0">保留完整 processor；image/video=0；</tspan><tspan x="1226" dy="27">用 trainable inventory 证明 ViT/aligner 冻结。</tspan></text>
+<rect x="70" y="1310" width="530" height="205" rx="16" class="amber-soft"/>
+<circle cx="106" cy="1349" r="18" class="number-dot"/>
+<text x="106" y="1355" class="number" text-anchor="middle">4</text>
+<text x="136" y="1355" class="label" text-anchor="start"><tspan x="136" dy="0">负结果也能迁移</tspan></text>
+<text x="96" y="1396" class="small" text-anchor="start"><tspan x="96" dy="0">Day 12 的 no-candidate 教会 fail closed；</tspan><tspan x="96" dy="27">它不证明 4B 也会失败。</tspan></text>
+<rect x="635" y="1310" width="530" height="205" rx="16" class="cyan-soft"/>
+<circle cx="671" cy="1349" r="18" class="number-dot"/>
+<text x="671" y="1355" class="number" text-anchor="middle">5</text>
+<text x="701" y="1355" class="label" text-anchor="start"><tspan x="701" dy="0">Eval identity 必须重建</tspan></text>
+<text x="661" y="1396" class="small" text-anchor="start"><tspan x="661" dy="0">scorer 意义可复用；render、prediction、</tspan><tspan x="661" dy="27">comparison key 与 Base score 都绑定模型。</tspan></text>
+<rect x="1200" y="1310" width="530" height="205" rx="16" class="slate-soft"/>
+<circle cx="1236" cy="1349" r="18" class="number-dot"/>
+<text x="1236" y="1355" class="number" text-anchor="middle">6</text>
+<text x="1266" y="1355" class="label" text-anchor="start"><tspan x="1266" dy="0">Lineage 是因果边界</tspan></text>
+<text x="1226" y="1396" class="small" text-anchor="start"><tspan x="1226" dy="0">跨模型 aggregate 只能并列描述；</tspan><tspan x="1226" dy="27">不能把规模差异误写成训练增益。</tspan></text>
+
+  <rect x="40" y="1610" width="1720" height="720" rx="18" class="panel"/>
+  <text x="70" y="1653" class="section">3 · Evidence：关键数字、对照与决策依据</text>
+  <rect x="70" y="1690" width="385" height="140" rx="16" class="metric"/>
+<text x="94" y="1724" class="stage" text-anchor="start"><tspan x="94" dy="0">V1 TERMINAL</tspan></text>
+<text x="94" y="1769" class="metric-value" text-anchor="start"><tspan x="94" dy="0">10 / 10 · 0 accepted</tspan></text>
+<text x="94" y="1802" class="tiny" text-anchor="start"><tspan x="94" dy="0">Day 12 recovery；frozen test 未消费</tspan></text>
+<rect x="480" y="1690" width="385" height="140" rx="16" class="metric"/>
+<text x="504" y="1724" class="stage" text-anchor="start"><tspan x="504" dy="0">V2 REPOSITORY</tspan></text>
+<text x="504" y="1769" class="metric-value" text-anchor="start"><tspan x="504" dy="0">4,659,865,088 params</tspan></text>
+<text x="504" y="1802" class="tiny" text-anchor="start"><tspan x="504" dy="0">完整 conditional-generation checkpoint</tspan></text>
+<rect x="890" y="1690" width="385" height="140" rx="16" class="metric"/>
+<text x="914" y="1724" class="stage" text-anchor="start"><tspan x="914" dy="0">NATIVE CONTEXT</tspan></text>
+<text x="914" y="1769" class="metric-value" text-anchor="start"><tspan x="914" dy="0">262,144 tokens</tspan></text>
+<text x="914" y="1802" class="tiny" text-anchor="start"><tspan x="914" dy="0">不是首轮训练长度承诺</tspan></text>
+<rect x="1300" y="1690" width="385" height="140" rx="16" class="metric"/>
+<text x="1324" y="1724" class="stage" text-anchor="start"><tspan x="1324" dy="0">ACTIVE S0 REVISION</tspan></text>
+<text x="1324" y="1769" class="metric-value" text-anchor="start"><tspan x="1324" dy="0">1001bb4d…741b</tspan></text>
+<text x="1324" y="1802" class="tiny" text-anchor="start"><tspan x="1324" dy="0">独立于 v1 ddc928…e865</tspan></text>
+  <rect x="70" y="1860" width="1660" height="248" rx="12" class="table-bg"/>
+<rect x="70" y="1860" width="1660" height="52" rx="12" class="table-head"/>
+<text x="86" y="1893" class="stage" text-anchor="start"><tspan x="86" dy="0">对象</tspan></text>
+<line x1="430" y1="1860" x2="430" y2="2108" class="grid"/>
+<text x="446" y="1893" class="stage" text-anchor="start"><tspan x="446" dy="0">允许跨越 v1→v2</tspan></text>
+<line x1="900" y1="1860" x2="900" y2="2108" class="grid"/>
+<text x="916" y="1893" class="stage" text-anchor="start"><tspan x="916" dy="0">必须在 v2 重建</tspan></text>
+<line x1="70" y1="1912" x2="1730" y2="1912" class="grid"/>
+<text x="86" y="1943" class="body-strong" text-anchor="start"><tspan x="86" dy="0">Raw source / provenance</tspan></text>
+<text x="446" y="1943" class="body" text-anchor="start"><tspan x="446" dy="0">重新审核后可引用</tspan></text>
+<text x="916" y="1943" class="body" text-anchor="start"><tspan x="916" dy="0">新 manifest 记录真实 parent 与 decision ledger</tspan></text>
+<rect x="70" y="1961" width="1660" height="49" class="table-alt"/>
+<line x1="70" y1="1961" x2="1730" y2="1961" class="grid"/>
+<text x="86" y="1992" class="body-strong" text-anchor="start"><tspan x="86" dy="0">清洗 / scorer 方法</tspan></text>
+<text x="446" y="1992" class="body" text-anchor="start"><tspan x="446" dy="0">可复用方法与语义</tspan></text>
+<text x="916" y="1992" class="body" text-anchor="start"><tspan x="916" dy="0">新 processor、render、comparison identity</tspan></text>
+<line x1="70" y1="2010" x2="1730" y2="2010" class="grid"/>
+<text x="86" y="2041" class="body-strong" text-anchor="start"><tspan x="86" dy="0">Rendered / tokens / labels</tspan></text>
+<text x="446" y="2041" class="body" text-anchor="start"><tspan x="446" dy="0">不可复用</tspan></text>
+<text x="916" y="2041" class="body" text-anchor="start"><tspan x="916" dy="0">全部重新编码、计量、hash 与边界审计</tspan></text>
+<rect x="70" y="2059" width="1660" height="49" class="table-alt"/>
+<line x1="70" y1="2059" x2="1730" y2="2059" class="grid"/>
+<text x="86" y="2090" class="body-strong" text-anchor="start"><tspan x="86" dy="0">Predictions / checkpoint / score</tspan></text>
+<text x="446" y="2090" class="body" text-anchor="start"><tspan x="446" dy="0">不可作为新 parent 或增益</tspan></text>
+<text x="916" y="2090" class="body" text-anchor="start"><tspan x="916" dy="0">v2 Base、candidate、promotion 与 downstream key</tspan></text>
+  <text x="70" y="2144" class="small" text-anchor="start"><tspan x="70" dy="0">正确迁移顺序：immutable v1 → exact S0 → processor/data/eval acceptance → controlled SFT S1 → DPO 或 GRPO。</tspan><tspan x="70" dy="26">后续实验证明这条边界必要；这些后验数字用于完善知识图，不冒充 Day 13 当天的 GPU 结果。</tspan></text>
+
+  <rect x="40" y="2360" width="1110" height="405" rx="18" class="decision"/>
+  <text x="70" y="2404" class="section">4 · 决策 / Takeaway</text>
+  <text x="70" y="2450" class="body-strong" text-anchor="start"><tspan x="70" dy="0">核心结论：迁移模型时，真正要迁移的是“判断框架”，不是旧模型产生的字节。</tspan><tspan x="70" dy="31">S0、S1、S2 是不同角色：Base 不能绕过 SFT promotion 直接充当 DPO/GRPO parent。</tspan><tspan x="70" dy="31">任何新 run 先回答五个问题：模型是谁？processor 是谁？监督落在哪些 token？</tspan><tspan x="70" dy="31">比较尺是否匹配？checkpoint 是否拥有可验证的 ancestry？</tspan><tspan x="70" dy="31">一句话记忆：raw evidence 可以重新审；model-bound evidence 必须重新生成。</tspan></text>
+  <rect x="1180" y="2360" width="580" height="405" rx="18" class="boundary"/>
+  <text x="1210" y="2404" class="section">证据边界</text>
+  <text x="1210" y="2450" class="small" text-anchor="start"><tspan x="1210" dy="0">• 原 Day 13 README 的阅读 checklist / 三个 takeaway</tspan><tspan x="1210" dy="29">  没有单独签收记录。</tspan><tspan x="1210" dy="29">• 本图依据实际迁移计划、机器合同与后来证据</tspan><tspan x="1210" dy="29">  重建知识，不声称完成了某次未留痕精读。</tspan><tspan x="1210" dy="29">• Day 12 的 0.6B checkpoint 不可成为 v2 parent。</tspan><tspan x="1210" dy="29">• native 262K context 不等于训练应直接使用 262K。</tspan><tspan x="1210" dy="29">• teacher 分支仍为 null / deferred，不能静默选择。</tspan></text>
+
+  <text x="70" y="2797" class="source" text-anchor="start"><tspan x="70" dy="0">Sources · QWEN35-4B-MIGRATION-PLAN.md · artifacts/configs/qwen35-4b-migration-contract.json · artifacts/checkpoints/qwen35-4b-base-s0.json</tspan></text>
+<text x="70" y="2817" class="source" text-anchor="start"><tspan x="70" dy="0">Scope · Day 13 roadmap reconstructed from durable lineage evidence · generated 2026-08-14</tspan></text>
+</svg>

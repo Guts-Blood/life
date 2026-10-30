@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "domain": "day12.recovery_rollout_outcome",
+  "ordinal": 7,
+  "run_id": "I",
+  "status": "failed_math_and_code_gates",
+  "hypothesis": "Keeping H's LoRA and 5e-5 optimization fixed while reallocating supervised tokens toward math and code will recover the two missing math cases and add the two missing code cases needed to pass every gate.",
+  "primary_change": {
+    "path": "data.target_ratios",
+    "parent": {"general": "7/24", "math": "7/24", "code": "7/24", "finance": "1/8"},
+    "rollout": {"general": "1/8", "math": "5/12", "code": "5/12", "finance": "1/24"}
+  },
+  "fixed_parent": "Run H rank-16 all-linear LoRA, 5e-5 LR, exact Base revision, format contract, total token budget and evaluation protocol",
+  "scores": {
+    "H_25_percent": {"general": 8, "math": 8, "code": 3, "finance": 0, "total": 19},
+    "I_25_percent": {"general": 5, "math": 8, "code": 3, "finance": 0, "total": 16},
+    "I_minus_H": {"general": -3, "math": 0, "code": 0, "finance": 0, "total": -3},
+    "base": {"general": 2, "math": 12, "code": 0, "finance": 1, "total": 15}
+  },
+  "gate": {
+    "math": {"actual": 8, "minimum": 10, "passed": false},
+    "code": {"actual": 3, "minimum": 5, "passed": false},
+    "total": {"actual": 16, "minimum": 15, "passed": true},
+    "accepted": false
+  },
+  "diagnostics": {
+    "general_parse_errors": 10,
+    "math_parse_errors": 0,
+    "math_ceiling_hits": 28,
+    "code_ceiling_hits": 28,
+    "finance_parse_errors": 17,
+    "finance_ceiling_hits": 28,
+    "all_slice_ceiling_hits": 112,
+    "output_tokens": 43904,
+    "generation_latency_seconds": 1039.249458,
+    "parameter_counts": {"total": 606142464, "trainable": 10092544, "frozen": 596049920},
+    "maximum_cuda_memory_gib": 6.760619640350342
+  },
+  "training": {
+    "checkpoint": "25_percent",
+    "supervised_tokens": 61734,
+    "optimizer_steps": 79,
+    "checkpoint_manifest_sha256": "ea8dc536e5dfc91260ad33b42193f573ef92a9357be51389f6ef6b10822e609f",
+    "inference_export_manifest_sha256": "a88705b4848721a9e828cdc13abf2c947fecaf56c3730812340e2e2cf5addefc",
+    "summary_path": "artifacts/logs/day12-run-I-25-training-summary.json",
+    "summary_file_sha256": "4914c7324b1d6b082b98d74e745fa8221af1f8305f65a83d45517823bc2016fa",
+    "preflight_path": "artifacts/logs/day12-preflight-I.json",
+    "preflight_file_sha256": "c1e341ca7666318e059af1310dbf629ed109ecc5d0f79032a1f9285e0d94edde",
+    "step_trace_path": "artifacts/logs/day12-run-I-step-trace.jsonl",
+    "step_trace_file_sha256": "3baa1827ccc8d1f52e22f35d2b94e1be9a39aca0fb9b11ac4631146545f7c756"
+  },
+  "eval": {
+    "summary_hash": "sha256:9161157b95b0d56697704698785cf0e0b20fd12787e02177ff65755f693d16cd",
+    "predictions": {"path": "artifacts/eval/I-25_percent-dev-predictions.jsonl", "records": 112, "file_sha256": "dc70c957659cd5f8af91606b7412b1690cde61bb72b841891a9e71df946051ac"},
+    "code_results": {"path": "artifacts/eval/I-25_percent-dev-code-e2b.jsonl", "records": 28, "file_sha256": "55ad7916ec37c21d0239d60fdcf3b1c1bbe9d6785bb0ed3d4c291dd1b09589de"},
+    "summary": {"path": "artifacts/eval/I-25_percent-dev-summary.json", "file_sha256": "4be171ba31244c9cc1ba76eb6a1c612c5511e662830f9ec6b948e918522ce3d3"}
+  },
+  "interpretation": {
+    "supported": "The focused mixture preserved I above the aggregate gate and retained H's three executable code solutions.",
+    "rejected": "Increasing math/code token share did not recover either constrained slice: math and code were unchanged from H while general lost three cases.",
+    "remaining_failure": "The unchanged math score under much higher math exposure points to LoRA update magnitude or parameterization, not raw math sample scarcity, as the next controlled variable.",
+    "next_rollout": "Reuse I's exact manifest and occurrence order, and reduce only LoRA learning rate from 5e-5 to 3e-5 to target the observed math-retention/code-acquisition frontier."
+  },
+  "storage": {
+    "full_checkpoint_deleted": true,
+    "bf16_export_deleted": true,
+    "recoverability": "Retraining and BF16 export only"
+  },
+  "frozen_test_consumed": false
+}

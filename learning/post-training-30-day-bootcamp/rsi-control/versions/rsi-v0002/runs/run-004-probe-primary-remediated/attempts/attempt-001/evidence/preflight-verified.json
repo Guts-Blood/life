@@ -1,0 +1,19 @@
+{
+  "schema_name": "rsi.pre_execution_attestation",
+  "schema_version": 1,
+  "version_id": "rsi-v0002",
+  "run_id": "run-004-probe-primary-remediated",
+  "attempt_id": "attempt-001",
+  "status": "pass",
+  "outer_manifest_sha256": "f3acfd8fe38c69e8864182ef9247b27c4f2483bde9228faab9b8b521f0053ce6",
+  "target_encoding_audit_sha256": "bc6da3fe02f18ea801e0fccdf5801d62dcb46c59e7d936f4e961bba326429e81",
+  "e2b_preflight_sha256": "3a3e6060ffb441f0390a05e3aaf2d06c6656c5ec35c917e810910f100d8a0da7",
+  "core_runtime_identity_sha256": "6e1018b2528288e459a0e5707468ac8ede284ca497e03e30f91139ff2b3cc2d8",
+  "target_runtime_identity_sha256": "f5117f90f30e8209ab2cc3b9c2d9761c81e718cdbe29cfb1ad3e638ae3c8edf5",
+  "gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+  "gpu_count_used": 1,
+  "ms_swift_commit": "565a1ad586a21d24b23931c52d2c62b49c39bee8",
+  "ms_swift_worktree_clean": true,
+  "candidate_code_executed_during_smoke": false,
+  "swift_training_started": false
+}

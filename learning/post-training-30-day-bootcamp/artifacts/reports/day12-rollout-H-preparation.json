@@ -1,0 +1,34 @@
+{
+  "authorized_differences": {
+    "optimizer.learning_rate": {
+      "parent": 1e-05,
+      "rollout": 5e-05
+    },
+    "run.id": {
+      "parent": "G",
+      "rollout": "H"
+    }
+  },
+  "checkpoint_budgets": {
+    "100_percent": 246936,
+    "25_percent": 61734,
+    "60_percent": 148162
+  },
+  "config_hash": "667eb0245ab96bd0a44c9559e43248217a62032c228e11b99dad87ba12fc985e",
+  "first_gate": "25_percent",
+  "hypothesis": "The Run G LoRA parameterization preserves Base math, and increasing only adapter learning rate from 1e-5 to 5e-5 will add at least five executable code solutions without pushing math below ten.",
+  "manifest_hash": "f76e6a9538f10b245a831d891899a1d825bf687d7e2eeb4bb949bbf83141b369",
+  "ordinal": 6,
+  "parent_run_id": "G",
+  "run_id": "H",
+  "schedule_file_sha256": "db9ee152e480db534c9a590fc8568d892220284d5b0798fab28453be367ac716",
+  "schedule_hash": "99073b4e6593bfba6b8e2d08213c2c97b37bc6fb4f206f009750385ee0dc0fcb",
+  "schedule_path": "learning/post-training-30-day-bootcamp/artifacts/data/day12-training-schedule-H.json",
+  "status": "day12_run_h_preparation_pass",
+  "summary_hash": "2e9e5aac02e8acc00545a17207f40e7953eabf5c45549e514b30cfb1637553be",
+  "validation_checks": {
+    "manifest_reused_exactly": true,
+    "only_run_id_and_learning_rate_changed": true,
+    "schedule_total_exact": true
+  }
+}

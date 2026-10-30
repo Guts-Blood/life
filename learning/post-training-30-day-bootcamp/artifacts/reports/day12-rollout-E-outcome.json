@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "domain": "day12.recovery_rollout_outcome",
+  "ordinal": 3,
+  "run_id": "E",
+  "status": "failed_math_gate",
+  "hypothesis": "Halving learning rate from 2e-5 to 1e-5 on the repaired Run D data will retain Base math while preserving code gains.",
+  "primary_change": {"path": "optimizer.learning_rate", "parent": 0.00002, "rollout": 0.00001},
+  "fixed_parent": "Run D format-repaired data and all other training/eval invariants",
+  "scores": {
+    "D_25_percent": {"general": 3, "math": 2, "code": 5, "finance": 2, "total": 12},
+    "E_25_percent": {"general": 4, "math": 4, "code": 9, "finance": 2, "total": 19},
+    "E_minus_D": {"general": 1, "math": 2, "code": 4, "finance": 0, "total": 7},
+    "base": {"general": 2, "math": 12, "code": 0, "finance": 1, "total": 15}
+  },
+  "gate": {
+    "math": {"actual": 4, "minimum": 10, "passed": false},
+    "code": {"actual": 9, "minimum": 5, "passed": true},
+    "total": {"actual": 19, "minimum": 15, "passed": true},
+    "accepted": false
+  },
+  "diagnostics": {
+    "general_parse_errors": 21,
+    "math_parse_errors": 0,
+    "math_ceiling_hits": 3,
+    "code_ceiling_hits": 1,
+    "finance_parse_errors": 2,
+    "finance_ceiling_hits": 1
+  },
+  "training": {
+    "checkpoint": "25_percent",
+    "supervised_tokens": 61734,
+    "optimizer_steps": 110,
+    "checkpoint_manifest_sha256": "f2a17bbb3a6506366a692d5ca37708b6c7b0a6704d917223c049cbc7d8642c30",
+    "inference_export_manifest_sha256": "ecfab545ef48b8dbb6346185a37bcf73d3cac4a7bde36a1d60a2753455948294",
+    "summary_path": "artifacts/logs/day12-run-E-25-training-summary.json",
+    "summary_file_sha256": "cb3e50f3b2a58120633af6e1d55f25a2768dabe51c99a894c70c86d01f049dbf",
+    "preflight_path": "artifacts/logs/day12-preflight-E.json",
+    "preflight_file_sha256": "361bb7a53ba0b70773e8df73132baff5658a31234502f662adb662af8bd87179"
+  },
+  "eval": {
+    "summary_hash": "sha256:4ad9dd304a6fa32d2fbc0b4d1949db6c90e5e129bd7e5a731d189b70f8653171",
+    "predictions": {"path": "artifacts/eval/E-25_percent-dev-predictions.jsonl", "records": 112, "file_sha256": "551df541168618dfb1b9c9043b017317f5ba1164099973696726018191ecb0f1"},
+    "code_results": {"path": "artifacts/eval/E-25_percent-dev-code-e2b.jsonl", "records": 28, "file_sha256": "50a8599331a22aec786d9e97654be7ff4f4eb743df60c60fd6b08bebc6316b22"},
+    "summary": {"path": "artifacts/eval/E-25_percent-dev-summary.json", "file_sha256": "7524d2d6f7fe532a3262d4abb5c30ca5e8d793922472e4942e013bbd70b010a0"}
+  },
+  "interpretation": {
+    "supported": "Lower update magnitude materially improved the capability frontier: all four slice scores were retained or improved, and code/aggregate gates passed.",
+    "remaining_failure": "Math improved from 2 to 4 but remains six cases below the acceptance threshold and eight below Base.",
+    "next_rollout": "Keep every E invariant and halve learning rate again to 5e-6."
+  },
+  "frozen_test_consumed": false
+}

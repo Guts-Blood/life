@@ -1,0 +1,6 @@
+{
+  "layer": "infrastructure",
+  "code": "missing_core_v2_compatibility_marker",
+  "message": "Frozen v2 evaluator rejected the v3 run root before model loading because the core-v2 compatibility marker was absent.",
+  "retryable": true
+}

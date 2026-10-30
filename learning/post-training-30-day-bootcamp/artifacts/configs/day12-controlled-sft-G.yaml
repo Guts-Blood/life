@@ -1,0 +1,8 @@
+extends: day12-controlled-sft-G-base.yaml
+run:
+  id: G
+data:
+  manifest_path: learning/post-training-30-day-bootcamp/artifacts/data/day12-mix-D-format-repaired.json
+  manifest_file_sha256: e7d7c522c240aa218d7a86e0466bf48dfd2f63473023d25e1e249fed168430ba
+  manifest_hash: f76e6a9538f10b245a831d891899a1d825bf687d7e2eeb4bb949bbf83141b369
+  mix_name: mix_D_format_repaired

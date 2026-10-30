@@ -1,0 +1,192 @@
+{
+  "schema_version": 1,
+  "status": "manifest_compilation_ready",
+  "identity": {
+    "manifest_name": "day10-frozen-eval-manifest",
+    "manifest_version": "day10_frozen_eval_manifest_v3",
+    "frozen_date": "2026-08-05",
+    "intended_use": "Base, SFT-A and SFT-B paired evaluation for the controlled Day 12 mixture experiment",
+    "claim_boundary": "This suite is a 160-sample learning experiment, not a population benchmark. Day 09 overlap status is scoped to the frozen matcher and train cohorts."
+  },
+  "upstream": {
+    "day09_assignment": {
+      "path": "learning/post-training-30-day-bootcamp/day-09-data-quality-mixture-lineage/day09_assignment.json",
+      "file_sha256": "51b82d02462336236a533997719fb81346a032b5937cd5ae66e35a3d2036ffac",
+      "required_status": "day09_complete_with_gate_c_waiver"
+    },
+    "clean_parent_manifest": {
+      "path": "learning/post-training-30-day-bootcamp/artifacts/data/day09-dataset-manifest.json",
+      "file_sha256": "97661d5482256dbaa3f33a96b32703fcdbc1f1aaa5084b64e4baba80b8f984bb",
+      "manifest_hash": "95ce7aeb02efc4dbce50786c51c0e87db27dde4e7f9778e2a6927c5dd991c27f",
+      "clean_pool_hash": "ab7dee175c140ef5fa5bf8e0f9197046d166f4e0eef98af5ec14ba543e2eb073"
+    },
+    "train_manifests": [
+      {
+        "name": "mix_A_balanced",
+        "path": "learning/post-training-30-day-bootcamp/artifacts/data/day09-mix-A-balanced.json",
+        "file_sha256": "cb0d4819d383e4a22fd2c389c27c9cf058a20287c08e0fa5d924703f0af77492",
+        "manifest_hash": "19ea1a93e860fc5e93f463f7a136ae834ebe041c00f9fe3fa874f66ab1428c7a"
+      },
+      {
+        "name": "mix_B_targeted",
+        "path": "learning/post-training-30-day-bootcamp/artifacts/data/day09-mix-B-targeted.json",
+        "file_sha256": "d87e32b7925080c4e1abc6676354cb35e60af3f2311b969d6441a8aacc319837",
+        "manifest_hash": "8409de2d47c51cf0a29a22f5af0fd7bd136b98cfb1ed7de72682ffebb3bd5aaf"
+      }
+    ],
+    "eval_candidate_summary": {
+      "path": "tmp/day09-work/step8-eval-candidates/eval-candidates-summary.json",
+      "file_sha256": "ec04d421d5a684f3001b56ade7e88419b27a0c8dd238c680209a07981f3bfc65",
+      "required_status": "complete_candidates_only",
+      "required_total": 160
+    },
+    "candidate_files": {
+      "general": {
+        "path": "tmp/day09-work/step8-eval-candidates/general-eval-candidates.jsonl",
+        "file_sha256": "fee5ff431b2d20528b6a64c15bb23fd57a82a60e55c493046ff3bff04865ff6c"
+      },
+      "math": {
+        "path": "tmp/day09-work/step8-eval-candidates/math-eval-candidates.jsonl",
+        "file_sha256": "6023cb474a1f29eade19bdb03d256cd327a4c9a0e6fc9d24953fc3cee558f1ff"
+      },
+      "code": {
+        "path": "tmp/day09-work/step8-eval-candidates/code-eval-candidates.jsonl",
+        "file_sha256": "51d7083a0789e52b75176df194884aa92b744361afbd8ae9d54f4ef77a06ae54"
+      },
+      "finance": {
+        "path": "tmp/day09-work/step8-eval-candidates/finance-eval-candidates.jsonl",
+        "file_sha256": "572ebdc04c4dcacc6e54496f4707a07f8b0010cd53b70ace495d7356b9f6ddad"
+      }
+    },
+    "decontamination_summary": {
+      "path": "tmp/day09-work/step9-decontamination/decontamination-summary.json",
+      "file_sha256": "31f8cfc55454380700457132320ace6c98195d0246f84469f7d0ec944bbcd80a",
+      "candidate_version": "day09_train_eval_overlap_v1",
+      "required_candidate_records": 0
+    },
+    "decontamination_report": {
+      "path": "learning/post-training-30-day-bootcamp/artifacts/reports/day09-decontamination-report.md",
+      "file_sha256": "a11386ad1fc3ae9b3b1405a7a71e290755e6ac12b70e5665a625a7e93b307db8"
+    },
+    "gate_c": {
+      "status": "waived_by_user",
+      "reviewed_occurrences": 0,
+      "downstream_training_eligible_under_waiver": true
+    }
+  },
+  "split_assignment": {
+    "version": "day10_eval_split_v1",
+    "slices": [
+      "general",
+      "math",
+      "code",
+      "finance"
+    ],
+    "candidates_per_slice": 40,
+    "dev_per_slice": 28,
+    "frozen_test_per_slice": 12,
+    "general_subject_policy": "Each of four MMLU subjects contributes 7 dev and 3 frozen_test samples.",
+    "ranking": "sha256(version + NUL + stratum + NUL + sample_id), then sample_id",
+    "evaluation_order_version": "day10_evaluation_order_v1"
+  },
+  "model_and_rendering": {
+    "model_id": "Qwen/Qwen3-0.6B-Base",
+    "model_revision": "ddc928429ed09d9ad603fd762053d0434c15e865",
+    "model_snapshot_path": "tmp/day10-hf-cache/model/models--Qwen--Qwen3-0.6B-Base/snapshots/ddc928429ed09d9ad603fd762053d0434c15e865",
+    "model_files": {
+      "config.json": "504a6b58c4271583724e66584b6b7698aea18450209df6b2f7582df0e89cee59",
+      "generation_config.json": "8c970692323e3ea0e9b8b0a4dca79388d31226e41f83c9fd6014804280ebf6e8",
+      "model.safetensors": "cd2a512003e2f9f3cd3c32a9c3573f820bb28c940f73c57b1ddaa983d9223eba"
+    },
+    "tokenizer_snapshot_path": "tmp/day09-hf-cache/tokenizer/models--Qwen--Qwen3-0.6B-Base/snapshots/ddc928429ed09d9ad603fd762053d0434c15e865",
+    "tokenizer_files": {
+      "tokenizer_config.json": "7d0fc4691628c9f6b0c77f8138a80517896a307e074dd5ac87e279ea85515774",
+      "tokenizer.json": "c0382117ea329cdf097041132f6d735924b697924d6f6fc3945713e96ce87539",
+      "vocab.json": "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910"
+    },
+    "tokenizer_class": "Qwen2TokenizerFast",
+    "transformers_version": "4.57.3",
+    "chat_template_sha256": "44d5f08f3f72b837eaad09f13a54c1f9f4eb58d75240334548b7fd52a5437fa5",
+    "render_flags": {
+      "add_generation_prompt": true,
+      "enable_thinking": false,
+      "add_special_tokens_after_render": false,
+      "implicit_system_message": "You are a helpful assistant."
+    },
+    "maximum_input_tokens": 4096,
+    "prompt_adapters": {
+      "general": "mmlu_chat_final_option_v1",
+      "math": "gsm8k_chat_final_answer_v1",
+      "code": "human_eval_chat_completion_v1",
+      "finance": "tatqa_chat_final_answer_v1"
+    }
+  },
+  "generation": {
+    "version": "day10_greedy_generation_v1",
+    "do_sample": false,
+    "num_beams": 1,
+    "temperature": null,
+    "top_p": null,
+    "top_k": null,
+    "repetition_penalty": 1,
+    "eos_token_id": 151645,
+    "pad_token_id": 151643,
+    "stop_token_ids": [
+      151645
+    ],
+    "seed": 20260805,
+    "max_new_tokens_by_slice": {
+      "general": 32,
+      "math": 512,
+      "code": 512,
+      "finance": 512
+    }
+  },
+  "scoring": {
+    "source_path": "learning/post-training-30-day-bootcamp/day-10-frozen-eval-baseline/day10_scorers.py",
+    "registry_version": "day10-scorer-registry-v3",
+    "extractor_by_slice": {
+      "general": "mmlu_option_extractor_v2",
+      "math": "gsm8k_final_number_extractor_v1",
+      "code": "human_eval_completion_extractor_v1",
+      "finance": "tatqa_final_answer_extractor_v3"
+    },
+    "scorer_by_slice": {
+      "general": "mmlu_exact_option_v2",
+      "math": "gsm8k_numeric_exact_v1",
+      "code": "human_eval_pass_at_1_sandbox_v1",
+      "finance": "tatqa_normalized_exact_v3"
+    },
+    "code_execution_policy": "Never execute generated code on the host. A separately frozen sandbox backend is required before code scores are valid."
+  },
+  "aggregation": {
+    "version": "day10_four_slice_macro_v1",
+    "primary_summary": "macro_average_of_four_slice_means",
+    "slice_weights": {
+      "general": 1,
+      "math": 1,
+      "code": 1,
+      "finance": 1
+    },
+    "target_slice_for_day12": "code",
+    "guardrail_slices_for_day12": [
+      "general",
+      "math",
+      "finance"
+    ],
+    "uncertainty": "paired_stratified_bootstrap_over_sample_ids_v1",
+    "interpretation": "Pilot-set resampling sensitivity only; not population coverage."
+  },
+  "environment": {
+    "name": "post_training_lab",
+    "direct_contract_path": "learning/post-training-30-day-bootcamp/environments/post-training-lab-macos.yml",
+    "direct_contract_sha256": "b5a41b3111dcce0a0ddc8e1cf1e8dac3abd7cf1a2e16835948dbe276af77d7e3",
+    "resolved_snapshot_path": "learning/post-training-30-day-bootcamp/artifacts/logs/post-training-lab-pip-freeze.txt",
+    "resolved_snapshot_sha256": "40aac26b5f4672db9d1415b816148107dc05563db116d6b5c53bcfabd8336e12",
+    "semantic_hash_library": "rfc8785==0.1.4"
+  },
+  "outputs": {
+    "manifest_path": "learning/post-training-30-day-bootcamp/artifacts/eval/day10-frozen-eval-manifest.json",
+    "protocol_report_path": "learning/post-training-30-day-bootcamp/artifacts/reports/day10-eval-protocol.md"
+  }
+}

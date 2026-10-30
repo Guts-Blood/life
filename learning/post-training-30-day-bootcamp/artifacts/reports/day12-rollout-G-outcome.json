@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "domain": "day12.recovery_rollout_outcome",
+  "ordinal": 5,
+  "run_id": "G",
+  "status": "failed_code_and_total_gates",
+  "hypothesis": "Freezing Base weights and training an all-linear LoRA adapter at Run E's 1e-5 learning rate will preserve Base math while learning enough code and routing behavior to pass every gate.",
+  "primary_change": {
+    "path": "training.parameterization",
+    "parent": "full_parameters",
+    "rollout": "rank_16_all_linear_lora"
+  },
+  "fixed_parent": "Run E format-repaired data, 1e-5 learning rate and every schedule/eval invariant",
+  "scores": {
+    "E_25_percent": {"general": 4, "math": 4, "code": 9, "finance": 2, "total": 19},
+    "G_25_percent": {"general": 2, "math": 12, "code": 0, "finance": 0, "total": 14},
+    "G_minus_E": {"general": -2, "math": 8, "code": -9, "finance": -2, "total": -5},
+    "base": {"general": 2, "math": 12, "code": 0, "finance": 1, "total": 15}
+  },
+  "gate": {
+    "math": {"actual": 12, "minimum": 10, "passed": true},
+    "code": {"actual": 0, "minimum": 5, "passed": false},
+    "total": {"actual": 14, "minimum": 15, "passed": false},
+    "accepted": false
+  },
+  "diagnostics": {
+    "general_parse_errors": 24,
+    "math_parse_errors": 0,
+    "math_ceiling_hits": 28,
+    "code_ceiling_hits": 28,
+    "finance_parse_errors": 16,
+    "finance_ceiling_hits": 28,
+    "all_slice_ceiling_hits": 112,
+    "output_tokens": 43904,
+    "generation_latency_seconds": 1023.8124641403556,
+    "parameter_counts": {"total": 606142464, "trainable": 10092544, "frozen": 596049920},
+    "trainable_fraction": 0.016650449,
+    "maximum_cuda_memory_gib": 6.957935810089111
+  },
+  "training": {
+    "checkpoint": "25_percent",
+    "supervised_tokens": 61734,
+    "optimizer_steps": 110,
+    "checkpoint_manifest_sha256": "5e563866940d5e64471c050080e9f6b7adb313138873821157d734f17d9ffb8e",
+    "inference_export_manifest_sha256": "86a1899f05c1b7625a765066915ace785feabb08cd91833ee688f207ab683e4f",
+    "summary_path": "artifacts/logs/day12-run-G-25-training-summary.json",
+    "summary_file_sha256": "01a8e1ca11ba151345b6e4f7f838857ad1b5204f4697c4ca87bf27e273576bc0",
+    "preflight_path": "artifacts/logs/day12-preflight-G.json",
+    "preflight_file_sha256": "b3d720715dacf05c660001d89e4a63f2f71a7134a256dafe8923056cc256ed5b"
+  },
+  "eval": {
+    "summary_hash": "sha256:84be2b373a4a0971369d01737f0c25f01268ea64c1ed7e3670aa1cb11f20cae0",
+    "predictions": {"path": "artifacts/eval/G-25_percent-dev-predictions.jsonl", "records": 112, "file_sha256": "5ae24b822afcb407a0bd924b4b88c1a649bf2a527e0bb513f8e4b0f7eaedc82b"},
+    "code_results": {"path": "artifacts/eval/G-25_percent-dev-code-e2b.jsonl", "records": 28, "file_sha256": "03eae8be2d6783886de186f6672853524e50f1fd5b1500e341dd6e43027ff337"},
+    "summary": {"path": "artifacts/eval/G-25_percent-dev-summary.json", "file_sha256": "9f3e1cf86c8e1c9264bf7c0f3e129490c23dd15fe9b2440de7279f9ef15fffbf"}
+  },
+  "interpretation": {
+    "supported": "Freezing Base weights solved math forgetting: G exactly matched Base's 12/28 math and 2/28 general scores while training only 1.665% of parameters.",
+    "remaining_failure": "At the unchanged 1e-5 LR the adapter was too weak to add executable code behavior. Code stayed at 0 and every sample retained Base-like maximum-length continuation.",
+    "next_rollout": "Keep the complete G LoRA parameterization and raise only adapter learning rate from 1e-5 to 5e-5."
+  },
+  "frozen_test_consumed": false
+}

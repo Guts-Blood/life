@@ -1,0 +1,39 @@
+{
+  "schema_name": "rsi.stage_a_training_completion",
+  "schema_version": 1,
+  "version_id": "rsi-v0002",
+  "run_id": "run-004-probe-primary-remediated",
+  "attempt_id": "attempt-001",
+  "retry_ordinal": 1,
+  "training_internal_attempt": "attempt-002",
+  "classification": "training_complete",
+  "status": "pass",
+  "optimizer_steps": 154,
+  "supervised_tokens": 24000,
+  "five_step_safety_status": "pass",
+  "sealed_summary_verification": "pass",
+  "training_summary": {
+    "file_sha256": "be806c8de51bdad5546df99451694abfa1cbcc32110c13b24f88512c69935905",
+    "content_sha256": "f0178031c530ce8c10bc5046a86994438f59d96644623486282f5e39dade8a88"
+  },
+  "target_attestation": {
+    "file_sha256": "0be90336292aa2a6b22c78c7104c88fa3235638e7ed80e907adb4041e68a8167",
+    "content_sha256": "54c0a327f506584c733a3ae1249c28b5190a296394b08af6078e9f7d2b097c15"
+  },
+  "checkpoints": {
+    "t6000": {"step": 40, "actual_tokens": 6177, "snapshot_sha256": "a7d10b8c860b7f38c9bbf3cc4d8658897d0413072f114298dad0750ff5bf20a0", "integrity_file_sha256": "b5340e3daeba52d71cdced6de3245d7eef0789cde58a70dba6d8cb32f2ea7092", "integrity_sha256": "1d7a4d0efbd8ef8b11709c0df39dc619f358998e6d6afef1ea7079afd67ff8f9", "envelope_file_sha256": "7c58b5ebc758828aa0d551db02087b57a5400c8643bf325863a91ac953ae396b", "envelope_sha256": "b1c7a963ca97a48c609956a38615268b1fdf36b20d700e07c8ac9a2830b096ac", "resumable": true},
+    "t12000": {"step": 82, "actual_tokens": 12055, "snapshot_sha256": "0d5bc280b74630bb019cae7057ee18e18332f7c2fa84f11dfa724b1669e594a0", "integrity_file_sha256": "66e7efa0002755cbfd137d8cebd08d2f4afc625eb12a2b989dcd3cc7c216bf02", "integrity_sha256": "30ece747c044d637d9c5e9574bb3273f399e81463c9bed3c2215d49b6ada492b", "envelope_file_sha256": "33ce03c007da35d6d7c151ee1d2bbb84a0a4de189c9c1fb7c7ae65abd9b3f0f9", "envelope_sha256": "38316ce735244c7118a6dde541fa1531c161bc8ae9daffb2083aea7aed826f9b", "resumable": true},
+    "t18000": {"step": 123, "actual_tokens": 18017, "snapshot_sha256": "cdf09ffc023ce73765fb607856275c8f190c188bedcc7ed83c6033ac097251c1", "integrity_file_sha256": "e110b9b4166a0e90bc575a7322af711c965149a120297d6c178ad9d1ec633a47", "integrity_sha256": "bee1769a175f734f612979ace58f3e2eee428a14ef5a0c365fdc2c214d250e15", "envelope_file_sha256": "97f04eee6090038bdeecd631c4f81f32acf15306c0850b1810148b13010d4a08", "envelope_sha256": "d5793c72ee4dee8496f89cc7ba42f20986a707ca52d62a550eadf1d046c47861", "resumable": true},
+    "t24000": {"step": 154, "actual_tokens": 24000, "snapshot_sha256": "e5983b7917c0658fa6092dd040a00bd59f1b3c897dd97a35ded6ecc289c9d327", "integrity_file_sha256": "262d96d5fc3951aa0d6fc161c9ee7f61f2153e00c733a72003dbaea5dbadaa3c", "integrity_sha256": "d08af4345fbc1bac93a06fcefe1a9c14a6ce22f49a0baecb0c16cc232085f749", "envelope_file_sha256": "b39ed4a5628eb127229765fec8164b6103d51e2bcde8c33c308d7c204e0f92c7", "envelope_sha256": "39dd8a71d90c2dc0557b8548ee82fc6f772d9ca1cc9e2c5258d1cd17b513cc1d", "resumable": true}
+  },
+  "cost": {
+    "gpu_count": 1,
+    "wall_seconds": 200.846315988,
+    "gpu_hours": 0.055790643,
+    "measurement_method": "training_log_birth_to_final_mtime_wall_seconds_x_gpu_count_div_3600"
+  },
+  "training_log": {
+    "bytes": 198147,
+    "file_sha256": "7e81b04d92355271a6cc038637ef9e98b836cceea3b2b9cd91b44bd3424b5ae1"
+  }
+}

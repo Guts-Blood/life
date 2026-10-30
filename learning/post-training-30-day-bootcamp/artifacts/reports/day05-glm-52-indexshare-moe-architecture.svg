@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="2400" height="4200" viewBox="0 0 2400 4200" role="img" aria-labelledby="title desc">
+  <title id="title">GLM-5.2 MLA, DeepSeek Sparse Attention, IndexShare, and MoE architecture</title>
+  <desc id="desc">A high-density Chinese architecture poster for GLM-5.2. It expands MLA-based DeepSeek Sparse Attention, the IndexShare schedule with 21 full indexers and 57 shared layers, the 256-expert MoE, one MTP layer, tensor shapes for an 8192-token worked example, backward propagation, and long-context cache lifetimes.</desc>
+  <defs>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2563eb"/></marker>
+    <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#dc2626"/></marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#16a34a"/></marker>
+    <marker id="arrow-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#d97706"/></marker>
+    <marker id="arrow-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#7c3aed"/></marker>
+    <style>
+      text { font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", "PingFang SC", sans-serif; fill:#172033; }
+      .title { font-size:39px; font-weight:780; }
+      .subtitle { font-size:19px; fill:#526078; }
+      .section { font-size:26px; font-weight:780; }
+      .subsection { font-size:21px; font-weight:740; }
+      .label { font-size:17px; font-weight:720; }
+      .body { font-size:15px; }
+      .small { font-size:13px; fill:#526078; }
+      .tiny { font-size:11px; fill:#64748b; }
+      .mono { font-family:"SFMono-Regular",Consolas,monospace; font-size:13px; fill:#273449; }
+      .mono-strong { font-family:"SFMono-Regular",Consolas,monospace; font-size:15px; font-weight:760; fill:#1e3a8a; }
+      .panel { fill:#ffffff; stroke:#cbd5e1; stroke-width:1.5; }
+      .hero { fill:#eef2ff; stroke:#6366f1; stroke-width:1.8; }
+      .mla-box { fill:#dbeafe; stroke:#2563eb; stroke-width:1.6; }
+      .dsa-box { fill:#e0f2fe; stroke:#0284c7; stroke-width:1.6; }
+      .index-box { fill:#dcfce7; stroke:#16a34a; stroke-width:1.6; }
+      .shared-index-box { fill:#f0fdf4; stroke:#22c55e; stroke-width:1.4; stroke-dasharray:7 4; }
+      .moe-box { fill:#fff7ed; stroke:#f59e0b; stroke-width:1.5; }
+      .expert-box { fill:#f3e8ff; stroke:#9333ea; stroke-width:1.5; }
+      .router-box { fill:#fef3c7; stroke:#d97706; stroke-width:1.5; }
+      .backward-box { fill:#fee2e2; stroke:#dc2626; stroke-width:1.5; }
+      .state-box { fill:#ede9fe; stroke:#7c3aed; stroke-width:1.5; }
+      .neutral-box { fill:#f8fafc; stroke:#94a3b8; stroke-width:1.3; }
+      .warning-box { fill:#fff1f2; stroke:#e11d48; stroke-width:1.5; }
+      .fwd { fill:none; stroke:#2563eb; stroke-width:2.2; marker-end:url(#arrow-blue); }
+      .bwd { fill:none; stroke:#dc2626; stroke-width:2.2; marker-end:url(#arrow-red); }
+      .reuse { fill:none; stroke:#16a34a; stroke-width:2.2; stroke-dasharray:8 5; marker-end:url(#arrow-green); }
+      .route { fill:none; stroke:#d97706; stroke-width:2.1; marker-end:url(#arrow-amber); }
+      .state { fill:none; stroke:#7c3aed; stroke-width:2; marker-end:url(#arrow-purple); }
+      .thin { fill:none; stroke:#94a3b8; stroke-width:1.4; }
+      .divider { stroke:#cbd5e1; stroke-width:1.2; }
+      .grid { stroke:#cbd5e1; stroke-width:1; }
+      .table-bg { fill:#ffffff; stroke:#cbd5e1; stroke-width:1.2; }
+      .table-head { fill:#e2e8f0; stroke:#94a3b8; stroke-width:1.1; }
+      .table-alt { fill:#f8fafc; }
+      .table-header { font-size:12px; font-weight:760; fill:#475569; }
+      .table-body { font-size:12px; }
+      .table-strong { font-size:12px; font-weight:720; }
+      .pill-blue { fill:#dbeafe; stroke:#2563eb; stroke-width:1.2; }
+      .pill-cyan { fill:#e0f2fe; stroke:#0284c7; stroke-width:1.2; }
+      .pill-green { fill:#dcfce7; stroke:#16a34a; stroke-width:1.2; }
+      .pill-purple { fill:#ede9fe; stroke:#7c3aed; stroke-width:1.2; }
+      .pill-amber { fill:#fef3c7; stroke:#d97706; stroke-width:1.2; }
+      .pill-red { fill:#fee2e2; stroke:#dc2626; stroke-width:1.2; }
+    </style>
+  </defs>
+
+  <rect width="2400" height="4200" fill="#f5f7fb"/>
+  <text x="55" y="62" class="title">GLM-5.2 · MLA + DSA + IndexShare + MoE Anatomy</text>
+  <text x="55" y="99" class="subtitle">把 1M context 的成本拆开：MLA 压缩 KV，DSA 只对 top-2048 token 做主注意力，IndexShare 在相邻四层复用索引。</text>
+
+  <rect x="45" y="126" width="2310" height="116" rx="18" class="hero"/>
+  <text x="75" y="164" class="subsection">官方配置快照</text>
+  <text x="315" y="164" class="label">GLM-5.2 · decoder-only MoE · MLA-based DeepSeek Sparse Attention · 1M context</text>
+  <text x="315" y="199" class="mono">L=78 + MTP=1 · D=6144 · H=64 · KV latent=512 · indexer=32×128 · top-token=2048 · E=256 · top-expert=8 · shared=1</text>
+  <text x="2275" y="164" class="mono-strong" text-anchor="end">744B total*</text>
+  <text x="2275" y="199" class="mono-strong" text-anchor="end">40B active/token</text>
+
+  <rect x="45" y="262" width="2310" height="56" rx="14" class="panel"/>
+  <rect x="74" y="278" width="22" height="22" rx="5" class="mla-box"/><text x="108" y="296" class="small">MLA projections / cache</text>
+  <rect x="355" y="278" width="22" height="22" rx="5" class="dsa-box"/><text x="389" y="296" class="small">DSA sparse attention</text>
+  <rect x="630" y="278" width="22" height="22" rx="5" class="index-box"/><text x="664" y="296" class="small">Full indexer compute</text>
+  <rect x="885" y="278" width="22" height="22" rx="5" class="shared-index-box"/><text x="919" y="296" class="small">Shared index reuse</text>
+  <rect x="1160" y="278" width="22" height="22" rx="5" class="expert-box"/><text x="1194" y="296" class="small">Experts / persistent weights</text>
+  <text x="1570" y="296" class="small">worked example：B=1 · T=8,192 · BF16；max context=1,048,576</text>
+
+  <!-- 1. Whole model -->
+  <rect x="45" y="338" width="2310" height="750" rx="20" class="panel"/>
+  <text x="75" y="383" class="section">1 · 整体模型：78 个 MLA+DSA decoder layers，前 3 层 dense FFN，后 75 层 sparse MoE</text>
+  <text x="75" y="413" class="small">IndexShare 只改变“找哪些 token”的 indexer 频率；每层自己的 MLA attention 与 FFN/MoE 仍继续计算。</text>
+
+  <rect x="72" y="480" width="280" height="112" rx="14" class="state-box"/>
+  <text x="92" y="515" class="label">Token embedding</text>
+  <text x="92" y="546" class="mono"><tspan x="92" dy="0">V=154,880 · D=6,144</tspan><tspan x="92" dy="23">X₀ [8192,6144]</tspan><tspan x="92" dy="23">BF16 · 100.7 MB</tspan></text>
+  <path d="M352 536 L405 536" class="fwd"/>
+  <rect x="405" y="465" width="510" height="160" rx="16" class="neutral-box"/>
+  <text x="435" y="505" class="subsection">Layers 0–2 · dense FFN</text>
+  <text x="435" y="543" class="mono"><tspan x="435" dy="0">RMSNorm → MLA+DSA → residual</tspan><tspan x="435" dy="24">RMSNorm → SwiGLU F=12,288 → residual</tspan><tspan x="435" dy="24">dense FFN ≈ 226.49M params/layer</tspan></text>
+  <path d="M915 545 L960 545" class="fwd"/>
+  <rect x="960" y="455" width="710" height="180" rx="16" class="moe-box"/>
+  <text x="990" y="497" class="subsection">Layers 3–77 · sparse MoE ×75</text>
+  <text x="990" y="535" class="mono"><tspan x="990" dy="0">RMSNorm → MLA+DSA → residual</tspan><tspan x="990" dy="24">RMSNorm → sigmoid router → top-8/256</tspan><tspan x="990" dy="24">8 routed experts + 1 shared expert → residual</tspan><tspan x="990" dy="24">MoE expert hidden F=2,048</tspan></text>
+  <path d="M1670 545 L1715 545" class="fwd"/>
+  <rect x="1715" y="465" width="300" height="160" rx="16" class="state-box"/>
+  <text x="1745" y="505" class="subsection">Final hidden / main head</text>
+  <text x="1745" y="543" class="mono"><tspan x="1745" dy="0">H [T,6144]</tspan><tspan x="1745" dy="24">main head → [T,154880]</tspan><tspan x="1745" dy="24">→ causal sampling / CE</tspan></text>
+  <path d="M2015 545 L2060 545" class="reuse"/>
+  <text x="2038" y="527" class="tiny" text-anchor="middle">aux draft</text>
+  <rect x="2060" y="455" width="245" height="180" rx="16" class="index-box"/>
+  <text x="2182" y="497" class="subsection" text-anchor="middle">MTP ×1</text>
+  <text x="2085" y="535" class="small"><tspan x="2085" dy="0">released config:</tspan><tspan x="2085" dy="23">nextn_predict_layers=1</tspan><tspan x="2085" dy="23">speculative draft path</tspan><tspan x="2085" dy="23">5.2 accept length ≤ +20%*</tspan></text>
+
+  <rect x="72" y="680" width="2233" height="335" rx="17" class="neutral-box"/>
+  <text x="102" y="722" class="subsection">IndexShare schedule · 21 full indexers + 57 shared layers</text>
+  <text x="2265" y="722" class="mono-strong" text-anchor="end">index_topk_freq = 4</text>
+  <rect x="110" y="770" width="150" height="82" rx="12" class="index-box"/><text x="185" y="801" class="label" text-anchor="middle">L0 · full</text><text x="185" y="828" class="tiny" text-anchor="middle">compute index</text>
+  <rect x="285" y="770" width="150" height="82" rx="12" class="index-box"/><text x="360" y="801" class="label" text-anchor="middle">L1 · full</text><text x="360" y="828" class="tiny" text-anchor="middle">compute index</text>
+  <rect x="460" y="770" width="150" height="82" rx="12" class="index-box"/><text x="535" y="801" class="label" text-anchor="middle">L2 · full</text><text x="535" y="828" class="tiny" text-anchor="middle">group seed</text>
+  <path d="M610 810 L645 810" class="reuse"/>
+  <rect x="645" y="770" width="150" height="82" rx="12" class="shared-index-box"/><text x="720" y="801" class="label" text-anchor="middle">L3 · shared</text><text x="720" y="828" class="tiny" text-anchor="middle">reuse L2 top-k</text>
+  <rect x="820" y="770" width="150" height="82" rx="12" class="shared-index-box"/><text x="895" y="801" class="label" text-anchor="middle">L4 · shared</text><text x="895" y="828" class="tiny" text-anchor="middle">reuse L2 top-k</text>
+  <rect x="995" y="770" width="150" height="82" rx="12" class="shared-index-box"/><text x="1070" y="801" class="label" text-anchor="middle">L5 · shared</text><text x="1070" y="828" class="tiny" text-anchor="middle">reuse L2 top-k</text>
+  <path d="M1145 810 L1180 810" class="fwd"/>
+  <rect x="1180" y="770" width="150" height="82" rx="12" class="index-box"/><text x="1255" y="801" class="label" text-anchor="middle">L6 · full</text><text x="1255" y="828" class="tiny" text-anchor="middle">new index</text>
+  <path d="M1330 810 L1365 810" class="reuse"/>
+  <rect x="1365" y="770" width="150" height="82" rx="12" class="shared-index-box"/><text x="1440" y="801" class="label" text-anchor="middle">L7 · shared</text><text x="1440" y="828" class="tiny" text-anchor="middle">reuse L6</text>
+  <rect x="1540" y="770" width="150" height="82" rx="12" class="shared-index-box"/><text x="1615" y="801" class="label" text-anchor="middle">L8 · shared</text><text x="1615" y="828" class="tiny" text-anchor="middle">reuse L6</text>
+  <rect x="1715" y="770" width="150" height="82" rx="12" class="shared-index-box"/><text x="1790" y="801" class="label" text-anchor="middle">L9 · shared</text><text x="1790" y="828" class="tiny" text-anchor="middle">reuse L6</text>
+  <text x="1925" y="818" class="section">…</text>
+  <rect x="2000" y="770" width="260" height="82" rx="12" class="index-box"/><text x="2130" y="801" class="label" text-anchor="middle">L74 full → L75–77 shared</text><text x="2130" y="828" class="tiny" text-anchor="middle">last 1+3 group</text>
+  <path d="M535 865 C650 930 970 930 1070 865" class="reuse"/>
+  <path d="M1255 865 C1370 930 1690 930 1790 865" class="reuse"/>
+  <text x="110" y="956" class="small"><tspan x="110" dy="0">稳定节奏是 1 个 full indexer layer + 3 个 shared layers；前三个 layer 的 indexer_type 都为 full。</tspan><tspan x="110" dy="24">官方口径：在 1M context 下，IndexShare 使 per-token FLOPs 降低 2.9×；这不是“整个 layer 跳过”，而是减少昂贵的全序列 index scan。</tspan></text>
+
+  <!-- 2. MLA + DSA -->
+  <rect x="45" y="1118" width="2310" height="1030" rx="20" class="panel"/>
+  <text x="75" y="1163" class="section">2 · 单层 attention：MLA 生成压缩 KV；DSA indexer 选 token；Sparse MLA 只对 2048 个位置做主注意力</text>
+  <text x="75" y="1193" class="small">X̂ [8192,6144] 同时进入 MLA projection 与 lightning indexer。full layer 计算 top-k；shared layer 直接接收最近 full layer 的 indices。</text>
+
+  <rect x="75" y="1235" width="950" height="800" rx="18" class="mla-box"/>
+  <text x="105" y="1278" class="subsection">MLA projection / compressed cache</text>
+  <text x="985" y="1278" class="mono-strong" text-anchor="end">64 attention heads</text>
+  <rect x="105" y="1320" width="210" height="105" rx="13" class="state-box"/>
+  <text x="125" y="1352" class="label">X̂ [T,6144]</text>
+  <text x="125" y="1382" class="mono"><tspan x="125" dy="0">T=8192</tspan><tspan x="125" dy="22">100.7 MB BF16</tspan></text>
+  <path d="M315 1372 L350 1372" class="fwd"/>
+  <rect x="350" y="1305" width="300" height="145" rx="13" class="mla-box"/>
+  <text x="370" y="1337" class="label">Q low-rank path</text>
+  <text x="370" y="1367" class="mono"><tspan x="370" dy="0">6144 → q-rank 2048</tspan><tspan x="370" dy="22">→ 64 × (192 noPE + 64 RoPE)</tspan><tspan x="370" dy="22">Q [T,64,256]</tspan></text>
+  <path d="M315 1372 C335 1372 335 1550 350 1550" class="fwd"/>
+  <rect x="350" y="1475" width="300" height="150" rx="13" class="mla-box"/>
+  <text x="370" y="1507" class="label">KV latent path</text>
+  <text x="370" y="1537" class="mono"><tspan x="370" dy="0">6144 → cᴷⱽ rank 512</tspan><tspan x="370" dy="22">+ decoupled Kᴿ [64]</tspan><tspan x="370" dy="22">K noPE=192；V head=256</tspan></text>
+  <path d="M650 1372 C690 1372 690 1450 730 1450" class="fwd"/>
+  <path d="M650 1550 C690 1550 690 1510 730 1510" class="fwd"/>
+  <rect x="730" y="1340" width="255" height="225" rx="14" class="mla-box"/>
+  <text x="750" y="1373" class="label">Sparse MLA projections</text>
+  <text x="750" y="1405" class="mono"><tspan x="750" dy="0">QK dim = 256</tspan><tspan x="750" dy="23">V dim = 256</tspan><tspan x="750" dy="23">attention output:</tspan><tspan x="750" dy="23">[T,64,256]</tspan><tspan x="750" dy="23">concat → Wₒ → [T,6144]</tspan></text>
+  <rect x="105" y="1670" width="880" height="150" rx="14" class="state-box"/>
+  <text x="130" y="1705" class="label">Compressed KV cache · 576 scalars / token / layer</text>
+  <text x="130" y="1740" class="mono">cᴷⱽ[512] + decoupled RoPE key[64]</text>
+  <text x="130" y="1775" class="small">T=8,192：9.44 MB BF16 / layer；T=1,048,576：1.208 GB / layer；78 层约 94.2 GB。</text>
+  <rect x="105" y="1855" width="880" height="135" rx="14" class="neutral-box"/>
+  <text x="130" y="1890" class="label">Projection parameter landmarks</text>
+  <text x="130" y="1924" class="mono"><tspan x="130" dy="0">Q: 6144→2048→16384　·　KV: 6144→(512+64)→per-head K/V</tspan><tspan x="130" dy="24">O: (64×256=16384)→6144　·　cache 存 latent，不存展开后的 64-head K/V</tspan></text>
+
+  <rect x="1055" y="1235" width="1270" height="800" rx="18" class="dsa-box"/>
+  <text x="1085" y="1278" class="subsection">DSA + IndexShare dataflow</text>
+  <text x="2285" y="1278" class="mono-strong" text-anchor="end">index_topk = 2048</text>
+  <rect x="1085" y="1320" width="250" height="125" rx="13" class="index-box"/>
+  <text x="1105" y="1352" class="label">Full indexer layer</text>
+  <text x="1105" y="1382" class="mono"><tspan x="1105" dy="0">32 heads × 128 dim</tspan><tspan x="1105" dy="22">content score scan</tspan><tspan x="1105" dy="22">over causal history</tspan></text>
+  <path d="M1335 1382 L1380 1382" class="fwd"/>
+  <rect x="1380" y="1305" width="330" height="155" rx="13" class="index-box"/>
+  <text x="1405" y="1337" class="label">Top-token selection</text>
+  <text x="1405" y="1367" class="mono"><tspan x="1405" dy="0">I = topk(index_scores, 2048)</tspan><tspan x="1405" dy="22">indices [T,2048]</tspan><tspan x="1405" dy="22">content-dynamic；causal-valid</tspan><tspan x="1405" dy="22">fused scan avoids dense materialization</tspan></text>
+  <path d="M1710 1382 L1755 1382" class="reuse"/>
+  <rect x="1755" y="1305" width="520" height="155" rx="13" class="shared-index-box"/>
+  <text x="1780" y="1337" class="label">IndexShare cache</text>
+  <text x="1780" y="1367" class="mono"><tspan x="1780" dy="0">full layer：write I</tspan><tspan x="1780" dy="22">next 3 shared layers：read same I</tspan><tspan x="1780" dy="22">attention weights / V aggregation still per-layer</tspan><tspan x="1780" dy="22">MTP iteration can reuse index cache</tspan></text>
+  <path d="M1545 1460 C1545 1515 1390 1515 1390 1565" class="fwd"/>
+  <path d="M2015 1460 C2015 1515 1680 1515 1680 1565" class="reuse"/>
+  <rect x="1250" y="1565" width="850" height="190" rx="15" class="dsa-box"/>
+  <text x="1275" y="1603" class="subsection">Gather selected KV → Sparse causal attention</text>
+  <text x="1275" y="1642" class="mono"><tspan x="1275" dy="0">Ksel,Vsel = gather(K,V,I)　→ [T,2048,…]</tspan><tspan x="1275" dy="26">S_sparse = QKselᵀ / √256 + causal mask</tspan><tspan x="1275" dy="26">A = softmax(S_sparse)；C = A·Vsel → [T,64,256]</tspan></text>
+  <text x="1275" y="1725" class="small">top-2048 是 token positions，不是 expert top-k；两种稀疏发生在不同轴。</text>
+  <rect x="1085" y="1800" width="1190" height="190" rx="14" class="neutral-box"/>
+  <text x="1110" y="1837" class="label">Attention score ledger · BF16 logical, not resident tensor promise</text>
+  <text x="1110" y="1873" class="mono"><tspan x="1110" dy="0">T=8,192：dense [64,T,T] = 8.590 GB　vs sparse [64,T,2048] = 2.147 GB　→ 4× fewer score elements</tspan><tspan x="1110" dy="28">T=1,048,576：dense ≈ 140.7 TB　vs sparse ≈ 274.9 GB / layer　　　　　　　→ 512× fewer</tspan></text>
+  <text x="1110" y="1955" class="small">真正瓶颈转移到 indexer 的长历史 scan；IndexShare 的意义是把这个 scan 从 78 次降到 21 次，而非再次改变 top-2048。</text>
+
+  <!-- 3. MoE -->
+  <rect x="45" y="2178" width="2310" height="765" rx="20" class="panel"/>
+  <text x="75" y="2223" class="section">3 · 单层 channel mixing：256 routed experts 选 8 + 1 shared expert；attention sparsity与 expert sparsity 串联</text>
+  <text x="75" y="2253" class="small">75 个 MoE layers。这里继续使用 T=8,192；dispatch 张量是 logical 视图，生产 kernel 通常按 expert/token tile 分批。</text>
+
+  <rect x="75" y="2310" width="235" height="105" rx="13" class="state-box"/>
+  <text x="95" y="2343" class="label">Normalized x</text>
+  <text x="95" y="2373" class="mono"><tspan x="95" dy="0">[8192,6144]</tspan><tspan x="95" dy="22">100.7 MB BF16</tspan></text>
+  <path d="M310 2363 C345 2363 345 2360 380 2360" class="fwd"/>
+  <path d="M310 2363 C345 2363 345 2585 380 2585" class="fwd"/>
+  <rect x="380" y="2295" width="340" height="165" rx="15" class="expert-box"/>
+  <text x="405" y="2333" class="subsection">Shared expert ×1</text>
+  <text x="405" y="2368" class="mono"><tspan x="405" dy="0">SwiGLU · F=2048</tspan><tspan x="405" dy="24">always active</tspan><tspan x="405" dy="24">≈37.75M params</tspan></text>
+  <path d="M720 2378 C1040 2378 1040 2740 1840 2740" class="fwd"/>
+  <rect x="380" y="2495" width="300" height="180" rx="15" class="router-box"/>
+  <text x="405" y="2533" class="label">Sigmoid router</text>
+  <text x="405" y="2568" class="mono"><tspan x="405" dy="0">scores [8192,256]</tspan><tspan x="405" dy="24">sigmoid → top-8 → norm</tspan><tspan x="405" dy="24">routed scale = 2.5</tspan><tspan x="405" dy="24">65,536 assignments</tspan></text>
+  <path d="M680 2585 L725 2585" class="route"/>
+  <rect x="725" y="2485" width="350" height="200" rx="15" class="router-box"/>
+  <text x="750" y="2523" class="label">Dispatch / permute</text>
+  <text x="750" y="2558" class="mono"><tspan x="750" dy="0">Xdispatch [65536,6144]</tspan><tspan x="750" dy="24">805.3 MB logical BF16</tspan><tspan x="750" dy="24">avg 256 assignments/expert</tspan><tspan x="750" dy="24">expert parallel all-to-all</tspan></text>
+  <path d="M1075 2585 L1120 2585" class="route"/>
+  <rect x="1120" y="2365" width="520" height="405" rx="17" class="expert-box"/>
+  <text x="1150" y="2405" class="subsection">Routed expert bank</text>
+  <text x="1600" y="2405" class="mono-strong" text-anchor="end">256 ×</text>
+  <rect x="1150" y="2440" width="105" height="54" rx="8" class="expert-box"/><text x="1202" y="2473" class="label" text-anchor="middle">E₁</text>
+  <rect x="1275" y="2440" width="105" height="54" rx="8" class="expert-box"/><text x="1327" y="2473" class="label" text-anchor="middle">E₂</text>
+  <rect x="1400" y="2440" width="105" height="54" rx="8" class="expert-box"/><text x="1452" y="2473" class="label" text-anchor="middle">…</text>
+  <rect x="1525" y="2440" width="85" height="54" rx="8" class="expert-box"/><text x="1567" y="2473" class="label" text-anchor="middle">E₂₅₆</text>
+  <text x="1150" y="2540" class="mono"><tspan x="1150" dy="0">Wgate [6144,2048]</tspan><tspan x="1150" dy="24">Wup   [6144,2048]</tspan><tspan x="1150" dy="24">Wdown [2048,6144]</tspan></text>
+  <text x="1150" y="2637" class="small"><tspan x="1150" dy="0">≈37.75M params / expert</tspan><tspan x="1150" dy="24">≈9.664B routed params / MoE layer</tspan><tspan x="1150" dy="24">top-8 active ≈302.0M expert params/layer</tspan><tspan x="1150" dy="24">all expert weights remain persistent</tspan></text>
+  <path d="M1380 2770 L1380 2805" class="route"/>
+  <rect x="1120" y="2805" width="520" height="90" rx="14" class="router-box"/>
+  <text x="1150" y="2838" class="label">Weighted combine + inverse dispatch</text>
+  <text x="1150" y="2868" class="mono">Yrouter [8192,6144] · weights from selected experts</text>
+  <path d="M1640 2850 L1690 2850" class="fwd"/>
+  <circle cx="1712" cy="2850" r="20" fill="#dcfce7" stroke="#16a34a" stroke-width="1.8"/><text x="1712" y="2857" class="label" text-anchor="middle">+</text>
+  <path d="M1840 2740 C1770 2740 1770 2830 1732 2830" class="fwd"/>
+  <rect x="1780" y="2795" width="500" height="110" rx="14" class="state-box"/>
+  <text x="1805" y="2828" class="label">MoE output + residual</text>
+  <text x="1805" y="2858" class="mono"><tspan x="1805" dy="0">Y = Eshared(x) + Σ pᵢEᵢ(x)</tspan><tspan x="1805" dy="22">Xℓ₊₁ = Xattn + Y　→ next layer</tspan></text>
+  <rect x="1780" y="2310" width="500" height="390" rx="17" class="neutral-box"/>
+  <text x="1810" y="2350" class="subsection">Two independent top-k operations</text>
+  <rect x="1810" y="2385" width="440" height="105" rx="13" class="pill-cyan"/>
+  <text x="1835" y="2418" class="label">Token sparsity · DSA top-2048</text>
+  <text x="1835" y="2448" class="small"><tspan x="1835" dy="0">每个 query 在历史 token 轴上选位置；</tspan><tspan x="1835" dy="22">影响 attention K/V gather。</tspan></text>
+  <rect x="1810" y="2510" width="440" height="105" rx="13" class="pill-amber"/>
+  <text x="1835" y="2543" class="label">Channel sparsity · MoE top-8</text>
+  <text x="1835" y="2573" class="small"><tspan x="1835" dy="0">每个 token 在 expert 轴上选网络；</tspan><tspan x="1835" dy="22">影响 FFN dispatch / expert parallel。</tspan></text>
+  <text x="1810" y="2653" class="small"><tspan x="1810" dy="0">两者串联：attention 先聚合 selected tokens，</tspan><tspan x="1810" dy="22">MoE 再选择 selected experts 做通道变换。</tspan></text>
+
+  <!-- 4. Backward and lifetime -->
+  <rect x="45" y="2973" width="2310" height="790" rx="20" class="panel"/>
+  <text x="75" y="3018" class="section">4 · Backward / cache / distributed lifetime：IndexShare 也创建跨层依赖</text>
+  <text x="75" y="3048" class="small">shared layer 使用 full layer 的离散 top-k indices；训练中 top-k selection 通常视为不可导选择，梯度通过被选 attention 路径与 indexer training objective/recipe 处理。</text>
+
+  <rect x="75" y="3090" width="700" height="360" rx="17" class="backward-box"/>
+  <text x="105" y="3132" class="subsection">Reverse graph</text>
+  <rect x="115" y="3170" width="180" height="72" rx="12" class="pill-red"/><text x="205" y="3202" class="label" text-anchor="middle">dLoss / dlogits</text><text x="205" y="3226" class="tiny" text-anchor="middle">LM head / MTP</text>
+  <path d="M295 3206 L345 3206" class="bwd"/>
+  <rect x="345" y="3170" width="180" height="72" rx="12" class="pill-red"/><text x="435" y="3202" class="label" text-anchor="middle">dLayer 77</text><text x="435" y="3226" class="tiny" text-anchor="middle">MoE + sparse MLA</text>
+  <path d="M525 3206 L575 3206" class="bwd"/>
+  <rect x="575" y="3170" width="160" height="72" rx="12" class="pill-red"/><text x="655" y="3202" class="label" text-anchor="middle">dEmbedding</text><text x="655" y="3226" class="tiny" text-anchor="middle">reverse 78 layers</text>
+  <text x="115" y="3280" class="body"><tspan x="115" dy="0">Sparse MLA：只对 gathered top-2048 K/V 做 softmax backward；</tspan><tspan x="115" dy="28">IndexShare：shared layers 复用同一 I，但各层 dQ/dK/dV、attention weights 与 projections 独立；</tspan><tspan x="115" dy="28">MoE：inverse dispatch，token 只激活 8 个 routed expert paths；</tspan><tspan x="115" dy="28">MTP：额外 draft loss / speculative path，released config 只有 1 个 next-token module。</tspan></text>
+  <text x="115" y="3398" class="small"><tspan x="115" dy="0">“40B active”是一次 token path 的 active parameter 口径；训练/部署仍需装载或分片全部 744B。</tspan><tspan x="115" dy="22">Hugging Face safetensors 文件页统计约 753B，差异口径见脚注。</tspan></text>
+
+  <rect x="810" y="3090" width="730" height="605" rx="17" class="neutral-box"/>
+  <text x="840" y="3132" class="subsection">Tensor lifetime · what crosses boundaries?</text>
+  <rect x="845" y="3170" width="660" height="100" rx="13" class="pill-purple"/>
+  <text x="870" y="3202" class="label">Across tokens · MLA KV latent</text>
+  <text x="870" y="3232" class="small">576 scalars/token/layer；1M BF16 ≈ 1.208 GB/layer，78 层约 94.2 GB before sharding/quantization。</text>
+  <rect x="845" y="3290" width="660" height="110" rx="13" class="pill-green"/>
+  <text x="870" y="3322" class="label">Across layers · IndexShare I</text>
+  <text x="870" y="3352" class="small"><tspan x="870" dy="0">full layer 写 [T,2048] token positions，后 3 层读取；</tspan><tspan x="870" dy="22">若 int32 且 T=1M，logical set ≈ 8.59 GB，实际实现需 tile / compress / pipeline carry。</tspan></text>
+  <rect x="845" y="3420" width="660" height="110" rx="13" class="pill-amber"/>
+  <text x="870" y="3452" class="label">Across experts · dispatch buffers</text>
+  <text x="870" y="3482" class="small"><tspan x="870" dy="0">top-8 route metadata + all-to-all payload；T=8192 logical</tspan><tspan x="870" dy="22">Xdispatch [65536,6144] ≈ 805.3 MB BF16。</tspan></text>
+  <rect x="845" y="3550" width="660" height="110" rx="13" class="pill-blue"/>
+  <text x="870" y="3582" class="label">Within layer · checkpointed activations</text>
+  <text x="870" y="3612" class="small"><tspan x="870" dy="0">norm/Q/latent/index scores/gathered KV/expert intermediates；</tspan><tspan x="870" dy="22">activation checkpointing 以重算换 HBM，不能消除 KV cache 或 weights。</tspan></text>
+
+  <rect x="1575" y="3090" width="750" height="605" rx="17" class="neutral-box"/>
+  <text x="1605" y="3132" class="subsection">Cost decomposition</text>
+  <rect x="1605" y="3165" width="690" height="48" rx="9" class="table-head"/>
+  <text x="1620" y="3195" class="table-header">Mechanism</text><text x="1880" y="3195" class="table-header">Reduces</text><text x="2080" y="3195" class="table-header">Does not remove</text>
+  <line x1="1860" y1="3165" x2="1860" y2="3570" class="grid"/><line x1="2060" y1="3165" x2="2060" y2="3570" class="grid"/>
+  <rect x="1605" y="3213" width="690" height="70" class="table-alt"/><text x="1620" y="3243" class="table-strong">MLA rank-512</text><text x="1880" y="3243" class="table-body">KV cache width</text><text x="2080" y="3243" class="table-body">per-layer Q/K/V/O GEMMs</text><text x="2080" y="3267" class="tiny">still 64 heads after expansion</text>
+  <text x="1620" y="3315" class="table-strong">DSA top-2048</text><text x="1880" y="3315" class="table-body">main attn T→k</text><text x="2080" y="3315" class="table-body">indexer history scan</text><text x="2080" y="3339" class="tiny">content-dependent selection</text>
+  <rect x="1605" y="3353" width="690" height="70" class="table-alt"/><text x="1620" y="3383" class="table-strong">IndexShare 1+3</text><text x="1880" y="3383" class="table-body">index scans</text><text x="2080" y="3383" class="table-body">attention in shared layers</text><text x="2080" y="3407" class="tiny">only reuses positions I</text>
+  <text x="1620" y="3455" class="table-strong">MoE top-8/256</text><text x="1880" y="3455" class="table-body">active FFN compute</text><text x="2080" y="3455" class="table-body">744B storage/state</text><text x="2080" y="3479" class="tiny">EP communication remains</text>
+  <rect x="1605" y="3493" width="690" height="77" class="table-alt"/><text x="1620" y="3523" class="table-strong">MTP ×1</text><text x="1880" y="3523" class="table-body">decode steps</text><text x="2080" y="3523" class="table-body">verification by main model</text><text x="2080" y="3547" class="tiny">acceptance is workload-dependent</text>
+  <text x="1605" y="3615" class="small"><tspan x="1605" dy="0">关键判断：GLM-5.2 的 1M context 不是单点优化。</tspan><tspan x="1605" dy="24">MLA 控 cache，DSA 控主 attention，IndexShare 控 indexer；</tspan><tspan x="1605" dy="24">三层优化分别对准不同的 O(T) / O(Tk) / scan 成本。</tspan></text>
+
+  <!-- 5. Notes and sources -->
+  <rect x="45" y="3793" width="2310" height="347" rx="20" class="panel"/>
+  <text x="75" y="3838" class="section">5 · 阅读边界与来源</text>
+  <rect x="75" y="3870" width="1080" height="220" rx="15" class="warning-box"/>
+  <text x="105" y="3907" class="label">口径说明</text>
+  <text x="105" y="3942" class="body"><tspan x="105" dy="0">• 744B-A40B 为 Z.ai 官方系列口径；GLM-5 技术报告计参数时含 MTP、但不含 word embedding / output head，HF safetensors 页面约 753B。</tspan><tspan x="105" dy="29">• 图中张量显存为 logical BF16 decimal MB/GB；indexer 与 sparse attention kernel 会融合、分块、分片，不承诺完整 tensor 常驻。</tspan><tspan x="105" dy="29">• GLM-5.2 沿用 GLM-5 的 glm_moe_dsa backbone；5.2 新增/公开的核心结构差异是 IndexShare 与改进 MTP。</tspan><tspan x="105" dy="29">• “MTP accept length ≤ +20%”来自官方发布描述，是 up to 口径，不代表所有请求固定提速 20%。</tspan></text>
+  <rect x="1185" y="3870" width="1140" height="220" rx="15" class="neutral-box"/>
+  <text x="1215" y="3907" class="label">Primary sources · checked 2026-08-19</text>
+  <text x="1215" y="3942" class="small"><tspan x="1215" dy="0">1. Z.ai, official GLM-5.2 release blog / model card</tspan><tspan x="1245" dy="23">z.ai/blog/glm-5.2 · huggingface.co/zai-org/GLM-5.2</tspan><tspan x="1215" dy="30">2. Official Hugging Face config (IndexShare schedule and dimensions)</tspan><tspan x="1245" dy="23">huggingface.co/zai-org/GLM-5.2/blob/main/config.json</tspan><tspan x="1215" dy="30">3. “GLM-5: From Vibe Coding to Agentic Engineering” technical report</tspan><tspan x="1245" dy="23">arxiv.org/abs/2602.15763 · github.com/zai-org/GLM-5</tspan></text>
+  <text x="2325" y="4120" class="tiny" text-anchor="end">Day 05 companion poster · generated from public architecture metadata · 2026-08-19</text>
+</svg>

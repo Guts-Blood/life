@@ -1,0 +1,242 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="2200" viewBox="0 0 1600 2200" role="img" aria-labelledby="title desc">
+  <title id="title">Day 01 Roofline foundations and reproducible-run roadmap</title>
+  <desc id="desc">A six-stage roadmap from choosing an analysis boundary through FLOPs and byte accounting, time and overlap, arithmetic intensity and Roofline classification, capacity versus bandwidth, profiler calibration, an FSDP overlap example, and reproducible-run evidence.</desc>
+
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2563eb"/>
+    </marker>
+    <style>
+      text { font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; fill: #172033; }
+      .title { font-size: 34px; font-weight: 700; }
+      .subtitle { font-size: 18px; fill: #526078; }
+      .section { font-size: 22px; font-weight: 700; }
+      .stage { font-size: 15px; font-weight: 700; letter-spacing: .5px; fill: #475569; }
+      .label { font-size: 18px; font-weight: 700; }
+      .body { font-size: 15px; }
+      .small { font-size: 13px; fill: #526078; }
+      .tiny { font-size: 12px; fill: #526078; }
+      .formula { font-family: "SFMono-Regular", Consolas, monospace; font-size: 14px; fill: #273449; }
+      .panel { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1.5; }
+      .node { fill: #f8fafc; stroke: #64748b; stroke-width: 1.5; }
+      .blue { fill: #dbeafe; stroke: #2563eb; stroke-width: 1.5; }
+      .green { fill: #dcfce7; stroke: #16a34a; stroke-width: 1.5; }
+      .amber { fill: #fef3c7; stroke: #d97706; stroke-width: 1.5; }
+      .purple { fill: #f3e8ff; stroke: #9333ea; stroke-width: 1.5; }
+      .red { fill: #fee2e2; stroke: #dc2626; stroke-width: 1.5; }
+      .cyan { fill: #cffafe; stroke: #0891b2; stroke-width: 1.5; }
+      .muted { fill: #f1f5f9; stroke: #94a3b8; stroke-width: 1.2; }
+      .arrow { fill: none; stroke: #475569; stroke-width: 2.2; marker-end: url(#arrow); }
+      .feedback { fill: none; stroke: #2563eb; stroke-width: 2.2; stroke-dasharray: 8 6; marker-end: url(#arrow-blue); }
+      .divider { stroke: #cbd5e1; stroke-width: 1.4; }
+      .axis { stroke: #64748b; stroke-width: 1.5; }
+      .tick { stroke: #94a3b8; stroke-width: 1; }
+    </style>
+  </defs>
+
+  <rect width="1600" height="2200" fill="#f5f7fb"/>
+  <text x="50" y="58" class="title">Day 01 Roadmap：Roofline 基础、Critical Path 与可复现 Run</text>
+  <text x="50" y="88" class="subtitle">目标：把 workload 与硬件规格翻译成时间和瓶颈假设，再用 profiler 与完整 run identity 校准</text>
+
+  <!-- North star -->
+  <rect x="40" y="115" width="1520" height="104" rx="16" class="panel"/>
+  <text x="70" y="153" class="label">North Star</text>
+  <text x="205" y="153" class="body">analysis boundary</text>
+  <text x="360" y="153" class="label">→</text>
+  <text x="400" y="153" class="body">FLOPs / bytes</text>
+  <text x="535" y="153" class="label">→</text>
+  <text x="575" y="153" class="body">time / intensity</text>
+  <text x="720" y="153" class="label">→</text>
+  <text x="760" y="153" class="body">bound / overlap</text>
+  <text x="915" y="153" class="label">→</text>
+  <text x="955" y="153" class="body">critical path</text>
+  <text x="1080" y="153" class="label">→</text>
+  <text x="1120" y="153" class="body">profiler evidence</text>
+  <text x="1275" y="153" class="label">→</text>
+  <text x="1315" y="153" class="body">engineering decision</text>
+  <text x="70" y="189" class="small">先做一阶预测；不要把理论峰值、GPU-Util 或“能放进显存”单独当作性能结论。</text>
+
+  <!-- Main roadmap -->
+  <rect x="40" y="245" width="1520" height="650" rx="18" class="panel"/>
+  <text x="70" y="288" class="section">学习主链路</text>
+  <text x="70" y="314" class="small">scope → ledger → time → Roofline → capacity / bandwidth → real-system calibration</text>
+
+  <text x="75" y="356" class="stage">01 · DECLARE THE BOUNDARY</text>
+  <rect x="75" y="372" width="430" height="210" rx="16" class="blue"/>
+  <text x="100" y="408" class="label">先明确“正在分析什么”</text>
+  <line x1="100" y1="426" x2="480" y2="426" class="divider"/>
+  <text x="100" y="458" class="body">Workload：kernel / layer / step / end-to-end</text>
+  <text x="100" y="488" class="body">Movement：HBM / GPU↔GPU / CPU↔GPU</text>
+  <text x="100" y="522" class="small">不同 operation 有不同 Fᵢ、Mᵢ、shape 与 bound。</text>
+  <text x="100" y="550" class="small">端到端不能默认用一次 total-F / total-M 代替 DAG。</text>
+
+  <text x="585" y="356" class="stage">02 · BUILD THE LEDGER</text>
+  <rect x="585" y="372" width="430" height="210" rx="16" class="amber"/>
+  <text x="610" y="408" class="label">记录 workload 与有效硬件能力</text>
+  <line x1="610" y1="426" x2="990" y2="426" class="divider"/>
+  <text x="610" y="461" class="formula">F = operation FLOPs</text>
+  <text x="610" y="491" class="formula">M = bytes moved</text>
+  <text x="610" y="521" class="formula">C = effective FLOPs/s</text>
+  <text x="610" y="551" class="formula">W = effective bytes/s</text>
+
+  <text x="1095" y="356" class="stage">03 · CONVERT TO TIME</text>
+  <rect x="1095" y="372" width="430" height="210" rx="16" class="purple"/>
+  <text x="1120" y="408" class="label">统一换算成 seconds</text>
+  <line x1="1120" y1="426" x2="1500" y2="426" class="divider"/>
+  <text x="1120" y="465" class="formula">T_math  = F / C</text>
+  <text x="1120" y="499" class="formula">T_comms = M / W</text>
+  <text x="1120" y="533" class="formula">perfect overlap → max(T_math, T_comms)</text>
+  <text x="1120" y="559" class="small">no overlap → T_math + T_comms</text>
+
+  <path d="M 505 477 L 570 477" class="arrow"/>
+  <path d="M 1015 477 L 1080 477" class="arrow"/>
+
+  <text x="75" y="630" class="stage">04 · CLASSIFY WITH INTENSITY</text>
+  <rect x="75" y="646" width="430" height="205" rx="16" class="green"/>
+  <text x="100" y="682" class="label">Operation 与 hardware 用同一单位比较</text>
+  <line x1="100" y1="700" x2="480" y2="700" class="divider"/>
+  <text x="100" y="734" class="formula">I_op = F / M · I_hw = C / W</text>
+  <text x="100" y="768" class="formula">I_op &gt; I_hw → compute-bound</text>
+  <text x="100" y="800" class="formula">I_op &lt; I_hw → memory / comm-bound</text>
+  <text x="100" y="829" class="small">P_achievable = min(C, I_op × W)</text>
+
+  <text x="585" y="630" class="stage">05 · SEPARATE CAPACITY / BANDWIDTH</text>
+  <rect x="585" y="646" width="430" height="205" rx="16" class="cyan"/>
+  <text x="610" y="682" class="label">“放得下”与“跑得快”是两道题</text>
+  <line x1="610" y1="700" x2="990" y2="700" class="divider"/>
+  <text x="610" y="736" class="body">Capacity：resident working set 是否小于显存</text>
+  <text x="610" y="770" class="body">Bandwidth：每 step 的 bytes 搬运需要多久</text>
+  <text x="610" y="804" class="small">显存翻倍不自动降低 M/W；带宽翻倍才可能减半。</text>
+  <text x="610" y="830" class="small">Full SFT 还要计 weights、grads、Adam、activation。</text>
+
+  <text x="1095" y="630" class="stage">06 · CALIBRATE THE REAL SYSTEM</text>
+  <rect x="1095" y="646" width="430" height="205" rx="16" class="red"/>
+  <text x="1120" y="682" class="label">理论下界不是性能保证</text>
+  <line x1="1120" y1="700" x2="1500" y2="700" class="divider"/>
+  <text x="1120" y="734" class="body">检查 shape、kernel、fusion、cache 与重计算</text>
+  <text x="1120" y="766" class="body">检查 launch、同步、依赖、拥塞与 data loader</text>
+  <text x="1120" y="800" class="body">沿 execution DAG 找 critical path</text>
+  <text x="1120" y="830" class="small">用 profiler 修正 F / M / C / W 与 overlap 假设。</text>
+
+  <path d="M 505 748 L 570 748" class="arrow"/>
+  <path d="M 1015 748 L 1080 748" class="arrow"/>
+  <path d="M 1310 851 C 1310 875, 1260 877, 1200 877 L 190 877 C 125 877, 100 866, 100 853" class="feedback"/>
+
+  <!-- Overlap example -->
+  <rect x="40" y="925" width="1520" height="380" rx="18" class="panel"/>
+  <text x="70" y="968" class="section">Worked Example：FSDP prefetch、依赖与 exposed communication</text>
+  <text x="70" y="994" class="small">Layer 6 同时需要 Layer 5 output activation 与完整 Layer 6 weights；两条生产链可以并发。</text>
+
+  <rect x="70" y="1025" width="930" height="230" rx="15" class="node"/>
+  <text x="95" y="1061" class="label">Timeline · variant: Layer 5 compute = 12ms, Layer 6 AllGather = 18ms</text>
+  <line x1="260" y1="1100" x2="930" y2="1100" class="axis"/>
+  <line x1="260" y1="1092" x2="260" y2="1198" class="tick"/>
+  <line x1="707" y1="1092" x2="707" y2="1198" class="tick"/>
+  <line x1="930" y1="1092" x2="930" y2="1198" class="tick"/>
+  <text x="250" y="1083" class="tiny">0ms</text>
+  <text x="693" y="1083" class="tiny">12ms</text>
+  <text x="916" y="1083" class="tiny">18ms</text>
+
+  <text x="95" y="1140" class="body">Layer 5 compute</text>
+  <rect x="260" y="1115" width="447" height="38" rx="8" class="blue"/>
+  <text x="432" y="1140" class="formula">12ms</text>
+  <text x="95" y="1194" class="body">Layer 6 AllGather</text>
+  <rect x="260" y="1169" width="670" height="38" rx="8" class="amber"/>
+  <text x="530" y="1194" class="formula">18ms</text>
+  <rect x="707" y="1169" width="223" height="38" rx="8" class="red"/>
+  <text x="760" y="1194" class="formula">6ms exposed</text>
+  <text x="260" y="1238" class="small">Layer 6 starts at max(12,18)=18ms；不是 12+18=30ms。</text>
+
+  <rect x="1030" y="1025" width="495" height="230" rx="15" class="purple"/>
+  <text x="1055" y="1061" class="label">关键理解</text>
+  <line x1="1055" y1="1079" x2="1500" y2="1079" class="divider"/>
+  <text x="1055" y="1112" class="body">Layer 6 weight shards 在 Layer 5 compute 前已存在。</text>
+  <text x="1055" y="1144" class="body">AllGather 不依赖 Layer 5 activation，所以可预取。</text>
+  <text x="1055" y="1176" class="body">Layer 6 compute 必须等 activation 与 weights 都 ready。</text>
+  <text x="1055" y="1210" class="formula">exposed = max(18 - 12, 0) = 6ms</text>
+  <text x="1055" y="1238" class="small">无数据依赖 ≠ 无资源竞争；并发仍可能互相降速。</text>
+
+  <!-- Capacity vs bandwidth -->
+  <rect x="40" y="1335" width="1520" height="300" rx="18" class="panel"/>
+  <text x="70" y="1378" class="section">Capacity vs Bandwidth：同一显存系统中的两本账</text>
+
+  <rect x="70" y="1410" width="455" height="175" rx="15" class="blue"/>
+  <text x="95" y="1446" class="label">Capacity · 可行性</text>
+  <text x="95" y="1482" class="formula">resident working set = 60GB</text>
+  <text x="95" y="1514" class="formula">GPU capacity = 80GB</text>
+  <text x="95" y="1548" class="body">60GB &lt; 80GB → 可以驻留，但尚未说明速度。</text>
+
+  <rect x="572" y="1410" width="455" height="175" rx="15" class="amber"/>
+  <text x="597" y="1446" class="label">Bandwidth · 时间</text>
+  <text x="597" y="1482" class="formula">bytes moved / step = 300GB</text>
+  <text x="597" y="1514" class="formula">W_effective = 3TB/s</text>
+  <text x="597" y="1548" class="formula">T_move = 300GB / 3TB/s = 100ms</text>
+
+  <rect x="1074" y="1410" width="451" height="175" rx="15" class="green"/>
+  <text x="1099" y="1446" class="label">改变硬件后的结论</text>
+  <text x="1099" y="1482" class="body">Capacity 80→160GB：仍是 100ms</text>
+  <text x="1099" y="1514" class="body">Bandwidth 3→6TB/s：降为 50ms</text>
+  <text x="1099" y="1548" class="small">优化前先确认你改变的是瓶颈资源。</text>
+
+  <!-- Reproducibility -->
+  <rect x="40" y="1665" width="1520" height="250" rx="18" class="panel"/>
+  <text x="70" y="1708" class="section">Reproducible Run：让预测、测量和结论可以复查</text>
+  <text x="70" y="1734" class="small">一次实验的身份不是文件夹名，而是一组不可变 revision、配置与证据。</text>
+
+  <rect x="70" y="1765" width="150" height="64" rx="12" class="blue"/>
+  <text x="104" y="1804" class="body">code commit</text>
+  <rect x="238" y="1765" width="165" height="64" rx="12" class="green"/>
+  <text x="268" y="1792" class="body">model / tokenizer</text>
+  <text x="292" y="1814" class="small">revision</text>
+  <rect x="421" y="1765" width="165" height="64" rx="12" class="amber"/>
+  <text x="450" y="1792" class="body">dataset revision</text>
+  <text x="476" y="1814" class="small">+ lineage</text>
+  <rect x="604" y="1765" width="150" height="64" rx="12" class="purple"/>
+  <text x="638" y="1792" class="body">config</text>
+  <text x="650" y="1814" class="small">+ seed</text>
+  <rect x="772" y="1765" width="165" height="64" rx="12" class="cyan"/>
+  <text x="803" y="1792" class="body">environment</text>
+  <text x="816" y="1814" class="small">+ packages</text>
+  <rect x="955" y="1765" width="155" height="64" rx="12" class="red"/>
+  <text x="986" y="1792" class="body">hardware</text>
+  <text x="982" y="1814" class="small">+ topology</text>
+  <path d="M 1110 1797 L 1170 1797" class="arrow"/>
+  <rect x="1185" y="1756" width="340" height="82" rx="14" class="node"/>
+  <text x="1210" y="1790" class="label">Run ID + artifacts</text>
+  <text x="1210" y="1818" class="small">config · logs · checkpoints · profiler · eval</text>
+  <text x="70" y="1880" class="body">Definition of Done：新 shell 中 5 分钟内打印关键版本、定位 cache / logs / checkpoints，并加载 Qwen tokenizer。</text>
+
+  <!-- Takeaways -->
+  <rect x="40" y="1945" width="1520" height="205" rx="18" class="panel"/>
+  <text x="70" y="1988" class="section">Final Takeaways</text>
+
+  <rect x="70" y="2018" width="280" height="92" rx="13" class="blue"/>
+  <text x="94" y="2050" class="label">1 · 先定边界</text>
+  <text x="94" y="2077" class="small">kernel bound 不自动代表 step bound。</text>
+  <text x="94" y="2098" class="small">端到端看 DAG critical path。</text>
+
+  <rect x="370" y="2018" width="280" height="92" rx="13" class="green"/>
+  <text x="394" y="2050" class="label">2 · 方向不要反</text>
+  <text x="394" y="2077" class="formula">I_op &gt; I_hw → compute</text>
+  <text x="394" y="2098" class="formula">I_op &lt; I_hw → memory</text>
+
+  <rect x="670" y="2018" width="280" height="92" rx="13" class="amber"/>
+  <text x="694" y="2050" class="label">3 · max 只是下界</text>
+  <text x="694" y="2077" class="small">依赖、资源竞争与 overhead</text>
+  <text x="694" y="2098" class="small">决定真实 overlap。</text>
+
+  <rect x="970" y="2018" width="280" height="92" rx="13" class="cyan"/>
+  <text x="994" y="2050" class="label">4 · 放得下 ≠ 跑得快</text>
+  <text x="994" y="2077" class="small">capacity 决定 feasibility；</text>
+  <text x="994" y="2098" class="small">bandwidth 决定 movement time。</text>
+
+  <rect x="1270" y="2018" width="255" height="92" rx="13" class="red"/>
+  <text x="1294" y="2050" class="label">5 · 用证据闭环</text>
+  <text x="1294" y="2077" class="small">理论先预测，profiler 校准，</text>
+  <text x="1294" y="2098" class="small">run identity 保证可复查。</text>
+
+  <text x="50" y="2180" class="tiny">Sources: How To Scale Your Model · Day 01 reading quiz · 30-Day LLM Post-Training Bootcamp</text>
+</svg>

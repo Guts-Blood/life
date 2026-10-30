@@ -1,0 +1,225 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="2440" viewBox="0 0 1800 2440" role="img" aria-labelledby="title desc">
+  <title id="title">Day 06 post-training stages and scaling decision roadmap</title>
+  <desc id="desc">A Chinese visual summary connecting SFT, DPO, and RLVR stage decisions with memory, compute, time and cost feasibility, evaluation gates, stopping rules, and the transfer boundary between TPU examples and Qwen H100 planning.</desc>
+
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2563eb"/>
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#15803d"/>
+    </marker>
+    <style>
+      text { font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; fill: #172033; }
+      .title { font-size: 34px; font-weight: 700; }
+      .subtitle { font-size: 18px; fill: #526078; }
+      .section { font-size: 23px; font-weight: 700; }
+      .stage { font-size: 14px; font-weight: 700; letter-spacing: .5px; fill: #475569; }
+      .label { font-size: 17px; font-weight: 650; }
+      .body { font-size: 15px; }
+      .small { font-size: 13px; fill: #526078; }
+      .tiny { font-size: 12px; fill: #526078; }
+      .formula { font-family: "SFMono-Regular", Consolas, monospace; font-size: 14px; fill: #273449; }
+      .formula-small { font-family: "SFMono-Regular", Consolas, monospace; font-size: 12px; fill: #273449; }
+      .panel { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1.5; }
+      .hero { fill: #eef2ff; stroke: #6366f1; stroke-width: 1.8; }
+      .blue { fill: #dbeafe; stroke: #2563eb; stroke-width: 1.5; }
+      .cyan { fill: #cffafe; stroke: #0891b2; stroke-width: 1.5; }
+      .purple { fill: #f3e8ff; stroke: #9333ea; stroke-width: 1.5; }
+      .green { fill: #dcfce7; stroke: #16a34a; stroke-width: 1.5; }
+      .amber { fill: #fef3c7; stroke: #d97706; stroke-width: 1.5; }
+      .red { fill: #fee2e2; stroke: #dc2626; stroke-width: 1.5; }
+      .muted { fill: #f1f5f9; stroke: #94a3b8; stroke-width: 1.3; }
+      .good { fill: #f0fdf4; stroke: #16a34a; stroke-width: 1.5; }
+      .warning { fill: #fff7ed; stroke: #ea580c; stroke-width: 1.5; }
+      .line { fill: none; stroke: #475569; stroke-width: 2; marker-end: url(#arrow); }
+      .line-blue { fill: none; stroke: #2563eb; stroke-width: 2; marker-end: url(#arrow-blue); }
+      .line-green { fill: none; stroke: #15803d; stroke-width: 2; marker-end: url(#arrow-green); }
+      .divider { stroke: #cbd5e1; stroke-width: 1.4; }
+      .grid { stroke: #cbd5e1; stroke-width: 1; }
+    </style>
+  </defs>
+
+  <rect width="1800" height="2440" fill="#f5f7fb"/>
+  <text x="50" y="58" class="title">Day 06 · Post-Training 阶段选择与 Scaling 决策 Roadmap</text>
+  <text x="50" y="90" class="subtitle">Tülu 3 × Applied Training：先判断“为什么训练”，再判断“是否放得下、算得动、按期值得跑”。</text>
+
+  <!-- North star -->
+  <rect x="40" y="118" width="1720" height="112" rx="18" class="hero"/>
+  <text x="70" y="155" class="section">一句话 Gate</text>
+  <text x="270" y="155" class="label">阶段由目标能力与学习信号批准；规模只约束执行方式，不能替代数据与评测决策。</text>
+  <text x="270" y="188" class="body">behavior gap → stage / signal → checkpoint gate → feasibility → pilot → frozen eval → scale or stop</text>
+
+  <!-- Stage pipeline -->
+  <rect x="40" y="254" width="1720" height="520" rx="18" class="panel"/>
+  <text x="70" y="294" class="section">1 · 三个阶段：数据对象、上游状态与主要扩展压力不同</text>
+  <text x="70" y="321" class="small">SFT、DPO、RLVR 是由监督信号定义的训练阶段；DP / FSDP / TP / PP 只是 state ownership 与 communication 策略。</text>
+
+  <text x="70" y="364" class="stage">01 · SFT · ABSOLUTE SUPERVISION</text>
+  <rect x="70" y="380" width="510" height="316" rx="15" class="blue"/>
+  <text x="96" y="417" class="label">Demonstration tokens</text>
+  <line x1="96" y1="436" x2="554" y2="436" class="divider"/>
+  <text x="96" y="468" class="body">数据：prompt / messages + target completion</text>
+  <text x="96" y="498" class="body">起点：pinned Base checkpoint</text>
+  <text x="96" y="528" class="body">目标：masked causal-LM loss</text>
+  <text x="96" y="562" class="small">Scaling pressure</text>
+  <text x="96" y="589" class="body">sequence · micro-batch · activation</text>
+  <text x="96" y="617" class="body">label-token ratio · supervised-token budget</text>
+  <text x="96" y="651" class="small">Gate：template / token / label audit + frozen Base eval</text>
+  <text x="96" y="678" class="small">Stop：零有效 label、NaN、resume 不连续或 dev 回退</text>
+
+  <path d="M 580 538 L 632 538" class="line-blue"/>
+
+  <text x="645" y="364" class="stage">02 · DPO · RELATIVE PREFERENCE</text>
+  <rect x="645" y="380" width="510" height="316" rx="15" class="purple"/>
+  <text x="671" y="417" class="label">Chosen / rejected pairs</text>
+  <line x1="671" y1="436" x2="1129" y2="436" class="divider"/>
+  <text x="671" y="468" class="body">数据：same prompt + chosen / rejected</text>
+  <text x="671" y="498" class="body">起点：已验证 SFT policy</text>
+  <text x="671" y="528" class="body">角色：trainable policy + fixed reference</text>
+  <text x="671" y="562" class="small">Scaling pressure</text>
+  <text x="671" y="589" class="body">两条 response × policy/reference logprobs</text>
+  <text x="671" y="617" class="body">可缓存 reference logprobs，但 policy 成本仍在</text>
+  <text x="671" y="651" class="small">Gate：pair provenance / alignment / length / held-out eval</text>
+  <text x="671" y="678" class="small">Stop：length bias、错位、收益不泛化或 general 回退</text>
+
+  <path d="M 1155 538 L 1207 538" class="line-blue"/>
+
+  <text x="1220" y="364" class="stage">03 · RLVR · ON-POLICY REWARD</text>
+  <rect x="1220" y="380" width="510" height="316" rx="15" class="amber"/>
+  <text x="1246" y="417" class="label">Rollouts + verifiable reward</text>
+  <line x1="1246" y1="436" x2="1704" y2="436" class="divider"/>
+  <text x="1246" y="468" class="body">数据：prompt + current-policy rollouts + verifier</text>
+  <text x="1246" y="498" class="body">起点：Tülu 3 最终 recipe 从 DPO checkpoint 开始</text>
+  <text x="1246" y="528" class="body">角色：policy / rollout / reference / value / verifier</text>
+  <text x="1246" y="562" class="small">Scaling pressure</text>
+  <text x="1246" y="589" class="body">autoregressive rollout · response length · samples/prompt</text>
+  <text x="1246" y="617" class="body">多模型角色 · policy freshness · weight sync</text>
+  <text x="1246" y="651" class="small">Gate：verifier 可单测，目标能力确实需要在线探索</text>
+  <text x="1246" y="678" class="small">Stop：reward hacking、stale rollout、KL/长度失控</text>
+
+  <rect x="70" y="716" width="1660" height="36" rx="9" class="muted"/>
+  <text x="94" y="740" class="body">Checkpoint chain：Base → SFT → DPO → RLVR；每一段都从“已验证的上游状态”出发，不能因硬件可用就跳过 stage gate。</text>
+
+  <!-- Decision order -->
+  <rect x="40" y="798" width="1720" height="326" rx="18" class="panel"/>
+  <text x="70" y="838" class="section">2 · 决策顺序：先问“值不值得”，再问“怎么跑”</text>
+  <text x="70" y="865" class="small">两个问题必须同时通过，但不能颠倒：工程 feasibility 不会证明训练阶段有效，离线收益也不会让超预算 run 自动可行。</text>
+
+  <rect x="70" y="900" width="690" height="172" rx="15" class="green"/>
+  <text x="96" y="936" class="label">A · Stage necessity / value</text>
+  <text x="96" y="968" class="body">待改善什么能力？有什么合法、可审计的学习信号？</text>
+  <text x="96" y="998" class="body">目标 slice 是否改善？unseen / frozen slice 是否保持？</text>
+  <text x="96" y="1028" class="small">证据：data contract · decontamination · dev/unseen eval · bad cases</text>
+  <text x="96" y="1055" class="small">输出：选择 SFT / DPO / RLVR，或明确“不进入该阶段”</text>
+
+  <path d="M 760 986 L 994 986" class="line-green"/>
+  <text x="806" y="968" class="stage">VALUE GATE</text>
+  <text x="806" y="1016" class="stage">THEN FEASIBILITY</text>
+
+  <rect x="1000" y="900" width="730" height="172" rx="15" class="cyan"/>
+  <text x="1026" y="936" class="label">B · Execution feasibility</text>
+  <text x="1026" y="968" class="body">峰值 tensor 能否放下？算力与带宽能否提供有效吞吐？</text>
+  <text x="1026" y="998" class="body">在租卡窗口、deadline 与预算内是否值得完成？</text>
+  <text x="1026" y="1028" class="small">证据：peak HBM · total FLOPs · roofline · MFU range · card-hours</text>
+  <text x="1026" y="1055" class="small">输出：pilot 配置、并行拓扑、budget cap 与 measurement plan</text>
+
+  <rect x="70" y="1088" width="1660" height="20" rx="8" fill="#c7d2fe"/>
+
+  <!-- Feasibility -->
+  <rect x="40" y="1148" width="1720" height="424" rx="18" class="panel"/>
+  <text x="70" y="1188" class="section">3 · 三种 feasibility：放得下、算得动、按期值得跑是三道独立 Gate</text>
+  <text x="70" y="1215" class="small">任一不通过都先缩小 pilot 或重做配置；不能只用“参数量 ÷ GPU 数”宣布可行。</text>
+
+  <rect x="70" y="1248" width="510" height="244" rx="15" class="blue"/>
+  <text x="96" y="1285" class="label">Memory-feasible · 某一时刻放得下？</text>
+  <line x1="96" y1="1303" x2="554" y2="1303" class="divider"/>
+  <text x="96" y="1334" class="body">weights + grads + optimizer + activations</text>
+  <text x="96" y="1364" class="body">+ temporary / communication / runtime peak</text>
+  <text x="96" y="1398" class="formula">M_peak ≤ total usable HBM</text>
+  <text x="96" y="1432" class="small">需要写明 sharding 与 checkpointing 假设</text>
+  <text x="96" y="1463" class="small">反例：模型能放下，但每 step 非常慢</text>
+
+  <rect x="645" y="1248" width="510" height="244" rx="15" class="purple"/>
+  <text x="671" y="1285" class="label">Compute-feasible · 有有效吞吐吗？</text>
+  <line x1="671" y1="1303" x2="1129" y2="1303" class="divider"/>
+  <text x="671" y="1334" class="body">total FLOPs + local tokens + HBM/network roofline</text>
+  <text x="671" y="1364" class="body">检查小 GEMM、通信暴露与 topology</text>
+  <text x="671" y="1398" class="formula">T_compute ≈ FLOPs / effective throughput</text>
+  <text x="671" y="1432" class="small">MFU 是情景假设，必须由短 pilot 校准</text>
+  <text x="671" y="1463" class="small">反例：理论能算完，但 wall-clock 不可接受</text>
+
+  <rect x="1220" y="1248" width="510" height="244" rx="15" class="amber"/>
+  <text x="1246" y="1285" class="label">Time / cost-feasible · 值得完成吗？</text>
+  <line x1="1246" y1="1303" x2="1704" y2="1303" class="divider"/>
+  <text x="1246" y="1334" class="body">训练 + eval + rollout + checkpoint 的总时间</text>
+  <text x="1246" y="1364" class="body">结合租卡窗口、deadline、单价与风险余量</text>
+  <text x="1246" y="1398" class="formula">T ≈ FLOPs / (devices × peak × MFU)</text>
+  <text x="1246" y="1432" class="small">cost ≈ card-hours × unit price + ancillary work</text>
+  <text x="1246" y="1463" class="small">反例：最低显存拓扑能跑，但要数月或数年</text>
+
+  <rect x="70" y="1510" width="1660" height="38" rx="9" class="warning"/>
+  <text x="94" y="1535" class="body">顺序建议：先减少无效 token / response、micro-batch、rollout 数和总 budget，再评估 FSDP / TP / PP；并行不会修复坏数据或错误 objective。</text>
+
+  <!-- Crosswalk -->
+  <rect x="40" y="1596" width="1720" height="356" rx="18" class="panel"/>
+  <text x="70" y="1636" class="section">4 · Crosswalk：什么时候进入、扩大或停止</text>
+  <text x="70" y="1663" class="small">Tülu 3 提供阶段价值与行为证据；Applied Training 提供执行边界。最终决策必须同时引用两类证据。</text>
+
+  <rect x="70" y="1696" width="510" height="202" rx="15" class="green"/>
+  <text x="96" y="1733" class="label">ENTER · 是否需要该阶段</text>
+  <text x="96" y="1765" class="body">先定义待改善能力与可用信号</text>
+  <text x="96" y="1795" class="body">确认前序 checkpoint 已验证</text>
+  <text x="96" y="1827" class="small">同时估：peak memory / FLOPs / wall-clock</text>
+  <text x="96" y="1863" class="formula-small">value gate PASS ∧ feasible pilot exists</text>
+
+  <rect x="645" y="1696" width="510" height="202" rx="15" class="blue"/>
+  <text x="671" y="1733" class="label">SCALE · 是否扩大规模</text>
+  <text x="671" y="1765" class="body">目标收益在 dev + unseen/frozen slice 泛化</text>
+  <text x="671" y="1795" class="body">没有不可接受的 general / bad-case 回退</text>
+  <text x="671" y="1827" class="small">新增设备确实改善有效吞吐，而非只增加通信</text>
+  <text x="671" y="1863" class="formula-small">gain is real ∧ marginal scaling is useful</text>
+
+  <rect x="1220" y="1696" width="510" height="202" rx="15" class="red"/>
+  <text x="1246" y="1733" class="label">STOP · 何时不再继续</text>
+  <text x="1246" y="1765" class="body">目标无增益、非目标退化、污染或 length bias</text>
+  <text x="1246" y="1795" class="body">reward hacking、KL / response length 异常</text>
+  <text x="1246" y="1827" class="small">达到预注册 token / step / time / cost cap</text>
+  <text x="1246" y="1863" class="formula-small">quality regression ∨ budget exhausted</text>
+
+  <rect x="70" y="1915" width="1660" height="20" rx="8" fill="#bbf7d0"/>
+
+  <!-- Transfer boundary -->
+  <rect x="40" y="1976" width="1720" height="292" rx="18" class="panel"/>
+  <text x="70" y="2016" class="section">5 · Applied Training 例题：迁移方法，不迁移绑定硬件的数字</text>
+  <text x="70" y="2043" class="small">LLaMA 3 / TPU v5p 示例用于展示判断结构，不是 Qwen / H100 的租卡答案。</text>
+
+  <rect x="70" y="2076" width="510" height="142" rx="15" class="warning"/>
+  <text x="96" y="2112" class="label">反例：memory-feasible ≠ time-feasible</text>
+  <text x="96" y="2144" class="body">约 225 × TPU v5p：满足最低 memory capacity</text>
+  <text x="96" y="2174" class="body">但估算训练时间约 1752 天</text>
+  <text x="96" y="2201" class="small">数字绑定模型、batch、拓扑和 checkpointing 假设</text>
+
+  <rect x="645" y="2076" width="510" height="142" rx="15" class="muted"/>
+  <text x="671" y="2112" class="label">扩大硬件后的时间情景</text>
+  <text x="671" y="2144" class="body">8960 × TPU v5p @ 40% MFU：约 44 天</text>
+  <text x="671" y="2174" class="body">说明设备数、有效吞吐与 wall-clock 必须联算</text>
+  <text x="671" y="2201" class="small">仍不能直接作为 H100 或其他模型的成本结论</text>
+
+  <rect x="1220" y="2076" width="510" height="142" rx="15" class="good"/>
+  <text x="1246" y="2112" class="label">可迁移到 Qwen / H100 的方法</text>
+  <text x="1246" y="2144" class="body">实际 config → P / FLOPs / state bytes</text>
+  <text x="1246" y="2174" class="body">加入 label ratio / pair / rollout multiplier</text>
+  <text x="1246" y="2201" class="small">用真实 H100 peak/HBM/network + 保守 MFU + pilot 校准</text>
+
+  <!-- Evidence -->
+  <rect x="40" y="2292" width="1720" height="104" rx="18" class="hero"/>
+  <text x="70" y="2328" class="section">Day 06 Evidence</text>
+  <text x="286" y="2328" class="label">✓ 完成 Tülu 3 × Applied Training 对读　✓ 三阶段 crosswalk　✓ 三类 feasibility　✓ 迁移边界</text>
+  <text x="286" y="2362" class="body">CPU / reading only · 无代码、无 GPU run · Week 2 用 Day 08–12 的数据契约、mixture、frozen eval 与 A/B 继续验证。</text>
+
+  <text x="50" y="2420" class="tiny">Sources: Tülu 3 report · Ai2 Tülu 3 technical overview · How To Scale Your Model / Applied Training · 30-Day LLM Post-Training Bootcamp Day 06</text>
+</svg>

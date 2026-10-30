@@ -1,0 +1,27 @@
+{
+  "schema_name": "rsi.history",
+  "schema_version": 1,
+  "day19_full112_reference": {
+    "comparison_note": "Historical qwen35-v2 identity; context only, not valid rsi-v0001 promotion evidence.",
+    "base": {"total": 59, "general": 1, "math": 24, "finance": 15, "code": 19, "format": 81, "code_eligible": 28},
+    "full_sft": {
+      "baseline_a": {"total": 7, "general": 4, "math": 0, "finance": 0, "code": 3},
+      "baseline_b": {"total": 22, "general": 15, "math": 0, "finance": 0, "code": 7},
+      "best_e": {"total": 5, "general": 1, "math": 0, "finance": 1, "code": 3}
+    }
+  },
+  "legacy_day20_probe32": {
+    "evidence": "Raw and normalized inference complete; Code E2B, selection, and full112 are missing.",
+    "base": {"non_code": 10, "general": 0, "math": 7, "finance": 3, "code_eligible": 8},
+    "probe_1e_5": {"non_code": 8, "general": 0, "math": 4, "finance": 4, "code_eligible": 8},
+    "probe_3e_5": {"non_code": 14, "general": 5, "math": 5, "finance": 4, "code_eligible": 6},
+    "probe_1e_4": {"non_code": 16, "general": 6, "math": 6, "finance": 4, "code_eligible": 0},
+    "key_signal": "All eight 1e-4 Code outputs lost first-line indentation and were repairable by four spaces; legacy Code target indentation was inconsistent.",
+    "infrastructure_signal": "E2B Python was missing after Probe training completed."
+  },
+  "artifact_refs": [
+    {"path": "day-20-qwen35-balanced-lora-sft/reports/day20-probe-analysis-20260809/evidence/probe_metrics.json", "sha256": "bb1ca54fb2f94e61387c602b636897d02d87c0094c53ba04d753abffd03f1908"},
+    {"path": "day-20-qwen35-balanced-lora-sft/reports/day20-probe-analysis-20260809/evidence/code_boundary.json", "sha256": "8b7f25895adc77450e55e9339079de1ab7e6eeced3c55e68dc1dd993a9787284"},
+    {"path": "day-20-qwen35-balanced-lora-sft/remote-runs/day20-qwen35-lora-20260809T042005Z/DAY20-MANIFEST.json", "sha256": "32c5dafc4a273b7067091244379233e45dad6a02a64d168165b6da04d049720f"}
+  ]
+}

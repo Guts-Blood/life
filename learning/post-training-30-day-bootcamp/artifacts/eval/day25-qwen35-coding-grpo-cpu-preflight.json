@@ -1,0 +1,78 @@
+{
+  "claim_boundary": {
+    "capability_gain_claimed": false,
+    "live_e2b_from_target_gpu_runtime": false,
+    "model_weights_loaded_for_training": false,
+    "optimizer_step_run": false,
+    "paid_gpu_opened": false,
+    "vllm_engine_created": false,
+    "weight_sync_proven": false
+  },
+  "gates": [
+    {
+      "command": "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/bin/python3.9 day-25-grpo-small-model-lab/prepare_day25_qwen35_grpo.py --mode check",
+      "name": "day25_data_manifest",
+      "status": "pass"
+    },
+    {
+      "command": "/Users/jiaweiqian/Desktop/python_projects/life/tmp/day22-token-runtime/bin/python day-25-grpo-small-model-lab/audit_day25_qwen35_processor.py --mode check",
+      "name": "day25_qwen35_processor",
+      "status": "pass"
+    },
+    {
+      "command": "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/bin/python3.9 day-25-grpo-small-model-lab/build_day25_cpu_contract.py --mode check",
+      "name": "day25_cpu_contract",
+      "status": "pass"
+    },
+    {
+      "command": "/Users/jiaweiqian/Desktop/python_projects/life/tmp/day22-token-runtime/bin/python day-25-grpo-small-model-lab/audit_day25_qwen35_arguments.py --mode check",
+      "name": "day25_pinned_argument_semantics",
+      "status": "pass"
+    },
+    {
+      "command": "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/bin/python3.9 -m unittest discover -s day-22-preference-data -p test_day22_sandbox.py",
+      "name": "day22_sandbox_contract",
+      "status": "pass"
+    },
+    {
+      "command": "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/bin/python3.9 artifacts/scripts/test_day24_coding_reward_contract.py",
+      "name": "day24_reward_contract",
+      "status": "pass"
+    },
+    {
+      "command": "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/bin/python3.9 day-25-grpo-small-model-lab/test_day25_reward_adapter.py",
+      "name": "day25_reward_adapter",
+      "status": "pass"
+    },
+    {
+      "command": "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/bin/python3.9 -m compileall -q day-24-online-rl-dataflow-reward day-25-grpo-small-model-lab artifacts/scripts/test_day24_coding_reward_contract.py",
+      "name": "day24_day25_python_compile",
+      "status": "pass"
+    }
+  ],
+  "next_action": "run the frozen GPU binder on exactly one H100 80GB target",
+  "preflight_sha256": "8b38235160b9f9561ee2a6cd1e49e0e31acff124dea6c2d5afb7817a2e35ed5b",
+  "schema_name": "day25.qwen35_coding_grpo_cpu_preflight",
+  "schema_version": 1,
+  "status": "pass_cpu_ready_gpu_pending",
+  "test_inventory": {
+    "day22_sandbox": {
+      "passed": 13
+    },
+    "day24_reward_contract": {
+      "passed": 22,
+      "skipped_live_e2b": 1
+    },
+    "day25_reward_adapter": {
+      "passed": 7
+    }
+  },
+  "trust_roots": {
+    "argument_audit_file_sha256": "94b0fca7156cd7fcab42840a0e213562cd895c9a5d4598579e79072bc12017d2",
+    "argument_audit_sha256": "fc597ba71cf59669ad5eb7db542f6ebd1a6895d2f5e26d34fcce5d79838c5c5b",
+    "cpu_contract_file_sha256": "97258ef44976e6af760e9e27c8d81bd178dd7fba6dd85d444c62bbd84c110bb8",
+    "cpu_contract_sha256": "59e4a07abbed6581650784b264fb43da81ce913c74c81f1be2b7880504f3ed2c",
+    "gpu_binder_file_sha256": "4ce17adabeb38435fa2ae450e35f176c10de8439619e96f38bdcbc1decca7d30",
+    "ms_swift_commit": "565a1ad586a21d24b23931c52d2c62b49c39bee8"
+  }
+}

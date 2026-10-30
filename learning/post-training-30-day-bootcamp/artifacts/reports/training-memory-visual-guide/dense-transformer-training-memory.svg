@@ -1,0 +1,184 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1410" viewBox="0 0 1600 1410" role="img" aria-labelledby="title desc">
+  <title id="title">Dense Transformer full-parameter SFT training memory map</title>
+  <desc id="desc">A Transformer training flow annotated with weights, gradients, optimizer states, saved activations and temporary tensors, plus a 10 billion parameter memory ledger.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+    <marker id="arrow-back" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 10 0 L 0 5 L 10 10 z" fill="#dc2626"/>
+    </marker>
+    <style>
+      text { font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; fill: #172033; }
+      .title { font-size: 34px; font-weight: 700; }
+      .subtitle { font-size: 18px; fill: #526078; }
+      .section { font-size: 22px; font-weight: 700; }
+      .label { font-size: 17px; font-weight: 650; }
+      .body { font-size: 15px; }
+      .small { font-size: 13px; fill: #526078; }
+      .tiny { font-size: 12px; fill: #526078; }
+      .panel { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1.5; }
+      .node { fill: #f8fafc; stroke: #64748b; stroke-width: 1.5; }
+      .weight { fill: #dbeafe; stroke: #2563eb; stroke-width: 1.5; }
+      .activation { fill: #dcfce7; stroke: #16a34a; stroke-width: 1.5; }
+      .gradient { fill: #fee2e2; stroke: #dc2626; stroke-width: 1.5; }
+      .optimizer { fill: #f3e8ff; stroke: #9333ea; stroke-width: 1.5; }
+      .temporary { fill: #fef3c7; stroke: #d97706; stroke-width: 1.5; }
+      .muted { fill: #f1f5f9; stroke: #94a3b8; stroke-width: 1.2; }
+      .arrow { fill: none; stroke: #475569; stroke-width: 2.2; marker-end: url(#arrow); }
+      .backward { fill: none; stroke: #dc2626; stroke-width: 2.2; stroke-dasharray: 8 6; marker-end: url(#arrow-back); }
+      .residual { fill: none; stroke: #16a34a; stroke-width: 2; stroke-dasharray: 5 5; }
+      .formula { font-family: "SFMono-Regular", Consolas, monospace; font-size: 14px; fill: #273449; }
+    </style>
+  </defs>
+
+  <rect width="1600" height="1410" fill="#f5f7fb"/>
+  <text x="50" y="58" class="title">Dense Transformer：full-parameter SFT 到底存什么？</text>
+  <text x="50" y="88" class="subtitle">10B example · BF16 compute · Adam · standard teacher-forced SFT（persistent KV cache = 0）</text>
+
+  <rect x="40" y="115" width="875" height="955" rx="18" class="panel"/>
+  <rect x="940" y="115" width="620" height="955" rx="18" class="panel"/>
+
+  <text x="70" y="158" class="section">1 · Forward / backward 数据流</text>
+  <text x="970" y="158" class="section">2 · 10B full SFT 显存账本</text>
+
+  <rect x="70" y="178" width="128" height="30" rx="15" class="weight"/>
+  <text x="89" y="198" class="small">权重 / parameters</text>
+  <rect x="212" y="178" width="128" height="30" rx="15" class="activation"/>
+  <text x="229" y="198" class="small">saved activation</text>
+  <rect x="354" y="178" width="98" height="30" rx="15" class="gradient"/>
+  <text x="373" y="198" class="small">gradient</text>
+  <rect x="466" y="178" width="118" height="30" rx="15" class="optimizer"/>
+  <text x="486" y="198" class="small">optimizer state</text>
+  <rect x="598" y="178" width="105" height="30" rx="15" class="temporary"/>
+  <text x="619" y="198" class="small">temporary</text>
+
+  <rect x="110" y="238" width="235" height="62" rx="12" class="node"/>
+  <text x="155" y="263" class="label">Input tokens + labels</text>
+  <text x="145" y="285" class="small">local micro-batch × sequence</text>
+  <path d="M 345 269 L 405 269" class="arrow"/>
+
+  <rect x="405" y="228" width="310" height="82" rx="12" class="weight"/>
+  <text x="480" y="257" class="label">Token embedding</text>
+  <text x="455" y="282" class="small">W_embed [vocab, hidden] · persistent weight</text>
+  <path d="M 560 310 L 560 352" class="arrow"/>
+
+  <rect x="82" y="352" width="800" height="410" rx="18" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="105" y="387" class="section">Transformer block × L</text>
+  <text x="725" y="384" class="small">pre-norm + residual</text>
+
+  <rect x="115" y="418" width="150" height="62" rx="10" class="node"/>
+  <text x="150" y="446" class="label">RMSNorm</text>
+  <text x="137" y="467" class="tiny">small weight; activation traffic</text>
+  <path d="M 265 449 L 320 449" class="arrow"/>
+
+  <rect x="320" y="403" width="350" height="92" rx="12" class="weight"/>
+  <text x="425" y="432" class="label">GQA / MHA attention</text>
+  <text x="356" y="456" class="small">Wq, Wk, Wv, Wo · Q/K/V activations</text>
+  <text x="361" y="477" class="tiny">FlashAttention avoids full [B,H,T,T] materialization</text>
+  <path d="M 670 449 L 730 449" class="arrow"/>
+
+  <rect x="730" y="418" width="105" height="62" rx="10" class="activation"/>
+  <text x="756" y="445" class="label">Add</text>
+  <text x="744" y="466" class="tiny">residual saved</text>
+  <path d="M 835 449 L 855 449 L 855 551 L 265 551" class="arrow"/>
+  <path d="M 115 449 L 95 449 L 95 501 L 782 501 L 782 480" class="residual"/>
+
+  <rect x="115" y="520" width="150" height="62" rx="10" class="node"/>
+  <text x="150" y="548" class="label">RMSNorm</text>
+  <text x="137" y="569" class="tiny">saved/recomputed by policy</text>
+  <path d="M 265 551 L 320 551" class="arrow"/>
+
+  <rect x="320" y="505" width="350" height="92" rx="12" class="weight"/>
+  <text x="404" y="534" class="label">Gated MLP / FFN</text>
+  <text x="365" y="558" class="small">W_gate, W_up, W_down · dominant weights</text>
+  <text x="382" y="579" class="tiny">intermediate activation depends on tokens × F</text>
+  <path d="M 670 551 L 730 551" class="arrow"/>
+
+  <rect x="730" y="520" width="105" height="62" rx="10" class="activation"/>
+  <text x="756" y="547" class="label">Add</text>
+  <text x="744" y="568" class="tiny">block output</text>
+  <path d="M 115 551 L 95 551 L 95 625 L 782 625 L 782 582" class="residual"/>
+
+  <rect x="120" y="656" width="215" height="70" rx="12" class="activation"/>
+  <text x="157" y="683" class="label">Saved for backward</text>
+  <text x="142" y="706" class="small">layer inputs / selected intermediates</text>
+  <rect x="355" y="656" width="205" height="70" rx="12" class="temporary"/>
+  <text x="392" y="683" class="label">Peak temporary</text>
+  <text x="379" y="706" class="small">workspace · fused-kernel scratch</text>
+  <rect x="570" y="656" width="285" height="70" rx="12" class="gradient"/>
+  <text x="610" y="683" class="label">Backward produces grads</text>
+  <text x="592" y="706" class="small">one gradient tensor per trainable weight</text>
+
+  <path d="M 560 762 L 560 800" class="arrow"/>
+  <rect x="405" y="800" width="310" height="68" rx="12" class="node"/>
+  <text x="493" y="828" class="label">Final RMSNorm</text>
+  <text x="464" y="850" class="small">activation + tiny trainable scale</text>
+  <path d="M 560 868 L 560 906" class="arrow"/>
+
+  <rect x="405" y="906" width="310" height="68" rx="12" class="weight"/>
+  <text x="494" y="934" class="label">LM head</text>
+  <text x="462" y="956" class="small">W_vocab [hidden, vocab] → logits</text>
+  <path d="M 560 974 L 560 1002" class="arrow"/>
+  <rect x="405" y="1002" width="310" height="46" rx="12" class="node"/>
+  <text x="494" y="1031" class="label">Cross-entropy loss</text>
+  <path d="M 405 1025 C 250 1025, 190 965, 190 885 L 190 790" class="backward"/>
+  <text x="78" y="980" class="small" fill="#dc2626">backward: saved activations → gradients</text>
+
+  <text x="970" y="195" class="label">默认展示 16 B/P 口径：160 GB model states</text>
+  <text x="970" y="220" class="small">bar 长度表示 GB；activation / temporary 另加，不能只由 P 唯一推出</text>
+
+  <text x="970" y="265" class="label">BF16 weights · 2 B/P</text>
+  <rect x="970" y="280" width="105" height="35" rx="8" class="weight"/>
+  <text x="1088" y="304" class="body">20 GB · forward/backward 持久存在</text>
+
+  <text x="970" y="352" class="label">BF16 gradients · 2 B/P</text>
+  <rect x="970" y="367" width="105" height="35" rx="8" class="gradient"/>
+  <text x="1088" y="391" class="body">20 GB · backward 产生</text>
+
+  <text x="970" y="439" class="label">FP32 Adam m + v · 8 B/P</text>
+  <rect x="970" y="454" width="420" height="35" rx="8" class="optimizer"/>
+  <text x="1404" y="478" class="body">80 GB</text>
+
+  <text x="970" y="526" class="label">Optional FP32 master weights · 4 B/P</text>
+  <rect x="970" y="541" width="210" height="35" rx="8" class="optimizer"/>
+  <text x="1194" y="565" class="body">40 GB</text>
+
+  <rect x="970" y="615" width="550" height="112" rx="14" class="activation"/>
+  <text x="995" y="646" class="label">Activations · variable</text>
+  <text x="995" y="672" class="body">local tokens × layers × hidden × saved tensors × dtype</text>
+  <text x="995" y="697" class="small">受 checkpointing、FlashAttention、packing、parallelism 影响</text>
+
+  <rect x="970" y="746" width="550" height="88" rx="14" class="temporary"/>
+  <text x="995" y="778" class="label">Temporary / communication / allocator · variable</text>
+  <text x="995" y="804" class="small">matmul workspace、collective buffer、CUDA context、fragmentation</text>
+
+  <rect x="970" y="853" width="550" height="72" rx="14" class="muted"/>
+  <text x="995" y="883" class="label">Persistent inference KV cache = 0</text>
+  <text x="995" y="907" class="small">但当前 forward 的 Q/K/V 与 attention intermediates 仍是 activation</text>
+
+  <rect x="970" y="947" width="550" height="93" rx="14" fill="#fff1f2" stroke="#e11d48" stroke-width="2"/>
+  <text x="995" y="980" class="label">10B full-parameter Adam：单卡 80GB 不可行</text>
+  <text x="995" y="1007" class="body">12 B/P = 120 GB · 16 B/P = 160 GB · 18 B/P = 180 GB</text>
+  <text x="995" y="1030" class="small">以上仍未加 activation 与 peak temporary memory</text>
+
+  <rect x="40" y="1090" width="1520" height="275" rx="18" class="panel"/>
+  <text x="70" y="1130" class="section">3 · 参数量与一次 forward 的通用计算公式</text>
+  <line x1="790" y1="1148" x2="790" y2="1335" stroke="#cbd5e1" stroke-width="1.5"/>
+
+  <text x="75" y="1174" class="label">Parameter accounting</text>
+  <text x="75" y="1204" class="formula">Dq = Nq×H · Dkv = Nkv×H · S = B×T local tokens</text>
+  <text x="75" y="1232" class="formula">Attention/layer = D×Dq + 2×D×Dkv + Dq×D</text>
+  <text x="75" y="1260" class="formula">MHA special case: Dq=Dkv=D → 4D² parameters/layer</text>
+  <text x="75" y="1288" class="formula">Gated MLP/layer = gate + up + down = 3DF</text>
+  <text x="75" y="1316" class="formula">P ≈ embedding/head + L×(attention + MLP + norms)</text>
+  <text x="75" y="1343" class="small">10B memory ledger uses P directly；architecture shape is needed to split P by component.</text>
+
+  <text x="825" y="1174" class="label">One-layer logical forward activations</text>
+  <text x="825" y="1204" class="formula">Residual/input [S,D]       → S×D elements</text>
+  <text x="825" y="1232" class="formula">Q [S,Dq], K/V [S,Dkv]      → S×(Dq+2Dkv)</text>
+  <text x="825" y="1260" class="formula">Naive attention scores     → B×Nq×T² elements</text>
+  <text x="825" y="1288" class="formula">Gate/up intermediates      → 2×S×F elements</text>
+  <text x="825" y="1316" class="formula">tensor bytes = elements × dtype bytes</text>
+  <text x="825" y="1343" class="small">实际 saved/peak ≠ 全部逻辑 tensor 相加；取决于 fusion、lifetime、FlashAttention 与 checkpointing。</text>
+</svg>

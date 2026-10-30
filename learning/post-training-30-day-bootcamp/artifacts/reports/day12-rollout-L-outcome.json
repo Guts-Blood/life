@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "domain": "day12.recovery_rollout_outcome",
+  "ordinal": 10,
+  "run_id": "L",
+  "status": "failed_all_gates_maximum_rollouts_reached",
+  "hypothesis": "I's rank-16 adapter has insufficient code capacity at the only LR that produced three executable solutions; doubling rank to 32 while holding alpha at 32 will add capacity and halve alpha/r scaling, recovering math retention while lifting code to the acceptance gate.",
+  "primary_change": {"path": "adapter.rank", "parent": 16, "rollout": 32},
+  "derived_scaling_change": {"parent_alpha_over_rank": 2.0, "rollout_alpha_over_rank": 1.0},
+  "fixed_parent": "Run I 5e-5 LR, exact manifest/order, all-linear targets, alpha 32, Base revision and every non-rank invariant",
+  "scores": {
+    "I_25_percent": {"general": 5, "math": 8, "code": 3, "finance": 0, "total": 16},
+    "L_25_percent": {"general": 4, "math": 8, "code": 1, "finance": 0, "total": 13},
+    "L_minus_I": {"general": -1, "math": 0, "code": -2, "finance": 0, "total": -3},
+    "base": {"general": 2, "math": 12, "code": 0, "finance": 1, "total": 15}
+  },
+  "gate": {
+    "math": {"actual": 8, "minimum": 10, "passed": false},
+    "code": {"actual": 1, "minimum": 5, "passed": false},
+    "total": {"actual": 13, "minimum": 15, "passed": false},
+    "accepted": false
+  },
+  "diagnostics": {
+    "general_parse_errors": 15,
+    "math_parse_errors": 0,
+    "math_ceiling_hits": 28,
+    "code_ceiling_hits": 28,
+    "finance_parse_errors": 16,
+    "finance_ceiling_hits": 28,
+    "all_slice_ceiling_hits": 112,
+    "output_tokens": 43904,
+    "generation_latency_seconds": 1104.711576,
+    "parameter_counts": {"total": 616235008, "trainable": 20185088, "frozen": 596049920},
+    "maximum_cuda_memory_gib": 6.911010265350342
+  },
+  "training": {
+    "checkpoint": "25_percent",
+    "supervised_tokens": 61734,
+    "optimizer_steps": 79,
+    "checkpoint_manifest_sha256": "f45505da8e0affefeeb8554ad1407e330563c937f12b24ab7599f68b12d9f502",
+    "inference_export_manifest_sha256": "f8f6b02567b3d88b062a5b75c65ae255745525a764f8df6e8a5ea9a6320a2e4e",
+    "summary_path": "artifacts/logs/day12-run-L-25-training-summary.json",
+    "summary_file_sha256": "23f10d1c6b372093bd5cbb7d92a54c6971ea6a0246ec023318246f9c8a058f0a",
+    "preflight_path": "artifacts/logs/day12-preflight-L.json",
+    "preflight_file_sha256": "174c89c9dad4d09139a4afa533049c0fc5489242104b23f1f3a19e502f1b9677",
+    "step_trace_path": "artifacts/logs/day12-run-L-step-trace.jsonl",
+    "step_trace_file_sha256": "96f13c2c0940ccb159f8b93647920eeec1d1976deb6760afbd9b30bc9cf94502"
+  },
+  "eval": {
+    "summary_hash": "sha256:9ba883937aa92c295abf72741021dfa4660fb6566229cf34ca2b0d390b5f4081",
+    "predictions": {"path": "artifacts/eval/L-25_percent-dev-predictions.jsonl", "records": 112, "file_sha256": "1310943ac792e0a997724c2407135c95c30e5712dced682b29480e3ed4e9741b"},
+    "code_results": {"path": "artifacts/eval/L-25_percent-dev-code-e2b.jsonl", "records": 28, "file_sha256": "1963fdf8f59e59e72780d5ed23fee564cd83cc9ed183e69ca1c1bfff9f859e50"},
+    "summary": {"path": "artifacts/eval/L-25_percent-dev-summary.json", "file_sha256": "d011652d28b3889bb5cd505ebab7b425b2f754436014ec88affad6b85a321667"}
+  },
+  "interpretation": {
+    "rejected": "Doubling adapter rank did not improve math, code or termination; relative to I it lost two executable code cases and three aggregate cases.",
+    "conclusion": "Neither more mixed-task exposure, LR interpolation, output-head coverage nor higher LoRA rank crossed the retention/capability gap under the frozen early-checkpoint protocol.",
+    "stopping_reason": "The preregistered maximum of ten recovery rollouts C through L was reached without a dev-eligible checkpoint."
+  },
+  "storage": {
+    "full_checkpoint_deleted": true,
+    "bf16_export_deleted": true,
+    "recoverability": "Retraining and BF16 export only"
+  },
+  "frozen_test_consumed": false
+}

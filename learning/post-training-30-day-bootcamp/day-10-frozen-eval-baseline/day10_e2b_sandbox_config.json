@@ -1,0 +1,67 @@
+{
+  "backend": "e2b_firecracker",
+  "composition": "source_prompt + parsed_completion + newline + source_test + newline + check(entry_point)",
+  "domain": "day10.humaneval_e2b_sandbox_contract",
+  "evaluator_source_sha256": "ee5581f3a29f02737ae08cbd7591e839b996168b3d1276670227e67157bcd4b0",
+  "execution": {
+    "candidate_timeout_seconds": 8,
+    "kill_after_seconds": 1,
+    "max_captured_output_bytes": 8192,
+    "max_result_bytes": 32768,
+    "python_command": "python3",
+    "result_path": "/home/user/day10_humaneval_result.json",
+    "runner_path": "/home/user/day10_humaneval_runner.py",
+    "sdk_outer_timeout_seconds": 15,
+    "timeout_semantics": {
+      "candidate_gnu_timeout_exit_124": "valid_score_zero",
+      "sdk_timeout_exception": "infrastructure_error_null"
+    }
+  },
+  "expected_dev_code_records": 28,
+  "isolation": {
+    "envs": {},
+    "fresh_sandbox_per_sample": true,
+    "mounts": [],
+    "mcp_servers": []
+  },
+  "lifecycle": {
+    "auto_resume": false,
+    "on_timeout": "kill",
+    "sandbox_timeout_seconds": 60
+  },
+  "network": {
+    "allow_internet_access": false,
+    "allow_public_traffic": false,
+    "deny_out": [
+      "0.0.0.0/0"
+    ],
+    "secure": true
+  },
+  "resource_limits": {
+    "address_space_bytes": 536870912,
+    "core_bytes": 0,
+    "cpu_seconds": 2,
+    "file_size_bytes": 1048576,
+    "open_files": 64,
+    "processes": 32
+  },
+  "schema_version": 1,
+  "sdk": {
+    "package": "e2b",
+    "version": "2.37.0"
+  },
+  "source": {
+    "file": "tmp/day09-eval-sources/human-eval/data/HumanEval.jsonl.gz",
+    "file_sha256": "b796127e635a67f93fb35c04f4cb03cf06f38c8072ee7cee8833d7bee06979ef",
+    "revision": "6d43fb980f9fee3c892a914eda09951f772ad10d",
+    "source": "openai/human-eval",
+    "split": "test"
+  },
+  "template_id": "rki5dems9wqfm4r03t7g",
+  "template_runtime": {
+    "envd_version": "0.6.10",
+    "memory_mib": 512,
+    "python_version": "3.11.6",
+    "vcpus": 2
+  }
+}

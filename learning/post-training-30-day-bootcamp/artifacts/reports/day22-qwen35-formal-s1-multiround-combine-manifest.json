@@ -1,0 +1,57 @@
+{
+  "content_identities": {
+    "ordered_combined_rows_sha256": "f1e689dff1de0da006115bbd1cc1a3cab3839c293c6bfeadc786bafc7c39fe47",
+    "ordered_supplemental_requests_sha256": "e7943d2c0d333324ff092808ba03a47020f72ac0da2ebd06f38ebd9f11ca4ceb"
+  },
+  "counts": {
+    "adaptive_exact_response_duplicates": 614,
+    "adaptive_format_ineligible_candidates": 6,
+    "adaptive_input_candidate_rows": 2268,
+    "adaptive_retained_execution_unique_candidates": 1648,
+    "combined_families": 330,
+    "combined_retained_candidates": 3043,
+    "cross_round_exact_response_duplicates": 243,
+    "exact_response_duplicates": 338,
+    "format_ineligible_candidates": 4,
+    "input_candidate_rows": 1980,
+    "retained_execution_unique_candidates": 1638,
+    "supplemental_e2b_requests": 1405,
+    "supplemental_retained_candidates": 1405
+  },
+  "dedup_policy": "exact response SHA-256; retain base-round representative before adaptive",
+  "e2b_gate": "every retained adaptive candidate requires exactly two fresh pinned E2B runs",
+  "inputs": {
+    "adaptive_contract": {
+      "contract_sha256": "4c0f64361a223924b98128a6a6956e7c432547c556cb5fc7b3e727c4865310d6",
+      "file_sha256": "2223a31688ee9630a96d49ab56c0c5bdfe08294cbb9f305565e6e0e1a9abce89"
+    },
+    "adaptive_rollouts": {
+      "file_sha256": "a310562c28e37eaab136ed6a4f1a118cdc8d96529cc40a0f0164d2d53f0bbd12"
+    },
+    "base_contract": {
+      "contract_sha256": "0b0c412a52bbfc419804307562fef29716195efe62e54b45e9be3737b939794f",
+      "file_sha256": "727e14053c2416ef7ac6214f411b32058e0f7e6e4645ca84323b64a9bc2b43dc"
+    },
+    "base_rollouts": {
+      "file_sha256": "eb2aa2d985241f83ba871bd2b945aca35c8a23944163579d564b640e5768e58b"
+    },
+    "seed_manifest": {
+      "file_sha256": "90943afc694d3aef121c3d58b751c52e0bbfaa0d48f7388dbc90a9088821ed8e",
+      "manifest_sha256": "700a7e16aa14ae62ad630c9d64f384c3c4274f9bf63a26e19babd4e4849c2ad1"
+    }
+  },
+  "manifest_sha256": "77cafab0120e607f345b6ee6604fb39ebafea0837c2a5bd089d65c8673362fe3",
+  "outputs": {
+    "combined_rollouts": {
+      "file_sha256": "c9299e004da5c9d1a59def345741ea4423256d8d83ad390525aa79293cccc2ea",
+      "path": "/Users/jiaweiqian/Desktop/python_projects/life/learning/post-training-30-day-bootcamp/artifacts/data/day22-qwen35-formal-s1-multiround-rollouts.jsonl"
+    },
+    "supplemental_requests": {
+      "file_sha256": "6b976bf4755c20ea92f44c4b14fb8514c598e07b74c2d2c1d6fa883ffd164bdf",
+      "path": "/Users/jiaweiqian/Desktop/python_projects/life/learning/post-training-30-day-bootcamp/artifacts/data/day22-qwen35-formal-s1-adaptive-r1-e2b-requests.jsonl"
+    }
+  },
+  "schema_name": "day22.s1_multi_round_rollout_combine_manifest",
+  "schema_version": 1,
+  "status": "ready_for_supplemental_e2b"
+}

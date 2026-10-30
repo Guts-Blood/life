@@ -1,0 +1,32 @@
+{
+  "cumulative_supervised_tokens": 7747,
+  "maximum_cuda_memory_gib": 5.63485860824585,
+  "optimizer_steps": 10,
+  "parameter_counts": {
+    "frozen": 596049920,
+    "total": 608589824,
+    "trainable": 12539904
+  },
+  "parameterization": {
+    "alpha": 32,
+    "bias": "none",
+    "dropout": 0.0,
+    "peft_version": "0.17.1",
+    "rank": 16,
+    "target_modules": [
+      "q_proj",
+      "k_proj",
+      "v_proj",
+      "o_proj",
+      "gate_proj",
+      "up_proj",
+      "down_proj",
+      "lm_head"
+    ],
+    "task_type": "CAUSAL_LM",
+    "type": "lora"
+  },
+  "run_id": "K",
+  "schedule_cursor": 40,
+  "status": "day12_smoke_pass"
+}

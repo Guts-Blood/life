@@ -1,0 +1,8 @@
+extends: day12-controlled-sft-L-base.yaml
+run:
+  id: L
+data:
+  manifest_path: learning/post-training-30-day-bootcamp/artifacts/data/day12-mix-I-math-code-focused.json
+  manifest_file_sha256: 245b10ade54f982ee786ad34e3f51079e00cf04a99cff7fb099328cd49f0031c
+  manifest_hash: 83712d7666962d336b7e8d9016543e1f26ca575a38249dc7ec98ec21e3793908
+  mix_name: mix_I_math_code_focused

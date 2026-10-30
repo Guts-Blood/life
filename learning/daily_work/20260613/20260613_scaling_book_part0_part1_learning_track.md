@@ -92,7 +92,39 @@ $$
 
 这个式子让我把 batch size、sequence length、卡数、副本数和硬件利用率真正连起来了。
 
-### 4. HBM 和芯片间网络是两层不同的瓶颈
+### 4. H100 spec 里的 sparsity 坑
+
+今天还记住了一个很容易踩的坑：NVIDIA spec sheet 里的 Tensor Core FLOPs 经常会标一个 with sparsity。这个数字不是 dense bf16 matmul 的真实可用算力，而是利用 structured sparsity 之后的理论峰值。
+
+如果我们要算普通 dense bfloat16 矩阵乘法的 roofline，应该把这个 with sparsity 的 FLOPs/s 除以 2。
+
+以 H100 SXM 为例，spec sheet 里 bfloat16 Tensor Core FLOPs 如果写成大约：
+
+$$
+1.979 \times 10^{15} \text{ FLOPs/s}
+$$
+
+但这个值是 with sparsity 的。dense bf16 真实应该按一半算：
+
+$$
+9.89 \times 10^{14} \text{ FLOPs/s}
+$$
+
+再除以 HBM bandwidth：
+
+$$
+3.35 \times 10^{12} \text{ Bytes/s}
+$$
+
+得到：
+
+$$
+B_{\text{crit}} = \frac{9.89 \times 10^{14}}{3.35 \times 10^{12}} \approx 295
+$$
+
+所以这里真正要记住的是：做 roofline 估算时，要先确认峰值算力是不是 dense 真实值。带 structured sparsity 的 advertised FLOPs 基本上要打半折，才能拿来估普通 dense matmul。
+
+### 5. HBM 和芯片间网络是两层不同的瓶颈
 
 今天还厘清了 HBM、ICI、DCN、PCIe 之间的关系。
 
@@ -164,4 +196,3 @@ ICI / DCN / PCIe 是芯片之间的数据通道。当模型被切到多张卡上
 3. 对 inference 来说，prefill 和 decode 的 roofline 为什么完全不一样？
 4. Profiler 里看到的实际瓶颈，怎么和手算的 Roofline 对上？
 5. 一个新模型结构如果论文指标更好，应该如何快速判断它是否会损害 scaling efficiency？
-

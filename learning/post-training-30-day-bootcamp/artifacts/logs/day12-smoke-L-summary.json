@@ -1,0 +1,23 @@
+{
+  "cumulative_supervised_tokens": 7747,
+  "maximum_cuda_memory_gib": 5.740742206573486,
+  "optimizer_steps": 10,
+  "parameter_counts": {
+    "frozen": 596049920,
+    "total": 616235008,
+    "trainable": 20185088
+  },
+  "parameterization": {
+    "alpha": 32,
+    "bias": "none",
+    "dropout": 0.0,
+    "peft_version": "0.17.1",
+    "rank": 32,
+    "target_modules": "all-linear",
+    "task_type": "CAUSAL_LM",
+    "type": "lora"
+  },
+  "run_id": "L",
+  "schedule_cursor": 40,
+  "status": "day12_smoke_pass"
+}

@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "domain": "day12.cloud_dev_selection_outcome",
+  "status": "dev_eval_complete_selection_inconclusive",
+  "evaluated_date": "2026-08-06",
+  "policy": {
+    "path": "artifacts/configs/day12-checkpoint-selection-policy.json",
+    "file_sha256": "2ddf00ec35f7e00758c80a72b39edd691fd238f31f72b2b34a44aca2e509ce4d",
+    "policy_version": "day12_checkpoint_selection_v1",
+    "maximum_allowed_guardrail_regression_cases_per_slice": 2,
+    "code_tie_band_cases": 2,
+    "minimum_meaningful_code_delta_cases": 3,
+    "matched_budget_ab_support_threshold_cases": 3
+  },
+  "cloud_protocol": {
+    "amendment_path": "artifacts/configs/day12-autodl-eval-protocol-amendment.json",
+    "amendment_file_sha256": "fce7ef6de5f1fea21d25715c9c561c8faff7a1a336aee73a9841ac4b2961681b",
+    "runner_path": "day-12-controlled-sft-checkpoints/run_day12_cloud_dev_eval.sh",
+    "runner_file_sha256": "3744ed1902d9a13bb33974f93275eba155b12e49bd224c4a3dc21188a9d4b44e",
+    "comparison_key": "sha256:fcae58c2fe207b28bd91037672b4282d23078ae94fcdb7b5152ec56d2a56cfbf",
+    "complete_comparison_key": "sha256:f33b389071b844f8c2db221c09e4e0f0a39970718e7d4ba76fa639b90f921f8e",
+    "code_execution_protocol_hash": "sha256:9571c64301029e230ab2d01e1b8daf8a6dcf7c4a5c8b0696e21d9b073a730c87",
+    "models": 7,
+    "dev_predictions_per_model": 112,
+    "e2b_code_results_per_model": 28,
+    "e2b_infrastructure_errors": 0
+  },
+  "base": {
+    "model_id": "Qwen/Qwen3-0.6B-Base",
+    "summary_hash": "sha256:bcfff1ed7e25d6ec943d61f4b3744a8bcac827005ea851c06277f79364ef680b",
+    "model_snapshot_hash": "sha256:b4117311d9b057b9df4e91c241cbf15650258d780c4da29731a626848ad9bf8a",
+    "correct": {
+      "general": 2,
+      "math": 12,
+      "code": 0,
+      "finance": 1,
+      "four_slice_total": 15
+    },
+    "output_tokens": 43904
+  },
+  "candidates": [
+    {
+      "name": "A-25_percent",
+      "summary_hash": "sha256:7e26764cec8e9830e4ab8be5e05acd0fe9c3fe617aa322f010c8f83c8e55875e",
+      "model_snapshot_hash": "sha256:bd8b1f42dca9b0abcf3de3ee8ed9f8c080084867b45bfaf65d4be08d3977820a",
+      "correct": {"general": 1, "math": 0, "code": 7, "finance": 1, "four_slice_total": 9},
+      "base_delta": {"general": -1, "math": -12, "code": 7, "finance": 0, "four_slice_total": -6},
+      "output_tokens": 3994,
+      "eligible": false,
+      "guardrail_failures": ["math regressed by 12 cases; maximum allowed regression is 2"]
+    },
+    {
+      "name": "A-60_percent",
+      "summary_hash": "sha256:e4946932699d05f8dc986cf28802bfb10cb8e20c37c01403a36fe33b351c3d24",
+      "model_snapshot_hash": "sha256:cbf0b37c6b71560c3bbbc0369c9e764a9da246b9b0ca8761bca1d4ebd293d1bf",
+      "correct": {"general": 0, "math": 4, "code": 5, "finance": 1, "four_slice_total": 10},
+      "base_delta": {"general": -2, "math": -8, "code": 5, "finance": 0, "four_slice_total": -5},
+      "output_tokens": 8313,
+      "eligible": false,
+      "guardrail_failures": ["math regressed by 8 cases; maximum allowed regression is 2"]
+    },
+    {
+      "name": "A-100_percent",
+      "summary_hash": "sha256:42be133be579568c7996135d41bfbace2f93829d62dc71317d9d706c955d0654",
+      "model_snapshot_hash": "sha256:66cc3aeb71df40b6a935076ad89b62acccfab3502d928d801db2d9251a1681b0",
+      "correct": {"general": 1, "math": 2, "code": 3, "finance": 1, "four_slice_total": 7},
+      "base_delta": {"general": -1, "math": -10, "code": 3, "finance": 0, "four_slice_total": -8},
+      "output_tokens": 5129,
+      "eligible": false,
+      "guardrail_failures": ["math regressed by 10 cases; maximum allowed regression is 2"]
+    },
+    {
+      "name": "B-25_percent",
+      "summary_hash": "sha256:26b9719162df90114f9ecd5e626dd983ee24f6277bda9ffa72d618d96ad91e58",
+      "model_snapshot_hash": "sha256:7769fd3cbe9f7343598fa09c793be3ff2d8eb09506893c85c19bb7b040bf9f9d",
+      "correct": {"general": 3, "math": 1, "code": 9, "finance": 0, "four_slice_total": 13},
+      "base_delta": {"general": 1, "math": -11, "code": 9, "finance": -1, "four_slice_total": -2},
+      "output_tokens": 4946,
+      "eligible": false,
+      "guardrail_failures": ["math regressed by 11 cases; maximum allowed regression is 2"]
+    },
+    {
+      "name": "B-60_percent",
+      "summary_hash": "sha256:bf489b53c2a1d98f0f01357b8e4686043e79625ad1c4da5f715450128d228b12",
+      "model_snapshot_hash": "sha256:53eb96c286d43468e0b794c1fde842f8bd2aeda6ea6138cc92dfd47a278a273c",
+      "correct": {"general": 0, "math": 0, "code": 4, "finance": 0, "four_slice_total": 4},
+      "base_delta": {"general": -2, "math": -12, "code": 4, "finance": -1, "four_slice_total": -11},
+      "output_tokens": 3968,
+      "eligible": false,
+      "guardrail_failures": ["math regressed by 12 cases; maximum allowed regression is 2"]
+    },
+    {
+      "name": "B-100_percent",
+      "summary_hash": "sha256:55e61684b5eee19312895136e5ee6a66deaba07ebae7b51289d236b898c389c9",
+      "model_snapshot_hash": "sha256:c120fbef5c65e55a47e5b2e5a87f06bbc8cb0c285e989ec97c7f44a7c4956b34",
+      "correct": {"general": 0, "math": 0, "code": 5, "finance": 0, "four_slice_total": 5},
+      "base_delta": {"general": -2, "math": -12, "code": 5, "finance": -1, "four_slice_total": -10},
+      "output_tokens": 5851,
+      "eligible": false,
+      "guardrail_failures": ["math regressed by 12 cases; maximum allowed regression is 2"]
+    }
+  ],
+  "within_run_selection": {
+    "A": {
+      "status": "inconclusive",
+      "selected_checkpoint": null,
+      "descriptive_code_peak": "A-25_percent",
+      "reason": "All three checkpoints failed the Base-relative math guardrail."
+    },
+    "B": {
+      "status": "inconclusive",
+      "selected_checkpoint": null,
+      "descriptive_code_peak": "B-25_percent",
+      "reason": "All three checkpoints failed the Base-relative math guardrail."
+    }
+  },
+  "matched_budget_code_contrasts": [
+    {"budget": "25_percent", "both_correct": 6, "b_only": 3, "a_only": 1, "both_wrong": 18, "net_b_minus_a": 2, "support_threshold_met": false},
+    {"budget": "60_percent", "both_correct": 3, "b_only": 1, "a_only": 2, "both_wrong": 22, "net_b_minus_a": -1, "support_threshold_met": false},
+    {"budget": "100_percent", "both_correct": 1, "b_only": 4, "a_only": 2, "both_wrong": 21, "net_b_minus_a": 2, "support_threshold_met": false}
+  ],
+  "frozen_confirmation": {
+    "status": "not_run_no_eligible_checkpoint",
+    "frozen_test_consumed": false,
+    "reason": "The preregistered policy forbids frozen-test access before one eligible checkpoint is selected within each run."
+  },
+  "claim_boundary": "The 28-sample slices are a controlled pilot. Results support an early code gain and severe math regression for this model, seed, data and token budget; they do not establish a universal mixture ranking."
+}

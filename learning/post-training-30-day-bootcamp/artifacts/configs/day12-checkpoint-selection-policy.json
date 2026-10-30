@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "policy_version": "day12_checkpoint_selection_v1",
+  "status": "preregistered_before_day12_training",
+  "frozen_date": "2026-08-05",
+  "purpose": "Select one checkpoint within each Day 12 A/B run and define the matched-budget mixture claim before observing SFT results.",
+  "evaluation_contract": {
+    "manifest_version": "day10_frozen_eval_manifest_v3",
+    "manifest_hash": "sha256:70749bf91842e2a3f10b66051d0fe3b26a8b6b3225198753f5861e2c39570cc0",
+    "dataset_context_hash": "sha256:77cb6be790afa4bd97bd190c2d9a9520146b79aefbdb948a3eb6780a3d56ef6b",
+    "rendered_inputs_hash": "sha256:96e657165705eea82b6c8fb213a1e85f909cab4930a801bf0d9f17489e947129",
+    "eval_suite_hash": "sha256:41b08752d045d4fb2834a84613d71ce5569513e865e38cdc6b050be46e04d376",
+    "protocol_hash": "sha256:4aa329a2566f0a3864d0bf35c158e1b22b08670afb6770b48a25161aed4e7c06",
+    "scorer_registry_hash": "sha256:593de0e8411ce4b3af85d593c6856afbcd310c256823e3f9e1b5c218575c866d",
+    "code_execution_protocol_hash": "sha256:9571c64301029e230ab2d01e1b8daf8a6dcf7c4a5c8b0696e21d9b073a730c87",
+    "complete_comparison_key": "sha256:850a69854fe0a945d7b86f3c71a59a7977e09dd42a2df96ca7548b6068bd0f14",
+    "required_evaluation_split": "dev",
+    "samples_per_slice": 28,
+    "required_same_comparison_key_within_contrast": true,
+    "required_same_complete_comparison_key_within_contrast": true
+  },
+  "eligibility": {
+    "checkpoints": [
+      "25_percent_supervised_token_budget",
+      "60_percent_supervised_token_budget",
+      "100_percent_supervised_token_budget"
+    ],
+    "required_run_invariants": [
+      "same base checkpoint",
+      "same seed",
+      "same cumulative supervised-token budget at each contrast",
+      "same optimizer, scheduler, warmup, effective batch, max length and dtype",
+      "same hardware and execution protocol",
+      "same frozen code sandbox execution protocol and complete comparison key",
+      "only the frozen Day 09 mixture manifest and resulting slice proportions may differ"
+    ],
+    "invalidate_on": [
+      "config drift outside the authorized mixture fields",
+      "data, tokenizer, template, scorer or protocol hash mismatch",
+      "code execution protocol or complete comparison key mismatch",
+      "missing or non-comparable checkpoint",
+      "resume-state or cumulative-token accounting failure"
+    ]
+  },
+  "sandbox_gate": {
+    "target_slice": "code",
+    "required_metric": "HumanEval pass_at_1",
+    "required_status": "scored_in_frozen_isolated_sandbox",
+    "required_code_execution_protocol_hash": "sha256:9571c64301029e230ab2d01e1b8daf8a6dcf7c4a5c8b0696e21d9b073a730c87",
+    "required_base_complete_comparison_key": "sha256:850a69854fe0a945d7b86f3c71a59a7977e09dd42a2df96ca7548b6068bd0f14",
+    "forbidden_substitution": "Do not treat sandbox_required, parse-only code completions, or host execution as zero-valued pass_at_1.",
+    "on_missing_sandbox": "selection_blocked_and_result_inconclusive"
+  },
+  "primary_metric": {
+    "slice": "code",
+    "metric": "exact_correct_count_out_of_28",
+    "higher_is_better": true,
+    "minimum_meaningful_delta_cases": 3,
+    "minimum_meaningful_delta_percentage_points": 10.714285714285714,
+    "interpretation": "A smaller difference is descriptive only and is inside the preregistered pilot tie band."
+  },
+  "guardrails": {
+    "comparison": "candidate minus Base under the same comparison_key",
+    "maximum_allowed_regression_cases_per_slice": 2,
+    "maximum_allowed_regression_percentage_points": 7.142857142857143,
+    "slices": [
+      "general",
+      "math",
+      "finance"
+    ],
+    "rule": "A checkpoint is ineligible if any guardrail slice loses more than two correct dev cases versus Base."
+  },
+  "within_run_selection": {
+    "steps": [
+      "Eliminate ineligible checkpoints and checkpoints that fail any guardrail.",
+      "Find the maximum code correct count among remaining checkpoints.",
+      "Treat checkpoints within two code-correct cases of that maximum as the tie band.",
+      "Within the tie band, choose the checkpoint with the highest equal-weight macro accuracy over general, math and finance.",
+      "If still tied, choose the earliest cumulative supervised-token checkpoint: 25 percent, then 60 percent, then 100 percent."
+    ],
+    "no_eligible_checkpoint": "inconclusive",
+    "claim_rule": "The selected checkpoint may be recorded even inside the tie band, but a meaningful target improvement claim requires at least three additional correct code cases versus Base."
+  },
+  "matched_budget_ab_contrast": {
+    "contrasts": [
+      "A_25_percent_vs_B_25_percent",
+      "A_60_percent_vs_B_60_percent",
+      "A_100_percent_vs_B_100_percent"
+    ],
+    "primary_statistic": "paired code net wins: B-correct/A-wrong minus A-correct/B-wrong",
+    "support_threshold_cases": 3,
+    "required_guardrail_result": "both checkpoints pass all Base-relative guardrails",
+    "otherwise": "inconclusive",
+    "claim_boundary": "This is evidence for the frozen small-model pilot, data, seed and token budgets only; it is not a universal mixture claim."
+  },
+  "uncertainty": {
+    "method": "paired_stratified_bootstrap_over_sample_ids_v1",
+    "report": [
+      "point estimates",
+      "paired case transitions",
+      "pilot-set bootstrap sensitivity interval"
+    ],
+    "prohibition": "Do not use interval overlap or a post-hoc threshold to override the preregistered decision rule."
+  },
+  "frozen_confirmation": {
+    "when": "Only after one checkpoint has been selected independently within each A/B run.",
+    "models": [
+      "Base",
+      "A-selected",
+      "B-selected"
+    ],
+    "samples_per_slice": 12,
+    "single_reveal": true,
+    "selection_changes_after_reveal": "forbidden",
+    "interpretation": "Report confirmation or failure descriptively; the 12-per-slice set is too small for strong population claims."
+  }
+}

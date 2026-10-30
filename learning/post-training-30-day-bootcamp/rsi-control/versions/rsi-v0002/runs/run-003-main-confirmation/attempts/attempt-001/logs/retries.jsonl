@@ -1,0 +1,1 @@
+{"schema_name":"rsi.retry_event","schema_version":1,"event_type":"retry_log_initialized","version_id":"rsi-v0002","run_id":"run-003-main-confirmation","attempt_id":"attempt-001","retry_ordinal":0,"created_at_utc":"2026-08-12T10:39:41Z"}

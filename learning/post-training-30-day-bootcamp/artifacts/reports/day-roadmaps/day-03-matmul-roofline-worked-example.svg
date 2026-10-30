@@ -1,0 +1,210 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="2190" viewBox="0 0 1800 2190" role="img" aria-labelledby="title desc">
+  <title id="title">Day 03 matmul Roofline worked example on an effective H100 model</title>
+  <desc id="desc">A numeric BF16 matrix multiplication Roofline example with explicit lower-bound HBM assumptions, exact FLOPs and bytes for 128 and 256 local token rows, the hardware knee at 200 FLOPs per byte, a critical local-token count near 221.65, timing cross-checks, and profiler evidence requirements.</desc>
+
+  <defs>
+    <style>
+      .bg { fill: #f5f7fb; }
+      .panel { fill: #ffffff; stroke: #cbd5e1; stroke-width: 2; }
+      .node { fill: #f8fafc; stroke: #94a3b8; stroke-width: 2; }
+      .blue { fill: #dbeafe; stroke: #3b82f6; stroke-width: 2; }
+      .green { fill: #dcfce7; stroke: #22c55e; stroke-width: 2; }
+      .amber { fill: #fef3c7; stroke: #f59e0b; stroke-width: 2; }
+      .purple { fill: #f3e8ff; stroke: #a855f7; stroke-width: 2; }
+      .cyan { fill: #cffafe; stroke: #06b6d4; stroke-width: 2; }
+      .red { fill: #fee2e2; stroke: #ef4444; stroke-width: 2; }
+      .title { font: 700 34px Inter, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #0f172a; }
+      .subtitle { font: 400 18px Inter, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #64748b; }
+      .section { font: 700 24px Inter, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #0f172a; }
+      .stage { font: 700 17px Inter, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #334155; letter-spacing: 0.5px; }
+      .label { font: 700 18px Inter, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #1e293b; }
+      .body { font: 400 17px Inter, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #334155; }
+      .small { font: 400 15px Inter, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #64748b; }
+      .tiny { font: 400 13px Inter, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #64748b; }
+      .formula { font: 500 16px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fill: #334155; }
+      .formulaStrong { font: 700 17px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fill: #0f172a; }
+      .axis { stroke: #475569; stroke-width: 2; }
+      .grid { stroke: #cbd5e1; stroke-width: 1; stroke-dasharray: 5 7; }
+      .roof { fill: none; stroke: #2563eb; stroke-width: 5; stroke-linejoin: round; }
+      .knee { stroke: #a855f7; stroke-width: 2; stroke-dasharray: 8 7; }
+      .pointMemory { fill: #f59e0b; stroke: #ffffff; stroke-width: 4; }
+      .pointCompute { fill: #22c55e; stroke: #ffffff; stroke-width: 4; }
+      .arrow { fill: none; stroke: #475569; stroke-width: 2.5; marker-end: url(#arrowhead); }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#475569"/>
+    </marker>
+  </defs>
+
+  <rect width="1800" height="2190" class="bg"/>
+
+  <text x="50" y="60" class="title">Day 03 Worked Example：Local Tokens 如何跨过 H100 Matmul Roofline Knee</text>
+  <text x="50" y="92" class="subtitle">同一个 4096×4096 BF16 linear layer，只改变 local token rows N；用 exact FLOPs、最低 HBM bytes 与时间交叉验证瓶颈</text>
+
+  <rect x="40" y="120" width="1720" height="110" rx="18" class="panel"/>
+  <text x="70" y="164" class="label">North Star</text>
+  <text x="225" y="164" class="body">固定 workload / byte boundary</text>
+  <text x="480" y="164" class="label">→</text>
+  <text x="525" y="164" class="body">算 F、M、I</text>
+  <text x="675" y="164" class="label">→</text>
+  <text x="720" y="164" class="body">与 I_hw=200 比较</text>
+  <text x="925" y="164" class="label">→</text>
+  <text x="970" y="164" class="body">用 T_math / T_HBM 复核</text>
+  <text x="1235" y="164" class="label">→</text>
+  <text x="1280" y="164" class="body">再用 profiler 校准</text>
+  <text x="70" y="202" class="small">这里得到的是理想 Roofline lower bound；真实 kernel 可能因 tile、cache、fusion、launch 与频率达不到该线。</text>
+
+  <rect x="40" y="255" width="1720" height="270" rx="18" class="panel"/>
+  <text x="70" y="300" class="section">1 · Explicit Assumptions：先固定口径，再允许比较</text>
+  <text x="70" y="328" class="small">本图只分析一个 forward GEMM：X[N,D] @ W[D,F] → Y[N,F]；不是整个 Transformer layer 或 training step。</text>
+
+  <rect x="70" y="355" width="510" height="140" rx="14" class="blue"/>
+  <text x="95" y="390" class="label">Workload / dtype</text>
+  <text x="95" y="423" class="formula">D = F = 4096 · BF16 · b_elem = 2 B</text>
+  <text x="95" y="454" class="formula">F_math = 2NDF = 2ND² FLOPs</text>
+  <text x="95" y="480" class="small">N 是该 rank 参与这一次 GEMM 的 local token rows。</text>
+
+  <rect x="605" y="355" width="555" height="140" rx="14" class="amber"/>
+  <text x="630" y="390" class="label">Minimum HBM traffic boundary</text>
+  <text x="630" y="423" class="formula">M_min = b_elem × (ND + DF + NF)</text>
+  <text x="630" y="454" class="formula">      = 2 × (ND + D² + ND) bytes</text>
+  <text x="630" y="480" class="small">假设 X、W 各从 HBM 读一次，Y 向 HBM 写一次；不含额外 traffic。</text>
+
+  <rect x="1185" y="355" width="545" height="140" rx="14" class="purple"/>
+  <text x="1210" y="390" class="label">Effective hardware inputs</text>
+  <text x="1210" y="423" class="formula">C_eff = 600 TFLOPs/s</text>
+  <text x="1210" y="454" class="formula">W_eff = 3 TB/s = 3×10¹² B/s</text>
+  <text x="1210" y="480" class="formulaStrong">I_hw = C_eff / W_eff = 200 FLOPs/B</text>
+
+  <rect x="40" y="550" width="1720" height="600" rx="18" class="panel"/>
+  <text x="70" y="595" class="section">2 · Numeric Roofline：两个 local-token shapes 落在 knee 两侧</text>
+  <text x="70" y="623" class="small">纵轴是简化模型下的 achievable ceiling：P_roofline = min(C_eff, I_op × W_eff)；它不是实测吞吐。</text>
+
+  <!-- Plot area: x maps 0..400 FLOPs/B, y maps 0..600 TFLOPs/s -->
+  <line x1="140" y1="1045" x2="1080" y2="1045" class="axis"/>
+  <line x1="140" y1="1045" x2="140" y2="680" class="axis"/>
+
+  <line x1="140" y1="954" x2="1080" y2="954" class="grid"/>
+  <line x1="140" y1="863" x2="1080" y2="863" class="grid"/>
+  <line x1="140" y1="772" x2="1080" y2="772" class="grid"/>
+  <line x1="140" y1="680" x2="1080" y2="680" class="grid"/>
+  <line x1="375" y1="680" x2="375" y2="1045" class="grid"/>
+  <line x1="610" y1="680" x2="610" y2="1045" class="knee"/>
+  <line x1="845" y1="680" x2="845" y2="1045" class="grid"/>
+  <line x1="1080" y1="680" x2="1080" y2="1045" class="grid"/>
+
+  <text x="114" y="1051" class="tiny">0</text>
+  <text x="101" y="959" class="tiny">150</text>
+  <text x="101" y="868" class="tiny">300</text>
+  <text x="101" y="777" class="tiny">450</text>
+  <text x="101" y="685" class="tiny">600</text>
+  <text x="131" y="1075" class="tiny">0</text>
+  <text x="360" y="1075" class="tiny">100</text>
+  <text x="595" y="1075" class="tiny">200</text>
+  <text x="830" y="1075" class="tiny">300</text>
+  <text x="1065" y="1075" class="tiny">400</text>
+  <text x="438" y="1110" class="small">Arithmetic intensity I_op（FLOPs / byte）</text>
+  <text x="42" y="880" class="small" transform="rotate(-90 42 880)">Roofline ceiling（TFLOPs/s）</text>
+
+  <polyline points="140,1045 610,680 1080,680" class="roof"/>
+  <text x="266" y="878" class="label" fill="#2563eb">HBM-bound slope：I × 3 TB/s</text>
+  <text x="735" y="710" class="label" fill="#2563eb">compute ceiling：600 TFLOPs/s</text>
+  <text x="624" y="750" class="small" fill="#7e22ce">knee：I_hw = 200 FLOPs/B</text>
+
+  <!-- N=128 point: x≈423, y≈825; N=256 point: x≈675, y=680 -->
+  <circle cx="423" cy="825" r="11" class="pointMemory"/>
+  <path d="M 433 819 C 480 790, 495 772, 540 756" class="arrow"/>
+  <rect x="505" y="716" width="235" height="72" rx="11" class="amber"/>
+  <text x="525" y="744" class="label">N=128</text>
+  <text x="525" y="770" class="small">I=120.47 · ceiling=361.41 TF/s</text>
+
+  <circle cx="675" cy="680" r="11" class="pointCompute"/>
+  <path d="M 685 670 C 735 635, 755 633, 790 632" class="arrow"/>
+  <rect x="770" y="598" width="265" height="70" rx="11" class="green"/>
+  <text x="790" y="626" class="label">N=256</text>
+  <text x="790" y="652" class="small">I=227.56 · capped at 600 TF/s</text>
+
+  <rect x="1140" y="662" width="560" height="430" rx="15" class="node"/>
+  <text x="1170" y="704" class="stage">SOLVE THE LOCAL-TOKEN KNEE</text>
+  <text x="1170" y="744" class="formula">I_op(N) = F_math / M_min</text>
+  <text x="1170" y="776" class="formula">        = ND / (D + 2N)   # BF16 b=2</text>
+  <text x="1170" y="818" class="body">令 I_op(N_critical) = I_hw = 200：</text>
+  <text x="1170" y="854" class="formula">4096N = 200 × (4096 + 2N)</text>
+  <text x="1170" y="886" class="formula">3696N = 819,200</text>
+  <text x="1170" y="924" class="formulaStrong">N_critical = 819,200 / 3696 ≈ 221.65</text>
+  <line x1="1170" y1="950" x2="1670" y2="950" stroke="#cbd5e1" stroke-width="2"/>
+  <text x="1170" y="986" class="body">N=128 &lt; 221.65 → HBM-bound</text>
+  <text x="1170" y="1018" class="body">N=256 &gt; 221.65 → compute-bound</text>
+  <text x="1170" y="1054" class="small">这不是“batch 越大越快”的保证；它只说明本模型中的理想瓶颈侧发生变化。</text>
+
+  <text x="70" y="1196" class="section">3 · Exact Ledger：分别用 intensity 与 time 两条路径得到同一结论</text>
+  <text x="70" y="1224" class="small">所有 GB/MB 均使用十进制；括号中的 MiB 仅用于二进制容量交叉检查。</text>
+
+  <rect x="40" y="1250" width="835" height="450" rx="18" class="panel"/>
+  <rect x="70" y="1280" width="775" height="72" rx="13" class="amber"/>
+  <text x="95" y="1314" class="section">Case A · N=128 local token rows</text>
+  <text x="95" y="1339" class="small">较小 GEMM；weight bytes 在最低流量中占主导</text>
+
+  <text x="95" y="1392" class="label">Exact FLOPs</text>
+  <text x="300" y="1392" class="formula">2×128×4096² = 4,294,967,296 FLOPs</text>
+  <text x="300" y="1421" class="small">≈ 4.295 GFLOPs</text>
+
+  <text x="95" y="1465" class="label">Minimum bytes</text>
+  <text x="300" y="1465" class="formula">2×(128×4096 + 4096² + 128×4096)</text>
+  <text x="300" y="1494" class="formulaStrong">= 35,651,584 B = 35.652 MB = 34 MiB</text>
+
+  <text x="95" y="1540" class="label">Intensity</text>
+  <text x="300" y="1540" class="formulaStrong">I_op = F/M = 120.47 FLOPs/B &lt; 200</text>
+
+  <text x="95" y="1585" class="label">Time check</text>
+  <text x="300" y="1585" class="formula">T_math = F/C = 7.16 μs</text>
+  <text x="300" y="1616" class="formula">T_HBM = M/W = 11.88 μs</text>
+
+  <rect x="95" y="1640" width="720" height="38" rx="9" class="red"/>
+  <text x="116" y="1666" class="formulaStrong">Ideal lower bound = max(7.16, 11.88) = 11.88 μs → HBM-bound</text>
+
+  <rect x="925" y="1250" width="835" height="450" rx="18" class="panel"/>
+  <rect x="955" y="1280" width="775" height="72" rx="13" class="green"/>
+  <text x="980" y="1314" class="section">Case B · N=256 local token rows</text>
+  <text x="980" y="1339" class="small">同一份 weight 被更多 rows 复用；I_op 跨过硬件 knee</text>
+
+  <text x="980" y="1392" class="label">Exact FLOPs</text>
+  <text x="1185" y="1392" class="formula">2×256×4096² = 8,589,934,592 FLOPs</text>
+  <text x="1185" y="1421" class="small">≈ 8.590 GFLOPs</text>
+
+  <text x="980" y="1465" class="label">Minimum bytes</text>
+  <text x="1185" y="1465" class="formula">2×(256×4096 + 4096² + 256×4096)</text>
+  <text x="1185" y="1494" class="formulaStrong">= 37,748,736 B = 37.749 MB = 36 MiB</text>
+
+  <text x="980" y="1540" class="label">Intensity</text>
+  <text x="1185" y="1540" class="formulaStrong">I_op = F/M = 227.56 FLOPs/B &gt; 200</text>
+
+  <text x="980" y="1585" class="label">Time check</text>
+  <text x="1185" y="1585" class="formula">T_math = F/C = 14.32 μs</text>
+  <text x="1185" y="1616" class="formula">T_HBM = M/W = 12.58 μs</text>
+
+  <rect x="980" y="1640" width="720" height="38" rx="9" class="cyan"/>
+  <text x="1001" y="1666" class="formulaStrong">Ideal lower bound = max(14.32, 12.58) = 14.32 μs → compute-bound</text>
+
+  <rect x="40" y="1730" width="1720" height="150" rx="18" class="panel"/>
+  <text x="70" y="1773" class="section">4 · Consistency Check：两种分类方法必须一致</text>
+  <text x="70" y="1811" class="formulaStrong">T_math / T_HBM = (F/C) / (M/W) = (F/M) / (C/W) = I_op / I_hw</text>
+  <text x="70" y="1847" class="body">N=128：120.47/200=0.602 &lt; 1 → T_math&lt;T_HBM；N=256：227.56/200=1.138 &gt; 1 → T_math&gt;T_HBM。</text>
+
+  <rect x="40" y="1910" width="1720" height="225" rx="18" class="panel"/>
+  <text x="70" y="1953" class="section">5 · Caveats &amp; Evidence：什么时候不能把这条线当真实结果</text>
+
+  <rect x="70" y="1980" width="790" height="125" rx="14" class="red"/>
+  <text x="95" y="2013" class="label">Lower-bound caveats</text>
+  <text x="95" y="2043" class="small">Minimum traffic 假设 X/W 只读一次、Y 只写一次；真实 traffic 可能更高。</text>
+  <text x="95" y="2070" class="small">tiling、cache miss、layout copy、dtype cast 与 unfused intermediate 都会增加 bytes。</text>
+  <text x="95" y="2097" class="small">有效 C/W 受 SKU、clock、power、shape 与 kernel 影响；本图不含 backward、optimizer、通信。</text>
+
+  <rect x="890" y="1980" width="840" height="125" rx="14" class="green"/>
+  <text x="915" y="2013" class="label">Must benchmark / profiler evidence</text>
+  <text x="915" y="2043" class="small">记录 exact GEMM shape/dtype、kernel name、steady-state latency、achieved TFLOPs/s 与 dram bytes。</text>
+  <text x="915" y="2070" class="small">核对实际 H100 SKU、clock/power、HBM bandwidth，并分别测 N=128/256 的重复运行分布。</text>
+  <text x="915" y="2097" class="small">若 measured point 落在线下：先量化 gap，再检查 traffic、occupancy、tile、launch 与同步。</text>
+
+  <text x="50" y="2170" class="tiny">Day 03 companion · exact arithmetic from DAY-03-READING-QUIZ.md · assumptions are teaching inputs, not measured H100 evidence</text>
+</svg>

@@ -1,0 +1,27 @@
+{
+  "combine_manifest_sha256": "77cafab0120e607f345b6ee6604fb39ebafea0837c2a5bd089d65c8673362fe3",
+  "counts": {
+    "combined_evidence": 3043,
+    "eligible_pairs_after_merge": 200,
+    "quarantined_families_after_merge": 130
+  },
+  "inputs": {
+    "base_evidence": {
+      "file_sha256": "5b05b6e4030ed3cc0198b979e98f3c738c05399b42470d7961e92755bf11b4da",
+      "rows": 1638
+    },
+    "supplemental_evidence": {
+      "file_sha256": "0418007280599349fe7408f601eea4098ffd495f59f1a4d5091b638699f4c874",
+      "rows": 1405
+    }
+  },
+  "manifest_sha256": "9280ed18686fefd6979f4050325a22c7bf2cb92f562983146f59777003e5a8a4",
+  "ordered_evidence_sha256": "db74415f2c544eb664facbde68d643c98700b43c96e91ccdb183f30bfa968beb",
+  "output": {
+    "file_sha256": "4da5a3e915c0498d1da27f90450520e7c532e3c6c027e2f58d4e6cca7d007379",
+    "path": "/Users/jiaweiqian/Desktop/python_projects/life/learning/post-training-30-day-bootcamp/artifacts/eval/day22-qwen35-formal-s1-multiround-candidate-e2b-evidence.jsonl"
+  },
+  "schema_name": "day22.s1_multi_round_evidence_merge_manifest",
+  "schema_version": 1,
+  "status": "pass"
+}

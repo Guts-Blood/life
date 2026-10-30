@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "domain": "day12.autodl_eval_protocol_amendment",
+  "status": "preregistered_before_sft_dev_evaluation",
+  "registered_date": "2026-08-06",
+  "reason": "Move deterministic dev generation from local CPU to the rented AutoDL RTX 4090 to reduce evaluation wall time while preserving an internally controlled contrast.",
+  "original_policy": {
+    "path": "artifacts/configs/day12-checkpoint-selection-policy.json",
+    "policy_version": "day12_checkpoint_selection_v1",
+    "original_base_complete_comparison_key": "sha256:850a69854fe0a945d7b86f3c71a59a7977e09dd42a2df96ca7548b6068bd0f14"
+  },
+  "amendment_scope": {
+    "changed": [
+      "dev generation execution backend changes from local CPU to AutoDL RTX 4090 CUDA",
+      "Base is regenerated and rescored on AutoDL before Base-relative Day 12 decisions",
+      "the AutoDL Base run establishes the replacement prediction comparison_key and complete_comparison_key"
+    ],
+    "unchanged": [
+      "frozen dev sample IDs and order",
+      "tokenizer files and token IDs",
+      "chat template and prompt rendering",
+      "greedy generation parameters and scorer registry",
+      "HumanEval source, evaluator, E2B template, network policy and resource limits",
+      "checkpoint eligibility, guardrail thresholds, tie band and selection rules",
+      "frozen_test access policy"
+    ]
+  },
+  "controlled_cloud_contrast": {
+    "hardware": "single NVIDIA GeForce RTX 4090 24GB",
+    "generation_python": "/root/miniconda3/bin/python",
+    "generation_dtype": "bfloat16",
+    "sandbox_binding": "artifacts/configs/day12-autodl-e2b-binding.json",
+    "dev_models_in_required_run_order": [
+      "Base",
+      "A-25_percent",
+      "A-60_percent",
+      "A-100_percent",
+      "B-25_percent",
+      "B-60_percent",
+      "B-100_percent"
+    ],
+    "required_invariant": "All seven dev prediction files must share the AutoDL Base prediction comparison_key; after E2B scoring, all seven must share the AutoDL Base complete_comparison_key.",
+    "old_local_baseline_use": "historical evidence only; never subtract it from or rank it against AutoDL-generated checkpoint results"
+  },
+  "selection_and_reveal": {
+    "dev_only_until_selection_lock": true,
+    "select_one_checkpoint_independently_within_each_run": true,
+    "frozen_models_after_lock": [
+      "Base",
+      "A-selected",
+      "B-selected"
+    ],
+    "single_frozen_reveal": true,
+    "selection_changes_after_reveal": "forbidden"
+  },
+  "registration_evidence_state": {
+    "sft_dev_predictions_generated": false,
+    "sft_dev_code_predictions_scored": false,
+    "frozen_test_consumed": false,
+    "run_a_training_complete": true,
+    "run_b_training_state": "in_progress_after_25_percent_checkpoint"
+  }
+}

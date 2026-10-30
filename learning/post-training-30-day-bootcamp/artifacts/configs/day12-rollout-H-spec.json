@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "domain": "day12.recovery_rollout_spec",
+  "ordinal": 6,
+  "run_id": "H",
+  "parent_run_id": "G",
+  "status": "planned",
+  "hypothesis": "The Run G LoRA parameterization preserves Base math, and increasing only adapter learning rate from 1e-5 to 5e-5 will add at least five executable code solutions without pushing math below ten.",
+  "primary_change": {
+    "path": "optimizer.learning_rate",
+    "parent_value": 0.00001,
+    "rollout_value": 0.00005
+  },
+  "fixed_invariants": [
+    "rank-16 alpha-32 all-linear LoRA on frozen Base",
+    "Run D format-repaired data manifest and exact occurrence order",
+    "61,734 supervised-token first checkpoint",
+    "base revision, seed, all non-LR optimizer/scheduler values and loss mask",
+    "frozen dev and E2B protocols"
+  ],
+  "first_gate": "25_percent",
+  "acceptance_gate_source": "artifacts/configs/day12-recovery-rollout-policy.json"
+}

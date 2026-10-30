@@ -1,0 +1,18 @@
+[
+  {
+    "artifact": "canonical Day20 run",
+    "local_relative_path": "remote-runs/day20-qwen35-lora-20260809T042005Z",
+    "files": 119,
+    "bytes": 253175927,
+    "manifest_sha256": "3b4575b11d4e964dd2d0ea839054a4b77eb26cc2a43596a3aa8457284538fb32",
+    "remote_local_comparison": "IDENTICAL"
+  },
+  {
+    "artifact": "AutoDL project snapshot + source contract",
+    "local_relative_path": "snapshots/autodl-20260809/day-20-qwen35-balanced-lora-sft",
+    "files": 18,
+    "bytes": 600236,
+    "manifest_sha256": "5469b872f6dbdaf3bfe139c9323ecec707c62c532fa6abb62bc5a903b03c2a9c",
+    "remote_local_comparison": "IDENTICAL"
+  }
+]

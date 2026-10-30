@@ -1,0 +1,54 @@
+{
+  "schema_name": "rsi.goal",
+  "schema_version": 1,
+  "goal_id": "goal-0001",
+  "title": "Qualified fixed-eval checkpoint",
+  "objective": "Produce one LoRA SFT checkpoint that passes every frozen full112 gate in both primary and confirmation runs.",
+  "claim_boundary": "Success proves qualification on this fixed suite, not general financial-agent improvement.",
+  "allowed_lever_prefixes": [
+    "model.data",
+    "model.target",
+    "model.objective.loss_weighting",
+    "model.objective.kl",
+    "model.objective.sft",
+    "model.optimization",
+    "model.trainable_scope.method",
+    "model.trainable_scope.lora_rank",
+    "model.trainable_scope.lora_targets",
+    "model.trainable_scope.layers"
+  ],
+  "hard_gates": {
+    "total_correct": {"operator": ">=", "threshold": 65},
+    "general_correct": {"operator": ">=", "threshold": 5},
+    "math_correct": {"operator": ">=", "threshold": 17},
+    "finance_correct": {"operator": ">=", "threshold": 10},
+    "code_correct": {"operator": ">=", "threshold": 14},
+    "format_compliant": {"operator": ">=", "threshold": 90},
+    "code_sandbox_execution_eligible": {"operator": ">=", "threshold": 26},
+    "infrastructure_failures": {"operator": "<=", "threshold": 0}
+  },
+  "confirmation": {
+    "primary_seed": 20260809,
+    "confirmation_seed": 20260810,
+    "same_recipe_lr_and_checkpoint": true
+  },
+  "required_evidence": [
+    "verified_full112_raw_normalized_and_e2b_pairs",
+    "common_sample_order_and_comparison_identity",
+    "verified_training_and_checkpoint_lineage",
+    "zero_train_eval_contamination",
+    "primary_and_confirmation_pass"
+  ],
+  "frozen_files": [
+    {"path": "artifacts/eval/day10-frozen-eval-manifest.json", "sha256": "be4b79f93d8c850360f3f2d38c223fcd347517796daaa9a1a4d3bc1a5eab7491"},
+    {"path": "day-10-frozen-eval-baseline/day10_scorers.py", "sha256": "18be9a87b857ba80baf8718bf3c75276f58c96f29359b07400e56e09ecb11d54"},
+    {"path": "day-10-frozen-eval-baseline/score_day10_code_e2b.py", "sha256": "ee5581f3a29f02737ae08cbd7591e839b996168b3d1276670227e67157bcd4b0"},
+    {"path": "day-10-frozen-eval-baseline/day10_e2b_sandbox_config.json", "sha256": "d4841e1e0479f6488306e916eb5d664d848716e80cfc7aef9943e6134ecbfc8c"}
+  ],
+  "forbidden": [
+    "change_eval_cases_scorers_or_gates",
+    "train_on_eval_content_or_case_specific_repairs",
+    "hide_failed_attempts",
+    "reuse_incomplete_or_cross-version_evidence"
+  ]
+}

@@ -1,0 +1,8 @@
+extends: day12-controlled-sft-base.yaml
+run:
+  id: C
+data:
+  manifest_path: learning/post-training-30-day-bootcamp/artifacts/data/day12-mix-C-finance-reduced.json
+  manifest_file_sha256: 8d1d5527236599959e0527b1893d28ae2e6485e7e49c37fe969cefdb7b1d894b
+  manifest_hash: f0336dc95892ff3b1519ebbb7fd1e94d2b4fecbb046635c1ff270a26152d6257
+  mix_name: mix_C_finance_reduced

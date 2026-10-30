@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="2840" viewBox="0 0 1800 2840" role="img" aria-labelledby="title desc">
+  <title id="title">Day 17 · Exact Resume：Checkpoint 能加载，不等于轨迹连续</title>
+  <desc id="desc">A Chinese roadmap separating checkpoint loadability, generation, fresh-process continuation, uninterrupted-versus-resumed trajectory parity and bitwise exactness, while clearly marking the Qwen3.5 LoRA Run A and Run B experiment as optional and not executed.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+    <style>
+      text { font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", "PingFang SC", sans-serif; fill: #172033; }
+      .title { font-size: 34px; font-weight: 750; }
+      .subtitle { font-size: 18px; fill: #526078; }
+      .section { font-size: 23px; font-weight: 750; }
+      .stage { font-size: 13px; font-weight: 750; letter-spacing: .45px; fill: #475569; }
+      .label { font-size: 18px; font-weight: 700; }
+      .body { font-size: 15px; }
+      .body-strong { font-size: 15px; font-weight: 700; }
+      .small { font-size: 14px; fill: #475569; }
+      .tiny { font-size: 12px; fill: #526078; }
+      .source { font-size: 11px; fill: #64748b; }
+      .metric-value { font-family: "SFMono-Regular", Consolas, monospace; font-size: 27px; font-weight: 750; fill: #1e3a8a; }
+      .number { font-size: 13px; font-weight: 800; fill: #ffffff; }
+      .panel { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1.5; }
+      .hero { fill: #eef2ff; stroke: #6366f1; stroke-width: 1.8; }
+      .blue { fill: #dbeafe; stroke: #2563eb; stroke-width: 1.5; }
+      .cyan { fill: #cffafe; stroke: #0891b2; stroke-width: 1.5; }
+      .purple { fill: #f3e8ff; stroke: #9333ea; stroke-width: 1.5; }
+      .green { fill: #dcfce7; stroke: #16a34a; stroke-width: 1.5; }
+      .amber { fill: #fef3c7; stroke: #d97706; stroke-width: 1.5; }
+      .teal { fill: #ccfbf1; stroke: #0f766e; stroke-width: 1.5; }
+      .indigo { fill: #e0e7ff; stroke: #4f46e5; stroke-width: 1.5; }
+      .red { fill: #fee2e2; stroke: #dc2626; stroke-width: 1.5; }
+      .blue-soft { fill: #eff6ff; stroke: #93c5fd; stroke-width: 1.3; }
+      .purple-soft { fill: #faf5ff; stroke: #d8b4fe; stroke-width: 1.3; }
+      .green-soft { fill: #f0fdf4; stroke: #86efac; stroke-width: 1.3; }
+      .amber-soft { fill: #fffbeb; stroke: #fcd34d; stroke-width: 1.3; }
+      .cyan-soft { fill: #ecfeff; stroke: #67e8f9; stroke-width: 1.3; }
+      .slate-soft { fill: #f8fafc; stroke: #cbd5e1; stroke-width: 1.3; }
+      .number-dot { fill: #475569; }
+      .metric { fill: #f8fafc; stroke: #94a3b8; stroke-width: 1.4; }
+      .table-bg { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1.3; }
+      .table-head { fill: #e2e8f0; stroke: #94a3b8; stroke-width: 1.2; }
+      .table-alt { fill: #f8fafc; }
+      .status-good { fill: #dcfce7; stroke: #16a34a; stroke-width: 1.4; }
+      .status-warn { fill: #fef3c7; stroke: #d97706; stroke-width: 1.4; }
+      .status-stop { fill: #fee2e2; stroke: #dc2626; stroke-width: 1.4; }
+      .status-info { fill: #dbeafe; stroke: #2563eb; stroke-width: 1.4; }
+      .status-slate { fill: #f1f5f9; stroke: #64748b; stroke-width: 1.4; }
+      .decision { fill: #eef2ff; stroke: #6366f1; stroke-width: 1.7; }
+      .boundary { fill: #fff7ed; stroke: #ea580c; stroke-width: 1.7; }
+      .divider { stroke: #cbd5e1; stroke-width: 1.2; }
+      .grid { stroke: #cbd5e1; stroke-width: 1; }
+      .line { fill: none; stroke: #475569; stroke-width: 2; marker-end: url(#arrow); }
+      .line-dash { fill: none; stroke: #64748b; stroke-width: 1.8; stroke-dasharray: 7 5; marker-end: url(#arrow); }
+    </style>
+  </defs>
+
+  <rect width="1800" height="2840" fill="#f5f7fb"/>
+  <text x="50" y="62" class="title">Day 17 · Exact Resume：Checkpoint 能加载，不等于轨迹连续</text>
+  <text x="50" y="95" class="subtitle">完整状态清单、Run A/B comparator 与 first-divergence 证据，才构成训练连续性证明。</text>
+  <rect x="1190" y="108" width="570" height="38" rx="19" class="status-warn"/>
+  <text x="1475" y="133" class="stage" text-anchor="middle">METHOD CONTRACT COMPLETE · OPTIONAL R NOT RUN · exact_resume=false</text>
+
+  <rect x="40" y="165" width="1720" height="112" rx="18" class="hero"/>
+  <text x="70" y="203" class="section">一句话 Gate</text>
+  <text x="270" y="203" class="label" text-anchor="start"><tspan x="270" dy="0">selected/resumable S1 已归档，但真正的 exact-resume comparator 仍未运行：Run A 0→40 对 Run B 0→20→fresh process→40。</tspan><tspan x="270" dy="31">Day 21 的 checkpoint integrity 与 adapter↔merged parity 不能替代 step 21–40 的数据、优化器、RNG 与 tensor trajectory 对齐。</tspan></text>
+
+  <rect x="40" y="310" width="1720" height="650" rx="18" class="panel"/>
+  <text x="70" y="352" class="section">1 · Roadmap：从输入边界到可交付结论</text>
+  <text x="70" y="382" class="small">每一步都回答“对象是什么、证据在哪里、失败时停在哪一层”；编号代表依赖顺序。</text>
+  <text x="70" y="391" class="stage">01 · FREEZE CONTRACT</text>
+<rect x="70" y="405" width="360" height="210" rx="16" class="blue"/>
+<text x="94" y="445" class="label" text-anchor="start"><tspan x="94" dy="0">冻结同一训练身份</tspan></text>
+<line x1="94" y1="463" x2="406" y2="463" class="divider"/>
+<text x="94" y="497" class="small" text-anchor="start"><tspan x="94" dy="0">Base / LoRA / data order / seed</tspan><tspan x="94" dy="28">processor / packing / runtime / topology</tspan><tspan x="94" dy="28">Run A 与 Run B 只能差中断</tspan></text>
+<text x="480" y="391" class="stage">02 · INVENTORY</text>
+<rect x="480" y="405" width="360" height="210" rx="16" class="cyan"/>
+<text x="504" y="445" class="label" text-anchor="start"><tspan x="504" dy="0">审计完整 state</tspan></text>
+<line x1="504" y1="463" x2="816" y2="463" class="divider"/>
+<text x="504" y="497" class="small" text-anchor="start"><tspan x="504" dy="0">adapter + optimizer + scheduler</tspan><tspan x="504" dy="28">Python / NumPy / Torch / CUDA RNG</tspan><tspan x="504" dy="28">sampler cursor / global step / accumulation</tspan></text>
+<text x="890" y="391" class="stage">03 · RUN A</text>
+<rect x="890" y="405" width="360" height="210" rx="16" class="purple"/>
+<text x="914" y="445" class="label" text-anchor="start"><tspan x="914" dy="0">连续训练对照</tspan></text>
+<line x1="914" y1="463" x2="1226" y2="463" class="divider"/>
+<text x="914" y="497" class="small" text-anchor="start"><tspan x="914" dy="0">同一初始化 step 0 → 40</tspan><tspan x="914" dy="28">每步保存 IDs / loss / LR / grad</tspan><tspan x="914" dy="28">作为 uninterrupted reference</tspan></text>
+<text x="1300" y="391" class="stage">04 · RUN B1</text>
+<rect x="1300" y="405" width="360" height="210" rx="16" class="green"/>
+<text x="1324" y="445" class="label" text-anchor="start"><tspan x="1324" dy="0">中断前保存</tspan></text>
+<line x1="1324" y1="463" x2="1636" y2="463" class="divider"/>
+<text x="1324" y="497" class="small" text-anchor="start"><tspan x="1324" dy="0">step 0 → 20</tspan><tspan x="1324" dy="28">在 accumulation boundary 保存</tspan><tspan x="1324" dy="28">退出整个 Python 进程</tspan></text>
+<text x="280" y="676" class="stage">05 · RUN B2</text>
+<rect x="280" y="690" width="360" height="210" rx="16" class="amber"/>
+<text x="304" y="730" class="label" text-anchor="start"><tspan x="304" dy="0">新进程恢复</tspan></text>
+<line x1="304" y1="748" x2="616" y2="748" class="divider"/>
+<text x="304" y="782" class="small" text-anchor="start"><tspan x="304" dy="0">验证 state manifest 与 hashes</tspan><tspan x="304" dy="28">从 step 20 继续到 40</tspan><tspan x="304" dy="28">禁止 warm start 冒充 resume</tspan></text>
+<text x="720" y="676" class="stage">06 · COMPARE</text>
+<rect x="720" y="690" width="360" height="210" rx="16" class="teal"/>
+<text x="744" y="730" class="label" text-anchor="start"><tspan x="744" dy="0">对齐 step 21–40</tspan></text>
+<line x1="744" y1="748" x2="1056" y2="748" class="divider"/>
+<text x="744" y="782" class="small" text-anchor="start"><tspan x="744" dy="0">sample/render/label token identity</tspan><tspan x="744" dy="28">LR / loss / grad / cumulative targets</tspan><tspan x="744" dy="28">adapter / optimizer tensor checksum</tspan></text>
+<text x="1160" y="676" class="stage">07 · INJECT + CLASSIFY</text>
+<rect x="1160" y="690" width="360" height="210" rx="16" class="indigo"/>
+<text x="1184" y="730" class="label" text-anchor="start"><tspan x="1184" dy="0">制造并定位分叉</tspan></text>
+<line x1="1184" y1="748" x2="1496" y2="748" class="divider"/>
+<text x="1184" y="782" class="small" text-anchor="start"><tspan x="1184" dy="0">删 scheduler 或 sampler cursor</tspan><tspan x="1184" dy="28">跑 3–5 steps 找 first divergence</tspan><tspan x="1184" dy="28">报告 tolerance / max diff / exactness</tspan></text>
+  <path d="M 430 510 L 470 510" class="line"/>
+<path d="M 840 510 L 880 510" class="line"/>
+<path d="M 1250 510 L 1290 510" class="line"/>
+<path d="M 1660 615 C 1660 650 1520 650 1520 680" class="line-dash"/>
+<path d="M 640 795 L 710 795" class="line"/>
+<path d="M 1080 795 L 1150 795" class="line"/>
+
+  <rect x="40" y="990" width="1720" height="590" rx="18" class="panel"/>
+  <text x="70" y="1033" class="section">2 · 真正学到的知识：可迁移的判断框架</text>
+  <rect x="70" y="1075" width="530" height="205" rx="16" class="blue-soft"/>
+<circle cx="106" cy="1114" r="18" class="number-dot"/>
+<text x="106" y="1120" class="number" text-anchor="middle">1</text>
+<text x="136" y="1120" class="label" text-anchor="start"><tspan x="136" dy="0">Resume 是训练状态问题</tspan></text>
+<text x="96" y="1161" class="small" text-anchor="start"><tspan x="96" dy="0">只有 adapter weights 是 warm start；</tspan><tspan x="96" dy="27">下一次 update 还依赖 optimizer、RNG 与数据位置。</tspan></text>
+<rect x="635" y="1075" width="530" height="205" rx="16" class="purple-soft"/>
+<circle cx="671" cy="1114" r="18" class="number-dot"/>
+<text x="671" y="1120" class="number" text-anchor="middle">2</text>
+<text x="701" y="1120" class="label" text-anchor="start"><tspan x="701" dy="0">证据有五个等级</tspan></text>
+<text x="661" y="1161" class="small" text-anchor="start"><tspan x="661" dy="0">load → generate → continue update → trajectory</tspan><tspan x="661" dy="27">parity → bitwise exact，不能合并成一个 PASS。</tspan></text>
+<rect x="1200" y="1075" width="530" height="205" rx="16" class="green-soft"/>
+<circle cx="1236" cy="1114" r="18" class="number-dot"/>
+<text x="1236" y="1120" class="number" text-anchor="middle">3</text>
+<text x="1266" y="1120" class="label" text-anchor="start"><tspan x="1266" dy="0">比较单位是逐 step</tspan></text>
+<text x="1226" y="1161" class="small" text-anchor="start"><tspan x="1226" dy="0">曲线看起来接近不够；必须核对 sample IDs、</tspan><tspan x="1226" dy="27">LR、loss、grad 与 tensor checksums。</tspan></text>
+<rect x="70" y="1310" width="530" height="205" rx="16" class="amber-soft"/>
+<circle cx="106" cy="1349" r="18" class="number-dot"/>
+<text x="106" y="1355" class="number" text-anchor="middle">4</text>
+<text x="136" y="1355" class="label" text-anchor="start"><tspan x="136" dy="0">数据游标属于模型轨迹</tspan></text>
+<text x="96" y="1396" class="small" text-anchor="start"><tspan x="96" dy="0">sampler epoch、batch cursor、accumulation</tspan><tspan x="96" dy="27">boundary 漂移会在首个新 batch 分叉。</tspan></text>
+<rect x="635" y="1310" width="530" height="205" rx="16" class="cyan-soft"/>
+<circle cx="671" cy="1349" r="18" class="number-dot"/>
+<text x="671" y="1355" class="number" text-anchor="middle">5</text>
+<text x="701" y="1355" class="label" text-anchor="start"><tspan x="701" dy="0">Export 与 resumable 分开</tspan></text>
+<text x="661" y="1396" class="small" text-anchor="start"><tspan x="661" dy="0">merged HF export 服务推理；完整 checkpoint</tspan><tspan x="661" dy="27">服务继续训练，它们有不同 state inventory。</tspan></text>
+<rect x="1200" y="1310" width="530" height="205" rx="16" class="slate-soft"/>
+<circle cx="1236" cy="1349" r="18" class="number-dot"/>
+<text x="1236" y="1355" class="number" text-anchor="middle">6</text>
+<text x="1266" y="1355" class="label" text-anchor="start"><tspan x="1266" dy="0">故障注入检验 auditor</tspan></text>
+<text x="1226" y="1396" class="small" text-anchor="start"><tspan x="1226" dy="0">主动删 scheduler/cursor，确认检测器能指出</tspan><tspan x="1226" dy="27">第一个错误 step，而非只报告最终 checksum。</tspan></text>
+
+  <rect x="40" y="1610" width="1720" height="720" rx="18" class="panel"/>
+  <text x="70" y="1653" class="section">3 · Evidence：关键数字、对照与决策依据</text>
+  <rect x="70" y="1690" width="385" height="140" rx="16" class="metric"/>
+<text x="94" y="1724" class="stage" text-anchor="start"><tspan x="94" dy="0">PLANNED COMPARATOR</tspan></text>
+<text x="94" y="1769" class="metric-value" text-anchor="start"><tspan x="94" dy="0">0→40 vs 0→20→40</tspan></text>
+<text x="94" y="1802" class="tiny" text-anchor="start"><tspan x="94" dy="0">comparison window = steps 21–40</tspan></text>
+<rect x="480" y="1690" width="385" height="140" rx="16" class="metric"/>
+<text x="504" y="1724" class="stage" text-anchor="start"><tspan x="504" dy="0">AVAILABLE WINNER</tspan></text>
+<text x="504" y="1769" class="metric-value" text-anchor="start"><tspan x="504" dy="0">checkpoint-1904</tspan></text>
+<text x="504" y="1802" class="tiny" text-anchor="start"><tspan x="504" dy="0">selected · resumable · immutable archive</tspan></text>
+<rect x="890" y="1690" width="385" height="140" rx="16" class="metric"/>
+<text x="914" y="1724" class="stage" text-anchor="start"><tspan x="914" dy="0">STATE ARCHIVE</tspan></text>
+<text x="914" y="1769" class="metric-value" text-anchor="start"><tspan x="914" dy="0">11 files · ≈187 MiB</tspan></text>
+<text x="914" y="1802" class="tiny" text-anchor="start"><tspan x="914" dy="0">optimizer / scheduler / RNG / trainer present</tspan></text>
+<rect x="1300" y="1690" width="385" height="140" rx="16" class="metric"/>
+<text x="1324" y="1724" class="stage" text-anchor="start"><tspan x="1324" dy="0">RUNTIME RESULT</tspan></text>
+<text x="1324" y="1769" class="metric-value" text-anchor="start"><tspan x="1324" dy="0">exact_resume = false</tspan></text>
+<text x="1324" y="1802" class="tiny" text-anchor="start"><tspan x="1324" dy="0">Optional R not run; does not block S1</tspan></text>
+  <rect x="70" y="1860" width="1660" height="297" rx="12" class="table-bg"/>
+<rect x="70" y="1860" width="1660" height="52" rx="12" class="table-head"/>
+<text x="86" y="1893" class="stage" text-anchor="start"><tspan x="86" dy="0">证据等级</tspan></text>
+<line x1="370" y1="1860" x2="370" y2="2157" class="grid"/>
+<text x="386" y="1893" class="stage" text-anchor="start"><tspan x="386" dy="0">当前 evidence</tspan></text>
+<line x1="810" y1="1860" x2="810" y2="2157" class="grid"/>
+<text x="826" y="1893" class="stage" text-anchor="start"><tspan x="826" dy="0">能支持的 claim</tspan></text>
+<line x1="1230" y1="1860" x2="1230" y2="2157" class="grid"/>
+<text x="1246" y="1893" class="stage" text-anchor="start"><tspan x="1246" dy="0">仍缺什么</tspan></text>
+<line x1="70" y1="1912" x2="1730" y2="1912" class="grid"/>
+<text x="86" y="1943" class="body-strong" text-anchor="start"><tspan x="86" dy="0">1 · Checkpoint loads</tspan></text>
+<text x="386" y="1943" class="body" text-anchor="start"><tspan x="386" dy="0">Day 21 archive / integrity</tspan></text>
+<text x="826" y="1943" class="body" text-anchor="start"><tspan x="826" dy="0">资产完整、可解析</tspan></text>
+<text x="1246" y="1943" class="body" text-anchor="start"><tspan x="1246" dy="0">无训练轨迹比较</tspan></text>
+<rect x="70" y="1961" width="1660" height="49" class="table-alt"/>
+<line x1="70" y1="1961" x2="1730" y2="1961" class="grid"/>
+<text x="86" y="1992" class="body-strong" text-anchor="start"><tspan x="86" dy="0">2 · Inference works</tspan></text>
+<text x="386" y="1992" class="body" text-anchor="start"><tspan x="386" dy="0">adapter ↔ merged 4/4</tspan></text>
+<text x="826" y="1992" class="body" text-anchor="start"><tspan x="826" dy="0">冻结 smoke conversion parity</tspan></text>
+<text x="1246" y="1992" class="body" text-anchor="start"><tspan x="1246" dy="0">不是 optimizer resume</tspan></text>
+<line x1="70" y1="2010" x2="1730" y2="2010" class="grid"/>
+<text x="86" y="2041" class="body-strong" text-anchor="start"><tspan x="86" dy="0">3 · Fresh continuation</tspan></text>
+<text x="386" y="2041" class="body" text-anchor="start"><tspan x="386" dy="0">Day 18 Megatron 3→5</tspan></text>
+<text x="826" y="2041" class="body" text-anchor="start"><tspan x="826" dy="0">另一训练栈可继续更新</tspan></text>
+<text x="1246" y="2041" class="body" text-anchor="start"><tspan x="1246" dy="0">没有 target LoRA comparator</tspan></text>
+<rect x="70" y="2059" width="1660" height="49" class="table-alt"/>
+<line x1="70" y1="2059" x2="1730" y2="2059" class="grid"/>
+<text x="86" y="2090" class="body-strong" text-anchor="start"><tspan x="86" dy="0">4 · Trajectory parity</tspan></text>
+<text x="386" y="2090" class="body" text-anchor="start"><tspan x="386" dy="0">not run</tspan></text>
+<text x="826" y="2090" class="body" text-anchor="start"><tspan x="826" dy="0">尚无</tspan></text>
+<text x="1246" y="2090" class="body" text-anchor="start"><tspan x="1246" dy="0">Run A/B step 21–40</tspan></text>
+<line x1="70" y1="2108" x2="1730" y2="2108" class="grid"/>
+<text x="86" y="2139" class="body-strong" text-anchor="start"><tspan x="86" dy="0">5 · Bitwise exact</tspan></text>
+<text x="386" y="2139" class="body" text-anchor="start"><tspan x="386" dy="0">not claimed</tspan></text>
+<text x="826" y="2139" class="body" text-anchor="start"><tspan x="826" dy="0">尚无</tspan></text>
+<text x="1246" y="2139" class="body" text-anchor="start"><tspan x="1246" dy="0">kernel determinism + tensor diff</tspan></text>
+  <text x="70" y="2193" class="small" text-anchor="start"><tspan x="70" dy="0">Day 11 的 0.6B full-SFT 6-step vs 3+3 exact probe证明过方法；Day 18 证明 fresh continuation；两者都不能跨 lineage / runtime 替代 Qwen3.5 HF LoRA Run A/B。</tspan><tspan x="70" dy="26">当前最诚实的结论是：state inventory 与实验设计 ready，runtime comparator 未执行，exactness 等级未授予。</tspan></text>
+
+  <rect x="40" y="2360" width="1110" height="405" rx="18" class="decision"/>
+  <text x="70" y="2404" class="section">4 · 决策 / Takeaway</text>
+  <text x="70" y="2450" class="body-strong" text-anchor="start"><tspan x="70" dy="0">Day 17 的学习目标已被明确成一份可执行的 continuity contract；真正实验保留为 Optional R。</tspan><tspan x="70" dy="31">它不再阻塞 S1，因为 promotion 依赖的是 checkpoint integrity、fixed-suite qualification 与 export parity；</tspan><tspan x="70" dy="31">但任何“训练可以无缝恢复”的强 claim 都必须等 Run A/B 证据，而不能引用 load 成功。</tspan><tspan x="70" dy="31">若未来出现 loss 跳变、LR 错位或数据重复，才按同一单卡 topology 执行 Optional R。</tspan><tspan x="70" dy="31">一句话记忆：resume 的问题不是‘文件能否打开’，而是‘下一次 update 是否还是同一个 update’。</tspan></text>
+  <rect x="1180" y="2360" width="580" height="405" rx="18" class="boundary"/>
+  <text x="1210" y="2404" class="section">证据边界</text>
+  <text x="1210" y="2450" class="small" text-anchor="start"><tspan x="1210" dy="0">• Run A / Run B 均未执行。</tspan><tspan x="1210" dy="29">• exact_resume_proven=false；不关闭为 PASS。</tspan><tspan x="1210" dy="29">• 早期“无 selected candidate”已被后来 S1 取代；</tspan><tspan x="1210" dy="29">  但新 checkpoint 不会自动产生历史 comparator。</tspan><tspan x="1210" dy="29">• 4/4 merge parity 只覆盖推理 smoke cohort。</tspan><tspan x="1210" dy="29">• Day 18 continuation 属于 Megatron full state。</tspan><tspan x="1210" dy="29">• kernel nondeterminism 若存在，需报告首个分叉</tspan><tspan x="1210" dy="29">  与 max_abs_diff，不能用“曲线相似”代替。</tspan></text>
+
+  <text x="70" y="2797" class="source" text-anchor="start"><tspan x="70" dy="0">Sources · artifacts/reports/day17-gap-audit.md · day17-qwen35-resume-equivalence.md · configs/day17-qwen35-resume-readiness.json</tspan></text>
+<text x="70" y="2817" class="source" text-anchor="start"><tspan x="70" dy="0">Latest state context · artifacts/reports/day21-qwen35-s1-handoff.md · Optional R not executed</tspan></text>
+</svg>

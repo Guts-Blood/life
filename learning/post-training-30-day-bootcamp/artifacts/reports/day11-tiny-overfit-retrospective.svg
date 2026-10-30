@@ -1,0 +1,355 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="3900" viewBox="0 0 1800 3900" role="img" aria-labelledby="title desc">
+  <title id="title">Day 11 Tiny Overfit 与 Teacher-Forced Evaluation 复盘</title>
+  <desc id="desc">一张中文长图，总结 Day 11 在 Qwen3-0.6B-Base 上用 18 条样本完成 tiny overfit、assistant-only mask、BF16 forward、FP32 loss 与训练状态、checkpoint resume 精确一致性，以及 teacher-forced evaluation 和 autoregressive generation 的区别。</desc>
+
+  <defs>
+    <linearGradient id="heroGradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#142d43"/>
+      <stop offset="1" stop-color="#24566b"/>
+    </linearGradient>
+    <linearGradient id="teacherGradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ecf8f4"/>
+      <stop offset="1" stop-color="#f7fcfa"/>
+    </linearGradient>
+    <linearGradient id="generationGradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f2eef8"/>
+      <stop offset="1" stop-color="#faf8fc"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="160%">
+      <feDropShadow dx="0" dy="9" stdDeviation="12" flood-color="#17354b" flood-opacity="0.11"/>
+    </filter>
+    <marker id="arrow" markerWidth="14" markerHeight="14" refX="11" refY="7" orient="auto" markerUnits="strokeWidth">
+      <path d="M1,1 L12,7 L1,13 Z" fill="#6a8392"/>
+    </marker>
+    <marker id="arrowTeal" markerWidth="14" markerHeight="14" refX="11" refY="7" orient="auto" markerUnits="strokeWidth">
+      <path d="M1,1 L12,7 L1,13 Z" fill="#2f9b78"/>
+    </marker>
+    <marker id="arrowPurple" markerWidth="14" markerHeight="14" refX="11" refY="7" orient="auto" markerUnits="strokeWidth">
+      <path d="M1,1 L12,7 L1,13 Z" fill="#8068a3"/>
+    </marker>
+    <style>
+      text { font-family: Inter, "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif; fill: #183247; }
+      .title { font-size: 54px; font-weight: 760; fill: #ffffff; }
+      .subtitle { font-size: 23px; font-weight: 500; fill: #d6e8f0; }
+      .eyebrow { font-size: 18px; font-weight: 760; letter-spacing: 2.4px; fill: #8ed8cf; }
+      .section { font-size: 31px; font-weight: 760; }
+      .section-sub { font-size: 18px; fill: #607989; }
+      .card-title { font-size: 23px; font-weight: 740; }
+      .body { font-size: 19px; }
+      .small { font-size: 16px; fill: #607989; }
+      .tiny { font-size: 14px; fill: #6b8392; }
+      .metric { font-size: 40px; font-weight: 780; }
+      .metric-label { font-size: 15px; font-weight: 650; fill: #607989; }
+      .mono { font-family: "SFMono-Regular", Consolas, monospace; font-size: 15px; fill: #3f5d70; }
+      .step { font-size: 15px; font-weight: 760; letter-spacing: 1.2px; fill: #247f77; }
+      .panel { fill: #ffffff; stroke: #d5e1e7; stroke-width: 1.5; }
+      .soft { fill: #f7fafb; stroke: #d5e1e7; stroke-width: 1.3; }
+      .divider { stroke: #d5e1e7; stroke-width: 1.5; }
+      .flow { fill: none; stroke: #6a8392; stroke-width: 4; marker-end: url(#arrow); }
+      .flow-teal { fill: none; stroke: #2f9b78; stroke-width: 4; marker-end: url(#arrowTeal); }
+      .flow-purple { fill: none; stroke: #8068a3; stroke-width: 4; marker-end: url(#arrowPurple); }
+    </style>
+  </defs>
+
+  <rect width="1800" height="3900" fill="#f3f7f9"/>
+
+  <!-- Hero -->
+  <rect width="1800" height="310" fill="url(#heroGradient)"/>
+  <circle cx="1570" cy="20" r="220" fill="#53a6a2" opacity="0.13"/>
+  <circle cx="1710" cy="205" r="160" fill="#e2b56c" opacity="0.10"/>
+  <text x="90" y="72" class="eyebrow">POST-TRAINING BOOTCAMP · DAY 11 · PIPELINE ACCEPTANCE TEST</text>
+  <text x="90" y="148" class="title">Tiny Overfit 与 Teacher-Forced Evaluation</text>
+  <text x="90" y="201" class="subtitle">刻意记住 18 条样本，不是为了证明模型强，而是证明整条 SFT pipeline 能学、能恢复、能审计。</text>
+  <rect x="90" y="238" width="500" height="46" rx="23" fill="#2f9b78"/>
+  <circle cx="119" cy="261" r="8" fill="#b8f3d9"/>
+  <text x="140" y="268" font-size="17" font-weight="720" style="fill:#ffffff">DAY11 PASS · STEP 50 · 98.89%</text>
+  <text x="1710" y="269" text-anchor="end" font-size="15" font-weight="650" style="fill:#d6e8f0">Qwen3-0.6B-Base · RTX 4090 24GB</text>
+
+  <!-- Headline metrics -->
+  <g filter="url(#shadow)">
+    <rect x="70" y="350" width="1660" height="210" rx="28" class="panel"/>
+  </g>
+  <line x1="402" y1="390" x2="402" y2="520" class="divider"/>
+  <line x1="734" y1="390" x2="734" y2="520" class="divider"/>
+  <line x1="1066" y1="390" x2="1066" y2="520" class="divider"/>
+  <line x1="1398" y1="390" x2="1398" y2="520" class="divider"/>
+
+  <text x="236" y="430" text-anchor="middle" class="metric" style="fill:#356f91">18</text>
+  <text x="236" y="468" text-anchor="middle" class="metric-label">frozen samples</text>
+  <text x="236" y="505" text-anchor="middle" class="body">tiny set</text>
+
+  <text x="568" y="430" text-anchor="middle" class="metric" style="fill:#6d8190">2,194</text>
+  <text x="568" y="468" text-anchor="middle" class="metric-label">encoded tokens</text>
+  <text x="568" y="505" text-anchor="middle" class="body">0 truncated</text>
+
+  <text x="900" y="430" text-anchor="middle" class="metric" style="fill:#2f9b78">904</text>
+  <text x="900" y="468" text-anchor="middle" class="metric-label">shifted supervised targets</text>
+  <text x="900" y="505" text-anchor="middle" class="body">assistant only</text>
+
+  <text x="1232" y="430" text-anchor="middle" class="metric" style="fill:#d08b31">50</text>
+  <text x="1232" y="468" text-anchor="middle" class="metric-label">optimizer steps</text>
+  <text x="1232" y="505" text-anchor="middle" class="body">min-step gate met</text>
+
+  <text x="1564" y="430" text-anchor="middle" class="metric" style="fill:#2f9b78">98.89%</text>
+  <text x="1564" y="468" text-anchor="middle" class="metric-label">final token accuracy</text>
+  <text x="1564" y="505" text-anchor="middle" class="body">loss 1.3256 → 0.0528</text>
+
+  <!-- Section 1 -->
+  <text x="90" y="655" class="section">01 · Day 11 到底验证了什么</text>
+  <text x="90" y="690" class="section-sub">把数据、mask、forward/backward、optimizer、checkpoint/resume 与两种 eval 串成一个 fail-closed 证据链。</text>
+  <g filter="url(#shadow)">
+    <rect x="70" y="730" width="1660" height="560" rx="28" class="panel"/>
+  </g>
+
+  <rect x="100" y="785" width="300" height="245" rx="22" fill="#f4f8fa" stroke="#cddde5" stroke-width="1.5"/>
+  <text x="130" y="830" class="step">1 · PREFLIGHT</text>
+  <text x="130" y="872" class="card-title">先拒绝漂移</text>
+  <text x="130" y="912" class="body">GPU / BF16 / 磁盘</text>
+  <text x="130" y="946" class="body">model revision / hashes</text>
+  <text x="130" y="980" class="body">data / template / labels</text>
+  <text x="130" y="1012" class="small">任一不一致，训练不启动。</text>
+
+  <path d="M400 905 L425 905" class="flow"/>
+
+  <rect x="425" y="785" width="300" height="245" rx="22" fill="#edf7f3" stroke="#b9ddce" stroke-width="1.5"/>
+  <text x="455" y="830" class="step">2 · RENDER + MASK</text>
+  <text x="455" y="872" class="card-title">冻结监督语义</text>
+  <text x="455" y="912" class="body">system / user → -100</text>
+  <text x="455" y="946" class="body">assistant body → target</text>
+  <text x="455" y="980" class="body">assistant &lt;im_end&gt; → target</text>
+  <text x="455" y="1012" class="small">padding: attention=0, label=-100</text>
+
+  <path d="M725 905 L750 905" class="flow"/>
+
+  <rect x="750" y="785" width="300" height="245" rx="22" fill="#edf6fb" stroke="#bcd7e7" stroke-width="1.5"/>
+  <text x="780" y="830" class="step" style="fill:#397da6">3 · RESUME PROBE</text>
+  <text x="780" y="872" class="card-title">6 vs 3 + resume + 3</text>
+  <text x="780" y="912" class="body">新 Python 进程恢复</text>
+  <text x="780" y="946" class="body">model / Adam / scheduler</text>
+  <text x="780" y="980" class="body">RNG / sampler cursor</text>
+  <text x="780" y="1012" class="small">逐 step exact comparison。</text>
+
+  <path d="M1050 905 L1075 905" class="flow"/>
+
+  <rect x="1075" y="785" width="300" height="245" rx="22" fill="#fff7ea" stroke="#e8d19f" stroke-width="1.5"/>
+  <text x="1105" y="830" class="step" style="fill:#9a7228">4 · TINY OVERFIT</text>
+  <text x="1105" y="872" class="card-title">Base → step 50</text>
+  <text x="1105" y="912" class="body">micro batch 1 × accum 4</text>
+  <text x="1105" y="946" class="body">eval every 10 steps</text>
+  <text x="1105" y="980" class="body">early checkpoint @25</text>
+  <text x="1105" y="1012" class="small">≥95% 且 step ≥50 才停。</text>
+
+  <path d="M1375 905 L1400 905" class="flow"/>
+
+  <rect x="1400" y="785" width="300" height="245" rx="22" fill="#ecf8f4" stroke="#9fd4bf" stroke-width="1.5"/>
+  <text x="1430" y="830" class="step">5 · ACCEPTANCE</text>
+  <text x="1430" y="872" class="card-title">只有全过才 PASS</text>
+  <text x="1430" y="912" class="body">resume: pass</text>
+  <text x="1430" y="946" class="body">accuracy: 98.89%</text>
+  <text x="1430" y="980" class="body">final checkpoint complete</text>
+  <text x="1430" y="1012" class="small">DAY11-PASS.json written</text>
+
+  <rect x="100" y="1085" width="1600" height="150" rx="20" fill="#173f54"/>
+  <text x="135" y="1128" font-size="17" font-weight="760" style="fill:#8ed8cf">THE CENTRAL QUESTION</text>
+  <text x="135" y="1171" font-size="25" font-weight="730" style="fill:#ffffff">“给定正确的数据与监督位置，这条 pipeline 能否产生正确梯度、更新参数，并从完整 checkpoint 无缝继续？”</text>
+  <text x="135" y="1208" font-size="17" style="fill:#d6e8f0">Day 11 的答案是 yes；但它没有回答模型是否泛化，也没有证明真实 SFT recipe 已经有效。</text>
+
+  <!-- Section 2 -->
+  <text x="90" y="1390" class="section">02 · 新知识：Teacher-Forced Eval 不是“另一种 checkpoint”</text>
+  <text x="90" y="1425" class="section-sub">Eval 是总称；teacher-forced 与 autoregressive generation 都是 eval。Checkpoint 只是保存状态，与采用哪种 eval 正交。</text>
+  <g filter="url(#shadow)">
+    <rect x="70" y="1465" width="1660" height="850" rx="28" class="panel"/>
+  </g>
+
+  <rect x="105" y="1510" width="1590" height="78" rx="18" fill="#f7fafb" stroke="#d5e1e7" stroke-width="1.3"/>
+  <text x="135" y="1542" class="small">同一条样本</text>
+  <text x="135" y="1573" class="body" font-weight="700">User: 2+2 等于多少？  ·  Assistant: 4 &lt;|im_end|&gt;</text>
+  <text x="1660" y="1558" text-anchor="end" class="small">causal LM：logit[t-1] 预测 label[t]</text>
+
+  <!-- Teacher-forced card -->
+  <rect x="105" y="1625" width="760" height="515" rx="24" fill="url(#teacherGradient)" stroke="#9fd4bf" stroke-width="2"/>
+  <circle cx="150" cy="1673" r="16" fill="#2f9b78"/>
+  <text x="180" y="1681" class="card-title" style="fill:#247f77">Teacher-forced evaluation</text>
+  <text x="825" y="1680" text-anchor="end" class="step">TOKEN-LEVEL</text>
+  <text x="140" y="1723" class="body">输入包含 prompt + gold answer；每个位置预测下一个 gold token。</text>
+
+  <text x="140" y="1770" class="metric-label">INPUT TOKENS</text>
+  <rect x="140" y="1790" width="220" height="58" rx="12" fill="#e8eef2" stroke="#c7d3da"/>
+  <text x="250" y="1826" text-anchor="middle" class="small">system + user</text>
+  <rect x="375" y="1790" width="115" height="58" rx="12" fill="#d9f0e6" stroke="#8bcbb2"/>
+  <text x="432" y="1826" text-anchor="middle" class="body" font-weight="720">4</text>
+  <rect x="505" y="1790" width="190" height="58" rx="12" fill="#d9f0e6" stroke="#8bcbb2"/>
+  <text x="600" y="1826" text-anchor="middle" class="body" font-weight="720">&lt;|im_end|&gt;</text>
+
+  <text x="140" y="1880" class="metric-label">LABELS AFTER SHIFT</text>
+  <rect x="140" y="1900" width="220" height="58" rx="12" fill="#e8eef2" stroke="#c7d3da"/>
+  <text x="250" y="1936" text-anchor="middle" class="mono">-100 · ignored</text>
+  <rect x="375" y="1900" width="115" height="58" rx="12" fill="#2f9b78"/>
+  <text x="432" y="1936" text-anchor="middle" font-size="17" font-weight="740" style="fill:#ffffff">target 4</text>
+  <rect x="505" y="1900" width="190" height="58" rx="12" fill="#2f9b78"/>
+  <text x="600" y="1936" text-anchor="middle" font-size="16" font-weight="740" style="fill:#ffffff">target &lt;im_end&gt;</text>
+
+  <path d="M432 1893 C432 1865 420 1860 420 1850" class="flow-teal"/>
+  <path d="M600 1893 C600 1865 560 1860 560 1850" class="flow-teal"/>
+
+  <rect x="140" y="1995" width="685" height="105" rx="16" fill="#ffffff" stroke="#b9ddce"/>
+  <text x="165" y="2030" class="body" font-weight="720">得到：masked CE loss + token accuracy</text>
+  <text x="165" y="2064" class="small">前面的答案 token 使用 gold prefix；错误不会回喂并累积。</text>
+  <text x="165" y="2092" class="small">不会看到当前/未来 token：causal shift 仍然严格成立。</text>
+
+  <!-- Generation card -->
+  <rect x="935" y="1625" width="760" height="515" rx="24" fill="url(#generationGradient)" stroke="#cdbbe0" stroke-width="2"/>
+  <circle cx="980" cy="1673" r="16" fill="#8068a3"/>
+  <text x="1010" y="1681" class="card-title" style="fill:#6f5590">Autoregressive generation eval</text>
+  <text x="1655" y="1680" text-anchor="end" class="step" style="fill:#79599b">SEQUENCE-LEVEL</text>
+  <text x="970" y="1723" class="body">只给 prompt；模型把自己刚生成的 token 回喂，再生成下一个。</text>
+
+  <rect x="970" y="1790" width="205" height="62" rx="14" fill="#e8eef2" stroke="#c7d3da"/>
+  <text x="1072" y="1828" text-anchor="middle" class="small">prompt</text>
+  <path d="M1175 1821 L1220 1821" class="flow-purple"/>
+  <rect x="1225" y="1790" width="105" height="62" rx="14" fill="#8068a3"/>
+  <text x="1277" y="1828" text-anchor="middle" font-size="18" font-weight="740" style="fill:#ffffff">ŷ₁</text>
+  <path d="M1330 1821 L1375 1821" class="flow-purple"/>
+  <rect x="1380" y="1790" width="105" height="62" rx="14" fill="#8068a3"/>
+  <text x="1432" y="1828" text-anchor="middle" font-size="18" font-weight="740" style="fill:#ffffff">ŷ₂</text>
+  <path d="M1485 1821 L1530 1821" class="flow-purple"/>
+  <rect x="1535" y="1790" width="120" height="62" rx="14" fill="#8068a3"/>
+  <text x="1595" y="1828" text-anchor="middle" font-size="18" font-weight="740" style="fill:#ffffff">ŷ₃ …</text>
+
+  <path d="M1277 1852 C1277 1890 1432 1875 1432 1852" fill="none" stroke="#8068a3" stroke-width="3" stroke-dasharray="7 6"/>
+  <path d="M1432 1852 C1432 1890 1595 1875 1595 1852" fill="none" stroke="#8068a3" stroke-width="3" stroke-dasharray="7 6"/>
+  <text x="1310" y="1918" class="small" style="fill:#79599b">自己的输出成为下一步上下文 → 错误可能累积</text>
+
+  <rect x="970" y="1965" width="685" height="135" rx="16" fill="#ffffff" stroke="#d5c7e5"/>
+  <text x="995" y="2002" class="body" font-weight="720">得到：完整回答，可做 exact match / task score / 人审</text>
+  <text x="995" y="2037" class="small">更接近真实使用，但慢、受 decoding 影响、序列错误会传播。</text>
+  <text x="995" y="2072" class="small">Day 11：Base / step 25 / final，各 18 条，共 54 条。</text>
+
+  <rect x="105" y="2180" width="1590" height="92" rx="18" fill="#173f54"/>
+  <text x="135" y="2216" font-size="19" font-weight="740" style="fill:#ffffff">记忆锚点</text>
+  <text x="135" y="2252" font-size="18" style="fill:#d6e8f0">Teacher-forced = “拿标准答案逐 token 考模型”；Generation = “让模型自己一路写完再评分”；两者都叫 eval。</text>
+  <text x="1660" y="2238" text-anchor="end" font-size="16" font-weight="700" style="fill:#8ed8cf">CHECKPOINT ≠ EVAL METHOD</text>
+
+  <!-- Section 3 -->
+  <text x="90" y="2425" class="section">03 · 一个正确 SFT optimizer step 的语义</text>
+  <text x="90" y="2460" class="section-sub">监督 token 数不同的 microbatch 不能简单等权平均；本次按整个 accumulation window 的有效 target 总数归一化。</text>
+  <g filter="url(#shadow)">
+    <rect x="70" y="2500" width="1660" height="430" rx="28" class="panel"/>
+  </g>
+
+  <rect x="105" y="2560" width="200" height="125" rx="18" fill="#f4f8fa" stroke="#cddde5"/>
+  <text x="205" y="2600" text-anchor="middle" class="step">DATA WINDOW</text>
+  <text x="205" y="2640" text-anchor="middle" class="card-title">1 × 4 microbatch</text>
+  <text x="205" y="2670" text-anchor="middle" class="small">count valid targets</text>
+  <path d="M305 2622 L340 2622" class="flow"/>
+
+  <rect x="345" y="2560" width="200" height="125" rx="18" fill="#edf6fb" stroke="#bcd7e7"/>
+  <text x="445" y="2600" text-anchor="middle" class="step" style="fill:#397da6">FORWARD</text>
+  <text x="445" y="2640" text-anchor="middle" class="card-title">BF16 autocast</text>
+  <text x="445" y="2670" text-anchor="middle" class="small">FP32 parameters</text>
+  <path d="M545 2622 L580 2622" class="flow"/>
+
+  <rect x="585" y="2560" width="200" height="125" rx="18" fill="#edf7f3" stroke="#b9ddce"/>
+  <text x="685" y="2600" text-anchor="middle" class="step">SHIFT + MASK</text>
+  <text x="685" y="2640" text-anchor="middle" class="card-title">logits[:-1]</text>
+  <text x="685" y="2670" text-anchor="middle" class="small">labels[1:] != -100</text>
+  <path d="M785 2622 L820 2622" class="flow"/>
+
+  <rect x="825" y="2560" width="235" height="125" rx="18" fill="#fff7ea" stroke="#e8d19f"/>
+  <text x="942" y="2600" text-anchor="middle" class="step" style="fill:#9a7228">LOSS</text>
+  <text x="942" y="2640" text-anchor="middle" class="card-title">FP32 CE · sum</text>
+  <text x="942" y="2670" text-anchor="middle" class="small">÷ window target tokens</text>
+  <path d="M1060 2622 L1095 2622" class="flow"/>
+
+  <rect x="1100" y="2560" width="200" height="125" rx="18" fill="#f2eef8" stroke="#d5c7e5"/>
+  <text x="1200" y="2600" text-anchor="middle" class="step" style="fill:#79599b">BACKWARD</text>
+  <text x="1200" y="2640" text-anchor="middle" class="card-title">FP32 gradients</text>
+  <text x="1200" y="2670" text-anchor="middle" class="small">4 microbatches accumulate</text>
+  <path d="M1300 2622 L1335 2622" class="flow"/>
+
+  <rect x="1340" y="2545" width="360" height="155" rx="18" fill="#173f54"/>
+  <text x="1370" y="2588" class="step" style="fill:#8ed8cf">UPDATE ORDER</text>
+  <text x="1370" y="2627" font-size="20" font-weight="720" style="fill:#ffffff">clip(1.0) → AdamW</text>
+  <text x="1370" y="2662" font-size="18" style="fill:#d6e8f0">→ scheduler → zero_grad(None)</text>
+  <text x="1660" y="2687" text-anchor="end" font-size="14" style="fill:#8ed8cf">no GradScaler</text>
+
+  <rect x="105" y="2750" width="1595" height="160" rx="18" fill="#f7fafb" stroke="#d5e1e7"/>
+  <text x="135" y="2790" class="body" font-weight="720">真实 trace 证据</text>
+  <text x="135" y="2828" class="small">前 3 step 参数 checksum 全部变化 · gradient norm 有限且非零 · parameter / gradient / Adam state 全为 FP32</text>
+  <text x="135" y="2860" class="small">LR warmup: 2e-5 → 4e-5 → 6e-5 → 8e-5 → 1e-4 · 每步 zero_grad 后所有 gradient 都是 None</text>
+  <text x="135" y="2892" class="small">注意：causal / attention mask 控制“能看到哪里”；supervised / loss mask 控制“哪些 target 被计分”。</text>
+
+  <!-- Section 4 -->
+  <text x="90" y="3035" class="section">04 · 结果：能学、能恢复、能留下完整证据</text>
+  <text x="90" y="3070" class="section-sub">Teacher-forced accuracy 越过 95% 阈值并在 step 50 合法停止；accuracy 不要求逐 step 单调，最终 gate 与完整轨迹才是判据。</text>
+  <g filter="url(#shadow)">
+    <rect x="70" y="3110" width="1660" height="500" rx="28" class="panel"/>
+  </g>
+
+  <!-- Accuracy plot -->
+  <text x="115" y="3160" class="card-title">Teacher-forced token accuracy</text>
+  <text x="1110" y="3160" text-anchor="end" class="small">每次都在同一 904 个 targets 上评估</text>
+  <rect x="115" y="3190" width="1020" height="295" rx="12" fill="#fbfcfd" stroke="#d5e1e7"/>
+  <line x1="155" y1="3230" x2="1100" y2="3230" stroke="#d5e1e7" stroke-dasharray="6 7"/>
+  <line x1="155" y1="3320" x2="1100" y2="3320" stroke="#d5e1e7" stroke-dasharray="6 7"/>
+  <line x1="155" y1="3410" x2="1100" y2="3410" stroke="#d5e1e7" stroke-dasharray="6 7"/>
+  <text x="145" y="3235" text-anchor="end" class="tiny">100%</text>
+  <text x="145" y="3325" text-anchor="end" class="tiny">90%</text>
+  <text x="145" y="3415" text-anchor="end" class="tiny">80%</text>
+  <line x1="155" y1="3275" x2="1100" y2="3275" stroke="#d89b3c" stroke-width="2" stroke-dasharray="8 7"/>
+  <text x="1090" y="3266" text-anchor="end" class="tiny" style="fill:#9a7228">95% threshold</text>
+
+  <path d="M185 3450 L335 3349 L485 3260 L635 3239 L785 3244 L935 3257 L1085 3240" fill="none" stroke="#2f9b78" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  <g fill="#ffffff" stroke="#2f9b78" stroke-width="5">
+    <circle cx="185" cy="3450" r="11"/><circle cx="335" cy="3349" r="11"/><circle cx="485" cy="3260" r="11"/>
+    <circle cx="635" cy="3239" r="11"/><circle cx="785" cy="3244" r="11"/><circle cx="935" cy="3257" r="11"/><circle cx="1085" cy="3240" r="11"/>
+  </g>
+  <text x="185" y="3430" text-anchor="middle" class="tiny" font-weight="720">75.55%</text>
+  <text x="335" y="3328" text-anchor="middle" class="tiny" font-weight="720">86.73%</text>
+  <text x="485" y="3240" text-anchor="middle" class="tiny" font-weight="720">96.57%</text>
+  <text x="635" y="3219" text-anchor="middle" class="tiny" font-weight="720">99.00%</text>
+  <text x="785" y="3224" text-anchor="middle" class="tiny" font-weight="720">98.45%</text>
+  <text x="935" y="3237" text-anchor="middle" class="tiny" font-weight="720">97.01%</text>
+  <text x="1085" y="3220" text-anchor="middle" class="tiny" font-weight="720">98.89%</text>
+  <text x="185" y="3475" text-anchor="middle" class="tiny">Base · L1.326</text>
+  <text x="335" y="3475" text-anchor="middle" class="tiny">10 · L0.620</text>
+  <text x="485" y="3475" text-anchor="middle" class="tiny">20 · L0.182</text>
+  <text x="635" y="3475" text-anchor="middle" class="tiny">25 · L0.070</text>
+  <text x="785" y="3475" text-anchor="middle" class="tiny">30 · L0.053</text>
+  <text x="935" y="3475" text-anchor="middle" class="tiny">40 · L0.128</text>
+  <text x="1085" y="3475" text-anchor="middle" class="tiny">50 · L0.053</text>
+
+  <!-- Evidence cards -->
+  <rect x="1180" y="3160" width="500" height="102" rx="18" fill="#edf7f3" stroke="#b9ddce"/>
+  <text x="1210" y="3200" class="step">RESUME</text>
+  <text x="1210" y="3234" class="body" font-weight="720">6 == 3 + fresh resume + 3</text>
+  <text x="1650" y="3234" text-anchor="end" class="small">mismatches = []</text>
+
+  <rect x="1180" y="3280" width="500" height="102" rx="18" fill="#edf6fb" stroke="#bcd7e7"/>
+  <text x="1210" y="3320" class="step" style="fill:#397da6">TESTS</text>
+  <text x="1210" y="3354" class="body" font-weight="720">7 / 7 unit tests PASS</text>
+  <text x="1650" y="3354" text-anchor="end" class="small">mask · resume · optimizer</text>
+
+  <rect x="1180" y="3400" width="500" height="102" rx="18" fill="#f2eef8" stroke="#d5c7e5"/>
+  <text x="1210" y="3440" class="step" style="fill:#79599b">GENERATIONS</text>
+  <text x="1210" y="3474" class="body" font-weight="720">18 × 3 = 54 records</text>
+  <text x="1650" y="3474" text-anchor="end" class="small">Base · early · final</text>
+
+  <rect x="1180" y="3520" width="500" height="62" rx="18" fill="#173f54"/>
+  <text x="1210" y="3558" font-size="18" font-weight="740" style="fill:#ffffff">DAY11-PASS.json</text>
+  <text x="1650" y="3558" text-anchor="end" font-size="16" style="fill:#8ed8cf">final checkpoint complete</text>
+
+  <!-- Footer -->
+  <rect x="70" y="3690" width="805" height="130" rx="24" fill="#edf7f3" stroke="#b9ddce" stroke-width="1.5"/>
+  <text x="105" y="3735" class="step">DAY 11 PROVES</text>
+  <text x="105" y="3774" class="body" font-weight="720">这条 pipeline 能在正确 mask 上学习、更新、恢复和复现。</text>
+  <text x="105" y="3805" class="small">Checkpoint 是训练系统正确性的证据。</text>
+
+  <rect x="925" y="3690" width="805" height="130" rx="24" fill="#fff7ea" stroke="#e8d19f" stroke-width="1.5"/>
+  <text x="960" y="3735" class="step" style="fill:#9a7228">DAY 11 DOES NOT PROVE</text>
+  <text x="960" y="3774" class="body" font-weight="720">泛化、真实数据质量、或一个可上线的 SFT recipe。</text>
+  <text x="960" y="3805" class="small">Tiny-set 记忆不是能力提升结论。</text>
+
+  <rect x="70" y="3840" width="1660" height="42" rx="18" fill="#173f54"/>
+  <text x="900" y="3868" text-anchor="middle" font-size="16" font-weight="700" style="fill:#ffffff">DAY 12 必须从同一 frozen Base revision 独立开始，而不是继承这个刻意过拟合的 checkpoint。</text>
+</svg>

@@ -1,0 +1,288 @@
+{
+  "candidate_policy": {
+    "candidate_factory_version": "day20_qwen35_candidate_factory_v2",
+    "confirmation_seed": 20260810,
+    "data_contract_version": "day20.qwen35_candidate_factory_v2",
+    "main_checkpoint_tokens": {
+      "early": 80000,
+      "final": 320000,
+      "mid": 192000
+    },
+    "main_min_cohort_tokens": {
+      "code_continuation": {
+        "tulu_code_plain_python_continuation_v2": 15000
+      },
+      "finance_value_scale": {
+        "finqa_day09_value_scale_v2": 15000
+      }
+    },
+    "main_supervised_tokens": 320000,
+    "main_tokens_by_format": {
+      "code_continuation": 80000,
+      "finance_value_scale": 80000,
+      "general_instruction": 48002,
+      "general_mcq": 31998,
+      "math_reasoning": 80000
+    },
+    "ordering_version": "token_aware_temporal_interleave_v2",
+    "primary_seed": 20260809,
+    "probe_checkpoint_tokens": {
+      "t12000": 12000,
+      "t18000": 18000,
+      "t24000": 24000,
+      "t6000": 6000
+    },
+    "probe_learning_rates": [
+      "1e-4",
+      "3e-5",
+      "6e-5",
+      "8e-5"
+    ],
+    "probe_min_cohort_tokens": {
+      "code_continuation": {
+        "tulu_code_plain_python_continuation_v2": 1000
+      },
+      "finance_value_scale": {
+        "finqa_day09_value_scale_v2": 1000
+      }
+    },
+    "probe_supervised_tokens": 24000,
+    "probe_tokens_by_format": {
+      "code_continuation": 6000,
+      "finance_value_scale": 6000,
+      "general_instruction": 3000,
+      "general_mcq": 3000,
+      "math_reasoning": 6000
+    },
+    "source_adapter_version": "day20_qwen35_source_expansion_v2"
+  },
+  "checkpoint_labels": [
+    "t6000",
+    "t12000",
+    "t18000",
+    "t24000"
+  ],
+  "contract_sha256": "4fcf80d093ccf435a1968f743003e95724a448649422e0dda9e94dc982a9dec3",
+  "frozen_files": [
+    {
+      "path": "artifacts/eval/day10-frozen-eval-manifest.json",
+      "sha256": "be4b79f93d8c850360f3f2d38c223fcd347517796daaa9a1a4d3bc1a5eab7491"
+    },
+    {
+      "path": "day-10-frozen-eval-baseline/day10_scorers.py",
+      "sha256": "18be9a87b857ba80baf8718bf3c75276f58c96f29359b07400e56e09ecb11d54"
+    },
+    {
+      "path": "day-10-frozen-eval-baseline/score_day10_code_e2b.py",
+      "sha256": "ee5581f3a29f02737ae08cbd7591e839b996168b3d1276670227e67157bcd4b0"
+    },
+    {
+      "path": "day-10-frozen-eval-baseline/day10_e2b_sandbox_config.json",
+      "sha256": "d4841e1e0479f6488306e916eb5d664d848716e80cfc7aef9943e6134ecbfc8c"
+    }
+  ],
+  "implementation": [
+    {
+      "path": "day-20-qwen35-balanced-lora-sft/day20_candidate_factory_v2.py",
+      "role": "candidate_factory",
+      "sha256": "92b9b575b5ac80d6c896924de4e930badd26be98633dcea133347263dda144de"
+    },
+    {
+      "path": "day-20-qwen35-balanced-lora-sft/day20_contract_v2.py",
+      "role": "target_contract",
+      "sha256": "ad67937b1deeb9cf5cbc044aaa6b9d6315df7486f8ae6a48b9252becb6cad5d7"
+    },
+    {
+      "path": "day-20-qwen35-balanced-lora-sft/day20_ordering_v2.py",
+      "role": "temporal_ordering",
+      "sha256": "4d2ab319814821463b1fcf2f7ff2dcfe43ca1e095576dec4ed3d6ab5cab83a6b"
+    },
+    {
+      "path": "day-20-qwen35-balanced-lora-sft/day20_source_expansion_v2.py",
+      "role": "source_expansion",
+      "sha256": "ae281574b06f4918ae0bab30e1608793c5201241f53500c1f5b2eef0197b374c"
+    },
+    {
+      "path": "day-20-qwen35-balanced-lora-sft/prepare_day20_v2.py",
+      "role": "preparer",
+      "sha256": "cac56cfeca16cefbf62ae3799ac7bce1cb82b466e539a6d57e4ec8d1315ac75e"
+    },
+    {
+      "path": "day-20-qwen35-balanced-lora-sft/day20_train_runtime_v2.py",
+      "role": "training_runtime",
+      "sha256": "8473e5d4fe55f0d072f6f112418c0439809452c206d3a7b0f2c4cc7ae899de9d"
+    },
+    {
+      "path": "day-20-qwen35-balanced-lora-sft/day20_train_plugin_v2.py",
+      "role": "training_plugin",
+      "sha256": "7129e5e3606756f242129539c740c303a13806ee636170df8ac8a86b070fbf5e"
+    },
+    {
+      "path": "day-20-qwen35-balanced-lora-sft/day20_e2b_preflight_v2.py",
+      "role": "e2b_preflight",
+      "sha256": "f3ed7045da293488ebb77c175ea3757253270dfb8c6217794ce423de1e0ee9d6"
+    },
+    {
+      "path": "day-20-qwen35-balanced-lora-sft/day20_eval_identity_v2.py",
+      "role": "eval_identity",
+      "sha256": "a060803ce0fd982ca7585fca544ee15909f5ec5e3c189bdda618810fbcc8ce89"
+    },
+    {
+      "path": "day-20-qwen35-balanced-lora-sft/qwen35_response_adapter_v3.py",
+      "role": "response_adapter",
+      "sha256": "a00795df99067032c7b2a659c8dba33bf0572a88f9b6451b3a0e97db3d12dde8"
+    },
+    {
+      "path": "day-20-qwen35-balanced-lora-sft/evaluate_day20_v2.py",
+      "role": "raw_evaluator",
+      "sha256": "cce3be544f6dc3fd351623ca2cc38e2f2bdb8c309f48534a3c1f1b16896ee8ff"
+    },
+    {
+      "path": "day-20-qwen35-balanced-lora-sft/rescore_day20_qwen35_v3.py",
+      "role": "normalized_rescorer",
+      "sha256": "0f8cffad3265fa85af920d5e0a8c2e88554b8c49c91d85f9a3885e899c7b06f2"
+    },
+    {
+      "path": "day-20-qwen35-balanced-lora-sft/score_day20_code_e2b_v3.py",
+      "role": "code_e2b",
+      "sha256": "3f9f80b9673ce74413c951a13e7249c46fc282d9ca334b02b9242a4bb72ff42e"
+    },
+    {
+      "path": "day-20-qwen35-balanced-lora-sft/select_day20_v2.py",
+      "role": "probe_selector",
+      "sha256": "99887e23150c7b0ff34185dfd89fd69e7cc5c8671ece699b53c75a469786a3fe"
+    },
+    {
+      "path": "day-20-qwen35-balanced-lora-sft/select_day20_main_v2.py",
+      "role": "main_selector",
+      "sha256": "6e861507286bde99128d94f6b9f9c0ec04b229c656f99c68a79e03b3b2125187"
+    },
+    {
+      "path": "day-20-qwen35-balanced-lora-sft/run_day20_v2_autodl.sh",
+      "role": "runner",
+      "sha256": "71560b68534fb15032aa562a63640c42baeedad93d730cfc9485e7a24e1efb95"
+    },
+    {
+      "path": "day-20-qwen35-balanced-lora-sft/V2-GPU-RUNBOOK.md",
+      "role": "runbook",
+      "sha256": "809845a2a80d90a96a35e132cf3a74945ac8fbce134ab7d93db6d63f14e5f83f"
+    }
+  ],
+  "inputs": [
+    {
+      "content_sha256": "2a2429dd47377fc0b0aed730609b8006b3f45fa3f6bddb530ec293a26f44fa4c",
+      "file_sha256": "7308c80ee6b3418f50c5d677cdd55ca7e72dd403c2db8dafa5721e0508ee9c53",
+      "path_or_uri": "/root/autodl-tmp/runs/day20-v2-qwen35-lora-20260812T092806Z/DAY20-V2-MANIFEST.json",
+      "role": "experiment_manifest"
+    },
+    {
+      "content_sha256": "d6e1ecf6d9dd9ffac213a4a44bba4522ee8d4de1fb2186477d6781a47749deb8",
+      "file_sha256": "0867b37f949ee7c2bcc625c94704fb7c0afd4991b23e88c8c1904b6873d45fd6",
+      "path_or_uri": "/root/autodl-tmp/qwen35-v2/day20-v2-sources/SOURCE-EXPANSION-MANIFEST.json",
+      "role": "source_expansion_manifest"
+    },
+    {
+      "path_or_uri": "/root/autodl-tmp/Qwen--Qwen3.5-4B-Base/1001bb4d826a52d1f399e183466143f4da7b741b",
+      "role": "base_model_snapshot",
+      "snapshot_sha256": "a176a3c982da5480a0ca98280848474133d105d2e4ab45dc37ce2c68a7c2195b"
+    },
+    {
+      "file_sha256": "338343120fe4e87b886af43641645d4cc7dbde98a15d772820c6ca91771b52ec",
+      "path_or_uri": "/root/autodl-tmp/runs/day20-v2-qwen35-lora-20260812T092806Z/data/probe-v2.jsonl",
+      "role": "probe_dataset",
+      "selection_sha256": "b611e82a3b760cdc75f173fe9396af80c5379f89915edc7e6f6deae9bc09fdb4",
+      "supervised_tokens": 24000,
+      "temporal_mix_sha256": "05215b196d3d501d6cb19a5b000376091ff455c00322899a367ccf3afcc1e3dc"
+    },
+    {
+      "eval_manifest_file_sha256": "be4b79f93d8c850360f3f2d38c223fcd347517796daaa9a1a4d3bc1a5eab7491",
+      "file_sha256": "fb6484acc8afd47d712fdbeaa42361f9fb13270e794685f98b1c1ea0b99524b4",
+      "path_or_uri": "/root/autodl-tmp/runs/day20-v2-qwen35-lora-20260812T092806Z/data/diagnostic-v2.jsonl",
+      "records": 32,
+      "role": "diagnostic_probe32",
+      "selection_sha256": "3241ee281c86688d00342c47931f708e50f2e60c99ac2fefbb2787e64b5ea4e4"
+    },
+    {
+      "content_sha256": "912fcf64c4e97f62397a730ff76d2c7891eeeef426377879822f7d65b33bc9c8",
+      "e2b_version": "2.37.0",
+      "file_sha256": "95ceea9c29375801c6ed4fd3c5657f836ce5c4610cacbc4dfd352d581a25a974",
+      "path_or_uri": "/root/autodl-tmp/runs/day20-v2-qwen35-lora-20260812T092806Z/evidence/E2B-PREFLIGHT.json",
+      "role": "e2b_preflight"
+    },
+    {
+      "file_sha256": "3f71a299fb9c88c4d3e15b2d54fa2bfd2ba8f35c8bc6def89dd1b547ed9831c1",
+      "immutable_sha256": "02badee38e12381331ad523be2eef21870212d7a36edf9cb8e60a764af0db5f4",
+      "learning_rate": "1e-4",
+      "path_or_uri": "/root/autodl-tmp/runs/day20-v2-qwen35-lora-20260812T092806Z/configs/probe-s20260809-lr1e-4.json",
+      "role": "probe_config_1e-4",
+      "seed": 20260809
+    },
+    {
+      "file_sha256": "0d9c31fecef575f25a04bc388aff8195558b5fde354e37f9a8137ad4ebdd960a",
+      "immutable_sha256": "7d021e8081585f82fb2d2b5b3f3111524cc8b913a59e26dd82dd1c9dcdd0e911",
+      "learning_rate": "3e-5",
+      "path_or_uri": "/root/autodl-tmp/runs/day20-v2-qwen35-lora-20260812T092806Z/configs/probe-s20260809-lr3e-5.json",
+      "role": "probe_config_3e-5",
+      "seed": 20260809
+    },
+    {
+      "file_sha256": "7e7d8d05c8d3a9d929bddbe0a11efdf9fde78979dcef1701619e2aeb3c717570",
+      "immutable_sha256": "774348a1916f7ed602620ac91219fac5ab75b848d12110c48b69df5f4f816981",
+      "learning_rate": "6e-5",
+      "path_or_uri": "/root/autodl-tmp/runs/day20-v2-qwen35-lora-20260812T092806Z/configs/probe-s20260809-lr6e-5.json",
+      "role": "probe_config_6e-5",
+      "seed": 20260809
+    },
+    {
+      "file_sha256": "a38dd07519d5260dcf0a96ceaeb104143429408ed28e0a19641d407c53705e54",
+      "immutable_sha256": "447ba675f667462e44c224d0f8af28663d7cb328bde71a46bde971589d8fa0e9",
+      "learning_rate": "8e-5",
+      "path_or_uri": "/root/autodl-tmp/runs/day20-v2-qwen35-lora-20260812T092806Z/configs/probe-s20260809-lr8e-5.json",
+      "role": "probe_config_8e-5",
+      "seed": 20260809
+    }
+  ],
+  "learning_rate_policy": {
+    "bracket_trigger": "strict factory near-miss only",
+    "near_miss_bracket": [
+      "3e-5",
+      "6e-5",
+      "8e-5"
+    ],
+    "stage_a": "1e-4"
+  },
+  "phase": "probe_funnel",
+  "pre_execution_facts": {
+    "e2b_preflight_status": "pass",
+    "live_smoke": {
+      "candidate_code_executed": false,
+      "runtime_attested": true,
+      "sandbox_created": true,
+      "sandbox_killed": true
+    },
+    "manifest_status": "prepared_stage_a_not_started"
+  },
+  "run_id": "run-001-probe-primary",
+  "runtime": {
+    "gpu_count": 2,
+    "gpu_names": [
+      "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+      "NVIDIA RTX PRO 6000 Blackwell Server Edition"
+    ],
+    "identity_sha256": "6e1018b2528288e459a0e5707468ac8ede284ca497e03e30f91139ff2b3cc2d8",
+    "ms_swift_commit": "565a1ad586a21d24b23931c52d2c62b49c39bee8",
+    "requirements": {
+      "e2b_version": "2.37.0",
+      "ms_swift_commit": "565a1ad586a21d24b23931c52d2c62b49c39bee8",
+      "ms_swift_version": "4.5.0.dev0",
+      "peft_version": "0.19.1",
+      "torch_version": "2.10.0+cu128",
+      "transformers_version": "5.12.1"
+    }
+  },
+  "schema_name": "rsi.run_contract",
+  "schema_version": 1,
+  "scope": "probe32",
+  "seed": 20260809,
+  "version_id": "rsi-v0001"
+}

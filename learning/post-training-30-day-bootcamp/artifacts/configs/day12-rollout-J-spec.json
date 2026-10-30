@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "domain": "day12.recovery_rollout_spec",
+  "ordinal": 8,
+  "run_id": "J",
+  "parent_run_id": "I",
+  "status": "planned",
+  "hypothesis": "Run I's math/code-focused mixture supplies the right tasks, but H's 5e-5 LoRA update magnitude still causes math forgetting; reducing only adapter learning rate to 3e-5 should move math from eight to at least ten while retaining at least five executable code solutions.",
+  "primary_change": {
+    "path": "optimizer.learning_rate",
+    "parent_value": 0.00005,
+    "rollout_value": 0.00003
+  },
+  "fixed_invariants": [
+    "Run I target ratios general/math/code/finance = 1/8,5/12,5/12,1/24",
+    "Run I exact manifest and occurrence order",
+    "rank-16 alpha-32 all-linear LoRA on frozen Base",
+    "61,734 supervised-token first checkpoint",
+    "base revision, seed, all non-LR optimizer/scheduler values and loss mask",
+    "frozen dev and E2B protocols"
+  ],
+  "first_gate": "25_percent",
+  "acceptance_gate_source": "artifacts/configs/day12-recovery-rollout-policy.json"
+}

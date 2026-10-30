@@ -1,0 +1,248 @@
+{
+  "activation_gate": {
+    "required_source_outcome": "succeeded",
+    "selection": {
+      "content_sha256": "372f3a5c6114da819b44399aff0b77f6371585c8dc931956fb204c1944282f00",
+      "file_sha256": "5fdeda915302aa6899dbe831d51a43545157a6a87a692cfd465ee2462a83077c",
+      "path": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/PROBE-SELECTION.json",
+      "role": "authorization_only_not_warm_start",
+      "selected_candidate": "probe-s20260809-lr1e-4-t12000",
+      "selected_checkpoint": "t12000",
+      "selected_learning_rate": "1e-4",
+      "status": "run_main"
+    },
+    "source_run": "run-004-probe-primary-remediated"
+  },
+  "artifact_root": {
+    "path": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z",
+    "reason": "runner state, prepared manifests/data, embedded selection paths, and future main lineage share one official Day20 v3 experiment root",
+    "reuse_official_root": true
+  },
+  "budget": {
+    "confirmation_eval_accesses_reserved": 1,
+    "eval_accesses_at_activation": 5,
+    "expected_gpu_hours_at_activation": 0.196101303,
+    "primary_main_eval_accesses": 4,
+    "primary_main_gpu_hours_cap": 1.2,
+    "remaining_gpu_hours_at_activation": 2.303898697,
+    "reserved_confirmation_gpu_hours": 0.9,
+    "stop_before_unplanned_gpu_work": true,
+    "version_gpu_hours_cap": 2.5
+  },
+  "checkpoint_schedule": {
+    "checkpoint_actual_tokens": {
+      "early": 80102,
+      "final": 320000,
+      "mid": 192049
+    },
+    "checkpoint_steps": {
+      "early": 470,
+      "final": 1904,
+      "mid": 1174
+    },
+    "checkpoint_tokens": {
+      "early": 80000,
+      "final": 320000,
+      "mid": 192000
+    },
+    "optimizer_steps": 1904
+  },
+  "contract_sha256": "20fdabd79d0337ba1634ebd4c0dc5e02abacaa20cceac78df264ea192d896d2a",
+  "evaluation": {
+    "all_candidates_required_before_primary_selection": true,
+    "candidate_ids": [
+      "base-full",
+      "main-s20260809-lr1e-4-early",
+      "main-s20260809-lr1e-4-mid",
+      "main-s20260809-lr1e-4-final"
+    ],
+    "new_eval_accesses": 4,
+    "ordered_sample_ids_sha256": "aa993b7bdd59b861384f3319d22e8a1a28f2f4f92860e3f956ac4c47074dc9dc",
+    "records": 112,
+    "records_per_skill": 28,
+    "scope": "full112"
+  },
+  "frozen_files": [
+    {
+      "path": "artifacts/eval/day10-frozen-eval-manifest.json",
+      "sha256": "be4b79f93d8c850360f3f2d38c223fcd347517796daaa9a1a4d3bc1a5eab7491"
+    },
+    {
+      "path": "day-10-frozen-eval-baseline/day10_scorers.py",
+      "sha256": "18be9a87b857ba80baf8718bf3c75276f58c96f29359b07400e56e09ecb11d54"
+    },
+    {
+      "path": "day-10-frozen-eval-baseline/score_day10_code_e2b.py",
+      "sha256": "ee5581f3a29f02737ae08cbd7591e839b996168b3d1276670227e67157bcd4b0"
+    },
+    {
+      "path": "day-10-frozen-eval-baseline/day10_e2b_sandbox_config.json",
+      "sha256": "d4841e1e0479f6488306e916eb5d664d848716e80cfc7aef9943e6134ecbfc8c"
+    }
+  ],
+  "implementation": [
+    {
+      "role": "candidate_factory",
+      "sha256": "92b9b575b5ac80d6c896924de4e930badd26be98633dcea133347263dda144de"
+    },
+    {
+      "role": "target_encoding",
+      "sha256": "a2ab893f6c52d0ce514ec442304f6d279e0c4313f7fff9c7cb3c90866695fc06"
+    },
+    {
+      "role": "core_training_runtime",
+      "sha256": "8473e5d4fe55f0d072f6f112418c0439809452c206d3a7b0f2c4cc7ae899de9d"
+    },
+    {
+      "role": "core_training_plugin",
+      "sha256": "7129e5e3606756f242129539c740c303a13806ee636170df8ac8a86b070fbf5e"
+    },
+    {
+      "role": "target_runtime",
+      "sha256": "b523703ccea84bdf9c09463c4982e9677347eadc8f500e62d294c170a35f0c99"
+    },
+    {
+      "role": "target_plugin",
+      "sha256": "1c26257aad3095f77e4b3fa9ce1b881272ea3bdfe6acfaafd8126ea13a35549b"
+    },
+    {
+      "role": "runner",
+      "sha256": "dc12f83e49161b7f04d328bc73d15d677a8af85da1b47eb72832e66ba7a85c6a"
+    },
+    {
+      "role": "raw_evaluator",
+      "sha256": "4da1e7bed95a628e6914711842001b491b25e821ba6711c7bafac8c08e837963"
+    },
+    {
+      "role": "normalized_rescorer",
+      "sha256": "0f8cffad3265fa85af920d5e0a8c2e88554b8c49c91d85f9a3885e899c7b06f2"
+    },
+    {
+      "role": "code_e2b",
+      "sha256": "cda49ee80e356ee4f419b6de512cca95a728998a7c88c3511bce373dd0a08784"
+    },
+    {
+      "role": "primary_selector",
+      "sha256": "6e861507286bde99128d94f6b9f9c0ec04b229c656f99c68a79e03b3b2125187"
+    }
+  ],
+  "inputs": [
+    {
+      "content_sha256": "f3acfd8fe38c69e8864182ef9247b27c4f2483bde9228faab9b8b521f0053ce6",
+      "file_sha256": "a112674cd186a3ee8dea3687a9e5ab6ef12e393402fd0cc3924d74b4fcf75723",
+      "path": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/DAY20-V3-MANIFEST.json",
+      "role": "outer_manifest"
+    },
+    {
+      "content_sha256": "dc90dee5ae68463e9ceed0c41c662eb56b0dfda81b9ef78d3547f4830a428b0d",
+      "file_sha256": "476847f1d311c2f6c1432dba0767ea978c410f3c65e5c937dfceee20d0b9fac6",
+      "path": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/DAY20-V2-MANIFEST.json",
+      "role": "core_manifest"
+    },
+    {
+      "content_sha256": "bc6da3fe02f18ea801e0fccdf5801d62dcb46c59e7d936f4e961bba326429e81",
+      "file_sha256": "019d2ef1b87b5c2b8cfaf20a5c3145fbffb40ab0f5e9b00b7a95c07b28a97054",
+      "path": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/TARGET-ENCODING-AUDIT.json",
+      "role": "target_encoding_audit"
+    },
+    {
+      "content_sha256": "03d13757bd892ba0361d83548569078402564958795be4a3ac7f1f7af3bc3299",
+      "file_sha256": "3d2a54bdff88a5f7ca43486aca86f5f3f9f5b5d902575314ba43821ba7a8b82a",
+      "path": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/SELECTION-EQUIVALENCE.json",
+      "role": "selection_equivalence"
+    },
+    {
+      "content_sha256": "3a3e6060ffb441f0390a05e3aaf2d06c6656c5ec35c917e810910f100d8a0da7",
+      "file_sha256": "088eab8545e9f039e51aba1dcd0179040cadb34e3b6ea7f87c04d3f979baec2a",
+      "path": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/evidence/E2B-PREFLIGHT.json",
+      "role": "e2b_preflight"
+    },
+    {
+      "content_sha256": "372f3a5c6114da819b44399aff0b77f6371585c8dc931956fb204c1944282f00",
+      "file_sha256": "5fdeda915302aa6899dbe831d51a43545157a6a87a692cfd465ee2462a83077c",
+      "path": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/PROBE-SELECTION.json",
+      "role": "probe_selection"
+    }
+  ],
+  "main_config": {
+    "resolved_expected": {
+      "file_sha256": "b0494af589490fc79f9664bd2d86e78616409e9be389f28cbaec9d8680bdf7c6",
+      "immutable_sha256": "536fcca7b89b6931fd4f1f9f3b7fd57092ea02542aeaa45446a153ca14444161",
+      "learning_rate": "1e-4",
+      "path": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/configs/main-s20260809-lr1e-4.json",
+      "seed": 20260809
+    },
+    "template": {
+      "file_sha256": "e1015e0a9148b00966b52084737bab87087f44c06cab0aeb9965ef61c0844c5b",
+      "immutable_sha256": "4b122dd0891ce61e60e612c13c6ca660abeca4cc66e1b77b6444659879ee821c",
+      "path": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/configs/main-template-v2.json"
+    }
+  },
+  "main_dataset": {
+    "file_sha256": "5fa5b5e43c78b02dd7fe62c762020d43c2a4cb857ded9a2c76b6fe37028ab13c",
+    "ordered_sample_ids_sha256": "29523d7bed70780b211692d834b282c7d69f29a28aeca05ffab9c1b0283509b4",
+    "ordered_supervised_tokens_sha256": "ae1af777c0f610c1672005004ecc9a8e24d8859e092fe28f77459babf40594f8",
+    "path": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/data/main-v2.jsonl",
+    "records": 15226,
+    "supervised_tokens": 320000,
+    "temporal_mix_sha256": "128be71a1e7a908174d4be6a70c53e12618ab778f3b1b19c88ea7da42c687668"
+  },
+  "model_start": {
+    "path": "/root/autodl-tmp/Qwen--Qwen3.5-4B-Base/1001bb4d826a52d1f399e183466143f4da7b741b",
+    "role": "base_fresh",
+    "snapshot_sha256": "a176a3c982da5480a0ca98280848474133d105d2e4ab45dc37ce2c68a7c2195b",
+    "warm_start_from_probe": false
+  },
+  "phase": "main_primary",
+  "primary_selector": {
+    "base_is_fallback_not_ranked_candidate": true,
+    "implementation_sha256": "6e861507286bde99128d94f6b9f9c0ec04b229c656f99c68a79e03b3b2125187",
+    "on_no_winner": "base_fallback_stop_no_confirmation",
+    "on_winner": "activate_run-003_confirmation_only",
+    "output": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/PRIMARY-MAIN-SELECTION.json",
+    "promotion_floors": {
+      "code_correct": 14,
+      "code_sandbox_execution_eligible": 26,
+      "finance_correct": 10,
+      "format_compliant": 90,
+      "general_correct": 5,
+      "infrastructure_failures": 0,
+      "math_correct": 17,
+      "total_correct": 65
+    },
+    "ranking": [
+      "total_correct_desc",
+      "general_correct_desc",
+      "code_correct_desc",
+      "checkpoint_target_tokens_asc"
+    ]
+  },
+  "run_id": "run-002-main-primary",
+  "runner_command": [
+    "bash",
+    "run_day20_v3_autodl.sh",
+    "main"
+  ],
+  "runtime": {
+    "core_runtime_identity_sha256": "6e1018b2528288e459a0e5707468ac8ede284ca497e03e30f91139ff2b3cc2d8",
+    "cuda_visible_devices": "0",
+    "gpu_count": 1,
+    "inference_template": "qwen3_5",
+    "ms_swift_commit": "565a1ad586a21d24b23931c52d2c62b49c39bee8",
+    "target_runtime_identity_sha256": "f5117f90f30e8209ab2cc3b9c2d9761c81e718cdbe29cfb1ad3e638ae3c8edf5",
+    "training_template": "day20_qwen3_5_target_v3"
+  },
+  "schema_name": "rsi.run_contract",
+  "schema_version": 1,
+  "scope": "full112",
+  "seed": 20260809,
+  "stop_on": [
+    "probe_selection_or_input_identity_drift_before_gpu",
+    "five_step_safety_failure",
+    "main_training_or_envelope_integrity_failure",
+    "projected_primary_cost_above_1.2_gpu_hours",
+    "no_primary_checkpoint_passes_all_frozen_floors",
+    "version_gpu_hours_cap"
+  ],
+  "version_id": "rsi-v0002"
+}

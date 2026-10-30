@@ -1,0 +1,283 @@
+{
+  "schema_version": 1,
+  "domain": "day12.recovery_rollout_trace",
+  "status": "complete_maximum_rollouts_no_acceptance",
+  "policy_path": "artifacts/configs/day12-recovery-rollout-policy.json",
+  "rollouts_completed": 10,
+  "maximum_rollouts": 10,
+  "accepted_rollout": null,
+  "frozen_test_consumed": false,
+  "rollouts": [
+    {
+      "ordinal": 1,
+      "run_id": "C",
+      "status": "failed_gate_checkpoint_deleted",
+      "hypothesis": "Halving finance supervised-token share will reduce FinQA format interference while preserving code gains and Base math capability.",
+      "primary_change": "Finance token share 25% to 12.5%; released share split equally across general, math, and code.",
+      "parent": "Base plus Day 12 training recipe",
+      "checkpoint": "25_percent",
+      "scores": {"general": 0, "math": 1, "code": 3, "finance": 1, "total": 5},
+      "gate": {"math": false, "code": false, "total": false, "accepted": false},
+      "result": "Finance token-share reduction alone did not prevent severe math/general regression.",
+      "outcome_report": "artifacts/reports/day12-mix-C-recovery-outcome.json",
+      "full_checkpoint_deleted": true,
+      "bf16_export_retained": true
+    },
+    {
+      "ordinal": 2,
+      "run_id": "D",
+      "status": "failed_gate_checkpoint_deleted",
+      "hypothesis": "Natural task routing and removal of the global FinQA Calculation DSL will reduce format leakage and recover aggregate capability.",
+      "primary_change": "Run C ratios and optimizer retained; prompts receive natural routing constraints and finance targets become natural arithmetic steps ending in Final answer.",
+      "parent": "Run C mixture ratios and training recipe",
+      "checkpoint": "25_percent",
+      "scores": {"general": 3, "math": 2, "code": 5, "finance": 2, "total": 12},
+      "delta_vs_C": {"general": 3, "math": 1, "code": 2, "finance": 1, "total": 7},
+      "gate": {"math": false, "code": true, "total": false, "accepted": false},
+      "result": "Format repair materially improved parsing, ceiling behavior and total score, but math retention remained the dominant failure.",
+      "outcome_report": "artifacts/reports/day12-format-repair-D-outcome.json",
+      "full_checkpoint_deleted": true,
+      "bf16_export_retained": true
+    },
+    {
+      "ordinal": 3,
+      "run_id": "E",
+      "status": "failed_math_gate_checkpoint_deleted",
+      "hypothesis": "The remaining math regression is driven mainly by excessive full-parameter update magnitude; halving peak learning rate should retain Base math while preserving the format-repaired code gain.",
+      "primary_change": "Learning rate 2e-5 to 1e-5.",
+      "parent": "Run D data, model, token budget, seed, optimizer family and constant-after-warmup scheduler",
+      "checkpoint": "25_percent",
+      "scores": {"general": 4, "math": 4, "code": 9, "finance": 2, "total": 19},
+      "delta_vs_D": {"general": 1, "math": 2, "code": 4, "finance": 0, "total": 7},
+      "gate": {"math": false, "code": true, "total": true, "accepted": false},
+      "result": "Halving LR moved the frontier strongly upward, but math retention remained below threshold.",
+      "outcome_report": "artifacts/reports/day12-rollout-E-outcome.json",
+      "full_checkpoint_deleted": true,
+      "bf16_export_retained": true
+    },
+    {
+      "ordinal": 4,
+      "run_id": "F",
+      "status": "failed_all_gates_checkpoint_deleted",
+      "hypothesis": "The positive retention trend continues at lower update magnitude; 5e-6 should recover more Base math while retaining enough code gain to pass all gates.",
+      "primary_change": "Learning rate 1e-5 to 5e-6.",
+      "parent": "Run E data, model, token budget, seed and all non-LR optimizer/scheduler settings",
+      "checkpoint": "25_percent",
+      "scores": {"general": 9, "math": 3, "code": 0, "finance": 0, "total": 12},
+      "delta_vs_E": {"general": 5, "math": -1, "code": -9, "finance": -2, "total": -7},
+      "gate": {"math": false, "code": false, "total": false, "accepted": false},
+      "result": "The lower LR caused Base-like maximum-length continuation without restoring Base math and erased E's code gains; the monotonic retention hypothesis was rejected.",
+      "outcome_report": "artifacts/reports/day12-rollout-F-outcome.json",
+      "full_checkpoint_deleted": true,
+      "bf16_export_retained": false
+    },
+    {
+      "ordinal": 5,
+      "run_id": "G",
+      "status": "failed_code_and_total_gates_checkpoint_deleted",
+      "hypothesis": "Freezing Base weights and training an all-linear LoRA adapter will retain Base math while learning enough code and routing behavior from the repaired data to pass every gate.",
+      "primary_change": "Full-parameter optimization to rank-16 all-linear LoRA; E's 1e-5 LR and every data, schedule and eval invariant are retained.",
+      "parent": "Run E data and optimizer recipe, with the exact Base checkpoint frozen beneath the adapter",
+      "checkpoint": "25_percent",
+      "spec": "artifacts/configs/day12-rollout-G-spec.json",
+      "scores": {"general": 2, "math": 12, "code": 0, "finance": 0, "total": 14},
+      "delta_vs_E": {"general": -2, "math": 8, "code": -9, "finance": -2, "total": -5},
+      "gate": {"math": true, "code": false, "total": false, "accepted": false},
+      "result": "Freezing Base weights fully recovered math retention, but E's unchanged 1e-5 LR was too weak for LoRA to add code capability.",
+      "outcome_report": "artifacts/reports/day12-rollout-G-outcome.json",
+      "full_checkpoint_deleted": true,
+      "bf16_export_retained": true
+    },
+    {
+      "ordinal": 6,
+      "run_id": "H",
+      "status": "failed_math_and_code_gates_checkpoint_deleted",
+      "hypothesis": "Increasing only LoRA LR will add executable code capability while the frozen Base keeps math at or above ten.",
+      "primary_change": "LoRA learning rate 1e-5 to 5e-5.",
+      "parent": "Run G adapter architecture, data, schedule, Base model and every non-LR invariant",
+      "checkpoint": "25_percent",
+      "spec": "artifacts/configs/day12-rollout-H-spec.json",
+      "scores": {"general": 8, "math": 8, "code": 3, "finance": 0, "total": 19},
+      "delta_vs_G": {"general": 6, "math": -4, "code": 3, "finance": 0, "total": 5},
+      "gate": {"math": false, "code": false, "total": true, "accepted": false},
+      "result": "Higher LoRA LR added general/code capability but missed math and code gates by two each; every sample still hit the generation ceiling.",
+      "outcome_report": "artifacts/reports/day12-rollout-H-outcome.json",
+      "full_checkpoint_deleted": true,
+      "bf16_export_retained": false
+    },
+    {
+      "ordinal": 7,
+      "run_id": "I",
+      "status": "failed_math_and_code_gates_checkpoint_and_export_deleted",
+      "hypothesis": "Reallocating H's supervised tokens toward math and code will recover the two missing cases in each constrained slice while preserving H's aggregate gain.",
+      "primary_change": "Target ratios general/math/code/finance 7/24,7/24,7/24,1/8 to 1/8,5/12,5/12,1/24.",
+      "parent": "Run H rank-16 LoRA, 5e-5 LR, Base revision, format contract, total token budget and eval protocol",
+      "checkpoint": "25_percent",
+      "spec": "artifacts/configs/day12-rollout-I-spec.json",
+      "scores": {"general": 5, "math": 8, "code": 3, "finance": 0, "total": 16},
+      "delta_vs_H": {"general": -3, "math": 0, "code": 0, "finance": 0, "total": -3},
+      "gate": {"math": false, "code": false, "total": true, "accepted": false},
+      "result": "The math/code-heavy mixture left both constrained scores unchanged and reduced general by three, rejecting raw task-share scarcity as the main cause.",
+      "outcome_report": "artifacts/reports/day12-rollout-I-outcome.json",
+      "full_checkpoint_deleted": true,
+      "bf16_export_retained": false
+    },
+    {
+      "ordinal": 8,
+      "run_id": "J",
+      "status": "failed_all_gates_checkpoint_and_export_deleted",
+      "hypothesis": "Reducing only I's LoRA LR will recover two math cases while its code-heavy mixture retains at least five executable code solutions.",
+      "primary_change": "LoRA learning rate 5e-5 to 3e-5.",
+      "parent": "Run I exact manifest/order, rank-16 adapter, Base revision and every non-LR invariant",
+      "checkpoint": "25_percent",
+      "spec": "artifacts/configs/day12-rollout-J-spec.json",
+      "scores": {"general": 2, "math": 9, "code": 1, "finance": 0, "total": 12},
+      "delta_vs_I": {"general": -3, "math": 1, "code": -2, "finance": 0, "total": -4},
+      "gate": {"math": false, "code": false, "total": false, "accepted": false},
+      "result": "Lower LR recovered one math case but lost two code and three general cases; every sample still hit its generation ceiling.",
+      "outcome_report": "artifacts/reports/day12-rollout-J-outcome.json",
+      "full_checkpoint_deleted": true,
+      "bf16_export_retained": false
+    },
+    {
+      "ordinal": 9,
+      "run_id": "K",
+      "status": "failed_all_gates_checkpoint_and_export_deleted",
+      "hypothesis": "Directly adapting lm_head in addition to J's decoder projections will improve executable code and termination without losing J's math-retention gain.",
+      "primary_change": "LoRA targets all decoder linear projections to the same projections plus lm_head.",
+      "parent": "Run J LR, exact manifest/order, rank/alpha, Base revision and all non-target-module invariants",
+      "checkpoint": "25_percent",
+      "spec": "artifacts/configs/day12-rollout-K-spec.json",
+      "scores": {"general": 2, "math": 9, "code": 0, "finance": 0, "total": 11},
+      "delta_vs_J": {"general": 0, "math": 0, "code": -1, "finance": 0, "total": -1},
+      "gate": {"math": false, "code": false, "total": false, "accepted": false},
+      "result": "Direct lm_head LoRA left math and all ceiling hits unchanged and reduced code from one to zero; output projection was not the bottleneck.",
+      "outcome_report": "artifacts/reports/day12-rollout-K-outcome.json",
+      "full_checkpoint_deleted": true,
+      "bf16_export_retained": false
+    },
+    {
+      "ordinal": 10,
+      "run_id": "L",
+      "status": "failed_all_gates_checkpoint_and_export_deleted_maximum_rollouts_reached",
+      "hypothesis": "Doubling I's all-linear LoRA rank while keeping alpha fixed will add code capacity and reduce update scaling enough to recover math retention.",
+      "primary_change": "LoRA rank 16 to 32 with alpha fixed at 32 (alpha/r 2 to 1).",
+      "parent": "Run I LR, exact manifest/order, target modules, Base revision and every non-rank invariant",
+      "checkpoint": "25_percent",
+      "spec": "artifacts/configs/day12-rollout-L-spec.json",
+      "scores": {"general": 4, "math": 8, "code": 1, "finance": 0, "total": 13},
+      "delta_vs_I": {"general": -1, "math": 0, "code": -2, "finance": 0, "total": -3},
+      "gate": {"math": false, "code": false, "total": false, "accepted": false},
+      "result": "Doubling rank while halving alpha/r scaling left math unchanged, reduced code from three to one and did not change 112/112 ceiling behavior.",
+      "outcome_report": "artifacts/reports/day12-rollout-L-outcome.json",
+      "full_checkpoint_deleted": true,
+      "bf16_export_retained": false
+    }
+  ],
+  "storage_events": [
+    {
+      "path": "/root/autodl-tmp/runs/day12-20260806/run-C/checkpoints/checkpoint-25_percent",
+      "reason": "Recovery rollout C failed all gates.",
+      "deleted": true,
+      "recoverability": "Retraining only"
+    },
+    {
+      "path": "/root/autodl-tmp/runs/day12-20260806/run-B/checkpoints/checkpoint-60_percent",
+      "reason": "Worst preregistered checkpoint and storage was below the 50 GiB preflight threshold.",
+      "deleted": true,
+      "recoverability": "Retraining only"
+    },
+    {
+      "path": "/root/autodl-tmp/runs/day12-20260806/run-D/checkpoints/checkpoint-25_percent",
+      "reason": "Recovery rollout D failed math and aggregate gates.",
+      "deleted": true,
+      "recoverability": "Retraining only"
+    },
+    {
+      "path": "/root/autodl-tmp/runs/day12-20260806/run-E/checkpoints/checkpoint-25_percent",
+      "reason": "Recovery rollout E failed the math gate.",
+      "deleted": true,
+      "recoverability": "Retraining only"
+    },
+    {
+      "path": "/root/autodl-tmp/runs/day12-20260806/run-F/checkpoints/checkpoint-25_percent",
+      "reason": "Recovery rollout F failed math, code and aggregate gates and exhibited 112/112 generation ceiling hits.",
+      "deleted": true,
+      "recoverability": "Retraining only"
+    },
+    {
+      "path": "/root/autodl-tmp/runs/day12-20260806/run-G/checkpoints/checkpoint-25_percent",
+      "reason": "Recovery rollout G passed math but failed code and aggregate gates.",
+      "deleted": true,
+      "recoverability": "Retraining only"
+    },
+    {
+      "path": "/root/autodl-tmp/runs/day12-20260806/inference-exports/F-25_percent",
+      "reason": "H preflight had 49.74 GiB free against a 50 GiB gate; F was the worst recent failed rollout and all reproducibility evidence was already preserved.",
+      "deleted": true,
+      "recoverability": "Retraining and BF16 export only"
+    },
+    {
+      "path": "/root/autodl-tmp/runs/day12-20260806/run-H/checkpoints/checkpoint-25_percent",
+      "reason": "Recovery rollout H passed aggregate but failed math and code gates.",
+      "deleted": true,
+      "recoverability": "Retraining only"
+    },
+    {
+      "path": "/root/autodl-tmp/runs/day12-20260806/inference-exports/H-25_percent",
+      "reason": "I preflight had 49.73 GiB free against a 50 GiB gate; H failed both constrained gates and all evidence was already preserved.",
+      "deleted": true,
+      "recoverability": "Retraining and BF16 export only"
+    },
+    {
+      "path": "/root/autodl-tmp/runs/day12-20260806/run-I/checkpoints/checkpoint-25_percent",
+      "reason": "Recovery rollout I passed aggregate but failed math and code gates; the complete training/eval evidence chain was preserved locally.",
+      "deleted": true,
+      "recoverability": "Retraining only"
+    },
+    {
+      "path": "/root/autodl-tmp/runs/day12-20260806/inference-exports/I-25_percent",
+      "reason": "J needed the 50 GiB storage gate; I failed both constrained gates and its model/eval hashes plus full predictions were preserved.",
+      "deleted": true,
+      "recoverability": "Retraining and BF16 export only"
+    },
+    {
+      "path": "/root/autodl-tmp/runs/day12-20260806/run-J/checkpoints/checkpoint-25_percent",
+      "reason": "Recovery rollout J failed all gates; complete training and evaluation evidence was preserved locally.",
+      "deleted": true,
+      "recoverability": "Retraining only"
+    },
+    {
+      "path": "/root/autodl-tmp/runs/day12-20260806/inference-exports/J-25_percent",
+      "reason": "K needed the 50 GiB storage gate; J failed all gates and its model/eval hashes plus full predictions were preserved.",
+      "deleted": true,
+      "recoverability": "Retraining and BF16 export only"
+    },
+    {
+      "path": "/root/autodl-tmp/runs/day12-20260806/run-K/checkpoints/checkpoint-25_percent",
+      "reason": "Recovery rollout K failed all gates; complete training, merge verification and evaluation evidence was preserved locally.",
+      "deleted": true,
+      "recoverability": "Retraining only"
+    },
+    {
+      "path": "/root/autodl-tmp/runs/day12-20260806/inference-exports/K-25_percent",
+      "reason": "Final rollout L needed the 50 GiB storage gate; K failed all gates and its standalone-load/eval hashes plus predictions were preserved.",
+      "deleted": true,
+      "recoverability": "Retraining and BF16 export only"
+    },
+    {
+      "path": "/root/autodl-tmp/runs/day12-20260806/run-L/checkpoints/checkpoint-25_percent",
+      "reason": "Final recovery rollout L failed all gates; complete training and evaluation evidence was preserved locally.",
+      "deleted": true,
+      "recoverability": "Retraining only"
+    },
+    {
+      "path": "/root/autodl-tmp/runs/day12-20260806/inference-exports/L-25_percent",
+      "reason": "The maximum-rollout stopping rule was reached without acceptance; L failed all gates and its model/eval hashes plus predictions were preserved.",
+      "deleted": true,
+      "recoverability": "Retraining and BF16 export only"
+    }
+  ],
+  "stopping_reason": "maximum_recovery_rollouts_reached_without_dev_acceptance",
+  "final_retrospective": "artifacts/reports/day12-recovery-final-retrospective.md"
+}

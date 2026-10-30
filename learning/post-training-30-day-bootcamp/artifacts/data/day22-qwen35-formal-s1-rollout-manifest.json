@@ -1,0 +1,21 @@
+{
+  "candidate_ids_sha256": "0924a5ab5ccadc4a1f9d2e8e67fe9e1ece4ed7b22dcf3c315a118a63e7147155",
+  "candidate_rows_sha256": "c38ce65ef8667b101aa06327677deb99f82d433c95f2c567046b2edf93a3f0d5",
+  "families": 330,
+  "generation_seeds_sha256": "ce1613a52a187c0aa11e678944631b30342126c0fafff7d9c46aec5c761e0fc8",
+  "manifest_sha256": "0d7ff0fe815c8decae78ebeff38022cbe50aed40ba83dbe4317595173a966786",
+  "merged_s1_snapshot_sha256": "768f2bc3c839edf5b6e0757403e3faa5a085ac9094f2987a34c6913bbca00806",
+  "output": {
+    "bytes": 13040042,
+    "file_sha256": "eb2aa2d985241f83ba871bd2b945aca35c8a23944163579d564b640e5768e58b",
+    "path": "/root/autodl-tmp/day22-preference-20260813/rollout/day22-s1-k6-candidates.jsonl"
+  },
+  "rollout_contract_sha256": "0b0c412a52bbfc419804307562fef29716195efe62e54b45e9be3737b939794f",
+  "rows": 1980,
+  "s1_candidate": "main-s20260809-lr1e-4-final",
+  "samples_per_family": 6,
+  "schema_name": "day22.s1_rollout_merge_manifest",
+  "schema_version": 1,
+  "source_seed_manifest_sha256": "700a7e16aa14ae62ad630c9d64f384c3c4274f9bf63a26e19babd4e4849c2ad1",
+  "status": "complete"
+}

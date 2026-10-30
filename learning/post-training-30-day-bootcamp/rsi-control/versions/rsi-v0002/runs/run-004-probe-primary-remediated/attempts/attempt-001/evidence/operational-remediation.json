@@ -1,0 +1,25 @@
+{
+  "schema_name": "rsi.operational_remediation_evidence",
+  "schema_version": 1,
+  "version_id": "rsi-v0002",
+  "run_id": "run-004-probe-primary-remediated",
+  "attempt_id": "attempt-001",
+  "replaces_run": "run-001-probe-primary",
+  "failure_classification": "infrastructure_integration",
+  "previous_global_step": 0,
+  "previous_training_summary": null,
+  "previous_checkpoint": null,
+  "old_plugin_sha256": "08b517281f9752e4bd7a507d0b3366a4c542edf8e56a2f8bcd04a0302ed0f32b",
+  "new_plugin_sha256": "1c26257aad3095f77e4b3fa9ce1b881272ea3bdfe6acfaafd8126ea13a35549b",
+  "new_target_runtime_identity_sha256": "f5117f90f30e8209ab2cc3b9c2d9761c81e718cdbe29cfb1ad3e638ae3c8edf5",
+  "model_semantics_changed": false,
+  "data_changed": false,
+  "training_recipe_changed": false,
+  "evaluation_changed": false,
+  "scorer_or_gate_changed": false,
+  "remote_tests": {
+    "status": "pass",
+    "passed": 28,
+    "failed": 0
+  }
+}

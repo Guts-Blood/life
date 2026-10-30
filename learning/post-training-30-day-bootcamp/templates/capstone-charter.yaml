@@ -1,0 +1,252 @@
+schema_version: 2
+status: draft
+experiment_id: null
+domain: executable_coding
+
+branch_state:
+  active_policy_lineage: S0_to_S1_to_S2
+  teacher_student_extension: deferred_unselected
+  teacher_model_id: null
+  teacher_revision: null
+  teacher_extension_activation_requires_new_charter: true
+  teacher_extension_charter_version: null
+
+models:
+  active_policy:
+    checkpoint_id: S0
+    model_id: Qwen/Qwen3.5-4B-Base
+    revision: null
+    revision_status: pending_immutable_revision
+    config_hash: null
+    weight_index_hash: null
+    license_evidence_hash: null
+    sole_trainable_policy_lineage: true
+  teacher:
+    status: deferred_unselected
+    checkpoint_id: null
+    model_id: null
+    revision: null
+    config_hash: null
+    optimizer_updates_authorized: false
+
+processor_contract:
+  processor_id: Qwen/Qwen3.5-4B-Base
+  processor_revision: null
+  revision_status: pending_immutable_revision
+  processor_class: null
+  tokenizer_class: null
+  tokenizer_json_hash: null
+  processor_config_hash: null
+  special_tokens_map_hash: null
+  added_tokens_hash: null
+  chat_template_hash: null
+  code_extraction_contract_hash: null
+
+loader_contract:
+  model_loader_class: null
+  processor_loader_class: null
+  transformers_version: null
+  framework_version: null
+  dtype: null
+  attention_implementation: null
+  trust_remote_code: null
+  resolved_loader_config_hash: null
+
+modality_contract:
+  checkpoint_input_modalities:
+    - text
+    - image
+    - video
+  checkpoint_output_modalities:
+    - text
+  active_training_input_modalities:
+    - text
+  active_training_output_modalities:
+    - text
+  image_or_video_samples_authorized: false
+  multimodal_processor_path_required: true
+
+training_scope:
+  active_domain: executable_coding
+  active_checkpoint_graph:
+    - S0
+    - S1
+    - S2
+  teacher_checkpoint_graph_authorized: false
+  teacher_scoring_authorized: false
+  opd_authorized: false
+  sft_recipe: pending_day32_capacity_and_smoke
+  direct_rl_recipe: pending_day37_smoke
+  full_lora_qlora_decision: pending
+
+module_coverage:
+  module_inventory_hash: null
+  trainable_module_patterns: null
+  frozen_module_patterns: null
+  language_model_scope: pending
+  vision_tower_scope: pending
+  multimodal_projector_scope: pending
+  mtp_scope: pending
+  adapter_target_modules: null
+  coverage_assertion_hash: null
+
+freeze_state:
+  model_id: frozen
+  immutable_model_revision: pending
+  immutable_processor_revision: pending
+  processor_loader_contract: pending
+  modality_contract: frozen_text_only_training
+  task_data_eval_contract: pending_day31
+  module_coverage_contract: pending_before_training
+  training_recipe: pending_measured_capacity
+
+artifact_hashes:
+  model_identity_manifest_hash: null
+  processor_loader_manifest_hash: null
+  modality_scope_manifest_hash: null
+  module_coverage_manifest_hash: null
+  rendered_dataset_manifest_hash: null
+  code_container_hash: null
+  environment_scorer_hash: null
+
+golden_render_contract:
+  manifest_hash: null
+  sample_count: 20
+  rendered_text_hash: null
+  input_token_ids_hash: null
+  attention_mask_hash: null
+  label_mask_hash: null
+  processor_output_schema_hash: null
+  decoded_roundtrip_hash: null
+  exact_match_required: true
+  verified: false
+
+teacher_compatibility:
+  status: deferred_not_applicable
+  teacher_tokenizer_hash: null
+  policy_tokenizer_hash: null
+  vocab_token_id_map_hash: null
+  added_special_tokens_hash: null
+  coding_chat_template_hash: null
+  golden_prompt_manifest_hash: null
+  golden_prompt_count: 20
+  exact_match_required_if_activated: true
+  verified: false
+
+data_manifests:
+  sft_train: null
+  policy_train: null
+  capstone_dev: null
+  capstone_frozen: null
+  overlap_report: null
+  teacher_advantage_probe:
+    status: deferred
+    manifest_hash: null
+  trace_cold_start:
+    status: deferred
+    manifest_hash: null
+
+evaluation:
+  eval_suite_hash: null
+  scorer_registry_hash: null
+  sandbox_runtime_hash: null
+  environment_hash: null
+  primary_metric: executable_end_to_end_task_success
+  aggregation: null
+  guardrails: {}
+  minimum_meaningful_difference: null
+  confidence_interval: null
+  selection_policy_hash: null
+  frozen_consumption_record: null
+
+checkpoint_graph:
+  S0:
+    status: active_pending_revision_freeze
+    parent: null
+    model_id: Qwen/Qwen3.5-4B-Base
+    revision: null
+    objective: base_reference
+  S1:
+    status: active
+    parent: S0
+    objective: coding_sft
+  S2:
+    status: active
+    parent: S1
+    objective: direct_coding_rl
+  T0:
+    status: deferred_unselected
+    parent: null
+    model_id: null
+    optional: true
+  T1:
+    status: deferred_unselected
+    parent: T0
+    objective: teacher_sft
+    optional: true
+  T2:
+    status: deferred_unselected
+    parent: T1
+    objective: teacher_domain_rl
+    optional: true
+  S3:
+    status: deferred_unselected
+    parent: S1
+    objective: on_policy_distillation
+    teacher: null
+    optional: true
+  S1d:
+    status: deferred_unselected
+    parent: S1
+    objective: offline_teacher_trace_cold_start
+    optional: true
+  S3d:
+    status: deferred_unselected
+    parent: S1d
+    objective: on_policy_distillation_recovery
+    teacher: null
+    optional: true
+
+active_policy_budget:
+  sft_trained_tokens: null
+  direct_rl_trained_tokens: null
+  policy_optimizer_updates: null
+  unique_policy_prompt_ids: null
+  prompt_exposures: null
+  policy_rollout_token_cap: null
+  max_response_tokens: null
+  checkpoint_cadence: null
+
+deferred_matched_student_budgets:
+  status: deferred_not_applicable
+  student_trained_tokens: null
+  student_optimizer_updates: null
+  unique_policy_prompt_ids: null
+  prompt_exposures: null
+  student_rollout_token_cap: null
+  max_response_tokens: null
+  checkpoint_cadence: null
+
+cost_accounting:
+  policy_sft_gpu_hours: null
+  policy_rollout_gpu_hours: null
+  policy_direct_rl_gpu_hours: null
+  evaluation_gpu_hours: null
+  teacher_preparation_gpu_hours:
+    status: deferred
+    value: null
+  teacher_trace_gpu_hours:
+    status: deferred
+    value: null
+  teacher_scoring_gpu_hours:
+    status: deferred
+    value: null
+
+runtime:
+  framework_tag: null
+  framework_sha: null
+  container_digest: null
+  torch_cuda_nccl_lock: null
+  inference_backend_lock: null
+  single_node_core: true
+  gpu_hour_hard_cap: null

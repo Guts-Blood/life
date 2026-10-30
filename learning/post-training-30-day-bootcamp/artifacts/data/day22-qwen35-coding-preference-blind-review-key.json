@@ -1,0 +1,711 @@
+{
+  "handling": "keep_separate_from_reviewer_worksheet",
+  "items": [
+    {
+      "a_side": "chosen",
+      "b_side": "rejected",
+      "pair_id": "mbpp:task:847:smoke:00",
+      "presentation": "swapped",
+      "review_item_id": "review:04df879a0feff534da88c0b1"
+    },
+    {
+      "a_side": "rejected",
+      "b_side": "chosen",
+      "pair_id": "mbpp:task:646:smoke:00",
+      "presentation": "swapped",
+      "review_item_id": "review:07124dbe02c07b73b56a65d1"
+    },
+    {
+      "a_side": "chosen",
+      "b_side": "rejected",
+      "pair_id": "mbpp:task:773:smoke:00",
+      "presentation": "primary",
+      "review_item_id": "review:09b018e208c8b573d9489769"
+    },
+    {
+      "a_side": "chosen",
+      "b_side": "rejected",
+      "pair_id": "mbpp:task:793:smoke:00",
+      "presentation": "swapped",
+      "review_item_id": "review:0ab09ae8f647a3b4b9e29b3b"
+    },
+    {
+      "a_side": "rejected",
+      "b_side": "chosen",
+      "pair_id": "mbpp:task:892:smoke:00",
+      "presentation": "primary",
+      "review_item_id": "review:0c2de094b720070cc4ee2d8c"
+    },
+    {
+      "a_side": "chosen",
+      "b_side": "rejected",
+      "pair_id": "mbpp:task:796:smoke:00",
+      "presentation": "swapped",
+      "review_item_id": "review:0e152b74300d8d0a78baf31c"
+    },
+    {
+      "a_side": "chosen",
+      "b_side": "rejected",
+      "pair_id": "mbpp:task:827:smoke:00",
+      "presentation": "swapped",
+      "review_item_id": "review:10e58d64a5350cc02465adb0"
+    },
+    {
+      "a_side": "rejected",
+      "b_side": "chosen",
+      "pair_id": "mbpp:task:620:smoke:00",
+      "presentation": "swapped",
+      "review_item_id": "review:14144fce901e1f454f6ed18c"
+    },
+    {
+      "a_side": "rejected",
+      "b_side": "chosen",
+      "pair_id": "mbpp:task:819:smoke:00",
+      "presentation": "swapped",
+      "review_item_id": "review:152550c70ef10fef53437782"
+    },
+    {
+      "a_side": "rejected",
+      "b_side": "chosen",
+      "pair_id": "mbpp:task:793:smoke:00",
+      "presentation": "primary",
+      "review_item_id": "review:15d3f83a1349174a8b926390"
+    },
+    {
+      "a_side": "chosen",
+      "b_side": "rejected",
+      "pair_id": "mbpp:task:965:smoke:00",
+      "presentation": "primary",
+      "review_item_id": "review:163af2388ccef78570d5ce3c"
+    },
+    {
+      "a_side": "chosen",
+      "b_side": "rejected",
+      "pair_id": "mbpp:task:687:smoke:00",
+      "presentation": "swapped",
+      "review_item_id": "review:171ac045d0022fa2497a3641"
+    },
+    {
+      "a_side": "chosen",
+      "b_side": "rejected",
+      "pair_id": "mbpp:task:887:smoke:00",
+      "presentation": "swapped",
+      "review_item_id": "review:175d5a8ac07df2badeb9058d"
+    },
+    {
+      "a_side": "rejected",
+      "b_side": "chosen",
+      "pair_id": "mbpp:task:821:smoke:00",
+      "presentation": "swapped",
+      "review_item_id": "review:1be049029b1ee9220b151a68"
+    },
+    {
+      "a_side": "chosen",
+      "b_side": "rejected",
+      "pair_id": "mbpp:task:840:smoke:00",
+      "presentation": "swapped",
+      "review_item_id": "review:1d12f7da1a0e6e0680ffc920"
+    },
+    {
+      "a_side": "chosen",
+      "b_side": "rejected",
+      "pair_id": "mbpp:task:638:smoke:00",
+      "presentation": "primary",
+      "review_item_id": "review:1eba8a9ffb5f88d45fdda3da"
+    },
+    {
+      "a_side": "chosen",
+      "b_side": "rejected",
+      "pair_id": "mbpp:task:694:smoke:00",
+      "presentation": "swapped",
+      "review_item_id": "review:1f4a317591390d810366b818"
+    },
+    {
+      "a_side": "rejected",
+      "b_side": "chosen",
+      "pair_id": "mbpp:task:775:smoke:00",
+      "presentation": "primary",
+      "review_item_id": "review:1f84d6e3cf797cec9b7fd43d"
+    },
+    {
+      "a_side": "rejected",
+      "b_side": "chosen",
+      "pair_id": "mbpp:task:709:smoke:00",
+      "presentation": "primary",
+      "review_item_id": "review:1ff10b45e18e3a7604c18255"
+    },
+    {
+      "a_side": "rejected",
+      "b_side": "chosen",
+      "pair_id": "mbpp:task:910:smoke:00",
+      "presentation": "swapped",
+      "review_item_id": "review:25a34863d9e87a30656e1b8b"
+    },
+    {
+      "a_side": "chosen",
+      "b_side": "rejected",
+      "pair_id": "mbpp:task:673:smoke:00",
+      "presentation": "swapped",
+      "review_item_id": "review:28c7f03ff7c6791585cec9fb"
+    },
+    {
+      "a_side": "chosen",
+      "b_side": "rejected",
+      "pair_id": "mbpp:task:618:smoke:00",
+      "presentation": "swapped",
+      "review_item_id": "review:2941d2a334245e33e292a463"
+    },
+    {
+      "a_side": "rejected",
+      "b_side": "chosen",
+      "pair_id": "mbpp:task:733:smoke:00",
+      "presentation": "primary",
+      "review_item_id": "review:29767ede146d42ae16c7e8d6"
+    },
+    {
+      "a_side": "chosen",
+      "b_side": "rejected",
+      "pair_id": "mbpp:task:960:smoke:00",
+      "presentation": "swapped",
+      "review_item_id": "review:2a59c972e5dc5d4a839e626f"
+    },
+    {
+      "a_side": "chosen",
+      "b_side": "rejected",
+      "pair_id": "mbpp:task:723:smoke:00",
+      "presentation": "swapped",
+      "review_item_id": "review:2f09584565c171079485da5e"
+    },
+    {
+      "a_side": "chosen",
+      "b_side": "rejected",
+      "pair_id": "mbpp:task:873:smoke:00",
+      "presentation": "primary",
+      "review_item_id": "review:30ebf48c01eec2b03d12bea3"
+    },
+    {
+      "a_side": "rejected",
+      "b_side": "chosen",
+      "pair_id": "mbpp:task:864:smoke:00",
+      "presentation": "primary",
+      "review_item_id": "review:32ffd9fdfaa6821a4b992c9e"
+    },
+    {
+      "a_side": "rejected",
+      "b_side": "chosen",
+      "pair_id": "mbpp:task:796:smoke:00",
+      "presentation": "primary",
+      "review_item_id": "review:34beef064bd0a07e211a82f6"
+    },
+    {
+      "a_side": "chosen",
+      "b_side": "rejected",
+      "pair_id": "mbpp:task:790:smoke:00",
+      "presentation": "swapped",
+      "review_item_id": "review:34f62b7d2742a980f89ffbc2"
+    },
+    {
+      "a_side": "rejected",
+      "b_side": "chosen",
+      "pair_id": "mbpp:task:776:smoke:00",
+      "presentation": "primary",
+      "review_item_id": "review:35252c947b96a6c7edf2af94"
+    },
+    {
+      "a_side": "rejected",
+      "b_side": "chosen",
+      "pair_id": "mbpp:task:758:smoke:00",
+      "presentation": "primary",
+      "review_item_id": "review:35faca668662f8cb17551dc4"
+    },
+    {
+      "a_side": "rejected",
+      "b_side": "chosen",
+      "pair_id": "mbpp:task:969:smoke:00",
+      "presentation": "primary",
+      "review_item_id": "review:37d83c35029305fee47bef1f"
+    },
+    {
+      "a_side": "rejected",
+      "b_side": "chosen",
+      "pair_id": "mbpp:task:673:smoke:00",
+      "presentation": "primary",
+      "review_item_id": "review:39fa3f958a318c4dd9c99f76"
+    },
+    {
+      "a_side": "chosen",
+      "b_side": "rejected",
+      "pair_id": "mbpp:task:792:smoke:00",
+      "presentation": "swapped",
+      "review_item_id": "review:3d387a03fe3ac0d9428ebce6"
+    },
+    {
+      "a_side": "chosen",
+      "b_side": "rejected",
+      "pair_id": "mbpp:task:969:smoke:00",
+      "presentation": "swapped",
+      "review_item_id": "review:3e39fe21021d19807c5f72d5"
+    },
+    {
+      "a_side": "rejected",
+      "b_side": "chosen",
+      "pair_id": "mbpp:task:965:smoke:00",
+      "presentation": "swapped",
+      "review_item_id": "review:467c07a40111ff726717d68f"
+    },
+    {
+      "a_side": "rejected",
+      "b_side": "chosen",
+      "pair_id": "mbpp:task:873:smoke:00",
+      "presentation": "swapped",
+      "review_item_id": "review:49c695218a33ce5a2dadcab7"
+    },
+    {
+      "a_side": "rejected",
+      "b_side": "chosen",
+      "pair_id": "mbpp:task:615:smoke:00",
+      "presentation": "swapped",
+      "review_item_id": "review:4b91f5f67922de3320d9bb31"
+    },
+    {
+      "a_side": "chosen",
+      "b_side": "rejected",
+      "pair_id": "mbpp:task:732:smoke:00",
+      "presentation": "swapped",
+      "review_item_id": "review:4e132e165a6569371582c71b"
+    },
+    {
+      "a_side": "rejected",
+      "b_side": "chosen",
+      "pair_id": "mbpp:task:874:smoke:00",
+      "presentation": "swapped",
+      "review_item_id": "review:4e4ed61f380b1f1d73dbcb9f"
+    },
+    {
+      "a_side": "rejected",
+      "b_side": "chosen",
+      "pair_id": "mbpp:task:649:smoke:00",
+      "presentation": "swapped",
+      "review_item_id": "review:5413e685636f085763b746bb"
+    },
+    {
+      "a_side": "rejected",
+      "b_side": "chosen",
+      "pair_id": "mbpp:task:638:smoke:00",
+      "presentation": "swapped",
+      "review_item_id": "review:566b6ed0d95f569c9dc6f2f3"
+    },
+    {
+      "a_side": "chosen",
+      "b_side": "rejected",
+      "pair_id": "mbpp:task:892:smoke:00",
+      "presentation": "swapped",
+      "review_item_id": "review:5b776c833958ae06184a2784"
+    },
+    {
+      "a_side": "rejected",
+      "b_side": "chosen",
+      "pair_id": "mbpp:task:825:smoke:00",
+      "presentation": "swapped",
+      "review_item_id": "review:5d99be708f27cbb6e72ab8eb"
+    },
+    {
+      "a_side": "chosen",
+      "b_side": "rejected",
+      "pair_id": "mbpp:task:670:smoke:00",
+      "presentation": "primary",
+      "review_item_id": "review:5e84de12c8479019e44df8da"
+    },
+    {
+      "a_side": "rejected",
+      "b_side": "chosen",
+      "pair_id": "mbpp:task:732:smoke:00",
+      "presentation": "primary",
+      "review_item_id": "review:63d902083c38aa8958be0bba"
+    },
+    {
+      "a_side": "chosen",
+      "b_side": "rejected",
+      "pair_id": "mbpp:task:886:smoke:00",
+      "presentation": "swapped",
+      "review_item_id": "review:6663eb9e86cbafc872dc2f0e"
+    },
+    {
+      "a_side": "rejected",
+      "b_side": "chosen",
+      "pair_id": "mbpp:task:960:smoke:00",
+      "presentation": "primary",
+      "review_item_id": "review:684a54f5f280d4da70191ed7"
+    },
+    {
+      "a_side": "chosen",
+      "b_side": "rejected",
+      "pair_id": "mbpp:task:902:smoke:00",
+      "presentation": "primary",
+      "review_item_id": "review:68664da3407bd350134a6651"
+    },
+    {
+      "a_side": "chosen",
+      "b_side": "rejected",
+      "pair_id": "mbpp:task:971:smoke:00",
+      "presentation": "primary",
+      "review_item_id": "review:6c18ac5202407d2979b1f7f5"
+    },
+    {
+      "a_side": "rejected",
+      "b_side": "chosen",
+      "pair_id": "mbpp:task:943:smoke:00",
+      "presentation": "swapped",
+      "review_item_id": "review:6c737d1416161cd8ef7c3152"
+    },
+    {
+      "a_side": "chosen",
+      "b_side": "rejected",
+      "pair_id": "mbpp:task:620:smoke:00",
+      "presentation": "primary",
+      "review_item_id": "review:6e02cac1843ed6befb143dc9"
+    },
+    {
+      "a_side": "rejected",
+      "b_side": "chosen",
+      "pair_id": "mbpp:task:813:smoke:00",
+      "presentation": "swapped",
+      "review_item_id": "review:726b7affae90ddc731f14845"
+    },
+    {
+      "a_side": "chosen",
+      "b_side": "rejected",
+      "pair_id": "mbpp:task:649:smoke:00",
+      "presentation": "primary",
+      "review_item_id": "review:72a5a756084bb8fa1e376511"
+    },
+    {
+      "a_side": "chosen",
+      "b_side": "rejected",
+      "pair_id": "mbpp:task:720:smoke:00",
+      "presentation": "swapped",
+      "review_item_id": "review:73dec3a3fc296807798722c8"
+    },
+    {
+      "a_side": "chosen",
+      "b_side": "rejected",
+      "pair_id": "mbpp:task:706:smoke:00",
+      "presentation": "swapped",
+      "review_item_id": "review:7a28a861fc8ada68f754aeab"
+    },
+    {
+      "a_side": "chosen",
+      "b_side": "rejected",
+      "pair_id": "mbpp:task:646:smoke:00",
+      "presentation": "primary",
+      "review_item_id": "review:7a8a3c3327db6ca38569e1aa"
+    },
+    {
+      "a_side": "chosen",
+      "b_side": "rejected",
+      "pair_id": "mbpp:task:775:smoke:00",
+      "presentation": "swapped",
+      "review_item_id": "review:7bc3565465866c0fdcdde39d"
+    },
+    {
+      "a_side": "rejected",
+      "b_side": "chosen",
+      "pair_id": "mbpp:task:706:smoke:00",
+      "presentation": "primary",
+      "review_item_id": "review:809dba5f2b0da9b84d44d680"
+    },
+    {
+      "a_side": "chosen",
+      "b_side": "rejected",
+      "pair_id": "mbpp:task:733:smoke:00",
+      "presentation": "swapped",
+      "review_item_id": "review:81422038c3debc94fcc78eb2"
+    },
+    {
+      "a_side": "chosen",
+      "b_side": "rejected",
+      "pair_id": "mbpp:task:864:smoke:00",
+      "presentation": "swapped",
+      "review_item_id": "review:81fe4bd734a558770b0eef32"
+    },
+    {
+      "a_side": "rejected",
+      "b_side": "chosen",
+      "pair_id": "mbpp:task:827:smoke:00",
+      "presentation": "primary",
+      "review_item_id": "review:87231ae04411e7b1b055a49f"
+    },
+    {
+      "a_side": "rejected",
+      "b_side": "chosen",
+      "pair_id": "mbpp:task:644:smoke:00",
+      "presentation": "swapped",
+      "review_item_id": "review:8a4d71e164f03744d0cceb92"
+    },
+    {
+      "a_side": "chosen",
+      "b_side": "rejected",
+      "pair_id": "mbpp:task:910:smoke:00",
+      "presentation": "primary",
+      "review_item_id": "review:8af08ca5e803cce9e33a2b3d"
+    },
+    {
+      "a_side": "rejected",
+      "b_side": "chosen",
+      "pair_id": "mbpp:task:653:smoke:00",
+      "presentation": "primary",
+      "review_item_id": "review:8c9745e2251efba38841e7ff"
+    },
+    {
+      "a_side": "chosen",
+      "b_side": "rejected",
+      "pair_id": "mbpp:task:813:smoke:00",
+      "presentation": "primary",
+      "review_item_id": "review:8cb6b526963fecb7d029d48d"
+    },
+    {
+      "a_side": "rejected",
+      "b_side": "chosen",
+      "pair_id": "mbpp:task:773:smoke:00",
+      "presentation": "swapped",
+      "review_item_id": "review:8dcb9093d8e3c3f7a27af895"
+    },
+    {
+      "a_side": "rejected",
+      "b_side": "chosen",
+      "pair_id": "mbpp:task:618:smoke:00",
+      "presentation": "primary",
+      "review_item_id": "review:8eeda1eb320d4c7cdb9fe162"
+    },
+    {
+      "a_side": "rejected",
+      "b_side": "chosen",
+      "pair_id": "mbpp:task:772:smoke:00",
+      "presentation": "swapped",
+      "review_item_id": "review:9ab535e02b3d6cb76223588e"
+    },
+    {
+      "a_side": "chosen",
+      "b_side": "rejected",
+      "pair_id": "mbpp:task:819:smoke:00",
+      "presentation": "primary",
+      "review_item_id": "review:9bf0d36d2c8b9e7d41d4552c"
+    },
+    {
+      "a_side": "chosen",
+      "b_side": "rejected",
+      "pair_id": "mbpp:task:869:smoke:00",
+      "presentation": "primary",
+      "review_item_id": "review:a1f0fcda34a99ebd88600c4c"
+    },
+    {
+      "a_side": "chosen",
+      "b_side": "rejected",
+      "pair_id": "mbpp:task:825:smoke:00",
+      "presentation": "primary",
+      "review_item_id": "review:a64710ae723c55b8baa6d1c6"
+    },
+    {
+      "a_side": "rejected",
+      "b_side": "chosen",
+      "pair_id": "mbpp:task:687:smoke:00",
+      "presentation": "primary",
+      "review_item_id": "review:a8cc12010d75a74ea4eec3d6"
+    },
+    {
+      "a_side": "rejected",
+      "b_side": "chosen",
+      "pair_id": "mbpp:task:790:smoke:00",
+      "presentation": "primary",
+      "review_item_id": "review:ad96a0029c5d27fed6cee206"
+    },
+    {
+      "a_side": "rejected",
+      "b_side": "chosen",
+      "pair_id": "mbpp:task:902:smoke:00",
+      "presentation": "swapped",
+      "review_item_id": "review:af4bc83b4496c818b3f5bbf0"
+    },
+    {
+      "a_side": "chosen",
+      "b_side": "rejected",
+      "pair_id": "mbpp:task:644:smoke:00",
+      "presentation": "primary",
+      "review_item_id": "review:b10bbc84abb8428920330b22"
+    },
+    {
+      "a_side": "chosen",
+      "b_side": "rejected",
+      "pair_id": "mbpp:task:709:smoke:00",
+      "presentation": "swapped",
+      "review_item_id": "review:b8fc328c33c014abbe015b8b"
+    },
+    {
+      "a_side": "chosen",
+      "b_side": "rejected",
+      "pair_id": "mbpp:task:758:smoke:00",
+      "presentation": "swapped",
+      "review_item_id": "review:b9d65706837f4e18ef84567a"
+    },
+    {
+      "a_side": "rejected",
+      "b_side": "chosen",
+      "pair_id": "mbpp:task:900:smoke:00",
+      "presentation": "primary",
+      "review_item_id": "review:bb11feb10a3a913041216e5e"
+    },
+    {
+      "a_side": "rejected",
+      "b_side": "chosen",
+      "pair_id": "mbpp:task:878:smoke:00",
+      "presentation": "primary",
+      "review_item_id": "review:c0d57b9dccdd00c3af2dd827"
+    },
+    {
+      "a_side": "chosen",
+      "b_side": "rejected",
+      "pair_id": "mbpp:task:900:smoke:00",
+      "presentation": "swapped",
+      "review_item_id": "review:ca1305b2489968fb1e9ee6b3"
+    },
+    {
+      "a_side": "rejected",
+      "b_side": "chosen",
+      "pair_id": "mbpp:task:694:smoke:00",
+      "presentation": "primary",
+      "review_item_id": "review:cb81fddb56f42051df0a806d"
+    },
+    {
+      "a_side": "rejected",
+      "b_side": "chosen",
+      "pair_id": "mbpp:task:869:smoke:00",
+      "presentation": "swapped",
+      "review_item_id": "review:d20652234939c6e93f820fd4"
+    },
+    {
+      "a_side": "rejected",
+      "b_side": "chosen",
+      "pair_id": "mbpp:task:792:smoke:00",
+      "presentation": "primary",
+      "review_item_id": "review:d4ef167da878337e6f7e3c45"
+    },
+    {
+      "a_side": "chosen",
+      "b_side": "rejected",
+      "pair_id": "mbpp:task:878:smoke:00",
+      "presentation": "swapped",
+      "review_item_id": "review:d94582f49e3a8e11acce2534"
+    },
+    {
+      "a_side": "rejected",
+      "b_side": "chosen",
+      "pair_id": "mbpp:task:971:smoke:00",
+      "presentation": "swapped",
+      "review_item_id": "review:da41eb01df55d5964acf5989"
+    },
+    {
+      "a_side": "rejected",
+      "b_side": "chosen",
+      "pair_id": "mbpp:task:723:smoke:00",
+      "presentation": "primary",
+      "review_item_id": "review:e2535839c4d6a58f9d705532"
+    },
+    {
+      "a_side": "rejected",
+      "b_side": "chosen",
+      "pair_id": "mbpp:task:887:smoke:00",
+      "presentation": "primary",
+      "review_item_id": "review:e3c120849dfa8c230ec0ccb0"
+    },
+    {
+      "a_side": "rejected",
+      "b_side": "chosen",
+      "pair_id": "mbpp:task:886:smoke:00",
+      "presentation": "primary",
+      "review_item_id": "review:e7459ec7a5a9884df89886f0"
+    },
+    {
+      "a_side": "chosen",
+      "b_side": "rejected",
+      "pair_id": "mbpp:task:615:smoke:00",
+      "presentation": "primary",
+      "review_item_id": "review:e771ec3a4e7f3768ce69b6c2"
+    },
+    {
+      "a_side": "chosen",
+      "b_side": "rejected",
+      "pair_id": "mbpp:task:653:smoke:00",
+      "presentation": "swapped",
+      "review_item_id": "review:e772774b48306dda1c8523e1"
+    },
+    {
+      "a_side": "rejected",
+      "b_side": "chosen",
+      "pair_id": "mbpp:task:847:smoke:00",
+      "presentation": "primary",
+      "review_item_id": "review:e8fc971f2975233c6916e164"
+    },
+    {
+      "a_side": "chosen",
+      "b_side": "rejected",
+      "pair_id": "mbpp:task:772:smoke:00",
+      "presentation": "primary",
+      "review_item_id": "review:ea8b182eb7b562c31922861d"
+    },
+    {
+      "a_side": "rejected",
+      "b_side": "chosen",
+      "pair_id": "mbpp:task:720:smoke:00",
+      "presentation": "primary",
+      "review_item_id": "review:ebeac05390c576f1d4178b32"
+    },
+    {
+      "a_side": "rejected",
+      "b_side": "chosen",
+      "pair_id": "mbpp:task:840:smoke:00",
+      "presentation": "primary",
+      "review_item_id": "review:efb85f7127909ff0516b82b1"
+    },
+    {
+      "a_side": "chosen",
+      "b_side": "rejected",
+      "pair_id": "mbpp:task:776:smoke:00",
+      "presentation": "swapped",
+      "review_item_id": "review:f24f2925be2c470b2bc19778"
+    },
+    {
+      "a_side": "chosen",
+      "b_side": "rejected",
+      "pair_id": "mbpp:task:821:smoke:00",
+      "presentation": "primary",
+      "review_item_id": "review:f284d05c1b8582a89909a9a6"
+    },
+    {
+      "a_side": "rejected",
+      "b_side": "chosen",
+      "pair_id": "mbpp:task:670:smoke:00",
+      "presentation": "swapped",
+      "review_item_id": "review:fa03a906ce1182007abe9912"
+    },
+    {
+      "a_side": "chosen",
+      "b_side": "rejected",
+      "pair_id": "mbpp:task:943:smoke:00",
+      "presentation": "primary",
+      "review_item_id": "review:fc5be73ebbfa7d8b20162b8b"
+    },
+    {
+      "a_side": "chosen",
+      "b_side": "rejected",
+      "pair_id": "mbpp:task:874:smoke:00",
+      "presentation": "primary",
+      "review_item_id": "review:fc5da52b032178033a5b1925"
+    }
+  ],
+  "key_sha256": "fc22d2838166fa7d156e1a347ff61677fd70cbc07cde86ba8181ae5b11cbad5e",
+  "presentations": 100,
+  "review_seed_sha256": "0de2ecc5243fa52fb91ae549ddfc9b9268cf5dc1a1fcd68b134fdf99583e2916",
+  "schema_name": "day22.blind_review_concealed_key",
+  "schema_version": 1,
+  "unique_pairs": 50
+}

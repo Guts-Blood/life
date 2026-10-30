@@ -1,0 +1,46 @@
+{
+  "authorized_differences": {
+    "adapter.rank": {
+      "parent": 16,
+      "rollout": 32
+    },
+    "run.id": {
+      "parent": "I",
+      "rollout": "L"
+    }
+  },
+  "checkpoint_budgets": {
+    "100_percent": 246936,
+    "25_percent": 61734,
+    "60_percent": 148162
+  },
+  "config_hash": "a67b6b80c9e1d55123e80cdb6ae0502cf0f93a5dbbe19331b5b1e44818e13d65",
+  "derived_scaling_change": {
+    "parent_alpha_over_rank": 2.0,
+    "rollout_alpha_over_rank": 1.0
+  },
+  "first_gate": "25_percent",
+  "hypothesis": "I's rank-16 adapter has insufficient code capacity at the only LR that produced three executable solutions; doubling rank to 32 while holding alpha at 32 will add capacity and halve alpha/r scaling, recovering math retention while lifting code to the acceptance gate.",
+  "manifest_hash": "83712d7666962d336b7e8d9016543e1f26ca575a38249dc7ec98ec21e3793908",
+  "ordinal": 10,
+  "parent_run_id": "I",
+  "primary_change": {
+    "parent_value": 16,
+    "path": "adapter.rank",
+    "rollout_value": 32
+  },
+  "run_id": "L",
+  "schedule_file_sha256": "0294a67c9510cbc9f7f69f1bf2d5ad628d503b5aadb987080c75312b24a93658",
+  "schedule_hash": "5e8180f0dea83acc9943fddc538242467918e868425164cfb8cded1dcf1381c5",
+  "schedule_path": "learning/post-training-30-day-bootcamp/artifacts/data/day12-training-schedule-L.json",
+  "status": "day12_run_l_preparation_pass",
+  "summary_hash": "65e36961248365ba90fc2ed6b16ab6e3bc94201987c6c8ddd91eb0e936ebeba7",
+  "validation_checks": {
+    "manifest_reused_exactly": true,
+    "nonrank_adapter_fields_reused_exactly": true,
+    "occurrence_order_reused_exactly": true,
+    "only_identity_and_rank_changed": true,
+    "optimizer_reused_exactly": true,
+    "schedule_total_exact": true
+  }
+}

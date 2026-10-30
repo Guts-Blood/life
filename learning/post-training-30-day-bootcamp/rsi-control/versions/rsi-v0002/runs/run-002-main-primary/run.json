@@ -1,0 +1,23 @@
+{
+  "attempts": [
+    "attempt-001"
+  ],
+  "checkpoint_labels": [
+    "early",
+    "mid",
+    "final"
+  ],
+  "condition": "run-004-probe-primary-remediated published and verified strict-pass PROBE-SELECTION.json selecting probe-s20260809-lr1e-4-t12000",
+  "learning_rate_policy": "selected_by_verified_probe_evidence",
+  "phase": "main_primary",
+  "remote_run_root": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z",
+  "run_contract_path": "run-contract.json",
+  "run_contract_sha256": "20fdabd79d0337ba1634ebd4c0dc5e02abacaa20cceac78df264ea192d896d2a",
+  "run_id": "run-002-main-primary",
+  "schema_name": "rsi.run",
+  "schema_version": 1,
+  "scope": "full112",
+  "seed": 20260809,
+  "status": "succeeded_primary_winner",
+  "version_id": "rsi-v0002"
+}

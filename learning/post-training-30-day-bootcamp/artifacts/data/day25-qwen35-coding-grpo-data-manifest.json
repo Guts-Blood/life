@@ -1,0 +1,164 @@
+{
+  "claim_boundary": {
+    "day23_checkpoint_used_as_parent": false,
+    "eval_independent_of_day25_optimizer": true,
+    "eval_is_new_virgin_blind_pool": false,
+    "reason": "Day 22 frozen dev/heldout families are reused; they are disjoint from Day 25 train but not claimed as globally unseen."
+  },
+  "inputs": {
+    "day21_downstream_key": {
+      "file_sha256": "979e599aa6c9c05bec9a14144b6ebae689dbdf8315a9112caaec09b5469bd545",
+      "path": "artifacts/checkpoints/day21-qwen35-s1-downstream-key.json"
+    },
+    "day21_merged_export_manifest": {
+      "file_sha256": "9c196e43f633116d7fc804870dcfe961db5ae0d216a15f5e21d679d8c1f14b5a",
+      "path": "artifacts/checkpoints/day21-qwen35-s1-merged-export-manifest.json"
+    },
+    "day21_promotion": {
+      "file_sha256": "40c76f690dcb73805250e0036f8e124ef07b8d2d32b1723637656ae4304d94f8",
+      "path": "artifacts/checkpoints/day21-qwen35-s1-promotion-manifest.json"
+    },
+    "day22_seed_manifest": {
+      "content_sha256": "700a7e16aa14ae62ad630c9d64f384c3c4274f9bf63a26e19babd4e4849c2ad1",
+      "file_sha256": "90943afc694d3aef121c3d58b751c52e0bbfaa0d48f7388dbc90a9088821ed8e",
+      "path": "artifacts/data/day22-qwen35-mbpp-seed-manifest.json"
+    }
+  },
+  "manifest_sha256": "b52eaba89df057477c9582f28827b502446910cb990e756eb936f608e6952f99",
+  "outputs": {
+    "eval": {
+      "file_sha256": "5fdab070c2b042421c7ac9ef1975bb91e9adb61f46aede4ed22dfc23c0026bab",
+      "ordered_row_hashes_sha256": "994f370cabc574673391018d20713672beabfb897617b66e4eedc7bedc39a16b",
+      "path": "artifacts/data/day25-qwen35-coding-grpo-eval.jsonl",
+      "records": 40
+    },
+    "train": {
+      "file_sha256": "78e7e6b23ec2b39073b8f363fa94f641b36a18b3416a63a086e423f979a39104",
+      "ordered_row_hashes_sha256": "560fa055f4c28621b7cbf44913f1534fee45eab6b147b50fca3f4b7c379bf9d9",
+      "path": "artifacts/data/day25-qwen35-coding-grpo-train.jsonl",
+      "records": 32
+    }
+  },
+  "parent": {
+    "adapter_sha256": "29dc1a7d676b7f2f88675521bc44cf81dd43b700423df3cf4adf8d6a1c4487c3",
+    "checkpoint_id": "qwen35-4b-s1-main-s20260809-lr1e-4-final",
+    "checkpoint_integrity_sha256": "d0f72be9751628c9073cc8e4104f16d8620bd598dbb8a1e97f1df9bae51170a3",
+    "checkpoint_snapshot_sha256": "c169e0bb55b20951d27a889e4ef0deae3a01fe10acabee804b212d3d8170db0a",
+    "downstream_key": "s1:qwen35-4b:c169e0bb55b20951d27a889e4ef0deae3a01fe10acabee804b212d3d8170db0a",
+    "downstream_key_file_sha256": "979e599aa6c9c05bec9a14144b6ebae689dbdf8315a9112caaec09b5469bd545",
+    "downstream_key_sha256": "4a3a467232288feb675eb7d15cc00ff95bc7255a1c4dc2d1debdd55da5831241",
+    "merged_export_artifact_sha256": "16bc212df51ecac9a5b3b34062e0ccc880c719d63248f04949be8636550e53be",
+    "merged_export_file_sha256": "9c196e43f633116d7fc804870dcfe961db5ae0d216a15f5e21d679d8c1f14b5a",
+    "merged_export_manifest_sha256": "660eed4af7f76796631561275f0190c402952520a8ccce358289e6269fb8f8d3",
+    "ms_swift_commit": "565a1ad586a21d24b23931c52d2c62b49c39bee8",
+    "promotion_file_sha256": "40c76f690dcb73805250e0036f8e124ef07b8d2d32b1723637656ae4304d94f8",
+    "promotion_manifest_sha256": "64e6a6bd61951d1f10eb4def520273cb056625c1b041b68ba861c6d1e15d7a6c",
+    "remote_merged_export_path": "/root/autodl-tmp/runs/day20-v3-qwen35-lora-20260812T105141Z/exports/main-s20260809-lr1e-4-final-merged",
+    "remote_resumable_checkpoint_path": "/root/autodl-tmp/s1-checkpoints/qwen35-4b-s1-main-s20260809-lr1e-4-final/checkpoint-1904",
+    "role": "S1"
+  },
+  "reward_contract": {
+    "challenge_tests_in_training_reward": false,
+    "policy": "tests_only",
+    "reward_tests_are_public_mbpp_tests": true,
+    "sandbox_contract_owner": "day24_coding_verifier.py"
+  },
+  "schema_name": "day25.qwen35_coding_grpo_data_manifest",
+  "schema_version": 1,
+  "selection": {
+    "eval": {
+      "domains": [
+        "day25.grpo.eval20.dev.v1",
+        "day25.grpo.eval20.heldout.v1"
+      ],
+      "families": 40,
+      "ordered_family_ids": [
+        "mbpp:task:946",
+        "mbpp:task:690",
+        "mbpp:task:939",
+        "mbpp:task:732",
+        "mbpp:task:874",
+        "mbpp:task:768",
+        "mbpp:task:742",
+        "mbpp:task:783",
+        "mbpp:task:914",
+        "mbpp:task:667",
+        "mbpp:task:761",
+        "mbpp:task:941",
+        "mbpp:task:919",
+        "mbpp:task:887",
+        "mbpp:task:760",
+        "mbpp:task:639",
+        "mbpp:task:947",
+        "mbpp:task:686",
+        "mbpp:task:863",
+        "mbpp:task:609",
+        "mbpp:task:894",
+        "mbpp:task:674",
+        "mbpp:task:832",
+        "mbpp:task:725",
+        "mbpp:task:934",
+        "mbpp:task:751",
+        "mbpp:task:638",
+        "mbpp:task:616",
+        "mbpp:task:948",
+        "mbpp:task:606",
+        "mbpp:task:706",
+        "mbpp:task:607",
+        "mbpp:task:777",
+        "mbpp:task:974",
+        "mbpp:task:957",
+        "mbpp:task:661",
+        "mbpp:task:618",
+        "mbpp:task:635",
+        "mbpp:task:657",
+        "mbpp:task:825"
+      ],
+      "source_splits": {
+        "day22.dev": 20,
+        "day22.heldout": 20
+      }
+    },
+    "train": {
+      "domain": "day25.grpo.train32.v1",
+      "families": 32,
+      "ordered_family_ids": [
+        "mbpp:task:684",
+        "mbpp:task:850",
+        "mbpp:task:602",
+        "mbpp:task:637",
+        "mbpp:task:845",
+        "mbpp:task:654",
+        "mbpp:task:971",
+        "mbpp:task:650",
+        "mbpp:task:764",
+        "mbpp:task:714",
+        "mbpp:task:759",
+        "mbpp:task:762",
+        "mbpp:task:841",
+        "mbpp:task:954",
+        "mbpp:task:693",
+        "mbpp:task:691",
+        "mbpp:task:636",
+        "mbpp:task:809",
+        "mbpp:task:918",
+        "mbpp:task:910",
+        "mbpp:task:836",
+        "mbpp:task:890",
+        "mbpp:task:913",
+        "mbpp:task:716",
+        "mbpp:task:646",
+        "mbpp:task:804",
+        "mbpp:task:815",
+        "mbpp:task:901",
+        "mbpp:task:795",
+        "mbpp:task:755",
+        "mbpp:task:924",
+        "mbpp:task:798"
+      ],
+      "source_split": "day22.train"
+    },
+    "train_eval_family_overlap": []
+  },
+  "status": "cpu_data_ready"
+}

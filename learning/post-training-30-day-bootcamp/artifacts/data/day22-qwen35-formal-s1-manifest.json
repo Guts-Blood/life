@@ -1,0 +1,97 @@
+{
+  "content_identities": {
+    "concealed_review_key_sha256": "a48188812101bb8507fcf94be105f67ee97dc0f30ee186ae23138a6f6601c8c9",
+    "ordered_pair_hashes_sha256": "6137fad69ca65d91aaad4386bd190a2b77c33e36083658d637bcb1cbcb06a2f0",
+    "processor_contract_sha256": "12af5b3df5597fc2de4e6e9eebc9abba2e0f14d27971f39dc7e4af83c66e1083",
+    "selection_summary_sha256": "d2fb6a1ea8d616b23f7fdbfac5b54f49d66fc4008bdd752e23b7aaa9525b4a7a",
+    "split_ids_sha256": "d9efd8cbd573cdd3a08d5097f9e9c1a14992985e44c16d09e0f7a44b6d31150a",
+    "worksheet_sha256": "ce3b0fb98321697bfb62dfb10c55c23310c9e2fd981b4edd5d9d4ef0bb183249"
+  },
+  "contract_summary": {
+    "ordered_pair_hashes_sha256": "6137fad69ca65d91aaad4386bd190a2b77c33e36083658d637bcb1cbcb06a2f0",
+    "pair_status_counts": {
+      "accepted": 200
+    },
+    "records": 200,
+    "split_counts": {
+      "dev": 17,
+      "heldout": 29,
+      "train": 154
+    }
+  },
+  "counts": {
+    "eligible_selections": 200,
+    "formal_pairs": 200,
+    "input_selections": 330,
+    "promoted_s1_on_policy_pairs": 200,
+    "review_presentations": 100,
+    "review_unique_pairs": 50,
+    "synthetic_pairs": 0
+  },
+  "dataset_role": "formal_s1_dpo_pairs_pending_human_blind_review",
+  "formal_dpo_blockers": [
+    "human_blind_review_pending"
+  ],
+  "formal_dpo_ready": false,
+  "human_review": {
+    "completed_unique_pairs": 0,
+    "conclusions": null,
+    "required_unique_pairs": 50,
+    "status": "pending"
+  },
+  "inputs": {
+    "candidate_evidence": {
+      "file_sha256": "4da5a3e915c0498d1da27f90450520e7c532e3c6c027e2f58d4e6cca7d007379",
+      "path": "artifacts/eval/day22-qwen35-formal-s1-multiround-candidate-e2b-evidence.jsonl"
+    },
+    "processor_audit": {
+      "file_sha256": "6592dfb530a62c9395519645d989b0a9a068298db652c0c921fa1299e9dd98b8",
+      "path": "artifacts/eval/day22-qwen35-formal-s1-processor-audit.jsonl"
+    },
+    "processor_contract": {
+      "file_sha256": "cfb38cc1192327277426c0878da93601ba21d54496f3b48ddb078d0049fd6b47",
+      "path": "artifacts/configs/day22-qwen35-formal-s1-processor-contract.json"
+    },
+    "replay_input": {
+      "file_sha256": "5bc7e9072915f655d0c3f76f3d7a6dad96fedcedf1e5ceb5d0117f66e70d02df",
+      "path": "artifacts/data/day22-qwen35-formal-s1-final-replay-input.jsonl"
+    },
+    "selection_summary": {
+      "file_sha256": "32ed3f2aa3408b7e4461206d11523a97517af528fd309a49c5df9d5674b2c529",
+      "path": "artifacts/data/day22-qwen35-formal-s1-final-selection-summary.json"
+    },
+    "selections": {
+      "file_sha256": "b7f6d153896ebe7daebcc093874ad6b9855a1f1bdabb8efd48c7e89c92d56590",
+      "path": "artifacts/data/day22-qwen35-formal-s1-final-selections.jsonl"
+    }
+  },
+  "machine_gate_audit_sha256": "a01bfdb8de74f655fc279e8da7c1d0cea41ae9175ac013abb191d3c7549ca032",
+  "machine_ready": true,
+  "manifest_sha256": "5b918b2a723fc3d44449193a5a72d5eb6a669a420243bbf08681d4b62fe0b26c",
+  "output_files": {
+    "day22-qwen35-formal-s1-assembly-audit.json": {
+      "file_sha256": "324814f51f748b60735ef10dd6994a23612f74d9c36aeb46032f8c9552ca0f46",
+      "path": "artifacts/reports/day22-qwen35-formal-s1-assembly-audit.json"
+    },
+    "day22-qwen35-formal-s1-blind-review-key.json": {
+      "file_sha256": "5a4d05a38edc7e913b3a585ef0667b1e573b6de64a24be119ccfe0711d07b39a",
+      "path": "artifacts/data/day22-qwen35-formal-s1-blind-review-key.json"
+    },
+    "day22-qwen35-formal-s1-blind-review.jsonl": {
+      "file_sha256": "cae8b7ae7b52f27f2da9eaf614f536b396d91d04cc18777dd63d4296c3c2f45e",
+      "path": "artifacts/data/day22-qwen35-formal-s1-blind-review.jsonl"
+    },
+    "day22-qwen35-formal-s1-preference-pairs.jsonl": {
+      "file_sha256": "d1607ac946a17a2b22b515d8cb4a9d41c8ecda143af8f6786faf2de946ddb85a",
+      "path": "artifacts/data/day22-qwen35-formal-s1-preference-pairs.jsonl"
+    },
+    "day22-qwen35-formal-s1-split-ids.json": {
+      "file_sha256": "84891eda0045387f5c27665e2941e57f1120cea7a4433f69b24324410d7a890e",
+      "path": "artifacts/data/day22-qwen35-formal-s1-split-ids.json"
+    }
+  },
+  "readiness": "BLOCKED",
+  "schema_name": "day22.formal_s1_assembly_manifest",
+  "schema_version": 1,
+  "status": "machine_gates_passed_human_review_pending"
+}

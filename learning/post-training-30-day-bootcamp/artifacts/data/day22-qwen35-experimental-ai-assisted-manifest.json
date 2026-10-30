@@ -1,0 +1,240 @@
+{
+  "adjudication_decisions": [
+    {
+      "action": "keep",
+      "adjudication_id": "adjudicate:1ae243b4ad3bbdb8604d9391",
+      "confidence": "high",
+      "decision": "prefer_A",
+      "issue_type": "ambiguous_spec",
+      "pair_id": "mbpp:task:867:s1pair:d8a396966399e806",
+      "rationale_zh": "公开测试将“最小数”限定为最小正整数：奇数和加1、偶数和加2，A三测全符；B在偶数和时返回0。两者都依赖n与数组长度一致。",
+      "review_item_id": "review:9e7a3f1e08cd53770c50114e",
+      "score_a_total": 9,
+      "score_b_total": 5,
+      "semantic_decision": "chosen"
+    },
+    {
+      "action": "keep",
+      "adjudication_id": "adjudicate:62e775ec2aa061126bc964dc",
+      "confidence": "high",
+      "decision": "prefer_A",
+      "issue_type": "both_incorrect",
+      "pair_id": "mbpp:task:869:s1pair:a7969ac9f64de058",
+      "rationale_zh": "A符合全部公开测试，但只检查子列表首项，未确保其余元素也在范围内，空子列表还会越界；B遍历的x必然属于list1，过滤条件恒假，结果恒为空。",
+      "review_item_id": "review:568e2e7a7cfab3253750a11c",
+      "score_a_total": 7,
+      "score_b_total": 2,
+      "semantic_decision": "chosen"
+    },
+    {
+      "action": "keep",
+      "adjudication_id": "adjudicate:304f22506accbec8be0daf0b",
+      "confidence": "high",
+      "decision": "prefer_A",
+      "issue_type": "boundary_or_type_risk",
+      "pair_id": "mbpp:task:868:s1pair:4c5243bdedae0c83",
+      "rationale_zh": "A三项公开测试均正确，但尾随空格会把计数清零，且只把普通空格视作分隔符；B对含空格字符串多算分隔符长度，对单词字符串返回0，仅空串碰巧正确。",
+      "review_item_id": "review:cce7a5c17ffd1809e4550136",
+      "score_a_total": 7,
+      "score_b_total": 2,
+      "semantic_decision": "chosen"
+    },
+    {
+      "action": "keep",
+      "adjudication_id": "adjudicate:be637de836af7b7c38ce6e80",
+      "confidence": "high",
+      "decision": "prefer_A",
+      "issue_type": "ambiguous_spec",
+      "pair_id": "mbpp:task:777:s1pair:7520fe1d8a56a799",
+      "rationale_zh": "测试明确要求每个不同值只计一次，A三测全符；其缺点是原地排序会修改输入。B只累加出现恰好一次的值，是对“non-repeated”的另一种理解，但与全部期望值不符。",
+      "review_item_id": "review:97d5951eb1584bcc837a7968",
+      "score_a_total": 9,
+      "score_b_total": 5,
+      "semantic_decision": "chosen"
+    },
+    {
+      "action": "keep",
+      "adjudication_id": "adjudicate:4193eb5bcd7c8dfb6287896f",
+      "confidence": "medium",
+      "decision": "prefer_B",
+      "issue_type": "ambiguous_spec",
+      "pair_id": "mbpp:task:899:s1pair:faa9e3c477db73eb",
+      "rationale_zh": "题目未定义“只取角元素”的具体操作与排序判定，且公开样例全为True。B静态可判三测全符，A前两测即返回False；不过B的局部相邻条件也不足以一般性刻画可排序性。",
+      "review_item_id": "review:e5d76c1886c486d12a5eb58f",
+      "score_a_total": 2,
+      "score_b_total": 6,
+      "semantic_decision": "chosen"
+    },
+    {
+      "action": "keep",
+      "adjudication_id": "adjudicate:37c8dcc0cc44ae65a952bdc6",
+      "confidence": "high",
+      "decision": "prefer_A",
+      "issue_type": "boundary_or_type_risk",
+      "pair_id": "mbpp:task:799:s1pair:5fce947002254843",
+      "rationale_zh": "A在所有公开小数样例上等同左移并通过，但没有截断到32位，也未正确回卷溢出位，d越界还可能产生负移位。B掩码仅31位且回卷表达式错误，除首例外多项公开测试失败。",
+      "review_item_id": "review:f74c8b386bc4573220090545",
+      "score_a_total": 5,
+      "score_b_total": 2,
+      "semantic_decision": "chosen"
+    },
+    {
+      "action": "keep",
+      "adjudication_id": "adjudicate:e69a4a278fa873a5339c497b",
+      "confidence": "high",
+      "decision": "prefer_B",
+      "issue_type": "none",
+      "pair_id": "mbpp:task:750:s1pair:05972b444fd5576d",
+      "rationale_zh": "测试要求把元组元素展开追加到列表。B用list(test_tup)拼接，结果、顺序及非修改性均正确；A把整个元组作为单个嵌套元素，三项测试都不符。",
+      "review_item_id": "review:186b81716a9c7021a693eccf",
+      "score_a_total": 5,
+      "score_b_total": 10,
+      "semantic_decision": "chosen"
+    },
+    {
+      "action": "keep",
+      "adjudication_id": "adjudicate:1ddf27e3b2d2da3d895ab6ae",
+      "confidence": "medium",
+      "decision": "prefer_A",
+      "issue_type": "ambiguous_spec",
+      "pair_id": "mbpp:task:822:s1pair:307dad4b07891d89",
+      "rationale_zh": "题目未说明有效密码规则；按公开测试可推断至少需大小写字母和数字，A三测全符。B禁止特殊字符，因此会拒绝唯一正例Password@10，且其规则也未要求小写字母。",
+      "review_item_id": "review:ee45c216e625418be2e3a380",
+      "score_a_total": 7,
+      "score_b_total": 3,
+      "semantic_decision": "chosen"
+    },
+    {
+      "action": "keep",
+      "adjudication_id": "adjudicate:5aea24051a6d8b2ea9ed13a6",
+      "confidence": "high",
+      "decision": "prefer_A",
+      "issue_type": "none",
+      "pair_id": "mbpp:task:758:s1pair:c29a1d61f894b721",
+      "rationale_zh": "A把每个子列表转成元组键并正确累计，覆盖重复项、单项和空输入。B转成元组后却在原始列表的列表元素中计数，列表与元组不相等，因而所有计数都会是0。",
+      "review_item_id": "review:e2c7fcbaf8b6a5c70728d026",
+      "score_a_total": 10,
+      "score_b_total": 2,
+      "semantic_decision": "chosen"
+    },
+    {
+      "action": "keep",
+      "adjudication_id": "adjudicate:a4aa1991f760b3dd6d76c489",
+      "confidence": "high",
+      "decision": "prefer_B",
+      "issue_type": "ambiguous_spec",
+      "pair_id": "mbpp:task:719:s1pair:bac0ac6ff201aedd",
+      "rationale_zh": "两者使用相同且可匹配a后零个或多个b的搜索模式；题面未写明返回格式，所以A的布尔值有语义合理性，但公开测试明确要求两种提示字符串，只有B三测全符。",
+      "review_item_id": "review:b30adae15a2a4c98627a69f4",
+      "score_a_total": 7,
+      "score_b_total": 10,
+      "semantic_decision": "chosen"
+    },
+    {
+      "action": "keep",
+      "adjudication_id": "adjudicate:f960be9558218890d1828fcf",
+      "confidence": "medium",
+      "decision": "prefer_B",
+      "issue_type": "ambiguous_spec",
+      "pair_id": "mbpp:task:713:s1pair:647b18a8964e1794",
+      "rationale_zh": "“valid values”未被定义；对公开布尔元组，B以大于0判定，三测全符。A检查自反相等，False也等于自身，故错误接受含False样例；B推广到字符串、None或负数时仍有类型或语义风险。",
+      "review_item_id": "review:a59d9ad74b61dedc734de694",
+      "score_a_total": 4,
+      "score_b_total": 7,
+      "semantic_decision": "chosen"
+    }
+  ],
+  "authorization": {
+    "actor": "user",
+    "date": "2026-08-14",
+    "decision": "close_day22_with_codex_subagent_adjudication"
+  },
+  "content_identities": {
+    "accepted_pair_ids_sha256": "58b572b09310b72df60381be983ab9f77bb0474e6743b40c163190e6ab3edc1c",
+    "ordered_pair_hashes_sha256": "6137fad69ca65d91aaad4386bd190a2b77c33e36083658d637bcb1cbcb06a2f0",
+    "split_ids_sha256": "d459b000bccada2c09fe0632b82a911cf1a3174b1d10ffce340d0d92d4a31f92"
+  },
+  "counts": {
+    "adjudication_exclude": 0,
+    "adjudication_keep": 11,
+    "contested_pairs": 11,
+    "experimental_pairs": 200,
+    "source_pairs": 200,
+    "split_counts": {
+      "dev": 17,
+      "heldout": 29,
+      "train": 154
+    }
+  },
+  "dataset_role": "experimental_ai_assisted_dpo_input",
+  "experimental_dpo_ready": true,
+  "formal_blockers": [
+    "human_blind_review_not_completed"
+  ],
+  "formal_dpo_ready": false,
+  "formal_human_review_ready": false,
+  "inputs": {
+    "adjudication_packet": {
+      "file_sha256": "ca3b70080aa3f7d66721d1e3936cc716850c7adb6ef29431a5fd8a8716e069b3",
+      "path": "artifacts/data/day22-qwen35-experimental-codex-adjudication-packet.jsonl"
+    },
+    "adjudication_scores": {
+      "file_sha256": "647757bdead7418c5360ba9ecc59693a1581ed810307306684364b705098e73b",
+      "path": "artifacts/data/day22-qwen35-experimental-codex-adjudication-scores.jsonl"
+    },
+    "ai_assisted_audit": {
+      "audit_sha256": "2bda9203479f4eab7e4ee435047a133c12827c056341b2e2c516e77561e29d1d",
+      "file_sha256": "e70f28e8fecaf841aebc5d98e72a0cb40471d46b853503a54ce979dafc8a9c21",
+      "path": "artifacts/reports/day22-qwen35-formal-s1-ai-assisted-review-audit.json"
+    },
+    "blank_worksheet": {
+      "file_sha256": "cae8b7ae7b52f27f2da9eaf614f536b396d91d04cc18777dd63d4296c3c2f45e",
+      "path": "artifacts/data/day22-qwen35-formal-s1-blind-review.jsonl"
+    },
+    "concealed_key": {
+      "file_sha256": "5a4d05a38edc7e913b3a585ef0667b1e573b6de64a24be119ccfe0711d07b39a",
+      "key_sha256": "a48188812101bb8507fcf94be105f67ee97dc0f30ee186ae23138a6f6601c8c9",
+      "path": "artifacts/data/day22-qwen35-formal-s1-blind-review-key.json"
+    },
+    "formal_manifest": {
+      "file_sha256": "fae6e54eedaf37f116fed2f1da0b81dc7206d18abdd4dcd4a282eca9d3fe53fd",
+      "manifest_sha256": "5b918b2a723fc3d44449193a5a72d5eb6a669a420243bbf08681d4b62fe0b26c",
+      "path": "artifacts/data/day22-qwen35-formal-s1-manifest.json"
+    },
+    "formal_pairs": {
+      "file_sha256": "d1607ac946a17a2b22b515d8cb4a9d41c8ecda143af8f6786faf2de946ddb85a",
+      "path": "artifacts/data/day22-qwen35-formal-s1-preference-pairs.jsonl"
+    },
+    "formal_split_ids": {
+      "file_sha256": "84891eda0045387f5c27665e2941e57f1120cea7a4433f69b24324410d7a890e",
+      "path": "artifacts/data/day22-qwen35-formal-s1-split-ids.json"
+    }
+  },
+  "manifest_sha256": "3e812fa76a61cbeccf4f6371de56c75baa2913710ff9da05ec068d39e907f6ce",
+  "outputs": {
+    "pairs": {
+      "file_sha256": "d1607ac946a17a2b22b515d8cb4a9d41c8ecda143af8f6786faf2de946ddb85a",
+      "path": "artifacts/data/day22-qwen35-formal-s1-preference-pairs.jsonl",
+      "records": 200
+    },
+    "report": {
+      "file_sha256": "6846b33feba69344a05745d774761f0272bf54b81f605f6260aa88e833c5f462",
+      "path": "artifacts/reports/day22-qwen35-experimental-ai-assisted-close.md"
+    },
+    "split_ids": {
+      "file_sha256": "9e9c333c55dd70bccddd6686b50a2d653370a2067f10bcbbbf7e62e5234b2fac",
+      "path": "artifacts/data/day22-qwen35-experimental-ai-assisted-split-ids.json"
+    }
+  },
+  "policy": {
+    "contested_pair_rule": "non_directional_or_position_inconsistent_in_mixed_review",
+    "exclude_rule": "Codex exclusion or preference for verifier rejected",
+    "formal_gate_waived_for_experimental_track": true,
+    "keep_rule": "Codex preferred side maps to verifier chosen",
+    "label_flip_allowed": false,
+    "source_pair_bytes_changed": false
+  },
+  "schema_name": "day22.experimental_ai_assisted_close_manifest",
+  "schema_version": 1,
+  "status": "completed_experimental_ai_assisted"
+}

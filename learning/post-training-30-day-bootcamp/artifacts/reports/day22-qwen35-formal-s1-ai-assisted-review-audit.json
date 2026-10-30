@@ -1,0 +1,2123 @@
+{
+  "audit_sha256": "2bda9203479f4eab7e4ee435047a133c12827c056341b2e2c516e77561e29d1d",
+  "counts": {
+    "directional_presentations": 89,
+    "human_presentations": 10,
+    "presentations": 100,
+    "subagent_presentations": 90,
+    "unique_pairs": 50,
+    "verifier_direction_agreement_rate": 0.94382,
+    "verifier_direction_agreements": 84
+  },
+  "formal_blockers": [
+    "ninety_presentations_reviewed_by_subagents_not_humans"
+  ],
+  "formal_dpo_ready": false,
+  "formal_human_review_eligible": false,
+  "inputs": {
+    "ai_reviews": [
+      {
+        "annotations": "/Users/jiaweiqian/Desktop/python_projects/life/tmp/day22-ai-blind-review-20260813/packet-1-annotations.jsonl",
+        "annotations_sha256": "55a84de57710142fe77995db8bd85a8247a22e727eb194b0723acd2dd15a8aae",
+        "packet": "/Users/jiaweiqian/Desktop/python_projects/life/tmp/day22-ai-blind-review-20260813/packet-1-of-3.jsonl",
+        "packet_sha256": "74a17caa3c71d8fd1edd41de202d4deec53db0804a572aad5fb849790f10c6a0",
+        "reviewer_id": "subagent-1"
+      },
+      {
+        "annotations": "/Users/jiaweiqian/Desktop/python_projects/life/tmp/day22-ai-blind-review-20260813/packet-2-annotations.jsonl",
+        "annotations_sha256": "ab940175001e6deb89620d6ef62ecd69135ec85c09dcecbdb535ff0fc446d3d5",
+        "packet": "/Users/jiaweiqian/Desktop/python_projects/life/tmp/day22-ai-blind-review-20260813/packet-2-of-3.jsonl",
+        "packet_sha256": "ffdcd4772227dee9a247ce7801aed4614bb852f73779791a1adbb7eb26599d6b",
+        "reviewer_id": "subagent-2"
+      },
+      {
+        "annotations": "/Users/jiaweiqian/Desktop/python_projects/life/tmp/day22-ai-blind-review-20260813/packet-3-annotations.jsonl",
+        "annotations_sha256": "d9dca3d34bf3de408881a0c88c16bc9d305b03d2a8b0287bc4c4a5f1323db972",
+        "packet": "/Users/jiaweiqian/Desktop/python_projects/life/tmp/day22-ai-blind-review-20260813/packet-3-of-3.jsonl",
+        "packet_sha256": "ccb9c0096e32d15c2269f8d9c1ce26245454500bd10fe9374d9537f45ae501eb",
+        "reviewer_id": "subagent-3"
+      }
+    ],
+    "blank": "/Users/jiaweiqian/Desktop/python_projects/life/learning/post-training-30-day-bootcamp/artifacts/data/day22-qwen35-formal-s1-blind-review.jsonl",
+    "blank_sha256": "cae8b7ae7b52f27f2da9eaf614f536b396d91d04cc18777dd63d4296c3c2f45e",
+    "concealed_key": "/Users/jiaweiqian/Desktop/python_projects/life/learning/post-training-30-day-bootcamp/artifacts/data/day22-qwen35-formal-s1-blind-review-key.json",
+    "concealed_key_file_sha256": "5a4d05a38edc7e913b3a585ef0667b1e573b6de64a24be119ccfe0711d07b39a",
+    "human_draft": "/Users/jiaweiqian/Downloads/day22-qwen35-formal-s1-blind-review-draft.jsonl",
+    "human_draft_sha256": "c616ae2e6be54c22b6f0eddf1c64cd4528dbb6a0059cbcb52cc9f1aa5be03b3d"
+  },
+  "pair_cohort_metrics": {
+    "mixed_human_subagent": {
+      "both_directional_pairs": 8,
+      "contains_nondirectional_pairs": 2,
+      "directional_position_consistency_rate": 0.5,
+      "pairs": 10,
+      "position_consistent_directional_pairs": 4
+    },
+    "subagent_only": {
+      "both_directional_pairs": 35,
+      "contains_nondirectional_pairs": 5,
+      "directional_position_consistency_rate": 1.0,
+      "pairs": 40,
+      "position_consistent_directional_pairs": 35
+    }
+  },
+  "pair_metrics": {
+    "both_directional": 43,
+    "consistent_chosen": 39,
+    "contains_nondirectional": 7,
+    "directional_position_consistency_rate": 0.906977,
+    "mixed_human_subagent": 10,
+    "position_consistent_directional": 39,
+    "position_disagreement_directional": 4
+  },
+  "pair_results": [
+    {
+      "both_directional": true,
+      "pair_id": "mbpp:task:611:s1pair:bb8f6a05b86b4e53",
+      "position_consistent": true,
+      "reviewer_types": [
+        "human",
+        "subagent"
+      ],
+      "semantic_decisions": [
+        "chosen",
+        "chosen"
+      ]
+    },
+    {
+      "both_directional": true,
+      "pair_id": "mbpp:task:616:s1pair:13c35d6446515c62",
+      "position_consistent": true,
+      "reviewer_types": [
+        "subagent"
+      ],
+      "semantic_decisions": [
+        "chosen",
+        "chosen"
+      ]
+    },
+    {
+      "both_directional": true,
+      "pair_id": "mbpp:task:622:s1pair:c7ba39e5ffadcf4f",
+      "position_consistent": true,
+      "reviewer_types": [
+        "subagent"
+      ],
+      "semantic_decisions": [
+        "chosen",
+        "chosen"
+      ]
+    },
+    {
+      "both_directional": true,
+      "pair_id": "mbpp:task:632:s1pair:d7f4adfcded0b31f",
+      "position_consistent": true,
+      "reviewer_types": [
+        "subagent"
+      ],
+      "semantic_decisions": [
+        "chosen",
+        "chosen"
+      ]
+    },
+    {
+      "both_directional": true,
+      "pair_id": "mbpp:task:633:s1pair:9eb19b15e28e0034",
+      "position_consistent": true,
+      "reviewer_types": [
+        "subagent"
+      ],
+      "semantic_decisions": [
+        "chosen",
+        "chosen"
+      ]
+    },
+    {
+      "both_directional": true,
+      "pair_id": "mbpp:task:641:s1pair:9901a24e468d04a9",
+      "position_consistent": true,
+      "reviewer_types": [
+        "subagent"
+      ],
+      "semantic_decisions": [
+        "chosen",
+        "chosen"
+      ]
+    },
+    {
+      "both_directional": true,
+      "pair_id": "mbpp:task:648:s1pair:f0dc4ebd552164a8",
+      "position_consistent": true,
+      "reviewer_types": [
+        "subagent"
+      ],
+      "semantic_decisions": [
+        "chosen",
+        "chosen"
+      ]
+    },
+    {
+      "both_directional": true,
+      "pair_id": "mbpp:task:657:s1pair:515f82f782267f1c",
+      "position_consistent": true,
+      "reviewer_types": [
+        "subagent"
+      ],
+      "semantic_decisions": [
+        "chosen",
+        "chosen"
+      ]
+    },
+    {
+      "both_directional": true,
+      "pair_id": "mbpp:task:659:s1pair:00c3ff47629d6cbf",
+      "position_consistent": true,
+      "reviewer_types": [
+        "subagent"
+      ],
+      "semantic_decisions": [
+        "chosen",
+        "chosen"
+      ]
+    },
+    {
+      "both_directional": true,
+      "pair_id": "mbpp:task:662:s1pair:c2a0b64c415535b4",
+      "position_consistent": true,
+      "reviewer_types": [
+        "subagent"
+      ],
+      "semantic_decisions": [
+        "chosen",
+        "chosen"
+      ]
+    },
+    {
+      "both_directional": true,
+      "pair_id": "mbpp:task:663:s1pair:c1483db628815115",
+      "position_consistent": true,
+      "reviewer_types": [
+        "subagent"
+      ],
+      "semantic_decisions": [
+        "chosen",
+        "chosen"
+      ]
+    },
+    {
+      "both_directional": false,
+      "pair_id": "mbpp:task:713:s1pair:647b18a8964e1794",
+      "position_consistent": true,
+      "reviewer_types": [
+        "subagent"
+      ],
+      "semantic_decisions": [
+        "ambiguous",
+        "ambiguous"
+      ]
+    },
+    {
+      "both_directional": false,
+      "pair_id": "mbpp:task:719:s1pair:bac0ac6ff201aedd",
+      "position_consistent": true,
+      "reviewer_types": [
+        "subagent"
+      ],
+      "semantic_decisions": [
+        "ambiguous",
+        "ambiguous"
+      ]
+    },
+    {
+      "both_directional": true,
+      "pair_id": "mbpp:task:724:s1pair:0b841a6d8824294e",
+      "position_consistent": true,
+      "reviewer_types": [
+        "subagent"
+      ],
+      "semantic_decisions": [
+        "chosen",
+        "chosen"
+      ]
+    },
+    {
+      "both_directional": true,
+      "pair_id": "mbpp:task:732:s1pair:359f8ec5974cbe03",
+      "position_consistent": true,
+      "reviewer_types": [
+        "subagent"
+      ],
+      "semantic_decisions": [
+        "chosen",
+        "chosen"
+      ]
+    },
+    {
+      "both_directional": true,
+      "pair_id": "mbpp:task:734:s1pair:7dba9e1a1ccfd735",
+      "position_consistent": true,
+      "reviewer_types": [
+        "subagent"
+      ],
+      "semantic_decisions": [
+        "chosen",
+        "chosen"
+      ]
+    },
+    {
+      "both_directional": true,
+      "pair_id": "mbpp:task:739:s1pair:a459a45d508a5e35",
+      "position_consistent": true,
+      "reviewer_types": [
+        "subagent"
+      ],
+      "semantic_decisions": [
+        "chosen",
+        "chosen"
+      ]
+    },
+    {
+      "both_directional": false,
+      "pair_id": "mbpp:task:750:s1pair:05972b444fd5576d",
+      "position_consistent": false,
+      "reviewer_types": [
+        "human",
+        "subagent"
+      ],
+      "semantic_decisions": [
+        "chosen",
+        "ambiguous"
+      ]
+    },
+    {
+      "both_directional": true,
+      "pair_id": "mbpp:task:751:s1pair:ee49b758a4e66648",
+      "position_consistent": true,
+      "reviewer_types": [
+        "subagent"
+      ],
+      "semantic_decisions": [
+        "chosen",
+        "chosen"
+      ]
+    },
+    {
+      "both_directional": true,
+      "pair_id": "mbpp:task:753:s1pair:8e0da8718e4630cf",
+      "position_consistent": true,
+      "reviewer_types": [
+        "subagent"
+      ],
+      "semantic_decisions": [
+        "chosen",
+        "chosen"
+      ]
+    },
+    {
+      "both_directional": true,
+      "pair_id": "mbpp:task:758:s1pair:c29a1d61f894b721",
+      "position_consistent": false,
+      "reviewer_types": [
+        "human",
+        "subagent"
+      ],
+      "semantic_decisions": [
+        "rejected",
+        "chosen"
+      ]
+    },
+    {
+      "both_directional": true,
+      "pair_id": "mbpp:task:772:s1pair:a70d249c0a0ec534",
+      "position_consistent": true,
+      "reviewer_types": [
+        "subagent"
+      ],
+      "semantic_decisions": [
+        "chosen",
+        "chosen"
+      ]
+    },
+    {
+      "both_directional": true,
+      "pair_id": "mbpp:task:775:s1pair:c69c41dcea40113d",
+      "position_consistent": true,
+      "reviewer_types": [
+        "subagent"
+      ],
+      "semantic_decisions": [
+        "chosen",
+        "chosen"
+      ]
+    },
+    {
+      "both_directional": true,
+      "pair_id": "mbpp:task:777:s1pair:7520fe1d8a56a799",
+      "position_consistent": false,
+      "reviewer_types": [
+        "human",
+        "subagent"
+      ],
+      "semantic_decisions": [
+        "chosen",
+        "rejected"
+      ]
+    },
+    {
+      "both_directional": true,
+      "pair_id": "mbpp:task:779:s1pair:c720e16b4c35effb",
+      "position_consistent": true,
+      "reviewer_types": [
+        "subagent"
+      ],
+      "semantic_decisions": [
+        "chosen",
+        "chosen"
+      ]
+    },
+    {
+      "both_directional": true,
+      "pair_id": "mbpp:task:782:s1pair:ec6e2d049705cbe8",
+      "position_consistent": true,
+      "reviewer_types": [
+        "subagent"
+      ],
+      "semantic_decisions": [
+        "chosen",
+        "chosen"
+      ]
+    },
+    {
+      "both_directional": false,
+      "pair_id": "mbpp:task:799:s1pair:5fce947002254843",
+      "position_consistent": false,
+      "reviewer_types": [
+        "subagent"
+      ],
+      "semantic_decisions": [
+        "tie",
+        "chosen"
+      ]
+    },
+    {
+      "both_directional": true,
+      "pair_id": "mbpp:task:806:s1pair:fac4080d5a357aaf",
+      "position_consistent": true,
+      "reviewer_types": [
+        "subagent"
+      ],
+      "semantic_decisions": [
+        "chosen",
+        "chosen"
+      ]
+    },
+    {
+      "both_directional": true,
+      "pair_id": "mbpp:task:809:s1pair:040b8c0933fde03e",
+      "position_consistent": true,
+      "reviewer_types": [
+        "subagent"
+      ],
+      "semantic_decisions": [
+        "chosen",
+        "chosen"
+      ]
+    },
+    {
+      "both_directional": true,
+      "pair_id": "mbpp:task:811:s1pair:19b1e6de88463ade",
+      "position_consistent": true,
+      "reviewer_types": [
+        "human",
+        "subagent"
+      ],
+      "semantic_decisions": [
+        "chosen",
+        "chosen"
+      ]
+    },
+    {
+      "both_directional": true,
+      "pair_id": "mbpp:task:816:s1pair:473d87798e2f76fd",
+      "position_consistent": true,
+      "reviewer_types": [
+        "subagent"
+      ],
+      "semantic_decisions": [
+        "chosen",
+        "chosen"
+      ]
+    },
+    {
+      "both_directional": false,
+      "pair_id": "mbpp:task:822:s1pair:307dad4b07891d89",
+      "position_consistent": true,
+      "reviewer_types": [
+        "subagent"
+      ],
+      "semantic_decisions": [
+        "ambiguous",
+        "ambiguous"
+      ]
+    },
+    {
+      "both_directional": true,
+      "pair_id": "mbpp:task:829:s1pair:ead4952ef3a8b007",
+      "position_consistent": true,
+      "reviewer_types": [
+        "subagent"
+      ],
+      "semantic_decisions": [
+        "chosen",
+        "chosen"
+      ]
+    },
+    {
+      "both_directional": true,
+      "pair_id": "mbpp:task:837:s1pair:105ec7da88d33160",
+      "position_consistent": true,
+      "reviewer_types": [
+        "subagent"
+      ],
+      "semantic_decisions": [
+        "chosen",
+        "chosen"
+      ]
+    },
+    {
+      "both_directional": true,
+      "pair_id": "mbpp:task:859:s1pair:ea014e50a104fe37",
+      "position_consistent": true,
+      "reviewer_types": [
+        "subagent"
+      ],
+      "semantic_decisions": [
+        "chosen",
+        "chosen"
+      ]
+    },
+    {
+      "both_directional": true,
+      "pair_id": "mbpp:task:861:s1pair:da2f204f886a2cf7",
+      "position_consistent": true,
+      "reviewer_types": [
+        "human",
+        "subagent"
+      ],
+      "semantic_decisions": [
+        "chosen",
+        "chosen"
+      ]
+    },
+    {
+      "both_directional": true,
+      "pair_id": "mbpp:task:863:s1pair:586bf92016f112fc",
+      "position_consistent": true,
+      "reviewer_types": [
+        "subagent"
+      ],
+      "semantic_decisions": [
+        "chosen",
+        "chosen"
+      ]
+    },
+    {
+      "both_directional": true,
+      "pair_id": "mbpp:task:866:s1pair:1973616deea0bb91",
+      "position_consistent": true,
+      "reviewer_types": [
+        "subagent"
+      ],
+      "semantic_decisions": [
+        "chosen",
+        "chosen"
+      ]
+    },
+    {
+      "both_directional": false,
+      "pair_id": "mbpp:task:867:s1pair:d8a396966399e806",
+      "position_consistent": false,
+      "reviewer_types": [
+        "human",
+        "subagent"
+      ],
+      "semantic_decisions": [
+        "rejected",
+        "ambiguous"
+      ]
+    },
+    {
+      "both_directional": true,
+      "pair_id": "mbpp:task:868:s1pair:4c5243bdedae0c83",
+      "position_consistent": false,
+      "reviewer_types": [
+        "human",
+        "subagent"
+      ],
+      "semantic_decisions": [
+        "rejected",
+        "chosen"
+      ]
+    },
+    {
+      "both_directional": true,
+      "pair_id": "mbpp:task:869:s1pair:a7969ac9f64de058",
+      "position_consistent": false,
+      "reviewer_types": [
+        "human",
+        "subagent"
+      ],
+      "semantic_decisions": [
+        "rejected",
+        "chosen"
+      ]
+    },
+    {
+      "both_directional": true,
+      "pair_id": "mbpp:task:871:s1pair:29cbab307edb9345",
+      "position_consistent": true,
+      "reviewer_types": [
+        "subagent"
+      ],
+      "semantic_decisions": [
+        "chosen",
+        "chosen"
+      ]
+    },
+    {
+      "both_directional": true,
+      "pair_id": "mbpp:task:895:s1pair:9ebc4d77602b3606",
+      "position_consistent": true,
+      "reviewer_types": [
+        "subagent"
+      ],
+      "semantic_decisions": [
+        "chosen",
+        "chosen"
+      ]
+    },
+    {
+      "both_directional": false,
+      "pair_id": "mbpp:task:899:s1pair:faa9e3c477db73eb",
+      "position_consistent": false,
+      "reviewer_types": [
+        "subagent"
+      ],
+      "semantic_decisions": [
+        "tie",
+        "ambiguous"
+      ]
+    },
+    {
+      "both_directional": true,
+      "pair_id": "mbpp:task:909:s1pair:437af207ea1fdba6",
+      "position_consistent": true,
+      "reviewer_types": [
+        "subagent"
+      ],
+      "semantic_decisions": [
+        "chosen",
+        "chosen"
+      ]
+    },
+    {
+      "both_directional": true,
+      "pair_id": "mbpp:task:931:s1pair:daebae9b1c22ffa8",
+      "position_consistent": true,
+      "reviewer_types": [
+        "subagent"
+      ],
+      "semantic_decisions": [
+        "chosen",
+        "chosen"
+      ]
+    },
+    {
+      "both_directional": true,
+      "pair_id": "mbpp:task:934:s1pair:f3ec46528748372e",
+      "position_consistent": true,
+      "reviewer_types": [
+        "subagent"
+      ],
+      "semantic_decisions": [
+        "chosen",
+        "chosen"
+      ]
+    },
+    {
+      "both_directional": true,
+      "pair_id": "mbpp:task:941:s1pair:13a58d9211f7a576",
+      "position_consistent": true,
+      "reviewer_types": [
+        "subagent"
+      ],
+      "semantic_decisions": [
+        "chosen",
+        "chosen"
+      ]
+    },
+    {
+      "both_directional": true,
+      "pair_id": "mbpp:task:956:s1pair:1ab7eec13eda8764",
+      "position_consistent": true,
+      "reviewer_types": [
+        "subagent"
+      ],
+      "semantic_decisions": [
+        "chosen",
+        "chosen"
+      ]
+    },
+    {
+      "both_directional": true,
+      "pair_id": "mbpp:task:966:s1pair:ae34ef6f38bf2eb5",
+      "position_consistent": true,
+      "reviewer_types": [
+        "human",
+        "subagent"
+      ],
+      "semantic_decisions": [
+        "chosen",
+        "chosen"
+      ]
+    }
+  ],
+  "presentation_results": [
+    {
+      "confidence": "low",
+      "notes": "",
+      "pair_id": "mbpp:task:611:s1pair:bb8f6a05b86b4e53",
+      "presentation": "swapped",
+      "review_item_id": "review:2b958353e547a8dfa2e31f57",
+      "reviewer_id": "user",
+      "reviewer_type": "human",
+      "row_number": 1,
+      "semantic_decision": "chosen",
+      "verdict": "A",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "A"
+    },
+    {
+      "confidence": "medium",
+      "notes": "",
+      "pair_id": "mbpp:task:966:s1pair:ae34ef6f38bf2eb5",
+      "presentation": "primary",
+      "review_item_id": "review:a4c102596c6e919e812af964",
+      "reviewer_id": "user",
+      "reviewer_type": "human",
+      "row_number": 2,
+      "semantic_decision": "chosen",
+      "verdict": "B",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "B"
+    },
+    {
+      "confidence": "high",
+      "notes": "",
+      "pair_id": "mbpp:task:867:s1pair:d8a396966399e806",
+      "presentation": "primary",
+      "review_item_id": "review:9e7a3f1e08cd53770c50114e",
+      "reviewer_id": "user",
+      "reviewer_type": "human",
+      "row_number": 3,
+      "semantic_decision": "rejected",
+      "verdict": "B",
+      "verifier_direction_agreement": false,
+      "verifier_visible_preference": "A"
+    },
+    {
+      "confidence": "high",
+      "notes": "",
+      "pair_id": "mbpp:task:750:s1pair:05972b444fd5576d",
+      "presentation": "swapped",
+      "review_item_id": "review:7ad4736101d802cefe5b365f",
+      "reviewer_id": "user",
+      "reviewer_type": "human",
+      "row_number": 4,
+      "semantic_decision": "chosen",
+      "verdict": "A",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "A"
+    },
+    {
+      "confidence": "high",
+      "notes": "",
+      "pair_id": "mbpp:task:811:s1pair:19b1e6de88463ade",
+      "presentation": "swapped",
+      "review_item_id": "review:6c76de3bf2f4410fd345062a",
+      "reviewer_id": "user",
+      "reviewer_type": "human",
+      "row_number": 5,
+      "semantic_decision": "chosen",
+      "verdict": "B",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "B"
+    },
+    {
+      "confidence": "medium",
+      "notes": "",
+      "pair_id": "mbpp:task:869:s1pair:a7969ac9f64de058",
+      "presentation": "primary",
+      "review_item_id": "review:568e2e7a7cfab3253750a11c",
+      "reviewer_id": "user",
+      "reviewer_type": "human",
+      "row_number": 6,
+      "semantic_decision": "rejected",
+      "verdict": "B",
+      "verifier_direction_agreement": false,
+      "verifier_visible_preference": "A"
+    },
+    {
+      "confidence": "high",
+      "notes": "",
+      "pair_id": "mbpp:task:868:s1pair:4c5243bdedae0c83",
+      "presentation": "primary",
+      "review_item_id": "review:cce7a5c17ffd1809e4550136",
+      "reviewer_id": "user",
+      "reviewer_type": "human",
+      "row_number": 7,
+      "semantic_decision": "rejected",
+      "verdict": "B",
+      "verifier_direction_agreement": false,
+      "verifier_visible_preference": "A"
+    },
+    {
+      "confidence": "high",
+      "notes": "",
+      "pair_id": "mbpp:task:758:s1pair:c29a1d61f894b721",
+      "presentation": "swapped",
+      "review_item_id": "review:14ecdb817f9b3ac9b85c39cb",
+      "reviewer_id": "user",
+      "reviewer_type": "human",
+      "row_number": 8,
+      "semantic_decision": "rejected",
+      "verdict": "A",
+      "verifier_direction_agreement": false,
+      "verifier_visible_preference": "B"
+    },
+    {
+      "confidence": "high",
+      "notes": "",
+      "pair_id": "mbpp:task:861:s1pair:da2f204f886a2cf7",
+      "presentation": "swapped",
+      "review_item_id": "review:22cc023fc14982d25c0d8581",
+      "reviewer_id": "user",
+      "reviewer_type": "human",
+      "row_number": 9,
+      "semantic_decision": "chosen",
+      "verdict": "B",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "B"
+    },
+    {
+      "confidence": "high",
+      "notes": "",
+      "pair_id": "mbpp:task:777:s1pair:7520fe1d8a56a799",
+      "presentation": "primary",
+      "review_item_id": "review:97d5951eb1584bcc837a7968",
+      "reviewer_id": "user",
+      "reviewer_type": "human",
+      "row_number": 10,
+      "semantic_decision": "chosen",
+      "verdict": "A",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "A"
+    },
+    {
+      "confidence": "high",
+      "notes": "B 是标准的非相邻状态转移（非空输入）；A 只保留单个和并减去前项，无法正确表示选取状态。",
+      "pair_id": "mbpp:task:895:s1pair:9ebc4d77602b3606",
+      "presentation": "swapped",
+      "review_item_id": "review:082b3d08eed1d32b76f521b4",
+      "reviewer_id": "subagent-1",
+      "reviewer_type": "subagent",
+      "row_number": 11,
+      "semantic_decision": "chosen",
+      "verdict": "B",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "B"
+    },
+    {
+      "confidence": "high",
+      "notes": "B 明确取频次排名第二的元素；A 取的是最高频元素。",
+      "pair_id": "mbpp:task:829:s1pair:ead4952ef3a8b007",
+      "presentation": "primary",
+      "review_item_id": "review:0de3c3032713dfd8274065d6",
+      "reviewer_id": "subagent-1",
+      "reviewer_type": "subagent",
+      "row_number": 12,
+      "semantic_decision": "chosen",
+      "verdict": "B",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "B"
+    },
+    {
+      "confidence": "high",
+      "notes": "A 使用正确的动态规划转移；B 的标量递推会丢失相邻项是否入选的信息。",
+      "pair_id": "mbpp:task:895:s1pair:9ebc4d77602b3606",
+      "presentation": "primary",
+      "review_item_id": "review:e7c36ffde4a58c19b761074f",
+      "reviewer_id": "subagent-1",
+      "reviewer_type": "subagent",
+      "row_number": 13,
+      "semantic_decision": "chosen",
+      "verdict": "A",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "A"
+    },
+    {
+      "confidence": "high",
+      "notes": "B 从 n 递减搜索，返回的首个满足余数条件的 k 即最大值；A 的公式与该约束不符。",
+      "pair_id": "mbpp:task:663:s1pair:c1483db628815115",
+      "presentation": "swapped",
+      "review_item_id": "review:91123c3a660806140c1fd0dd",
+      "reviewer_id": "subagent-1",
+      "reviewer_type": "subagent",
+      "row_number": 14,
+      "semantic_decision": "chosen",
+      "verdict": "B",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "B"
+    },
+    {
+      "confidence": "high",
+      "notes": "A 覆盖长度 0 到 n，包含空子列表；B 漏掉了空子列表，因而不是全部组合。",
+      "pair_id": "mbpp:task:859:s1pair:ea014e50a104fe37",
+      "presentation": "swapped",
+      "review_item_id": "review:12594ede1dd1de73634181a0",
+      "reviewer_id": "subagent-1",
+      "reviewer_type": "subagent",
+      "row_number": 15,
+      "semantic_decision": "chosen",
+      "verdict": "A",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "A"
+    },
+    {
+      "confidence": "high",
+      "notes": "B 保留首元素落在闭区间内的子列表；A 遍历 list1 时条件 x not in list1 恒假，结果总为空。",
+      "pair_id": "mbpp:task:869:s1pair:a7969ac9f64de058",
+      "presentation": "swapped",
+      "review_item_id": "review:7b6279165ae9482b1bb1fcc4",
+      "reviewer_id": "subagent-1",
+      "reviewer_type": "subagent",
+      "row_number": 16,
+      "semantic_decision": "chosen",
+      "verdict": "B",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "B"
+    },
+    {
+      "confidence": "high",
+      "notes": "题面没有定义密码有效规则；A 假定长度和字符集规则，B 假定大小写及数字规则，无法据此判定。",
+      "pair_id": "mbpp:task:822:s1pair:307dad4b07891d89",
+      "presentation": "swapped",
+      "review_item_id": "review:423da4c24b0ea7b2b4726d58",
+      "reviewer_id": "subagent-1",
+      "reviewer_type": "subagent",
+      "row_number": 17,
+      "semantic_decision": "ambiguous",
+      "verdict": "ambiguous",
+      "verifier_direction_agreement": false,
+      "verifier_visible_preference": "B"
+    },
+    {
+      "confidence": "high",
+      "notes": "两者同样只有局部判断：A 仅看边缘相邻项，B 遇一组局部条件即提前返回；均未验证完整取数过程。",
+      "pair_id": "mbpp:task:899:s1pair:faa9e3c477db73eb",
+      "presentation": "primary",
+      "review_item_id": "review:e5d76c1886c486d12a5eb58f",
+      "reviewer_id": "subagent-1",
+      "reviewer_type": "subagent",
+      "row_number": 18,
+      "semantic_decision": "tie",
+      "verdict": "tie",
+      "verifier_direction_agreement": false,
+      "verifier_visible_preference": "B"
+    },
+    {
+      "confidence": "high",
+      "notes": "B 只检查 Python 的奇数索引切片；A 错误地检查了除最后一项外的所有位置。",
+      "pair_id": "mbpp:task:775:s1pair:c69c41dcea40113d",
+      "presentation": "primary",
+      "review_item_id": "review:01941b887886802a1039852d",
+      "reviewer_id": "subagent-1",
+      "reviewer_type": "subagent",
+      "row_number": 19,
+      "semantic_decision": "chosen",
+      "verdict": "B",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "B"
+    },
+    {
+      "confidence": "high",
+      "notes": "B 等价于对方程 k(k+1)/2>=10^(n-1) 的正根向上取整；A 的根公式有偏移。",
+      "pair_id": "mbpp:task:739:s1pair:a459a45d508a5e35",
+      "presentation": "primary",
+      "review_item_id": "review:1119a932dc178d55a51c4795",
+      "reviewer_id": "subagent-1",
+      "reviewer_type": "subagent",
+      "row_number": 20,
+      "semantic_decision": "chosen",
+      "verdict": "B",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "B"
+    },
+    {
+      "confidence": "high",
+      "notes": "A 对字典中每个列表值排序并保留字典结构；B 排序的是字典条目且返回列表。",
+      "pair_id": "mbpp:task:662:s1pair:c2a0b64c415535b4",
+      "presentation": "swapped",
+      "review_item_id": "review:672288d117a25e577bbab1a8",
+      "reviewer_id": "subagent-1",
+      "reviewer_type": "subagent",
+      "row_number": 21,
+      "semantic_decision": "chosen",
+      "verdict": "A",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "A"
+    },
+    {
+      "confidence": "high",
+      "notes": "B 正确归并后取中间两项；A 在通常未提前耗尽任一数组时从未给 mid1、mid2 赋值。",
+      "pair_id": "mbpp:task:622:s1pair:c7ba39e5ffadcf4f",
+      "presentation": "primary",
+      "review_item_id": "review:af8ac3ff0ff3e9802cd59588",
+      "reviewer_id": "subagent-1",
+      "reviewer_type": "subagent",
+      "row_number": 22,
+      "semantic_decision": "chosen",
+      "verdict": "B",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "B"
+    },
+    {
+      "confidence": "high",
+      "notes": "A 正确计算达到 n 位下界所需的最小三角数索引；B 使用 k-1 和错误偏移，常多返回 1。",
+      "pair_id": "mbpp:task:739:s1pair:a459a45d508a5e35",
+      "presentation": "swapped",
+      "review_item_id": "review:3731eaf32ce286f5bc1f5eb0",
+      "reviewer_id": "subagent-1",
+      "reviewer_type": "subagent",
+      "row_number": 23,
+      "semantic_decision": "chosen",
+      "verdict": "A",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "A"
+    },
+    {
+      "confidence": "high",
+      "notes": "两者同样未实现正确的 32 位回卷：A 只用单比特掩码，B 使用 31 位掩码且未把高位正确右移到低位。",
+      "pair_id": "mbpp:task:799:s1pair:5fce947002254843",
+      "presentation": "primary",
+      "review_item_id": "review:f74c8b386bc4573220090545",
+      "reviewer_id": "subagent-1",
+      "reviewer_type": "subagent",
+      "row_number": 24,
+      "semantic_decision": "tie",
+      "verdict": "tie",
+      "verifier_direction_agreement": false,
+      "verifier_visible_preference": "A"
+    },
+    {
+      "confidence": "high",
+      "notes": "B 收集非零项并在末尾补足零，保持相对顺序；A 计算结果未使用，实际返回原列表。",
+      "pair_id": "mbpp:task:632:s1pair:d7f4adfcded0b31f",
+      "presentation": "swapped",
+      "review_item_id": "review:793472304e5992a4cdf58311",
+      "reviewer_id": "subagent-1",
+      "reviewer_type": "subagent",
+      "row_number": 25,
+      "semantic_decision": "chosen",
+      "verdict": "B",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "B"
+    },
+    {
+      "confidence": "high",
+      "notes": "“将 tuple 加到 list”未说明是把 tuple 作为单个元素追加还是把其元素展开；A、B 分别实现这两种合理语义。",
+      "pair_id": "mbpp:task:750:s1pair:05972b444fd5576d",
+      "presentation": "primary",
+      "review_item_id": "review:186b81716a9c7021a693eccf",
+      "reviewer_id": "subagent-1",
+      "reviewer_type": "subagent",
+      "row_number": 26,
+      "semantic_decision": "ambiguous",
+      "verdict": "ambiguous",
+      "verifier_direction_agreement": false,
+      "verifier_visible_preference": "B"
+    },
+    {
+      "confidence": "high",
+      "notes": "题面缺少有效密码的必要条件；A 与 B 采用不同且互不包含的规则，不能客观择优。",
+      "pair_id": "mbpp:task:822:s1pair:307dad4b07891d89",
+      "presentation": "primary",
+      "review_item_id": "review:ee45c216e625418be2e3a380",
+      "reviewer_id": "subagent-1",
+      "reviewer_type": "subagent",
+      "row_number": 27,
+      "semantic_decision": "ambiguous",
+      "verdict": "ambiguous",
+      "verifier_direction_agreement": false,
+      "verifier_visible_preference": "A"
+    },
+    {
+      "confidence": "high",
+      "notes": "题面未定义“valid values”：A 将其解释为正数，B 实际仅排除 NaN，二者都依赖未说明的标准。",
+      "pair_id": "mbpp:task:713:s1pair:647b18a8964e1794",
+      "presentation": "swapped",
+      "review_item_id": "review:34313d425d6f8b7c57250d7f",
+      "reviewer_id": "subagent-1",
+      "reviewer_type": "subagent",
+      "row_number": 28,
+      "semantic_decision": "ambiguous",
+      "verdict": "ambiguous",
+      "verifier_direction_agreement": false,
+      "verifier_visible_preference": "A"
+    },
+    {
+      "confidence": "high",
+      "notes": "A 在第一个 tuple 处停止并返回此前元素数；B 会继续统计 tuple 之后的非 tuple 元素。",
+      "pair_id": "mbpp:task:941:s1pair:13a58d9211f7a576",
+      "presentation": "swapped",
+      "review_item_id": "review:67f103ff744beb7a723a6916",
+      "reviewer_id": "subagent-1",
+      "reviewer_type": "subagent",
+      "row_number": 29,
+      "semantic_decision": "chosen",
+      "verdict": "A",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "A"
+    },
+    {
+      "confidence": "high",
+      "notes": "A 正确处理重复值并持续更新最大长度；B 遇重复会重置且遗漏末尾连续段的最终更新。",
+      "pair_id": "mbpp:task:863:s1pair:586bf92016f112fc",
+      "presentation": "primary",
+      "review_item_id": "review:6488d18fafbc8e6320ba7ef9",
+      "reviewer_id": "subagent-1",
+      "reviewer_type": "subagent",
+      "row_number": 30,
+      "semantic_decision": "chosen",
+      "verdict": "A",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "A"
+    },
+    {
+      "confidence": "high",
+      "notes": "B 用 all 返回整体布尔判断；A 返回逐项布尔列表，不符合“check if”的返回语义。",
+      "pair_id": "mbpp:task:809:s1pair:040b8c0933fde03e",
+      "presentation": "primary",
+      "review_item_id": "review:10aa3db36aabba63c593f177",
+      "reviewer_id": "subagent-1",
+      "reviewer_type": "subagent",
+      "row_number": 31,
+      "semantic_decision": "chosen",
+      "verdict": "B",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "B"
+    },
+    {
+      "confidence": "high",
+      "notes": "A 对等长列表能正确判断逐项相等，虽漏检长度差；B 对完全相同的列表反而返回 False，逻辑方向错误。",
+      "pair_id": "mbpp:task:811:s1pair:19b1e6de88463ade",
+      "presentation": "primary",
+      "review_item_id": "review:7fc33429c20b3af9d32955d6",
+      "reviewer_id": "subagent-1",
+      "reviewer_type": "subagent",
+      "row_number": 32,
+      "semantic_decision": "chosen",
+      "verdict": "A",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "A"
+    },
+    {
+      "confidence": "high",
+      "notes": "A 使用 (n(n+1)/2)^2 的正确立方和公式；B 的表达式不等价。",
+      "pair_id": "mbpp:task:931:s1pair:daebae9b1c22ffa8",
+      "presentation": "swapped",
+      "review_item_id": "review:d537787e07aa0757e88f8dbe",
+      "reviewer_id": "subagent-1",
+      "reviewer_type": "subagent",
+      "row_number": 33,
+      "semantic_decision": "chosen",
+      "verdict": "A",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "A"
+    },
+    {
+      "confidence": "high",
+      "notes": "A 返回第二高频元素；B 返回最高频元素。",
+      "pair_id": "mbpp:task:829:s1pair:ead4952ef3a8b007",
+      "presentation": "swapped",
+      "review_item_id": "review:bdfc3843d5a55e195cb59887",
+      "reviewer_id": "subagent-1",
+      "reviewer_type": "subagent",
+      "row_number": 34,
+      "semantic_decision": "chosen",
+      "verdict": "A",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "A"
+    },
+    {
+      "confidence": "high",
+      "notes": "B 删除指定长度单词后用单空格规范连接；A 会在非空结果末尾额外添加空格。",
+      "pair_id": "mbpp:task:772:s1pair:a70d249c0a0ec534",
+      "presentation": "primary",
+      "review_item_id": "review:6ae144b4d71c05a4f0aa1e21",
+      "reviewer_id": "subagent-1",
+      "reviewer_type": "subagent",
+      "row_number": 35,
+      "semantic_decision": "chosen",
+      "verdict": "B",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "B"
+    },
+    {
+      "confidence": "high",
+      "notes": "Delannoy 数在任一坐标为 0 时应为 1，B 的基例和递推正确；A 错把坐标轴基例设为 0。",
+      "pair_id": "mbpp:task:934:s1pair:f3ec46528748372e",
+      "presentation": "swapped",
+      "review_item_id": "review:109925f82dfebcc4ef56f643",
+      "reviewer_id": "subagent-1",
+      "reviewer_type": "subagent",
+      "row_number": 36,
+      "semantic_decision": "chosen",
+      "verdict": "B",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "B"
+    },
+    {
+      "confidence": "high",
+      "notes": "A 返回逐元素取模所得 tuple；B 计算后转成字符串，返回类型错误。",
+      "pair_id": "mbpp:task:616:s1pair:13c35d6446515c62",
+      "presentation": "swapped",
+      "review_item_id": "review:d143312aa418e9c017acc1ef",
+      "reviewer_id": "subagent-1",
+      "reviewer_type": "subagent",
+      "row_number": 37,
+      "semantic_decision": "chosen",
+      "verdict": "A",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "A"
+    },
+    {
+      "confidence": "high",
+      "notes": "B 对字典中的各列表值分别排序；A 改为按值排序字典条目并返回列表。",
+      "pair_id": "mbpp:task:662:s1pair:c2a0b64c415535b4",
+      "presentation": "primary",
+      "review_item_id": "review:6c48006a1e918ef4c9bcd1a6",
+      "reviewer_id": "subagent-1",
+      "reviewer_type": "subagent",
+      "row_number": 38,
+      "semantic_decision": "chosen",
+      "verdict": "B",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "B"
+    },
+    {
+      "confidence": "high",
+      "notes": "B 用括号确保先算每对 XOR 再累加；A 因运算符优先级实际计算 (ans+arr[i])^arr[j]。",
+      "pair_id": "mbpp:task:633:s1pair:9eb19b15e28e0034",
+      "presentation": "swapped",
+      "review_item_id": "review:94e2852f9b73b749d32ce44c",
+      "reviewer_id": "subagent-1",
+      "reviewer_type": "subagent",
+      "row_number": 39,
+      "semantic_decision": "chosen",
+      "verdict": "B",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "B"
+    },
+    {
+      "confidence": "high",
+      "notes": "A 正确过滤指定长度单词并规范连接；B 会给结果附加多余的尾随空格。",
+      "pair_id": "mbpp:task:772:s1pair:a70d249c0a0ec534",
+      "presentation": "swapped",
+      "review_item_id": "review:183c912e19cbcdfe15c58bc4",
+      "reviewer_id": "subagent-1",
+      "reviewer_type": "subagent",
+      "row_number": 40,
+      "semantic_decision": "chosen",
+      "verdict": "A",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "A"
+    },
+    {
+      "confidence": "high",
+      "notes": "B按奇偶切片交错，偶数长度时能完成相邻交换；A用tee复制同一序列，只会重复每个元素。B虽会在奇数长度时插入空串，仍明显更优。",
+      "pair_id": "mbpp:task:648:s1pair:f0dc4ebd552164a8",
+      "presentation": "swapped",
+      "review_item_id": "review:a2dbda2903da0480d007b25c",
+      "reviewer_id": "subagent-2",
+      "reviewer_type": "subagent",
+      "row_number": 41,
+      "semantic_decision": "chosen",
+      "verdict": "B",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "B"
+    },
+    {
+      "confidence": "high",
+      "notes": "A稳定保留非零元素并在末尾补足零；B计算了过滤结果却未使用，最终原样返回列表。",
+      "pair_id": "mbpp:task:632:s1pair:d7f4adfcded0b31f",
+      "presentation": "primary",
+      "review_item_id": "review:150a3fef636142153bd61d5e",
+      "reviewer_id": "subagent-2",
+      "reviewer_type": "subagent",
+      "row_number": 42,
+      "semantic_decision": "chosen",
+      "verdict": "A",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "A"
+    },
+    {
+      "confidence": "high",
+      "notes": "A先把每个子列表转成元组再正确累计次数；B拿原列表中的list与tuple比较，计数通常为0。",
+      "pair_id": "mbpp:task:758:s1pair:c29a1d61f894b721",
+      "presentation": "primary",
+      "review_item_id": "review:e2c7fcbaf8b6a5c70728d026",
+      "reviewer_id": "subagent-2",
+      "reviewer_type": "subagent",
+      "row_number": 43,
+      "semantic_decision": "chosen",
+      "verdict": "A",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "A"
+    },
+    {
+      "confidence": "high",
+      "notes": "B返回所有出现多次的整数；A遇到首个重复项便返回标量，遗漏其余重复项。",
+      "pair_id": "mbpp:task:659:s1pair:00c3ff47629d6cbf",
+      "presentation": "primary",
+      "review_item_id": "review:edf4ffe1027ec85efd662e56",
+      "reviewer_id": "subagent-2",
+      "reviewer_type": "subagent",
+      "row_number": 44,
+      "semantic_decision": "chosen",
+      "verdict": "B",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "B"
+    },
+    {
+      "confidence": "high",
+      "notes": "A的字符类同时覆盖空格、逗号和句点；B只覆盖逗号与句点，未替换空格。",
+      "pair_id": "mbpp:task:732:s1pair:359f8ec5974cbe03",
+      "presentation": "primary",
+      "review_item_id": "review:97275da3347670a7b5816660",
+      "reviewer_id": "subagent-2",
+      "reviewer_type": "subagent",
+      "row_number": 45,
+      "semantic_decision": "chosen",
+      "verdict": "A",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "A"
+    },
+    {
+      "confidence": "high",
+      "notes": "A按记录的第二项排序后取前K条，符合最小K条记录；B是在每个元组内部截取并展平元素。",
+      "pair_id": "mbpp:task:753:s1pair:8e0da8718e4630cf",
+      "presentation": "swapped",
+      "review_item_id": "review:44b41cea858cb96209f6bb2e",
+      "reviewer_id": "subagent-2",
+      "reviewer_type": "subagent",
+      "row_number": 46,
+      "semantic_decision": "chosen",
+      "verdict": "A",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "A"
+    },
+    {
+      "confidence": "high",
+      "notes": "B对常规输入能累计最后一个词的长度；A会把分隔空格计入长度，且单词字符串会错误返回0。B对尾随空格仍有边界缺陷。",
+      "pair_id": "mbpp:task:868:s1pair:4c5243bdedae0c83",
+      "presentation": "swapped",
+      "review_item_id": "review:e959c80e4ec35a38d7903e94",
+      "reviewer_id": "subagent-2",
+      "reviewer_type": "subagent",
+      "row_number": 47,
+      "semantic_decision": "chosen",
+      "verdict": "B",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "B"
+    },
+    {
+      "confidence": "medium",
+      "notes": "两者使用相同正则，差别仅是返回布尔值还是提示字符串；题面未规定返回类型，无法据此判定优劣。",
+      "pair_id": "mbpp:task:719:s1pair:bac0ac6ff201aedd",
+      "presentation": "primary",
+      "review_item_id": "review:b30adae15a2a4c98627a69f4",
+      "reviewer_id": "subagent-2",
+      "reviewer_type": "subagent",
+      "row_number": 48,
+      "semantic_decision": "ambiguous",
+      "verdict": "ambiguous",
+      "verifier_direction_agreement": false,
+      "verifier_visible_preference": "B"
+    },
+    {
+      "confidence": "high",
+      "notes": "清空元组应得到空元组，A直接返回空元组；B的切片只是复制原值。",
+      "pair_id": "mbpp:task:816:s1pair:473d87798e2f76fd",
+      "presentation": "swapped",
+      "review_item_id": "review:5000a0acb1624902ce640b25",
+      "reviewer_id": "subagent-2",
+      "reviewer_type": "subagent",
+      "row_number": 49,
+      "semantic_decision": "chosen",
+      "verdict": "A",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "A"
+    },
+    {
+      "confidence": "high",
+      "notes": "A先计算base的power次幂再逐位求和；B首轮算成base平方且随后把temp耗为0，无法处理一般幂次。",
+      "pair_id": "mbpp:task:724:s1pair:0b841a6d8824294e",
+      "presentation": "swapped",
+      "review_item_id": "review:a08dc42ec40e78f7f0218588",
+      "reviewer_id": "subagent-2",
+      "reviewer_type": "subagent",
+      "row_number": 50,
+      "semantic_decision": "chosen",
+      "verdict": "A",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "A"
+    },
+    {
+      "confidence": "high",
+      "notes": "题目要求检查是否为31天月份，A返回准确布尔结果；B返回天数字符串，并把二月等一概写成30。",
+      "pair_id": "mbpp:task:866:s1pair:1973616deea0bb91",
+      "presentation": "primary",
+      "review_item_id": "review:c5635651304a51eb4e5eea51",
+      "reviewer_id": "subagent-2",
+      "reviewer_type": "subagent",
+      "row_number": 51,
+      "semantic_decision": "chosen",
+      "verdict": "A",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "A"
+    },
+    {
+      "confidence": "high",
+      "notes": "B正确维护当前连续大写长度及最大值；A的比较条件无关大写判断，还可能访问越界。",
+      "pair_id": "mbpp:task:806:s1pair:fac4080d5a357aaf",
+      "presentation": "swapped",
+      "review_item_id": "review:12b85039e8cdcc447dd86948",
+      "reviewer_id": "subagent-2",
+      "reviewer_type": "subagent",
+      "row_number": 52,
+      "semantic_decision": "chosen",
+      "verdict": "B",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "B"
+    },
+    {
+      "confidence": "medium",
+      "notes": "题面未定义“只取角元素”的具体操作及排序过程；A与B检查的是不同局部条件，均无法仅由可见描述推出。",
+      "pair_id": "mbpp:task:899:s1pair:faa9e3c477db73eb",
+      "presentation": "swapped",
+      "review_item_id": "review:425dc8d5b8f224c7613c094c",
+      "reviewer_id": "subagent-2",
+      "reviewer_type": "subagent",
+      "row_number": 53,
+      "semantic_decision": "ambiguous",
+      "verdict": "ambiguous",
+      "verifier_direction_agreement": false,
+      "verifier_visible_preference": "A"
+    },
+    {
+      "confidence": "high",
+      "notes": "A过滤掉所有空元组且不修改输入；B边遍历边删除，会跳过相邻的多个空元组。",
+      "pair_id": "mbpp:task:966:s1pair:ae34ef6f38bf2eb5",
+      "presentation": "swapped",
+      "review_item_id": "review:5b03b1432f2a15655665b4e8",
+      "reviewer_id": "subagent-2",
+      "reviewer_type": "subagent",
+      "row_number": 54,
+      "semantic_decision": "chosen",
+      "verdict": "A",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "A"
+    },
+    {
+      "confidence": "high",
+      "notes": "两者都找到第N列最大值，但B保留原数值类型；A无依据地转成字符串。",
+      "pair_id": "mbpp:task:611:s1pair:bb8f6a05b86b4e53",
+      "presentation": "primary",
+      "review_item_id": "review:40789f0f19afff3e8619f3d2",
+      "reviewer_id": "subagent-2",
+      "reviewer_type": "subagent",
+      "row_number": 55,
+      "semantic_decision": "chosen",
+      "verdict": "B",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "B"
+    },
+    {
+      "confidence": "medium",
+      "notes": "两者使用相同正则，差别仅是提示字符串与布尔值；题面未规定返回类型，无法据此判定优劣。",
+      "pair_id": "mbpp:task:719:s1pair:bac0ac6ff201aedd",
+      "presentation": "swapped",
+      "review_item_id": "review:535d27298cf6d9a2d4a0e306",
+      "reviewer_id": "subagent-2",
+      "reviewer_type": "subagent",
+      "row_number": 56,
+      "semantic_decision": "ambiguous",
+      "verdict": "ambiguous",
+      "verifier_direction_agreement": false,
+      "verifier_visible_preference": "A"
+    },
+    {
+      "confidence": "high",
+      "notes": "A按大写字母起点提取分段，符合按大写字母拆分的主体需求；B只是每四个单词字符切分，与大小写无关。",
+      "pair_id": "mbpp:task:956:s1pair:1ab7eec13eda8764",
+      "presentation": "primary",
+      "review_item_id": "review:b5f4bff4dc0d356f35b90668",
+      "reviewer_id": "subagent-2",
+      "reviewer_type": "subagent",
+      "row_number": 57,
+      "semantic_decision": "chosen",
+      "verdict": "A",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "A"
+    },
+    {
+      "confidence": "high",
+      "notes": "题目要求检查是否为31天月份，B返回准确布尔结果；A返回天数字符串，并把二月等一概写成30。",
+      "pair_id": "mbpp:task:866:s1pair:1973616deea0bb91",
+      "presentation": "swapped",
+      "review_item_id": "review:5abe14b530d5ee53ada0564a",
+      "reviewer_id": "subagent-2",
+      "reviewer_type": "subagent",
+      "row_number": 58,
+      "semantic_decision": "chosen",
+      "verdict": "B",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "B"
+    },
+    {
+      "confidence": "high",
+      "notes": "B按大写字母起点提取分段，符合按大写字母拆分的主体需求；A只是每四个单词字符切分，与大小写无关。",
+      "pair_id": "mbpp:task:956:s1pair:1ab7eec13eda8764",
+      "presentation": "swapped",
+      "review_item_id": "review:c21fdb4d9c5fd3630ac026e3",
+      "reviewer_id": "subagent-2",
+      "reviewer_type": "subagent",
+      "row_number": 59,
+      "semantic_decision": "chosen",
+      "verdict": "B",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "B"
+    },
+    {
+      "confidence": "high",
+      "notes": "A用all汇总每一对元素的严格大小关系并返回布尔值；B仅返回逐项布尔列表，没有完成整体检查。",
+      "pair_id": "mbpp:task:809:s1pair:040b8c0933fde03e",
+      "presentation": "swapped",
+      "review_item_id": "review:270273914113060843024211",
+      "reviewer_id": "subagent-2",
+      "reviewer_type": "subagent",
+      "row_number": 60,
+      "semantic_decision": "chosen",
+      "verdict": "A",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "A"
+    },
+    {
+      "confidence": "medium",
+      "notes": "奇数和时两者都补1；偶数和时A允许补0、B要求补最小正偶数2，而题面未说明所加数字是否必须为正数。",
+      "pair_id": "mbpp:task:867:s1pair:d8a396966399e806",
+      "presentation": "swapped",
+      "review_item_id": "review:afe2fec62fb22db81ae9b2fe",
+      "reviewer_id": "subagent-2",
+      "reviewer_type": "subagent",
+      "row_number": 61,
+      "semantic_decision": "ambiguous",
+      "verdict": "ambiguous",
+      "verifier_direction_agreement": false,
+      "verifier_visible_preference": "B"
+    },
+    {
+      "confidence": "high",
+      "notes": "A逐个比较候选词与目标字符串的字符计数；B把整个字符串列表的词频与单词字符频率比较，维度错误。",
+      "pair_id": "mbpp:task:861:s1pair:da2f204f886a2cf7",
+      "presentation": "primary",
+      "review_item_id": "review:604e0d43d64d11514cf33f85",
+      "reviewer_id": "subagent-2",
+      "reviewer_type": "subagent",
+      "row_number": 62,
+      "semantic_decision": "chosen",
+      "verdict": "A",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "A"
+    },
+    {
+      "confidence": "high",
+      "notes": "A枚举所有连续子数组并累加各自乘积；B枚举的是包含空集和非连续组合的所有子集。",
+      "pair_id": "mbpp:task:734:s1pair:7dba9e1a1ccfd735",
+      "presentation": "swapped",
+      "review_item_id": "review:b00295854214010435e6df84",
+      "reviewer_id": "subagent-2",
+      "reviewer_type": "subagent",
+      "row_number": 63,
+      "semantic_decision": "chosen",
+      "verdict": "A",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "A"
+    },
+    {
+      "confidence": "high",
+      "notes": "Delannoy递推在任一坐标为0时应为1，A的边界与递推均正确；B把坐标轴边界错设为0。",
+      "pair_id": "mbpp:task:934:s1pair:f3ec46528748372e",
+      "presentation": "primary",
+      "review_item_id": "review:dab015ffef4cb126f301d13f",
+      "reviewer_id": "subagent-2",
+      "reviewer_type": "subagent",
+      "row_number": 64,
+      "semantic_decision": "chosen",
+      "verdict": "A",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "A"
+    },
+    {
+      "confidence": "high",
+      "notes": "B按记录的第二项排序后取前K条，符合最小K条记录；A是在每个元组内部截取并展平元素。",
+      "pair_id": "mbpp:task:753:s1pair:8e0da8718e4630cf",
+      "presentation": "primary",
+      "review_item_id": "review:4cb82188b04b1246934bdd07",
+      "reviewer_id": "subagent-2",
+      "reviewer_type": "subagent",
+      "row_number": 65,
+      "semantic_decision": "chosen",
+      "verdict": "B",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "B"
+    },
+    {
+      "confidence": "high",
+      "notes": "A返回所有出现多次的整数；B遇到首个重复项便返回标量，遗漏其余重复项。",
+      "pair_id": "mbpp:task:659:s1pair:00c3ff47629d6cbf",
+      "presentation": "swapped",
+      "review_item_id": "review:0365c01c44a9c50c2c175b4e",
+      "reviewer_id": "subagent-2",
+      "reviewer_type": "subagent",
+      "row_number": 66,
+      "semantic_decision": "chosen",
+      "verdict": "A",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "A"
+    },
+    {
+      "confidence": "high",
+      "notes": "A从num减1后持续向下寻找回文数；B的temp初值等于num，导致while条件一开始就为假，几乎总返回-1。",
+      "pair_id": "mbpp:task:909:s1pair:437af207ea1fdba6",
+      "presentation": "swapped",
+      "review_item_id": "review:1e84d5baf5add0841f740ce3",
+      "reviewer_id": "subagent-2",
+      "reviewer_type": "subagent",
+      "row_number": 67,
+      "semantic_decision": "chosen",
+      "verdict": "A",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "A"
+    },
+    {
+      "confidence": "high",
+      "notes": "第n个九边形数公式为n乘以(7n-5)再除以2，A正确，B的系数错误。",
+      "pair_id": "mbpp:task:641:s1pair:9901a24e468d04a9",
+      "presentation": "primary",
+      "review_item_id": "review:31e2a5085cccad649cb36230",
+      "reviewer_id": "subagent-2",
+      "reviewer_type": "subagent",
+      "row_number": 68,
+      "semantic_decision": "chosen",
+      "verdict": "A",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "A"
+    },
+    {
+      "confidence": "high",
+      "notes": "A从对数的小数部分恢复首位并取整；B返回1到10之间的浮点有效值，而不是首位整数。",
+      "pair_id": "mbpp:task:657:s1pair:515f82f782267f1c",
+      "presentation": "swapped",
+      "review_item_id": "review:b67a2c6c8488007f5262bc12",
+      "reviewer_id": "subagent-2",
+      "reviewer_type": "subagent",
+      "row_number": 69,
+      "semantic_decision": "chosen",
+      "verdict": "A",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "A"
+    },
+    {
+      "confidence": "high",
+      "notes": "B恰好累加前n个正奇数的立方；A从i=0开始，额外加入了负一的立方。",
+      "pair_id": "mbpp:task:837:s1pair:105ec7da88d33160",
+      "presentation": "primary",
+      "review_item_id": "review:83e9671267973235b3326f07",
+      "reviewer_id": "subagent-2",
+      "reviewer_type": "subagent",
+      "row_number": 70,
+      "semantic_decision": "chosen",
+      "verdict": "B",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "B"
+    },
+    {
+      "confidence": "high",
+      "notes": "B使用立方和公式[n(n+1)/2]^2；A的乘积公式不成立。",
+      "pair_id": "mbpp:task:931:s1pair:daebae9b1c22ffa8",
+      "presentation": "primary",
+      "review_item_id": "review:b943abeb895b5b88e6e65ee6",
+      "reviewer_id": "subagent-3",
+      "reviewer_type": "subagent",
+      "row_number": 71,
+      "semantic_decision": "chosen",
+      "verdict": "B",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "B"
+    },
+    {
+      "confidence": "high",
+      "notes": "B将对数法得到的首位数取整；A返回1到10之间的浮点数而非首位数字。",
+      "pair_id": "mbpp:task:657:s1pair:515f82f782267f1c",
+      "presentation": "primary",
+      "review_item_id": "review:9851b3f66098435be50cfdb4",
+      "reviewer_id": "subagent-3",
+      "reviewer_type": "subagent",
+      "row_number": 72,
+      "semantic_decision": "chosen",
+      "verdict": "B",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "B"
+    },
+    {
+      "confidence": "high",
+      "notes": "A正确判断子数组长度的奇偶；B因运算符优先级实际只累计长度为1的子数组。",
+      "pair_id": "mbpp:task:782:s1pair:ec6e2d049705cbe8",
+      "presentation": "primary",
+      "review_item_id": "review:fe10ac100d18e04072fe79c4",
+      "reviewer_id": "subagent-3",
+      "reviewer_type": "subagent",
+      "row_number": 73,
+      "semantic_decision": "chosen",
+      "verdict": "A",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "A"
+    },
+    {
+      "confidence": "high",
+      "notes": "B正确判断子数组长度的奇偶；A的表达式受运算符优先级影响，只累计单元素子数组。",
+      "pair_id": "mbpp:task:782:s1pair:ec6e2d049705cbe8",
+      "presentation": "swapped",
+      "review_item_id": "review:0b9222ec5bb22b40c4eaf675",
+      "reviewer_id": "subagent-3",
+      "reviewer_type": "subagent",
+      "row_number": 74,
+      "semantic_decision": "chosen",
+      "verdict": "B",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "B"
+    },
+    {
+      "confidence": "high",
+      "notes": "B能跳过重复值并持续更新最长长度；A遗漏末尾连续段的最终更新，且重复值会错误重置。",
+      "pair_id": "mbpp:task:863:s1pair:586bf92016f112fc",
+      "presentation": "swapped",
+      "review_item_id": "review:7201d31e9f22997ea17e1e31",
+      "reviewer_id": "subagent-3",
+      "reviewer_type": "subagent",
+      "row_number": 75,
+      "semantic_decision": "chosen",
+      "verdict": "B",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "B"
+    },
+    {
+      "confidence": "high",
+      "notes": "A从n向下搜索，直接保证得到不超过n且余数为y的最大值；B的公式与n的商无关，普遍错误。",
+      "pair_id": "mbpp:task:663:s1pair:c1483db628815115",
+      "presentation": "primary",
+      "review_item_id": "review:ccc3a9aae25f4f2a88b47d59",
+      "reviewer_id": "subagent-3",
+      "reviewer_type": "subagent",
+      "row_number": 76,
+      "semantic_decision": "chosen",
+      "verdict": "A",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "A"
+    },
+    {
+      "confidence": "high",
+      "notes": "A只检查奇数下标位置且要求其值为奇数；B错误检查了几乎所有位置并漏掉末元素。",
+      "pair_id": "mbpp:task:775:s1pair:c69c41dcea40113d",
+      "presentation": "swapped",
+      "review_item_id": "review:fac77314beef21dd77965ec0",
+      "reviewer_id": "subagent-3",
+      "reviewer_type": "subagent",
+      "row_number": 77,
+      "semantic_decision": "chosen",
+      "verdict": "A",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "A"
+    },
+    {
+      "confidence": "high",
+      "notes": "B从num-1递减寻找前一个回文数；A的while条件初始即为假，除边界外总返回-1。",
+      "pair_id": "mbpp:task:909:s1pair:437af207ea1fdba6",
+      "presentation": "primary",
+      "review_item_id": "review:34770fd8e7a6fcbaa1f7d840",
+      "reviewer_id": "subagent-3",
+      "reviewer_type": "subagent",
+      "row_number": 78,
+      "semantic_decision": "chosen",
+      "verdict": "B",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "B"
+    },
+    {
+      "confidence": "high",
+      "notes": "题目未定义“valid values”的判定标准；A隐含排除NaN，B隐含要求正数，无法仅凭提示确定。",
+      "pair_id": "mbpp:task:713:s1pair:647b18a8964e1794",
+      "presentation": "primary",
+      "review_item_id": "review:a59d9ad74b61dedc734de694",
+      "reviewer_id": "subagent-3",
+      "reviewer_type": "subagent",
+      "row_number": 79,
+      "semantic_decision": "ambiguous",
+      "verdict": "ambiguous",
+      "verifier_direction_agreement": false,
+      "verifier_visible_preference": "B"
+    },
+    {
+      "confidence": "high",
+      "notes": "第n个九边形数公式为n(7n-5)/2，B正确；A的系数为6。",
+      "pair_id": "mbpp:task:641:s1pair:9901a24e468d04a9",
+      "presentation": "swapped",
+      "review_item_id": "review:0ab27762abbf206f5363fd62",
+      "reviewer_id": "subagent-3",
+      "reviewer_type": "subagent",
+      "row_number": 80,
+      "semantic_decision": "chosen",
+      "verdict": "B",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "B"
+    },
+    {
+      "confidence": "high",
+      "notes": "A只累加出现恰好一次的元素；B会把每个不同值累加一次，包括重复出现的值。",
+      "pair_id": "mbpp:task:777:s1pair:7520fe1d8a56a799",
+      "presentation": "swapped",
+      "review_item_id": "review:4b6a833bce441721bc609c9a",
+      "reviewer_id": "subagent-3",
+      "reviewer_type": "subagent",
+      "row_number": 81,
+      "semantic_decision": "rejected",
+      "verdict": "A",
+      "verifier_direction_agreement": false,
+      "verifier_visible_preference": "B"
+    },
+    {
+      "confidence": "high",
+      "notes": "A按0基数组的2i+1和2i+2检查全部父子关系；B使用错误的子节点下标且不递归检查深层节点。",
+      "pair_id": "mbpp:task:751:s1pair:ee49b758a4e66648",
+      "presentation": "swapped",
+      "review_item_id": "review:5361a22205caa0477cb26923",
+      "reviewer_id": "subagent-3",
+      "reviewer_type": "subagent",
+      "row_number": 82,
+      "semantic_decision": "chosen",
+      "verdict": "A",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "A"
+    },
+    {
+      "confidence": "high",
+      "notes": "A完整归并后取两个中间值，逻辑正确；B在常规合并路径中未赋值mid1和mid2。",
+      "pair_id": "mbpp:task:622:s1pair:c7ba39e5ffadcf4f",
+      "presentation": "swapped",
+      "review_item_id": "review:8e52a8f561ecf5623ab4bce9",
+      "reviewer_id": "subagent-3",
+      "reviewer_type": "subagent",
+      "row_number": 83,
+      "semantic_decision": "chosen",
+      "verdict": "A",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "A"
+    },
+    {
+      "confidence": "medium",
+      "notes": "A能正确交换成对元素，但奇数长度时会插入空字符串；B只是复制并交错两个相同迭代器，整体功能错误。",
+      "pair_id": "mbpp:task:648:s1pair:f0dc4ebd552164a8",
+      "presentation": "primary",
+      "review_item_id": "review:6f88f4bf4be97049bbc48685",
+      "reviewer_id": "subagent-3",
+      "reviewer_type": "subagent",
+      "row_number": 84,
+      "semantic_decision": "chosen",
+      "verdict": "A",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "A"
+    },
+    {
+      "confidence": "high",
+      "notes": "A明确累加每对元素的异或值；B因加法优先于异或，后续迭代计算含义错误。",
+      "pair_id": "mbpp:task:633:s1pair:9eb19b15e28e0034",
+      "presentation": "primary",
+      "review_item_id": "review:edbc29c53a2d21683799bc9d",
+      "reviewer_id": "subagent-3",
+      "reviewer_type": "subagent",
+      "row_number": 85,
+      "semantic_decision": "chosen",
+      "verdict": "A",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "A"
+    },
+    {
+      "confidence": "medium",
+      "notes": "两者都未完整实现32位回卷，但B至少在不发生高位溢出时保留正确左移结果；A还会错误混入低位并使用31位掩码。",
+      "pair_id": "mbpp:task:799:s1pair:5fce947002254843",
+      "presentation": "swapped",
+      "review_item_id": "review:db06ee3784d1f51ac01ab9b0",
+      "reviewer_id": "subagent-3",
+      "reviewer_type": "subagent",
+      "row_number": 86,
+      "semantic_decision": "chosen",
+      "verdict": "B",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "B"
+    },
+    {
+      "confidence": "medium",
+      "notes": "B生成从长度0到n的全部组合，包含空子列表；A遗漏空子列表。",
+      "pair_id": "mbpp:task:859:s1pair:ea014e50a104fe37",
+      "presentation": "primary",
+      "review_item_id": "review:92e3ff4d3decae765e715750",
+      "reviewer_id": "subagent-3",
+      "reviewer_type": "subagent",
+      "row_number": 87,
+      "semantic_decision": "chosen",
+      "verdict": "B",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "B"
+    },
+    {
+      "confidence": "high",
+      "notes": "B枚举所有连续子数组并累加其乘积；A枚举的是任意子集且还包含空集乘积。",
+      "pair_id": "mbpp:task:734:s1pair:7dba9e1a1ccfd735",
+      "presentation": "primary",
+      "review_item_id": "review:04484856724528534ea2e656",
+      "reviewer_id": "subagent-3",
+      "reviewer_type": "subagent",
+      "row_number": 88,
+      "semantic_decision": "chosen",
+      "verdict": "B",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "B"
+    },
+    {
+      "confidence": "high",
+      "notes": "A恰好累加前n个正奇数的立方；B从i=0开始额外加入(-1)^3。",
+      "pair_id": "mbpp:task:837:s1pair:105ec7da88d33160",
+      "presentation": "swapped",
+      "review_item_id": "review:2d2bce4acb52b4f46a22245c",
+      "reviewer_id": "subagent-3",
+      "reviewer_type": "subagent",
+      "row_number": 89,
+      "semantic_decision": "chosen",
+      "verdict": "A",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "A"
+    },
+    {
+      "confidence": "high",
+      "notes": "B按0基数组检查所有节点的左右孩子；A的子节点下标错误且只检查传入位置。",
+      "pair_id": "mbpp:task:751:s1pair:ee49b758a4e66648",
+      "presentation": "primary",
+      "review_item_id": "review:f29314537a9286ab921ea22b",
+      "reviewer_id": "subagent-3",
+      "reviewer_type": "subagent",
+      "row_number": 90,
+      "semantic_decision": "chosen",
+      "verdict": "B",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "B"
+    },
+    {
+      "confidence": "high",
+      "notes": "B先校验等长，再用双倍字符串判断旋转关系；A仅在极少数拼接完全相等时返回真。",
+      "pair_id": "mbpp:task:871:s1pair:29cbab307edb9345",
+      "presentation": "primary",
+      "review_item_id": "review:bbde45c830891c1618563c24",
+      "reviewer_id": "subagent-3",
+      "reviewer_type": "subagent",
+      "row_number": 91,
+      "semantic_decision": "chosen",
+      "verdict": "B",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "B"
+    },
+    {
+      "confidence": "high",
+      "notes": "A将列表转为元组后逐项计数；B先用set去重，导致所有计数恒为1。",
+      "pair_id": "mbpp:task:779:s1pair:c720e16b4c35effb",
+      "presentation": "primary",
+      "review_item_id": "review:288357b7c29a03f150f31c0d",
+      "reviewer_id": "subagent-3",
+      "reviewer_type": "subagent",
+      "row_number": 92,
+      "semantic_decision": "chosen",
+      "verdict": "A",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "A"
+    },
+    {
+      "confidence": "high",
+      "notes": "A正确维护连续大写字符的当前长度和最大长度；B比较相邻字符且可能越界，与大写判断无关。",
+      "pair_id": "mbpp:task:806:s1pair:fac4080d5a357aaf",
+      "presentation": "primary",
+      "review_item_id": "review:ab19bf05107123fe5b69d181",
+      "reviewer_id": "subagent-3",
+      "reviewer_type": "subagent",
+      "row_number": 93,
+      "semantic_decision": "chosen",
+      "verdict": "A",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "A"
+    },
+    {
+      "confidence": "high",
+      "notes": "A采用等长检查和双倍字符串包含关系，正确判断旋转；B的拼接相等条件过强。",
+      "pair_id": "mbpp:task:871:s1pair:29cbab307edb9345",
+      "presentation": "swapped",
+      "review_item_id": "review:aa8a427565468d5d545ae473",
+      "reviewer_id": "subagent-3",
+      "reviewer_type": "subagent",
+      "row_number": 94,
+      "semantic_decision": "chosen",
+      "verdict": "A",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "A"
+    },
+    {
+      "confidence": "high",
+      "notes": "B保留重复出现次数并将列表键转成元组；A先去重，无法得到真实出现次数。",
+      "pair_id": "mbpp:task:779:s1pair:c720e16b4c35effb",
+      "presentation": "swapped",
+      "review_item_id": "review:a6f6076e258dd725354a385b",
+      "reviewer_id": "subagent-3",
+      "reviewer_type": "subagent",
+      "row_number": 95,
+      "semantic_decision": "chosen",
+      "verdict": "B",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "B"
+    },
+    {
+      "confidence": "high",
+      "notes": "B的字符类明确覆盖空格、逗号和点；A没有匹配空格且额外涉及反斜杠。",
+      "pair_id": "mbpp:task:732:s1pair:359f8ec5974cbe03",
+      "presentation": "swapped",
+      "review_item_id": "review:ebc649090849813efa377f56",
+      "reviewer_id": "subagent-3",
+      "reviewer_type": "subagent",
+      "row_number": 96,
+      "semantic_decision": "chosen",
+      "verdict": "B",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "B"
+    },
+    {
+      "confidence": "high",
+      "notes": "B在首个元组处停止并返回此前元素数；A统计整份列表中的所有非元组元素。",
+      "pair_id": "mbpp:task:941:s1pair:13a58d9211f7a576",
+      "presentation": "primary",
+      "review_item_id": "review:4ec3bdff3d09c6748c2dc324",
+      "reviewer_id": "subagent-3",
+      "reviewer_type": "subagent",
+      "row_number": 97,
+      "semantic_decision": "chosen",
+      "verdict": "B",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "B"
+    },
+    {
+      "confidence": "high",
+      "notes": "B返回逐元素取模后的元组；A虽然计算相同内容，却错误转换成字符串。",
+      "pair_id": "mbpp:task:616:s1pair:13c35d6446515c62",
+      "presentation": "primary",
+      "review_item_id": "review:793db2575f671cb6a2d6d945",
+      "reviewer_id": "subagent-3",
+      "reviewer_type": "subagent",
+      "row_number": 98,
+      "semantic_decision": "chosen",
+      "verdict": "B",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "B"
+    },
+    {
+      "confidence": "high",
+      "notes": "B返回空元组，符合清空值的要求；A切片后仍保留原元组全部内容。",
+      "pair_id": "mbpp:task:816:s1pair:473d87798e2f76fd",
+      "presentation": "primary",
+      "review_item_id": "review:db239eed7c9dd3e574bbfd93",
+      "reviewer_id": "subagent-3",
+      "reviewer_type": "subagent",
+      "row_number": 99,
+      "semantic_decision": "chosen",
+      "verdict": "B",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "B"
+    },
+    {
+      "confidence": "high",
+      "notes": "B先计算base的power次幂再求数字和；A首轮算成base平方并把temp耗尽，未按指定幂次计算。",
+      "pair_id": "mbpp:task:724:s1pair:0b841a6d8824294e",
+      "presentation": "primary",
+      "review_item_id": "review:376b78379331184ab59f0c24",
+      "reviewer_id": "subagent-3",
+      "reviewer_type": "subagent",
+      "row_number": 100,
+      "semantic_decision": "chosen",
+      "verdict": "B",
+      "verifier_direction_agreement": true,
+      "verifier_visible_preference": "B"
+    }
+  ],
+  "reviewer_source_metrics": {
+    "human": {
+      "confidence_counts": {
+        "high": 7,
+        "low": 1,
+        "medium": 2
+      },
+      "directional_presentations": 10,
+      "presentations": 10,
+      "verdict_counts": {
+        "A": 4,
+        "B": 6
+      },
+      "verifier_direction_agreement_rate": 0.6,
+      "verifier_direction_agreements": 6
+    },
+    "subagent": {
+      "confidence_counts": {
+        "high": 83,
+        "medium": 7
+      },
+      "directional_presentations": 79,
+      "presentations": 90,
+      "verdict_counts": {
+        "A": 40,
+        "B": 39,
+        "ambiguous": 9,
+        "tie": 2
+      },
+      "verifier_direction_agreement_rate": 0.987342,
+      "verifier_direction_agreements": 78
+    }
+  },
+  "schema_name": "day22.ai_assisted_blind_review_audit",
+  "schema_version": 1,
+  "status": "audit_only_not_formal_human_review"
+}

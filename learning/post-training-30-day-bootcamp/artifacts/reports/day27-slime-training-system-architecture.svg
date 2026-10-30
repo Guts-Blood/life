@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="2000" height="3040" viewBox="0 0 2000 3040" role="img" aria-labelledby="title desc">
+  <title id="title">Day 27 · slime Training System Architecture</title>
+  <desc id="desc">A Chinese architecture map of slime showing the exact control hierarchy from train.py or train_async.py to the sibling RolloutManager and RayTrainGroup controllers, their use of Ray, SGLang and Megatron, the online reinforcement-learning data loop, four flow types, state ownership, observable evidence and failure triage.</desc>
+  <defs>
+    <marker id="arrow-control" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#7c3aed"/>
+    </marker>
+    <marker id="arrow-data" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#2563eb"/>
+    </marker>
+    <marker id="arrow-weight" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#15803d"/>
+    </marker>
+    <marker id="arrow-evidence" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#c2410c"/>
+    </marker>
+    <marker id="arrow-runtime" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#475569"/>
+    </marker>
+    <style>
+      text { font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; fill: #172033; }
+      .title { font-size: 38px; font-weight: 750; }
+      .subtitle { font-size: 18px; fill: #526078; }
+      .section { font-size: 25px; font-weight: 750; }
+      .label { font-size: 19px; font-weight: 700; }
+      .body { font-size: 16px; }
+      .small { font-size: 14px; fill: #475569; }
+      .tiny { font-size: 12px; fill: #526078; }
+      .mono { font-family: "SFMono-Regular", Consolas, monospace; font-size: 13px; }
+      .badge { font-size: 12px; font-weight: 750; letter-spacing: .35px; }
+      .panel { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1.5; }
+      .slime { fill: #f3e8ff; stroke: #7c3aed; stroke-width: 1.7; }
+      .ray { fill: #ede9fe; stroke: #6d28d9; stroke-width: 1.7; }
+      .sglang { fill: #dbeafe; stroke: #2563eb; stroke-width: 1.7; }
+      .reward { fill: #ecfeff; stroke: #0891b2; stroke-width: 1.7; }
+      .buffer { fill: #e0f2fe; stroke: #0284c7; stroke-width: 1.7; }
+      .megatron { fill: #dcfce7; stroke: #16a34a; stroke-width: 1.7; }
+      .runtime { fill: #f1f5f9; stroke: #64748b; stroke-width: 1.6; }
+      .evidence { fill: #fff7ed; stroke: #ea580c; stroke-width: 1.6; }
+      .warn { fill: #fef3c7; stroke: #d97706; stroke-width: 1.5; }
+      .fail { fill: #fee2e2; stroke: #dc2626; stroke-width: 1.5; }
+      .soft { fill: #f8fafc; stroke: #cbd5e1; stroke-width: 1.3; }
+      .divider { stroke: #cbd5e1; stroke-width: 1.2; }
+      .control-line { fill: none; stroke: #7c3aed; stroke-width: 2.5; stroke-dasharray: 9 6; marker-end: url(#arrow-control); }
+      .data-line { fill: none; stroke: #2563eb; stroke-width: 3; marker-end: url(#arrow-data); }
+      .weight-line { fill: none; stroke: #15803d; stroke-width: 3.2; marker-end: url(#arrow-weight); }
+      .evidence-line { fill: none; stroke: #c2410c; stroke-width: 2.3; stroke-dasharray: 4 5; marker-end: url(#arrow-evidence); }
+      .runtime-line { fill: none; stroke: #475569; stroke-width: 2.3; marker-end: url(#arrow-runtime); }
+      .table-head { fill: #e2e8f0; stroke: #94a3b8; stroke-width: 1.2; }
+      .table-row { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1; }
+      .table-alt { fill: #f8fafc; stroke: #cbd5e1; stroke-width: 1; }
+      .control-text { fill: #6d28d9; }
+      .data-text { fill: #1d4ed8; }
+      .weight-text { fill: #166534; }
+      .evidence-text { fill: #9a3412; }
+    </style>
+  </defs>
+
+  <rect width="2000" height="3040" fill="#f5f7fb"/>
+
+  <text id="title-text" x="55" y="65" class="title">Day 27 · slime Training System：职责、对象、状态与证据</text>
+  <text x="55" y="100" class="subtitle">slime 写 RL 工作流；Ray 调度 actor/GPU；SGLang 生成；Megatron 学习；PyTorch/NCCL/CUDA 执行。框架名不是同一层的互斥替代品。</text>
+
+  <rect x="55" y="125" width="450" height="38" rx="19" class="slime"/>
+  <text x="280" y="150" class="badge" text-anchor="middle">CONCEPT MAP · CPU SOURCE STUDY · NO NEW GPU CLAIM</text>
+
+  <line x1="960" y1="144" x2="1020" y2="144" class="control-line"/>
+  <text x="1034" y="149" class="small control-text">control flow</text>
+  <line x1="1170" y1="144" x2="1230" y2="144" class="data-line"/>
+  <text x="1244" y="149" class="small data-text">data flow</text>
+  <line x1="1370" y1="144" x2="1430" y2="144" class="weight-line"/>
+  <text x="1444" y="149" class="small weight-text">weight flow</text>
+  <line x1="1590" y1="144" x2="1650" y2="144" class="evidence-line"/>
+  <text x="1664" y="149" class="small evidence-text">checkpoint / evidence flow</text>
+
+  <!-- Responsibility boundary -->
+  <rect x="40" y="190" width="1920" height="440" rx="20" class="panel"/>
+  <text x="70" y="232" class="section">1 · 实际控制层级：两个 sibling controller，不等于同时并行</text>
+  <text x="70" y="263" class="small">顶层 entry 决定 generate/train/sync 的顺序或重叠；RolloutManager 管 rollout 侧，RayTrainGroup 管 learner 侧；Ray 是两侧共同使用的执行底座。</text>
+
+  <rect x="70" y="292" width="1860" height="82" rx="16" class="slime"/>
+  <text x="95" y="325" class="label">slime entry · driver process</text>
+  <text x="385" y="325" class="body">train.py：同步执行 generate → train → update weights</text>
+  <text x="385" y="353" class="body">train_async.py：通过 ObjectRef / ray.get 时机让 rollout 与 learner 有界重叠</text>
+  <text x="1290" y="325" class="small"><tspan x="1290" dy="0">创建 placement groups、RolloutManager、actor/critic models</tspan><tspan x="1290" dy="25">entry 才是两条 controller 分支的共同上层</tspan></text>
+
+  <path d="M1000 374 V394 H420 V410" class="control-line"/>
+  <path d="M1000 374 V394 H1145 V410" class="control-line"/>
+  <path d="M1000 374 V394 H1725 V410" class="control-line"/>
+
+  <rect x="70" y="410" width="700" height="142" rx="17" class="sglang"/>
+  <text x="95" y="444" class="label">RolloutManager @ray.remote · rollout-side controller</text>
+  <line x1="95" y1="460" x2="745" y2="460" class="divider"/>
+  <text x="95" y="485" class="small"><tspan x="95" dy="0">内部状态：DataSource · rollout/eval callbacks · rollout_id · engine lock · health monitors</tspan><tspan x="95" dy="24">生命周期：start/attach SGLang Router → ServerGroups → Engines；on/offload、recover、check weights</tspan><tspan x="95" dy="24">generate()：取 Sample → rollout/reward → debug evidence → convert train data → split by DP</tspan></text>
+
+  <rect x="820" y="410" width="650" height="142" rx="17" class="megatron"/>
+  <text x="845" y="444" class="label">RayTrainGroup · learner-side controller</text>
+  <line x1="845" y1="460" x2="1445" y2="460" class="divider"/>
+  <text x="845" y="485" class="small"><tspan x="845" dy="0">slime 本地 Python manager，不是 Ray Core 自带组件</tspan><tspan x="845" dy="24">创建并持有 MegatronTrainRayActor × world_size（每个 distributed rank 一个 actor handle）</tspan><tspan x="845" dy="24">调用 async_train · save_model · update_weights · clear/offload/release</tspan></text>
+
+  <rect x="1520" y="410" width="410" height="142" rx="17" class="ray"/>
+  <text x="1545" y="444" class="label">Ray Core · execution substrate</text>
+  <line x1="1545" y1="460" x2="1905" y2="460" class="divider"/>
+  <text x="1545" y="485" class="small"><tspan x="1545" dy="0">PlacementGroup · resource bundles</tspan><tspan x="1545" dy="24">@ray.remote actors · .remote() calls</tspan><tspan x="1545" dy="24">ObjectRef · scheduling · actor lifecycle</tspan></text>
+
+  <rect x="70" y="570" width="1860" height="38" rx="16" class="soft"/>
+  <text x="95" y="594" class="small" font-weight="700">RolloutManager.generate()</text>
+  <line x1="285" y1="589" x2="350" y2="589" class="data-line"/>
+  <text x="370" y="594" class="small data-text">rollout_data_ref</text>
+  <line x1="510" y1="589" x2="575" y2="589" class="data-line"/>
+  <text x="595" y="594" class="small" font-weight="700">RayTrainGroup.async_train()</text>
+  <line x1="830" y1="589" x2="895" y2="589" class="control-line"/>
+  <text x="915" y="594" class="small" font-weight="700">RayTrainGroup.update_weights()</text>
+  <line x1="1180" y1="589" x2="1245" y2="589" class="weight-line"/>
+  <text x="1265" y="594" class="small weight-text">RolloutManager-managed SGLang engines</text>
+  <text x="1885" y="594" class="tiny" text-anchor="end">sync entry 顺序执行；async entry 才可能重叠</text>
+
+  <!-- Online RL loop -->
+  <rect x="40" y="660" width="1920" height="900" rx="20" class="panel"/>
+  <text x="70" y="704" class="section">2 · Online RL 逻辑闭环：对象沿箭头移动，版本沿闭环传播</text>
+  <text x="70" y="735" class="small">上排生成数据，下排训练并回传权重；RolloutManager 和 RayTrainGroup 是 sibling controllers，entry 的等待策略才决定同步或异步。</text>
+
+  <!-- Control row -->
+  <rect x="70" y="775" width="330" height="120" rx="15" class="slime"/>
+  <text x="92" y="809" class="label">Recipe / launch config</text>
+  <text x="92" y="840" class="small"><tspan x="92" dy="0">model · data · GRPO/PPO · resources</tspan><tspan x="92" dy="24">custom generate / reward / hooks</tspan></text>
+
+  <rect x="470" y="775" width="500" height="120" rx="15" class="slime"/>
+  <text x="492" y="809" class="label">slime train.py / train_async.py</text>
+  <text x="492" y="840" class="small"><tspan x="492" dy="0">creates RolloutManager + RayTrainGroup</tspan><tspan x="492" dy="24">orders/overlaps generate → train → weight sync</tspan></text>
+
+  <rect x="1040" y="775" width="430" height="120" rx="15" class="ray"/>
+  <text x="1062" y="809" class="label">Ray scheduler / actors</text>
+  <text x="1062" y="840" class="small"><tspan x="1062" dy="0">placement bundles · GPU allocation</tspan><tspan x="1062" dy="24">actor lifecycle · remote() · async futures</tspan><tspan x="1062" dy="24">external SGLang can live outside this Ray cluster</tspan></text>
+
+  <rect x="1540" y="775" width="390" height="120" rx="15" class="evidence"/>
+  <text x="1562" y="809" class="label">Run identity / policy ledger</text>
+  <text x="1562" y="840" class="small"><tspan x="1562" dy="0">run_id · global_step · expected version</tspan><tspan x="1562" dy="24">config/SHA · sync ACK · failure status</tspan></text>
+
+  <path d="M400 835 H470" class="control-line"/>
+  <path d="M970 835 H1040" class="control-line"/>
+  <path d="M1470 835 H1540" class="evidence-line"/>
+  <path d="M720 895 V925 H200 V955" class="control-line"/>
+  <path d="M1255 895 V925 H885 V955" class="control-line"/>
+
+  <!-- Data row -->
+  <rect x="70" y="955" width="260" height="180" rx="15" class="buffer"/>
+  <text x="92" y="990" class="body" font-weight="700">RolloutManager / DataSource</text>
+  <text x="92" y="1021" class="small"><tspan x="92" dy="0">raw Sample · prompt/group id</tspan><tspan x="92" dy="25">dataset cursor · retry buffer</tspan><tspan x="92" dy="25">rollout_id / expected version</tspan></text>
+
+  <rect x="380" y="955" width="280" height="180" rx="15" class="buffer"/>
+  <text x="402" y="990" class="label">Render / preprocess</text>
+  <text x="402" y="1021" class="small"><tspan x="402" dy="0">input_ids · attention_mask</tspan><tspan x="402" dy="25">request_id · generation config</tspan><tspan x="402" dy="25">padding/batching；无 SFT label</tspan></text>
+
+  <rect x="710" y="955" width="350" height="180" rx="15" class="sglang"/>
+  <text x="732" y="990" class="label">SGLang router + engines</text>
+  <text x="732" y="1021" class="small"><tspan x="732" dy="0">K responses / prompt · action mask</tspan><tspan x="732" dy="25">old_logprobs · finish_reason</tspan><tspan x="732" dy="25">trajectory_id · loaded_policy_version</tspan></text>
+
+  <rect x="1110" y="955" width="330" height="180" rx="15" class="reward"/>
+  <text x="1132" y="990" class="label">Environment / verifier / RM</text>
+  <text x="1132" y="1021" class="small"><tspan x="1132" dy="0">response + tool/env feedback</tspan><tspan x="1132" dy="25">scalar/token reward · status</tspan><tspan x="1132" dy="25">reward_version · failure semantics</tspan></text>
+
+  <rect x="1490" y="955" width="440" height="180" rx="15" class="buffer"/>
+  <text x="1512" y="990" class="label">Sample / trajectory Data Buffer</text>
+  <text x="1512" y="1021" class="small"><tspan x="1512" dy="0">tokens + masks + reward + old_logprobs</tspan><tspan x="1512" dy="25">advantages · prompt/group/trajectory ids</tspan><tspan x="1512" dy="25">rollout_policy_version；producer↔consumer bridge</tspan></text>
+
+  <path d="M330 1045 H380" class="data-line"/>
+  <path d="M660 1045 H710" class="data-line"/>
+  <path d="M1060 1045 H1110" class="data-line"/>
+  <path d="M1440 1045 H1490" class="data-line"/>
+  <text x="355" y="1030" class="tiny data-text" text-anchor="middle">raw sample</text>
+  <text x="685" y="1030" class="tiny data-text" text-anchor="middle">request</text>
+  <text x="1085" y="1030" class="tiny data-text" text-anchor="middle">trajectory</text>
+  <text x="1465" y="1030" class="tiny data-text" text-anchor="middle">rewarded sample</text>
+
+  <!-- Train + sync row -->
+  <rect x="1490" y="1195" width="440" height="155" rx="15" class="buffer"/>
+  <text x="1512" y="1230" class="label">Learner batch conversion</text>
+  <text x="1512" y="1261" class="small"><tspan x="1512" dy="0">validate group/version → pack tensors</tspan><tspan x="1512" dy="25">old/ref logprobs · advantage · action mask</tspan><tspan x="1512" dy="25">reject/quarantine stale trajectories</tspan></text>
+
+  <rect x="1030" y="1195" width="400" height="155" rx="15" class="megatron"/>
+  <text x="1052" y="1230" class="label">RayTrainGroup → Megatron learner</text>
+  <text x="1052" y="1261" class="small"><tspan x="1052" dy="0">current logprob → ratio/KL/loss</tspan><tspan x="1052" dy="25">backward → optimizer step → policy vN+1</tspan><tspan x="1052" dy="25">params/grad/Adam/RNG/global step</tspan></text>
+
+  <rect x="580" y="1195" width="390" height="155" rx="15" class="megatron"/>
+  <text x="602" y="1230" class="label">RayTrainGroup.update_weights()</text>
+  <text x="602" y="1261" class="small"><tspan x="602" dy="0">source version/hash + target engines</tspan><tspan x="602" dy="25">full weights / selected tensors / transport</tspan><tspan x="602" dy="25">loaded-version ACK + cache/request barrier</tspan></text>
+
+  <path d="M1710 1135 V1195" class="data-line"/>
+  <path d="M1490 1272 H1430" class="data-line"/>
+  <path d="M1030 1272 H970" class="weight-line"/>
+  <path d="M775 1195 V1168 H885 V1135" class="weight-line"/>
+  <text x="1460" y="1256" class="tiny data-text" text-anchor="middle">learner tensors</text>
+  <text x="1000" y="1256" class="tiny weight-text" text-anchor="middle">vN+1 + hash</text>
+  <text x="805" y="1155" class="tiny weight-text" text-anchor="middle">publish → load → ACK</text>
+
+  <rect x="70" y="1405" width="1860" height="105" rx="15" class="runtime"/>
+  <text x="95" y="1440" class="label">Learner execution stack</text>
+  <text x="355" y="1440" class="body">Megatron topology/train step</text>
+  <path d="M590 1434 H660" class="runtime-line"/>
+  <text x="690" y="1440" class="body">PyTorch tensors/autograd/torch.distributed</text>
+  <path d="M1000 1434 H1070" class="runtime-line"/>
+  <text x="1100" y="1440" class="body">NCCL collectives</text>
+  <path d="M1265 1434 H1335" class="runtime-line"/>
+  <text x="1365" y="1440" class="body">CUDA · cuBLAS · TE · Triton kernels</text>
+  <text x="95" y="1482" class="small">训练层决定“算什么/何时通信”，runtime 层决定“如何执行”；NaN 应先沿 loss inputs 定位，只有首次异常落在算子边界才升级 device compute。</text>
+  <path d="M1230 1350 V1405" class="runtime-line"/>
+
+  <!-- Ledger -->
+  <rect x="40" y="1590" width="1920" height="1000" rx="20" class="panel"/>
+  <text x="70" y="1635" class="section">3 · Node ledger：process、对象、状态、证据和首要故障</text>
+  <text x="70" y="1666" class="small">“状态”写节点真正维护的内容；“证据”写下游或操作者能够独立观察、交叉核验的事实。</text>
+
+  <rect x="70" y="1700" width="250" height="62" class="table-head"/>
+  <rect x="320" y="1700" width="275" height="62" class="table-head"/>
+  <rect x="595" y="1700" width="355" height="62" class="table-head"/>
+  <rect x="950" y="1700" width="300" height="62" class="table-head"/>
+  <rect x="1250" y="1700" width="285" height="62" class="table-head"/>
+  <rect x="1535" y="1700" width="395" height="62" class="table-head"/>
+  <text x="90" y="1738" class="label">Node / component</text>
+  <text x="340" y="1738" class="label">Process / owner</text>
+  <text x="615" y="1738" class="label">Input → output</text>
+  <text x="970" y="1738" class="label">Owned state</text>
+  <text x="1270" y="1738" class="label">Upstream → downstream</text>
+  <text x="1555" y="1738" class="label">Evidence / likely failures</text>
+
+  <!-- row 1 -->
+  <rect x="70" y="1762" width="250" height="112" class="table-row"/>
+  <rect x="320" y="1762" width="275" height="112" class="table-row"/>
+  <rect x="595" y="1762" width="355" height="112" class="table-row"/>
+  <rect x="950" y="1762" width="300" height="112" class="table-row"/>
+  <rect x="1250" y="1762" width="285" height="112" class="table-row"/>
+  <rect x="1535" y="1762" width="395" height="112" class="table-row"/>
+  <text x="90" y="1792" class="body"><tspan x="90" dy="0" font-weight="700">Entry / execution</tspan><tspan x="90" dy="24" class="mono">train*.py + Ray Core</tspan></text>
+  <text x="340" y="1792" class="small"><tspan x="340" dy="0">driver process owns phase order</tspan><tspan x="340" dy="23">Ray owns scheduling/lifecycle</tspan><tspan x="340" dy="23">controllers use Ray, not vice versa</tspan></text>
+  <text x="615" y="1792" class="small"><tspan x="615" dy="0">recipe/resource request</tspan><tspan x="615" dy="23">→ controller handles / phase ObjectRefs</tspan></text>
+  <text x="970" y="1792" class="small"><tspan x="970" dy="0">entry loop / wait strategy</tspan><tspan x="970" dy="23">Ray PG · actors · ObjectRefs</tspan></text>
+  <text x="1270" y="1792" class="small"><tspan x="1270" dy="0">recipe → RM + RTG</tspan><tspan x="1270" dy="23">Ray hosts both sides' remote actors</tspan></text>
+  <text x="1555" y="1792" class="small"><tspan x="1555" dy="0">phase logs · PG/actor/resource status</tspan><tspan x="1555" dy="23">wrong wait order · import drift · pending PG</tspan></text>
+
+  <!-- row 2 -->
+  <rect x="70" y="1874" width="250" height="112" class="table-alt"/>
+  <rect x="320" y="1874" width="275" height="112" class="table-alt"/>
+  <rect x="595" y="1874" width="355" height="112" class="table-alt"/>
+  <rect x="950" y="1874" width="300" height="112" class="table-alt"/>
+  <rect x="1250" y="1874" width="285" height="112" class="table-alt"/>
+  <rect x="1535" y="1874" width="395" height="112" class="table-alt"/>
+  <text x="90" y="1904" class="body"><tspan x="90" dy="0" font-weight="700">DataSource / buffer</tspan><tspan x="90" dy="24" class="mono">RolloutDataSourceWithBuffer</tspan></text>
+  <text x="340" y="1904" class="small"><tspan x="340" dy="0">inside RolloutManager actor</tspan><tspan x="340" dy="23">producer/consumer bridge</tspan></text>
+  <text x="615" y="1904" class="small"><tspan x="615" dy="0">raw prompt / generated Sample</tspan><tspan x="615" dy="23">→ grouped trajectories / learner batch</tspan></text>
+  <text x="970" y="1904" class="small"><tspan x="970" dy="0">queue · cursor · group status</tspan><tspan x="970" dy="23">sample ids · version metadata</tspan></text>
+  <text x="1270" y="1904" class="small"><tspan x="1270" dy="0">prompt/rollout → learner</tspan><tspan x="1270" dy="23">decouples rates and retries</tspan></text>
+  <text x="1555" y="1904" class="small"><tspan x="1555" dy="0">queue depth · ids · version distribution · dumps</tspan><tspan x="1555" dy="23">mixed versions · lost group · schema mismatch</tspan></text>
+
+  <!-- row 3 -->
+  <rect x="70" y="1986" width="250" height="112" class="table-row"/>
+  <rect x="320" y="1986" width="275" height="112" class="table-row"/>
+  <rect x="595" y="1986" width="355" height="112" class="table-row"/>
+  <rect x="950" y="1986" width="300" height="112" class="table-row"/>
+  <rect x="1250" y="1986" width="285" height="112" class="table-row"/>
+  <rect x="1535" y="1986" width="395" height="112" class="table-row"/>
+  <text x="90" y="2016" class="body"><tspan x="90" dy="0" font-weight="700">Rollout control + serving</tspan><tspan x="90" dy="24" class="mono">RolloutManager + SGLang</tspan></text>
+  <text x="340" y="2016" class="small"><tspan x="340" dy="0">RM is a Ray actor/controller</tspan><tspan x="340" dy="23">SGLang: Ray actors or external servers</tspan></text>
+  <text x="615" y="2016" class="small"><tspan x="615" dy="0">rendered prompt + generation config</tspan><tspan x="615" dy="23">→ response/mask/old_logprobs/version</tspan></text>
+  <text x="970" y="2016" class="small"><tspan x="970" dy="0">RM: callbacks/id/locks/health</tspan><tspan x="970" dy="23">SGLang: weights/KV/in-flight</tspan></text>
+  <text x="1270" y="2016" class="small"><tspan x="1270" dy="0">driver/DataSource → reward/buffer</tspan><tspan x="1270" dy="23">weight sync → SGLang engines</tspan></text>
+  <text x="1555" y="2016" class="small"><tspan x="1555" dy="0">RM generate/convert + SGLang ready/version</tspan><tspan x="1555" dy="23">schema bug · stale weights · cache/OOM/timeout</tspan></text>
+
+  <!-- row 4 -->
+  <rect x="70" y="2098" width="250" height="112" class="table-alt"/>
+  <rect x="320" y="2098" width="275" height="112" class="table-alt"/>
+  <rect x="595" y="2098" width="355" height="112" class="table-alt"/>
+  <rect x="950" y="2098" width="300" height="112" class="table-alt"/>
+  <rect x="1250" y="2098" width="285" height="112" class="table-alt"/>
+  <rect x="1535" y="2098" width="395" height="112" class="table-alt"/>
+  <text x="90" y="2128" class="body"><tspan x="90" dy="0" font-weight="700">Reward / environment</tspan><tspan x="90" dy="24" class="mono">verifier · RM · sandbox</tspan></text>
+  <text x="340" y="2128" class="small"><tspan x="340" dy="0">custom service/function</tspan><tspan x="340" dy="23">optional external process</tspan></text>
+  <text x="615" y="2128" class="small"><tspan x="615" dy="0">trajectory + env/tool result</tspan><tspan x="615" dy="23">→ reward/status/reward_version</tspan></text>
+  <text x="970" y="2128" class="small"><tspan x="970" dy="0">rubric/test version · retry state</tspan><tspan x="970" dy="23">sandbox/tool session if applicable</tspan></text>
+  <text x="1270" y="2128" class="small"><tspan x="1270" dy="0">rollout → Data Buffer</tspan><tspan x="1270" dy="23">may call tools/environment</tspan></text>
+  <text x="1555" y="2128" class="small"><tspan x="1555" dy="0">raw verifier result · latency · reward ledger</tspan><tspan x="1555" dy="23">infra error as reward · nondeterminism · drift</tspan></text>
+
+  <!-- row 5 -->
+  <rect x="70" y="2210" width="250" height="112" class="table-row"/>
+  <rect x="320" y="2210" width="275" height="112" class="table-row"/>
+  <rect x="595" y="2210" width="355" height="112" class="table-row"/>
+  <rect x="950" y="2210" width="300" height="112" class="table-row"/>
+  <rect x="1250" y="2210" width="285" height="112" class="table-row"/>
+  <rect x="1535" y="2210" width="395" height="112" class="table-row"/>
+  <text x="90" y="2240" class="body"><tspan x="90" dy="0" font-weight="700">Learner controller</tspan><tspan x="90" dy="24" class="mono">RayTrainGroup + Megatron</tspan></text>
+  <text x="340" y="2240" class="small"><tspan x="340" dy="0">RTG local manager + actor handles</tspan><tspan x="340" dy="23">Megatron Ray actors × ranks</tspan></text>
+  <text x="615" y="2240" class="small"><tspan x="615" dy="0">tokens/masks/advantage/old logprobs</tspan><tspan x="615" dy="23">→ updated weights/version/metrics</tspan></text>
+  <text x="970" y="2240" class="small"><tspan x="970" dy="0">RTG: actor handles / role</tspan><tspan x="970" dy="23">Megatron: params/grads/Adam/RNG/step</tspan></text>
+  <text x="1270" y="2240" class="small"><tspan x="1270" dy="0">entry/buffer → sync/checkpoint</tspan><tspan x="1270" dy="23">runtime stack below ranks</tspan></text>
+  <text x="1555" y="2240" class="small"><tspan x="1555" dy="0">loss parts · grad norm · step · weight hash</tspan><tspan x="1555" dy="23">NaN · mask/logprob bug · OOM/hang/no step</tspan></text>
+
+  <!-- row 6 -->
+  <rect x="70" y="2322" width="250" height="112" class="table-alt"/>
+  <rect x="320" y="2322" width="275" height="112" class="table-alt"/>
+  <rect x="595" y="2322" width="355" height="112" class="table-alt"/>
+  <rect x="950" y="2322" width="300" height="112" class="table-alt"/>
+  <rect x="1250" y="2322" width="285" height="112" class="table-alt"/>
+  <rect x="1535" y="2322" width="395" height="112" class="table-alt"/>
+  <text x="90" y="2352" class="body"><tspan x="90" dy="0" font-weight="700">Weight sync</tspan><tspan x="90" dy="24" class="mono">RayTrainGroup.update_weights</tspan></text>
+  <text x="340" y="2352" class="small"><tspan x="340" dy="0">RTG invokes train actors</tspan><tspan x="340" dy="23">SGLang endpoints receive tensors</tspan></text>
+  <text x="615" y="2352" class="small"><tspan x="615" dy="0">source version/hash + tensors</tspan><tspan x="615" dy="23">→ loaded version/hash + ACK</tspan></text>
+  <text x="970" y="2352" class="small"><tspan x="970" dy="0">sync phase · target set</tspan><tspan x="970" dy="23">per-worker ACK / failure status</tspan></text>
+  <text x="1270" y="2352" class="small"><tspan x="1270" dy="0">learner → rollout engines</tspan><tspan x="1270" dy="23">gates next-version requests</tspan></text>
+  <text x="1555" y="2352" class="small"><tspan x="1555" dy="0">publish/load hashes · ACK · barrier timestamps</tspan><tspan x="1555" dy="23">partial sync · stale worker · cache/in-flight race</tspan></text>
+
+  <!-- row 7 -->
+  <rect x="70" y="2434" width="250" height="112" class="table-row"/>
+  <rect x="320" y="2434" width="275" height="112" class="table-row"/>
+  <rect x="595" y="2434" width="355" height="112" class="table-row"/>
+  <rect x="950" y="2434" width="300" height="112" class="table-row"/>
+  <rect x="1250" y="2434" width="285" height="112" class="table-row"/>
+  <rect x="1535" y="2434" width="395" height="112" class="table-row"/>
+  <text x="90" y="2464" class="body"><tspan x="90" dy="0" font-weight="700">Persistence / evidence</tspan><tspan x="90" dy="24" class="mono">checkpoint + dumps + metrics</tspan></text>
+  <text x="340" y="2464" class="small"><tspan x="340" dy="0">training/checkpoint writers</tspan><tspan x="340" dy="23">logging/eval stores</tspan></text>
+  <text x="615" y="2464" class="small"><tspan x="615" dy="0">state + identity metadata</tspan><tspan x="615" dy="23">→ resume/export/audit evidence</tspan></text>
+  <text x="970" y="2464" class="small"><tspan x="970" dy="0">checkpoint version · manifests</tspan><tspan x="970" dy="23">run/sample/version lineage</tspan></text>
+  <text x="1270" y="2464" class="small"><tspan x="1270" dy="0">all nodes → operators/downstream</tspan><tspan x="1270" dy="23">evidence is not the live state itself</tspan></text>
+  <text x="1555" y="2464" class="small"><tspan x="1555" dy="0">checksums · metadata · replayable sample ids</tspan><tspan x="1555" dy="23">checkpoint not resumable · mislabeled version</tspan></text>
+
+  <!-- Diagnostics -->
+  <rect x="40" y="2620" width="1920" height="280" rx="20" class="panel"/>
+  <text x="70" y="2662" class="section">4 · 首轮诊断：先找“首次不一致”的层，不从最底层猜</text>
+
+  <rect x="70" y="2700" width="570" height="145" rx="15" class="warn"/>
+  <text x="94" y="2735" class="label">Import / placement failure</text>
+  <text x="94" y="2767" class="small"><tspan x="94" dy="0">ModuleNotFound → recipe/environment：actor 内同环境 import</tspan><tspan x="94" dy="25">placement pending → Ray control plane：request vs available resources</tspan><tspan x="94" dy="25">actor alive 只证明进程存在，不证明模型 ready</tspan></text>
+
+  <rect x="715" y="2700" width="570" height="145" rx="15" class="fail"/>
+  <text x="739" y="2735" class="label">Finite reward/advantage, NaN loss</text>
+  <text x="739" y="2767" class="small"><tspan x="739" dy="0">先查 learner：current/old logprob → ratio/KL → mask → loss</tspan><tspan x="739" dy="25">再查 grad/optimizer；只有首次异常在 kernel 边界才查 device</tspan><tspan x="739" dy="25">证据：loss 分项、finite checks、grad norm、optimizer step</tspan></text>
+
+  <rect x="1360" y="2700" width="570" height="145" rx="15" class="evidence"/>
+  <text x="1384" y="2735" class="label">Trajectory vN+1, worker loaded vN</text>
+  <text x="1384" y="2767" class="small"><tspan x="1384" dy="0">weight-sync/evidence conflict：quarantine trajectory/group</tspan><tspan x="1384" dy="25">对齐 learner publish hash → worker load hash → ACK → request time</tspan><tspan x="1384" dy="25">严格 on-policy 下重跑；不能用 null 破坏 GRPO group</tspan></text>
+
+  <!-- Footer -->
+  <rect x="40" y="2930" width="1920" height="78" rx="16" class="soft"/>
+  <text x="65" y="2960" class="tiny"><tspan font-weight="700">Evidence boundary · </tspan>Day 26 pinned slime v0.3.1 source paths passed static audit；supplied runtime failed S0, so model load / rollout / optimizer / weight sync remain RUNTIME UNKNOWN for that run.</text>
+  <text x="65" y="2987" class="tiny">Primary references: <a xlink:href="https://github.com/THUDM/slime" href="https://github.com/THUDM/slime"><tspan class="data-text">THUDM/slime README &amp; usage docs</tspan></a> · <a xlink:href="https://thudm.github.io/slime/blogs/introducing_slime.html" href="https://thudm.github.io/slime/blogs/introducing_slime.html"><tspan class="data-text">slime architecture blog</tspan></a> · local Day 26 runtime config/static audit.</text>
+</svg>

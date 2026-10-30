@@ -1,0 +1,12 @@
+{
+  "candidate_ids_sha256": "892f96dc75d62d7c5428a8fdcf35f3f0dd6b68f78f422665d48485714ee9bdb8",
+  "candidate_rows_sha256": "2802904bade0b90982dee939e63fce168a35764961397c6a8146aa6073ef153e",
+  "rollout_contract_sha256": "0b0c412a52bbfc419804307562fef29716195efe62e54b45e9be3737b939794f",
+  "rows": 990,
+  "schema_name": "day22.s1_rollout_shard_summary",
+  "schema_version": 1,
+  "shard_count": 2,
+  "shard_id": 0,
+  "status": "complete",
+  "summary_sha256": "9ffd5c9c9e29a15ef52bb5fa6901ebb459a388aca92fdd6704e73ffa2ced775a"
+}

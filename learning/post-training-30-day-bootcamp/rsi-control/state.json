@@ -1,0 +1,23 @@
+{
+  "schema_name": "rsi.state",
+  "schema_version": 1,
+  "goal_status": "achieved",
+  "current_goal": "goal-0001",
+  "current_version": "rsi-v0002",
+  "current_run": "run-003-main-confirmation",
+  "current_attempt": "attempt-001",
+  "best_qualified_candidate": "main-s20260809-lr1e-4-final",
+  "versions": [
+    {
+      "version_id": "rsi-v0001",
+      "status": "complete_not_qualified",
+      "confirmed_qualified": false
+    },
+    {
+      "version_id": "rsi-v0002",
+      "status": "complete_qualified",
+      "confirmed_qualified": true
+    }
+  ],
+  "next_action": "Goal achieved; retain the promoted primary checkpoint and immutable evidence."
+}
